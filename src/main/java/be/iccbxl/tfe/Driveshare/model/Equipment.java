@@ -3,18 +3,21 @@ package be.iccbxl.tfe.Driveshare.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
-@Table(name="conditions")
-public class Condition {
+@Table(name="equipements")
+public class Equipment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="description")
-    private String condition;
+    private String equipment;
 
-    @ManyToOne
-    private Car car;
+    @ManyToMany(mappedBy = "equipments")
+    private List<Car> cars;
+
 }

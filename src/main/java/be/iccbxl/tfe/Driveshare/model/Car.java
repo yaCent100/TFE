@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name="voitures")
-public class Cars {
+public class Car {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,12 @@ public class Cars {
     )
     private List<Feature> features;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(
+            name = "voitures_equipements",
+            joinColumns = @JoinColumn(name = "voiture_id"),
+            inverseJoinColumns = @JoinColumn(name = "equipement_id")
+    )
     private List<Equipment> equipments;
 
 

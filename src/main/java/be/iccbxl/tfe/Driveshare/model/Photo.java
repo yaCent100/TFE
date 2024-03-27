@@ -16,6 +16,6 @@ public class Photo {
     private String photo;
 
     @ManyToOne
-    private Cars car;
+    private Car car;
 
 }

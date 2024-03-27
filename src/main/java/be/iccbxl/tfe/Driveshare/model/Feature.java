@@ -20,7 +20,7 @@ public class Feature {
     private String description;
 
     @ManyToMany(mappedBy = "features")
-    private List<Cars> cars;
+    private List<Car> cars;
 
 }
 
