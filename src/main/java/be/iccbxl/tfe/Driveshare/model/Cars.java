@@ -3,6 +3,8 @@ package be.iccbxl.tfe.Driveshare.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 @Table(name="voitures")
@@ -32,7 +34,12 @@ public class Cars {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Photo> photos;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(
+            name = "voitures_caracteristiques",
+            joinColumns = @JoinColumn(name = "voiture_id"),
+            inverseJoinColumns = @JoinColumn(name = "caracteristique_id")
+    )
     private List<Feature> features;
 
     @OneToMany(cascade = CascadeType.ALL)
