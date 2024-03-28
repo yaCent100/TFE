@@ -14,18 +14,24 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="Marque")
     private String brand;
 
+    @Column(name="Modele")
     private String model;
 
+    @Column(name="Annee")
     private int year;
 
+    @Column(name="Carburant")
     private String fuelType;
 
     @ManyToOne
+    @JoinColumn(name = "UserID")
     private User owner;
 
     @ManyToOne
+    @JoinColumn(name = "CategorieID")
     private Category category;
 
     @OneToMany(cascade = CascadeType.ALL)

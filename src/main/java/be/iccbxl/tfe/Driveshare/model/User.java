@@ -27,22 +27,22 @@ public class User {
     @Column(name="Adresse")
     private String adresse;
 
-    @Column(name="CodePostal")
+    @Column(name="code_postal")
     private String codePostal;
 
-    @Column(name="DateNaissance")
+    @Column(name="date_naissance")
     private Date dateNaissance;
 
-    @Column(name="MotDePasse")
-    private String motDePasse;
+    @Column(name="password")
+    private String password;
 
-    @Column(name="PhotoProfil")
+    @Column(name="photo_profil")
     private String photoProfil;
 
-    @Column(name="PermisConduire")
+    @Column(name="permis_conduire")
     private String permisConduire;
 
-    @Column(name="CarteIdentite")
+    @Column(name="carte_identite")
     private String carteIdentite;
 
     @ManyToMany
