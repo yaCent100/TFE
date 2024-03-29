@@ -2,7 +2,7 @@ package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.repository.CarRepository;
-import be.iccbxl.tfe.Driveshare.service.CarsServiceI;
+import be.iccbxl.tfe.Driveshare.service.CarServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CarService implements CarsServiceI {
+public class CarService implements CarServiceI {
 
     @Autowired
     private CarRepository carRepository;

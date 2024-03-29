@@ -4,7 +4,7 @@ import be.iccbxl.tfe.Driveshare.model.Car;
 
 import java.util.List;
 
-public interface CarsServiceI {
+public interface CarServiceI {
 
     List<Car> getAllCars();
     Car getCarById(Long id);
