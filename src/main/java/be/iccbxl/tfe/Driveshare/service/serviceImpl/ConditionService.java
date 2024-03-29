@@ -20,7 +20,8 @@ public class ConditionService implements ConditionServiceI {
     public List<Condition> getAllConditions() {
         List<Condition> conditions = new ArrayList<>();
         conditionRepository.findAll().forEach(conditions::add);
-        return conditions;    }
+        return conditions;
+    }
 
     @Override
     public Condition getConditionById(Long id) {
