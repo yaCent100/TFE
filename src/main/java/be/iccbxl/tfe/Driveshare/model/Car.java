@@ -34,11 +34,14 @@ public class Car {
     @JoinColumn(name = "CategorieID")
     private Category category;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Condition> conditions;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Photo> photos;
+
+    @OneToMany(mappedBy = "car")
+    private List<Evaluation> evaluations;
 
     @ManyToMany
     @JoinTable(

@@ -45,6 +45,9 @@ public class User {
     @Column(name="carte_identite")
     private String carteIdentite;
 
+    @OneToMany(mappedBy = "user")
+    private List<Evaluation> evaluations;
+
     @ManyToMany
     @JoinTable(
             name = "user_role",

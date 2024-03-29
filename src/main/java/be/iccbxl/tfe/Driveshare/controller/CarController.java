@@ -23,6 +23,6 @@ public class CarController {
     public String getAllCars(Model model) {
         List<Car> cars = carService.getAllCars();
         model.addAttribute("cars", cars);
-        return "index";
+        return "car/index";
     }
 }

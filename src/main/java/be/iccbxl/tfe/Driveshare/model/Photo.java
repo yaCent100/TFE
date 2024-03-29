@@ -5,17 +5,18 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name="photo")
+@Table(name="photos")
 public class Photo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="filePath")
-    private String photo;
+    @Column(name="url")
+    private String url;
 
     @ManyToOne
+    @JoinColumn(name = "VoitureID")
     private Car car;
 
 }

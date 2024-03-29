@@ -12,9 +12,10 @@ public class Condition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="description")
+    @Column(name="Description")
     private String condition;
 
     @ManyToOne
+    @JoinColumn(name = "VoitureID")
     private Car car;
 }

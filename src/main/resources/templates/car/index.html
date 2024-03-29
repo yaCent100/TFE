@@ -14,7 +14,9 @@
     <th>Année</th>
     <th>Type de carburant</th>
     <th>Catégorie</th>
-    <th>Propriétaire</th>
+    <th>Photos</th>
+    <th>Conditions</th>
+    <th>Evaluations</th>
   </tr>
   </thead>
   <tbody>
@@ -24,7 +26,21 @@
     <td th:text="${car.year}"></td>
     <td th:text="${car.fuelType}"></td>
     <td th:text="${car.category.category}"></td>
-    <!-- Ajoutez d'autres détails de la voiture selon vos besoins -->
+    <td>
+      <div th:each="photo : ${car.photos}">
+        <img th:src="${photo.url}" alt="Photo de voiture" width="100px"/>
+      </div>
+    </td>
+    <td>
+      <div th:each="condition : ${car.conditions}">
+        <p th:text="${condition.condition}"></p>
+      </div>
+    </td>
+    <td>
+      <div th:each="eval : ${car.evaluations}">
+        <p th:text="${eval.avis}"></p>
+      </div>
+    </td>
   </tr>
   </tbody>
 </table>

@@ -15,11 +15,11 @@ public class Evaluation {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "voiture_id", nullable = false)
+    @JoinColumn(name = "VoitureID", nullable = false)
     private Car car;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "UserID", nullable = false)
     private User user;
 
     @Column(nullable = false)
@@ -28,6 +28,6 @@ public class Evaluation {
     @Column(columnDefinition = "TEXT")
     private String avis;
 
-    @Column(name = "createdAt", nullable = false)
+    @Column(name = "Created_at", nullable = false)
     private LocalDateTime createdAt;
 }
