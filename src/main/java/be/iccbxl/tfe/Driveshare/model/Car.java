@@ -26,9 +26,21 @@ public class Car {
     @Column(name="Carburant")
     private String fuelType;
 
+    @Column(name="Adresse")
+    private String adresse;
+
+    @Column(name="code_postal")
+    private int codePostal;
+
+    @Column(name="locality")
+    private String locality;
+
+    @Column(name="prix")
+    private double price;
+
     @ManyToOne
     @JoinColumn(name = "UserID")
-    private User owner;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "CategorieID")
@@ -46,16 +58,16 @@ public class Car {
     @ManyToMany
     @JoinTable(
             name = "voitures_caracteristiques",
-            joinColumns = @JoinColumn(name = "voiture_id"),
-            inverseJoinColumns = @JoinColumn(name = "caracteristique_id")
+            joinColumns = @JoinColumn(name = "VoitureID"),
+            inverseJoinColumns = @JoinColumn(name = "CaracteristiqueID")
     )
     private List<Feature> features;
 
     @ManyToMany
     @JoinTable(
             name = "voitures_equipements",
-            joinColumns = @JoinColumn(name = "voiture_id"),
-            inverseJoinColumns = @JoinColumn(name = "equipement_id")
+            joinColumns = @JoinColumn(name = "VoitureID"),
+            inverseJoinColumns = @JoinColumn(name = "EquipementID")
     )
     private List<Equipment> equipments;
 
@@ -91,6 +103,7 @@ public class Car {
     public void removeEquipment(Equipment equipment) {
         equipments.remove(equipment);
     }
+
 
 
 

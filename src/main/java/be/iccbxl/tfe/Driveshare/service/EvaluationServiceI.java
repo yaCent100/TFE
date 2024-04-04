@@ -1,5 +1,6 @@
 package be.iccbxl.tfe.Driveshare.service;
 
+import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Equipment;
 import be.iccbxl.tfe.Driveshare.model.Evaluation;
 
@@ -12,4 +13,5 @@ public interface EvaluationServiceI {
     Evaluation saveEvaluation(Evaluation evaluation);
     Evaluation updateEvaluation(Long id, Evaluation evaluation);
     void deleteEvaluation(Long id);
+    double calculateAverageRating(Car car);
 }

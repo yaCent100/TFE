@@ -14,9 +14,10 @@ public class Feature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="nom")
+    @Column(name="Nom")
     private String name;
 
+    @Column(name="Description")
     private String description;
 
     @ManyToMany(mappedBy = "features")

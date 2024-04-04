@@ -27,6 +27,9 @@ public class User {
     @Column(name="Adresse")
     private String adresse;
 
+    @Column(name="locality")
+    private String locality;
+
     @Column(name="code_postal")
     private String codePostal;
 

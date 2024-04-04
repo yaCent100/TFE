@@ -17,6 +17,9 @@ public class Equipment {
     @Column(name="description")
     private String equipment;
 
+    @Column(name="icones")
+    private String icone;
+
     @ManyToMany(mappedBy = "equipments")
     private List<Car> cars;
 

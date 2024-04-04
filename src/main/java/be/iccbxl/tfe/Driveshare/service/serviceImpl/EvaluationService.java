@@ -1,5 +1,6 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
+import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Evaluation;
 import be.iccbxl.tfe.Driveshare.repository.EvaluationRepository;
 import be.iccbxl.tfe.Driveshare.service.EvaluationServiceI;
@@ -49,4 +50,18 @@ public class EvaluationService implements EvaluationServiceI {
     public void deleteEvaluation(Long id) {
         evaluationRepository.deleteById(id);
     }
+
+    @Override
+    public double calculateAverageRating(Car car) {
+        List<Evaluation> evaluations = car.getEvaluations();
+        if (evaluations.isEmpty()) {
+            return 0.0;
+        }
+
+        double sum = 0.0;
+        for (Evaluation evaluation : evaluations) {
+            sum += evaluation.getNote();
+        }
+
+        return Math.round((sum / evaluations.size()) * 2) / 2.0;    }
 }
