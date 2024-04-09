@@ -38,6 +38,9 @@ public class Car {
     @Column(name="prix")
     private double price;
 
+    @Column(name="kilometrage")
+    private double miles;
+
     @ManyToOne
     @JoinColumn(name = "UserID")
     private User user;

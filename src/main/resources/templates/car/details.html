@@ -29,10 +29,10 @@
                     </div>
                     <div>
                         <h1 class="fw-bold mt-2" th:text="${car.brand + ' ' + car.model}"></h1><br>
-                        <span th:text="${car.year}"></span><br>
+                        <span th:text="${car.year} + ' - ' + ${car.fuelType} + ' - ' + ${car.miles} + ' Km'"></span><br>
                         <span>
-                            <span th:each="star : ${#numbers.sequence(1, averageRating)}">&#9733;</span>
-                            <span th:each="star : ${#numbers.sequence(0, 5 - averageRating)}">&#9734;</span>
+                            <span th:each="star : ${#numbers.sequence(1, averageRating)}" class="star-filled">&#9733;</span>
+                            <span th:each="star : ${#numbers.sequence(0, 5 - averageRating)}" class="star-filled">&#9734;</span>
                             <span th:text="${averageRating}"></span> (<span th:text="${#lists.size(car.evaluations)}"></span>)
                         </span>
                     </div>
@@ -59,11 +59,13 @@
                     <div class="row m-3">
                         <div class="col-md-2">
                             <img th:if="${car.user.photoProfil != null}" th:src="${car.user.photoProfil}" class="img-fluid" alt="User Profile Picture" width="100px">
-                            <img th:if="${car.user.photoProfil == null}" src="/profil/defaultProfil.png" class="img-fluid" alt="Default Profile Picture" width="100px">
                         </div>
-                        <div class="col-md-10 fw-bold">
-                            <h2 th:text="${car.user.prenom + ' ' + car.user.nom}"></h2>
+                        <div class="col-md-10 ">
+                            <h2 class="fw-bold" th:text="${car.user.prenom + ' ' + car.user.nom}"></h2>
+                            <span th:text="${car.user.adresse}"></span><br>
+                            <span th:text="${car.user.codePostal + ' ' + car.user.locality}"></span>
                         </div>
+
                     </div>
                 </div>
 
@@ -122,8 +124,8 @@
                     <div th:if="${car.evaluations != null and not #lists.isEmpty(car.evaluations)}">
                         <div th:each="evaluation : ${car.evaluations}" class="col-md-12">
                             <div class="row m-3">
-                                <div class="col-md-2 m-1 d-flex justify-content-center align-items-center">
-                                    <img th:src="${evaluation.user.photoProfil}" alt="Profil" width="50px" height="50px">
+                                <div class="col-md-2 m-1v">
+                                    <img th:src="${evaluation.user.photoProfil}" alt="Profil" width="100px" height="100px">
                                 </div>
                                 <div class="col-md-7">
                                     <span class="fw-bold" th:text="${evaluation.user.nom + ' ' + evaluation.user.prenom.substring(0,1) + '.'}"></span><br>
@@ -133,7 +135,7 @@
                             <span class="star-filled">&#9733;</span>
                         </span>
                         <span th:unless="${evaluation.note >= star}">
-                            <span class="star-empty">&#9734;</span>
+                            <span class="star-filled">&#9734;</span>
                         </span>
                     </span>
                                 </div>
