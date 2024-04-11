@@ -1,61 +1,53 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout"
-      layout:decorate="~{layouts/main}">
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
 <head>
   <meta charset="UTF-8">
   <title>Liste des voitures</title>
 </head>
 <body>
 <div layout:fragment="content">
-
-
-
-
-
-
   <div class="container">
-
     <div id="filters" style="display: none;">
       <form>
         <input>
       </form>
     </div>
     <button id="toggleFilters" class="btn btn-primary mt-3">Filtres</button>
-
-
-
     <br>
     <br>
     <div class="row">
       <!-- Boucle sur chaque voiture pour créer une carte -->
       <div class="col-md-4 mb-3" th:each="car : ${cars}">
-
-          <div class="card">
-            <!-- Afficher uniquement la première image de la voiture -->
-            <a th:href="@{'/cars/' + ${car.id}}" class="card-link">
+        <div class="card">
+          <!-- Afficher uniquement la première image de la voiture -->
+          <a th:href="@{'/cars/' + ${car.id}}" class="card-link">
             <img class="card-img-top" th:src="${car.photos != null and car.photos.size() > 0 ? car.photos[0].url : '/path/to/default/image.jpg'}" alt="Photo de voiture">
-            </a>
-
-            <div class="card-body">
-              <!-- Titre de la carte avec la marque et le modèle -->
-              <h5 class="card-title" th:text="${car.brand + ' ' + car.model}"></h5>
-              <div class="card-text text-end">
+          </a>
+          <div class="card-body">
+            <!-- Titre de la carte avec la marque et le modèle -->
+            <h5 class="card-title" th:text="${car.brand + ' ' + car.model}"></h5>
+            <div class="card-text text-end">
               <!-- Prix de la voiture -->
-              <span  th:text="${car.price + '€/j'}"></span><br>
+              <span th:text="${car.price + '€/j'}"></span><br>
               <!-- Catégorie de la voiture -->
-              <span  th:text="${car.category.category}"></span>
-              </div>
+              <span th:text="${car.category.category}"></span>
             </div>
           </div>
+        </div>
       </div>
+    </div>
 
+
+  </div>
+</div>
 <script>
-  $(document).ready(function(){
-    $("#toggleFilters").click(function(){
-        $("#filters").slideToggle();
+    $(document).ready(function(){
+        $("#toggleFilters").click(function(){
+            $("#filters").slideToggle();
+        });
     });
-});
-</script>
 
+
+</script>
 </body>
 </html>

@@ -4,6 +4,8 @@ import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.repository.CarRepository;
 import be.iccbxl.tfe.Driveshare.service.CarServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +24,9 @@ public class CarService implements CarServiceI {
         carRepository.findAll().forEach(cars::add);
         return cars;
     }
+
+
+
 
     @Override
     public Car getCarById(Long id) {
@@ -53,4 +58,8 @@ public class CarService implements CarServiceI {
     public void deleteCar(Long id) {
         carRepository.deleteById(id);
     }
+
+
+
+
 }

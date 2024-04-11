@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<head>
+    <meta charset="UTF-8">
+    <title>Se connecter</title>
+    <style>
+        .tab {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8"> <!-- Changez la taille de la première colonne -->
+                <div class="card" style="background-color: #DFE7EC;">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#" id="loginTab">Se connecter</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" id="registerTab">Inscription</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab active" id="loginContent">
+                            <div class="row"> <!-- Ajoutez align-items-center pour centrer verticalement -->
+                                <div class="col-md-5"> <!-- Changez la taille de la première colonne -->
+                                    <img th:src="@{/images/imagelogin.png}" class="img-fluid" width="437">
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="text-center"><!-- Changez la taille de la deuxième colonne -->
+                                    <img th:src="@{/images/logoNoir.png}" class="img-fluid" width="166">
+                                    </div>
+                                    <form>
+                                        <!-- Vos champs de formulaire pour la connexion -->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab" id="registerContent">
+                            <!-- Contenu du formulaire d'inscription -->
+                            <!-- Vous pouvez remplacer cela par votre formulaire d'inscription -->
+                            <form>
+                                <!-- Vos champs de formulaire pour l'inscription -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Récupérer les onglets et leur contenu
+    var loginTab = document.getElementById('loginTab');
+    var registerTab = document.getElementById('registerTab');
+    var loginContent = document.getElementById('loginContent');
+    var registerContent = document.getElementById('registerContent');
+
+    // Ajouter des écouteurs d'événements pour les onglets
+    loginTab.addEventListener('click', function() {
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+        loginContent.classList.add('active');
+        registerContent.classList.remove('active');
+    });
+
+    registerTab.addEventListener('click', function() {
+        registerTab.classList.add('active');
+        loginTab.classList.remove('active');
+        registerContent.classList.add('active');
+        loginContent.classList.remove('active');
+    });
+</script>
+
+</body>
+</html>
