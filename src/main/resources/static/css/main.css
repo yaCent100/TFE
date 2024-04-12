@@ -147,6 +147,65 @@ nav {
         color: gold; /* Couleur dorée */
     }
 
+    /*LOGIN*/
+
+    .custom-form {
+        background-color: #DFE7EC
+        text:center;
+
+
+    }
+
+    .custom-card {
+        background-color: #DFE7EC !important;
+         border: none !important; /* Supprimer la bordure */
+         border-radius: 20px !important;;
+         box-shadow: none !important;/*
+
+    }
+
+    /* Style de l'onglet de connexion actif *//* Style de l'onglet de connexion actif */
+  .nav-link#loginTab.active {
+      background-color: #354C6F; /* Couleur de fond pour l'onglet actif */
+      color: #FFF; /* Couleur du texte pour l'onglet actif */
+  }
+
+  /* Style de l'onglet d'inscription lorsque l'onglet de connexion n'est pas actif */
+  .nav-link#registerTab:not(.active) {
+      background-color: #DFE7EC; /* Couleur de fond pour l'onglet inactif */
+      color: #000; /* Couleur du texte pour l'onglet inactif */
+  }
+    .nav-link#registerTab.active {
+        background-color: #354C6F; /* Couleur de fond pour l'onglet actif */
+        color: #FFF; /* Couleur du texte pour l'onglet actif */
+    }
+
+    /* Style de l'onglet d'inscription lorsque l'onglet de connexion n'est pas actif */
+    .nav-link#loginTab:not(.active) {
+        background-color: #DFE7EC; /* Couleur de fond pour l'onglet inactif */
+        color: #000; /* Couleur du texte pour l'onglet inactif */
+    }
+
+
+    .nav-link {
+        border-top-left-radius: 10px !important; /* Coin supérieur gauche arrondi */
+        border-top-right-radius: 10px !important; /* Coin supérieur droit arrondi */
+    }
+
+    .card-header {
+        background-color : #FBFBFB;
+    }
+
+    .form-control {
+        border-radius: 15px; /* Ajustez la valeur selon vos préférences */
+    }
+
+
+
+
+
+
+
 
 
 
