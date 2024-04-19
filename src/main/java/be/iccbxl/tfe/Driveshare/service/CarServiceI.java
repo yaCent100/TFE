@@ -10,7 +10,10 @@ public interface CarServiceI {
 
     List<Car> getAllCars();
     Car getCarById(Long id);
+    Car addUser(Car car);
+
     Car saveCar(Car car);
+
     Car updateCar(Long id, Car car);
     void deleteCar(Long id);
 }

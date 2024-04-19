@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}"
+      xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Se connecter</title>
@@ -17,82 +18,70 @@
 <div layout:fragment="content">
     <div class="container">
         <div class="row justify-content-center mt-5">
-            <div class="col-md-8"> <!-- Changez la taille de la première colonne -->
+            <div class="col-md-8">
                 <div class="card custom-card">
-                    <div class="card-header pt-0 ps-2">
-                        <ul class="nav nav-tabs card-header-tabs">
-                            <li class="nav-item">
-                                <a class="nav-link active" href="#" id="loginTab">Connexion</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" id="registerTab">Inscription</a>
-                            </li>
-                        </ul>
-                    </div>
+                    <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginContent" type="button" role="tab" aria-controls="loginContent" aria-selected="true">Connexion</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerContent" type="button" role="tab" aria-controls="registerContent" aria-selected="false">Inscription</button>
+                        </li>
+                    </ul>
                     <div class="card-body pt-0 pb-0">
                         <div class="tab active" id="loginContent">
-                            <div class="row"> <!-- Ajoutez align-items-center pour centrer verticalement -->
-                                <div class="col-md-5 ps-0"> <!-- Changez la taille de la première colonne -->
-                                    <img th:src="@{/images/imagelogin.png}" class="img-fluid" width="437">
+                            <div class="row">
+                                <div class="col-md-5 ps-0">
+                                    <img th:src="@{/images/imagelogin.png}" class="img-fluid" width="437" alt="login">
                                 </div>
                                 <div class="col-md-7">
-                                    <div class="text-center mt-5"><!-- Changez la taille de la deuxième colonne -->
+                                    <div class="text-center mt-5">
                                         <img th:src="@{/images/logoNoir.png}" class="img-fluid" width="166">
                                     </div>
                                     <div class="col-md-8 mx-auto my-5">
                                         <form class="custom-form">
-                                            <!-- Vos champs de formulaire pour la connexion -->
                                             <label for="email" class="ms-1">Email</label>
                                             <input type="email" id="email" class="form-control">
-
                                             <label for="password" class="ms-1">Password</label>
                                             <input type="password" id="password" class="form-control">
                                         </form>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                         <div class="tab" id="registerContent">
-                            <form class="custom-form">
+                            <form class="custom-form" th:action="@{/register}" th:object="${user}" method="post" enctype="multipart/form-data">
                                 <div class="row">
-                                    <div class="col-md-5 ps-0"> <!-- Changez la taille de la première colonne -->
+                                    <div class="col-md-5 ps-0">
                                         <img th:src="@{/images/registerImage.png}" class="img-fluid" width="437">
                                     </div>
                                     <div class="col-md-7">
-                                        <div class="text-center mt-5"><!-- Changez la taille de la deuxième colonne -->
+                                        <div class="text-center mt-5">
                                             <img th:src="@{/images/logoNoir.png}" class="img-fluid" width="166">
                                         </div>
                                         <div class="col-md-8 mx-auto my-5">
-                                            <!-- Première ligne -->
                                             <div class="row mb-2">
                                                 <div class="col-md-6">
                                                     <label for="nom" class="form-label ms-1 mb-0">Nom</label>
-                                                    <input type="text" class="form-control" id="nom" required>
+                                                    <input type="text" class="form-control" id="nom">
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label for="prenom" class="form-label ms-1 mb-0">Prénom</label>
                                                     <input type="text" class="form-control" id="prenom" required>
                                                 </div>
                                             </div>
-
-                                            <!-- Deuxième ligne -->
                                             <div class="row mb-2">
                                                 <div class="col-md-12">
-                                                    <label for="email" class="form-label ms-1 mb-0">Email</label>
-                                                    <input type="email" class="form-control" id="email" required>
+                                                    <label for="email2" class="form-label ms-1 mb-0">Email</label>
+                                                    <input type="email" class="form-control" id="email2" required>
                                                 </div>
                                             </div>
-
-                                            <!-- Troisième ligne -->
                                             <div class="row mb-2">
                                                 <div class="col-md-12">
                                                     <label for="adresse" class="form-label ms-1 mb-0">Adresse</label>
                                                     <input type="text" class="form-control" id="adresse" required>
                                                 </div>
                                             </div>
-
-                                            <!-- Quatrième ligne -->
                                             <div class="row mb-2">
                                                 <div class="col-md-6">
                                                     <label for="codepostal" class="form-label ms-1 mb-0">Code Postal</label>
@@ -106,18 +95,14 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Cinquième ligne -->
                                 <div class="row mb-3 mt-3">
                                     <div class="col-md-4">
                                         <label for="date_naissance" class="form-label ms-1 mb-0">Date de Naissance</label>
-                                        <input type="date" class="form-control" id="date_naissance" required>
+                                        <input type="date" class="form-control" id="date_naissance">
                                     </div>
-
-                                    <!-- Sixième ligne -->
                                     <div class="col-md-4">
-                                        <label for="password" class="form-label ms-1 mb-0">Mot de passe</label>
-                                        <input type="password" class="form-control" id="password" required>
+                                        <label for="password2" class="form-label ms-1 mb-0">Mot de passe</label>
+                                        <input type="password" class="form-control" id="password2" required>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="confirm_password" class="form-label ms-1 mb-0">Confirmation de Mot de passe</label>
@@ -126,36 +111,29 @@
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-md-4">
-                                        <label for="profil_photo" class="form-label ms-1 mb-0">Photo de Profil</label>
-                                        <input type="file" class="form-control" id="profil_photo" accept="image/*" required>
+                                        <label for="photo" class="form-label ms-1 mb-0">Photo de Profil</label>
+                                        <input type="file" class="form-control" name="photo" id="photo" accept="image/*">
                                     </div>
-
                                     <div class="col-md-4">
-                                        <label for="permis_conduire" class="form-label ms-1 mb-0">Permis de Conduire</label>
-                                        <input type="file" class="form-control" id="permis_conduire" accept=".pdf" required>
+                                        <label for="permis" class="form-label ms-1 mb-0">Permis de Conduire</label>
+                                        <input type="file" class="form-control" name="permis" id="permis" accept="image/*,.pdf">
                                     </div>
-
                                     <div class="col-md-4">
-                                        <label for="carte_identite" class="form-label ms-1 mb-0">Carte d'Identité</label>
-                                        <input type="file" class="form-control" id="carte_identite" accept="image/*,.pdf" required>
+                                        <label for="identite" class="form-label ms-1 mb-0">Carte d'Identité</label>
+                                        <input type="file" class="form-control" name="identity" id="identite" accept="image/*,.pdf">
                                     </div>
                                 </div>
-
-                                <br><br>
-
-                                <div class="row mb-2 text-center"> <!-- Ajoutez la classe text-center pour centrer le bouton -->
+                                <div class="row mb-2 text-center">
                                     <div class="col-md-4 offset-md-4">
                                         <button type="submit" class="btn btn-primary ps-3 pe-3 mt-5 mb-3">S'inscrire</button>
                                     </div>
                                 </div>
-                                <br>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </div></div>
 </body>
 </html>

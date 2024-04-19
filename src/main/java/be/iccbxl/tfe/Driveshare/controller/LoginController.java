@@ -1,64 +1,94 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.model.User;
+import be.iccbxl.tfe.Driveshare.service.serviceImpl.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.File;
+import java.io.IOException;
 
 @Controller
 public class LoginController {
 
+
+
+
+
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private UserService userService;
+
+    @Value("${upload.photo.dir}")
+    private String photoUploadDir;
+
+    @Value("${upload.licence.dir}")
+    private String licenceUploadDir;
+
+    @Value("${upload.identity.dir}")
+    private String identityUploadDir;
+
 
 
     @GetMapping("/login")
-    public String login() {
+    public String login(Model model) {
+        model.addAttribute("user", new User());
         return "login/login";
     }
 
-    @PostMapping("/inscription")
-    public String soumettreFormulaireInscription(@RequestParam String password,
-                                                 @RequestParam String nom,
-                                                 @RequestParam String prenom,
-                                                 @RequestParam String email,
-                                                 @RequestParam String adresse,
-                                                 @RequestParam String codepostal,
-                                                 @RequestParam String commune,
-                                                 @RequestParam String date_naissance,
-                                                 @RequestParam MultipartFile profil_photo,
-                                                 @RequestParam MultipartFile permis_conduire,
-                                                 @RequestParam MultipartFile carte_identite,
-                                                 Model model) {
-        // Validation des champs (exemple: vérifier si les champs obligatoires sont remplis)
+    @PostMapping("/register")
+    public String processRegistrationForm(@ModelAttribute @Valid User user,
+                                          @RequestParam("photo") MultipartFile profilePhoto,
+                                          @RequestParam("permis") MultipartFile drivingLicense,
+                                          @RequestParam("identity") MultipartFile idCard,
+                                          BindingResult result,
+                                          RedirectAttributes redirectAttributes) {
 
-        if (password == null || password.isEmpty()) {
-            model.addAttribute("error", "Le mot de passe est obligatoire.");
-            return "inscription"; // Redirection vers la page d'inscription en cas de mot de passe vide
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorLogin", "Veuillez corriger les champs invalides.");
+            return "redirect:/login";
         }
-
-        // Hashage du mot de passe avec BCrypt
-        String hashedPassword = passwordEncoder.encode(password);
-
-        // Autres validations à ajouter si nécessaire
 
         try {
-            // Enregistrement de l'utilisateur (exemple: sauvegarde dans la base de données)
-            User user = new User(nom, prenom, email, adresse, codepostal, commune, date_naissance, hashedPassword, profil_photo,
-                                    permis_conduire, carte_identite);
-            // Vous pouvez également traiter les fichiers téléchargés ici
+            // Enregistrer la photo
+            String profilePhotoUrl = userService.uploadFile(profilePhoto,photoUploadDir );
+            user.setPhotoUrl(profilePhotoUrl);
 
+            // Enregistrer la licence
+            String drivingLicenseUrl = userService.uploadFile(drivingLicense, licenceUploadDir);
+            user.setPermisConduire(drivingLicenseUrl);
 
-            // Redirection vers la page de succès après inscription
-            return "redirect:/dashboard"; // Redirection vers la page de tableau de bord après inscription
-        } catch (Exception ex) {
-            // Gestion des erreurs (exemple: envoi d'un message d'erreur à l'utilisateur)
-            model.addAttribute("error", "Une erreur s'est produite lors de l'inscription. Veuillez réessayer.");
-            return "inscription"; // Redirection vers la page d'inscription en cas d'erreur
+            // Enregistrer la carte d'identité
+            String idCardUrl = userService.uploadFile(idCard, identityUploadDir);
+            user.setCarteIdentite(idCardUrl);
+
+            // Ajout de l'utilisateur
+            userService.addUser(user);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Inscription réussie. Veuillez vous connecter.");
+            return "redirect:/login?success=true";
+        } catch (IOException e) {
+            // Gérer les erreurs d'entrée/sortie ici
+            redirectAttributes.addFlashAttribute("errorLogin", "Une erreur est survenue lors de l'enregistrement de l'utilisateur.");
+            return "redirect:/login";
         }
+    }
+
+
+
+
+
+
+
+
+
 }

@@ -1,8 +1,12 @@
 package be.iccbxl.tfe.Driveshare.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +37,8 @@ public class User {
     @Column(name="code_postal")
     private String codePostal;
 
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name="date_naissance")
     private Date dateNaissance;
 
@@ -40,7 +46,7 @@ public class User {
     private String password;
 
     @Column(name="photo_profil")
-    private String photoProfil;
+    private String photoUrl;
 
     @Column(name="permis_conduire")
     private String permisConduire;
@@ -57,6 +63,25 @@ public class User {
             joinColumns = @JoinColumn(name = "UserID"),
             inverseJoinColumns = @JoinColumn(name = "RoleID")
     )
-    private List<Role> roles;
+    private List<Role> roles = new ArrayList<>();
+
+
+    public User addRole(Role role) {
+        if(!this.roles.contains(role)) {
+            this.roles.add(role);
+            role.getUsers().add(this);
+        }
+
+        return this;
+    }
+
+    public User removeRole(Role role) {
+        if(this.roles.contains(role)) {
+            this.roles.remove(role);
+            role.getUsers().remove(this);
+        }
+
+        return this;
+    }
 
 }

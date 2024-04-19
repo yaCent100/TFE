@@ -36,8 +36,6 @@ public class CarController {
     }
 
 
-
-
     @GetMapping("/cars/{id}")
     public String getCarById(@PathVariable Long id, Model model) {
         // Récupérer la voiture par son ID
@@ -58,4 +56,8 @@ public class CarController {
 
         return "car/details"; // à adapter selon le nom de votre vue
     }
+
+
+
+
 }

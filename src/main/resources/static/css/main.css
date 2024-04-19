@@ -160,8 +160,8 @@ nav {
         background-color: #DFE7EC !important;
          border: none !important; /* Supprimer la bordure */
          border-radius: 20px !important;;
-         box-shadow: none !important;/*
-
+         box-shadow: none !important;
+         height : 800px;
     }
 
     /* Style de l'onglet de connexion actif *//* Style de l'onglet de connexion actif */
@@ -199,7 +199,6 @@ nav {
     .form-control {
         border-radius: 15px; /* Ajustez la valeur selon vos préférences */
     }
-
 
 
 

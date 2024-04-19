@@ -58,7 +58,7 @@
                     <h2 class="fw-bold">Propriétaire</h2>
                     <div class="row m-3">
                         <div class="col-md-2">
-                            <img th:if="${car.user.photoProfil != null}" th:src="${car.user.photoProfil}" class="img-fluid" alt="User Profile Picture" width="100px">
+                            <img th:if="${car.user.photoUrl != null}" th:src="${'/uploads/profil/' + car.user.photoUrl}" class="img-fluid" alt="User Profile Picture" width="100px">
                         </div>
                         <div class="col-md-10 ">
                             <h2 class="fw-bold" th:text="${car.user.prenom + ' ' + car.user.nom}"></h2>
@@ -125,7 +125,7 @@
                         <div th:each="evaluation : ${car.evaluations}" class="col-md-12">
                             <div class="row m-3">
                                 <div class="col-md-2 m-1v">
-                                    <img th:src="${evaluation.user.photoProfil}" alt="Profil" width="100px" height="100px">
+                                    <img th:src="@{'/uploads/profil/' + ${evaluation.user.photoUrl}}" alt="Profil" width="100px" height="100px">
                                 </div>
                                 <div class="col-md-7">
                                     <span class="fw-bold" th:text="${evaluation.user.nom + ' ' + evaluation.user.prenom.substring(0,1) + '.'}"></span><br>
