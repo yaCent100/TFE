@@ -6,48 +6,225 @@
 </head>
 <body>
 <div layout:fragment="content">
-  <div class="container">
-    <div id="filters" style="display: none;">
-      <form>
-        <input>
-      </form>
-    </div>
-    <button id="toggleFilters" class="btn btn-primary mt-3">Filtres</button>
-    <br>
-    <br>
-    <div class="row">
-      <!-- Boucle sur chaque voiture pour créer une carte -->
-      <div class="col-md-4 mb-3" th:each="car : ${cars}">
-        <div class="card">
-          <!-- Afficher uniquement la première image de la voiture -->
-          <a th:href="@{'/cars/' + ${car.id}}" class="card-link">
-            <img class="card-img-top" th:src="${car.photos != null and car.photos.size() > 0 ? car.photos[0].url : '/path/to/default/image.jpg'}" alt="Photo de voiture">
-          </a>
-          <div class="card-body">
-            <!-- Titre de la carte avec la marque et le modèle -->
-            <h5 class="card-title" th:text="${car.brand + ' ' + car.model}"></h5>
-            <div class="card-text text-end">
-              <!-- Prix de la voiture -->
-              <span th:text="${car.price + '€/j'}"></span><br>
-              <!-- Catégorie de la voiture -->
-              <span th:text="${car.category.category}"></span>
+  <div class="container pdb-30">
+
+    <form class="search-form" action="" method="GET">
+      <div class="row m-5">
+        <div class="col-md-4">
+          <div class="input-group">
+            <input type="text" class="form-control typeahead" placeholder="Lieu de départ" aria-label="Lieu de départ">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="input-group">
+            <input type="text" class="form-control datepicker start-date" placeholder="Date de début" readonly>
+            <span class="input-group-text" id="basic-addon2"><i class="far fa-calendar-alt"></i></span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="input-group">
+            <input type="text" class="form-control datepicker end-date" placeholder="Date de fin" readonly>
+            <span class="input-group-text" id="basic-addon3"><i class="far fa-calendar-alt"></i></span>
+          </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-center justify-content-center">
+          <button type="submit" class="btn btn-success bold">Rechercher</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="row justify-content-center mt-5">
+      <!-- Colonne de filtres (sur les grands écrans uniquement) -->
+      <div class="col-lg-3 d-none d-lg-block mgb-20">
+        <form class="form-shadow">
+          <div class="search-filter-item mb-3">
+            <h6 class="search-title"><img src="icones/voiture-electrique.png" class="img-fluid" width="25" alt="voiture"> Catégorie de véhicule</h6>
+            <hr>
+            <div th:each="categorie : ${categories}">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" th:value="${categorie}" th:id="${categorie}">
+                <label class="form-check-label" th:for="${categorie}" th:text="${categorie.category}"></label>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="form-group">
+            <label for="priceRange"><img src="icones/prix.png" class="img-fluid" width="25" alt="voiture"> Prix</label>
+            <input type="range" class="form-range" id="priceRange" min="0" max="150" step="1" value="0">
+            <div id="priceValue">0 €</div>
+          </div>
+          <br>
+          <div class="search-filter-item mb-3">
+            <h6 class="search-title"><img src="icones/boite-de-vitesses.png" class="img-fluid" width="25" alt="voiture"> Boite de vitesse</h6>
+            <hr>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox">
+                <label class="form-check-label">Manuelle</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox">
+                <label class="form-check-label" >Automatique</label>
+              </div>
+
+          </div>
+          <br>
+          <div class="search-filter-item mb-3">
+            <h6 class="search-title"><img src="icones/pompe-a-essence.png" class="img-fluid" width="25" alt="voiture"> Motorisation</h6>
+            <hr>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox">
+                <label class="form-check-label" >Essence</label>
+              </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >Diesel</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >Hybride</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >Electrique</label>
+            </div>
+          </div>
+          <br>
+          <div class="search-filter-item mb-3">
+            <h6 class="search-title"><img src="icones/compteur-de-vitesse.png" class="img-fluid" width="25" alt="voiture"> Kilometrage du véhicule</h6>
+            <hr>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >0 - 10 000</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >10 000 - 50 000</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >50 000 - 100 000</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >100 000 - 150 000</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >plus de 150 000</label>
+            </div>
+          </div>
+          <br>
+          <div class="search-filter-item mb-3">
+            <h6 class="search-title"><img src="icones/siege.png" class="img-fluid" width="25" alt="voiture"> Nombre de places</h6>
+            <hr>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >3 places</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >4 places</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >5 places</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox">
+              <label class="form-check-label" >7 places</label>
+            </div>
+          </div>
+          <div class="text-center">
+            <button class="btn btn-primary ps-3 pe-3">Reinitialiser</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Colonne principale pour afficher les voitures -->
+      <div class="col-lg-9">
+        <div class="d-flex justify-content-between">
+          <h6 class="search-title">Trier par :</h6>
+          <nav class="filter-top">
+            <ul class="nav nav-pills justify-content-end">
+              <li class="nav-item">
+                <a href="#" class="nav-link sort-link active">Classement des véhicules</a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link sort-link">Taux d'acceptation</a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link sort-link">Prix croissant</a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link sort-link">Evaluation</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="row g-3 p-3">
+          <!-- Boucle sur chaque voiture pour créer une carte -->
+          <div class="col-12 mb-3" th:each="car : ${cars}">
+            <div class="card p-3 rounded">
+              <a th:href="@{'/cars/' + ${car.id}}" class="card-link">
+                <div class="row g-0">
+                  <!-- Colonne pour l'image -->
+                  <div class="col-md-3">
+                    <!-- Afficher uniquement la première image de la voiture -->
+                    <img class="card-img-top" style="max-height: 150px;" th:src="${car.photos != null and car.photos.size() > 0 ? car.photos[0].url : '/path/to/default/image.jpg'}" alt="Photo de voiture">
+                  </div>
+                  <!-- Colonne pour le contenu de la carte -->
+                  <div class="col-md-9">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-lg-12">
+                          <div class="row">
+                            <div class="col-lg-8 col-md-7">
+                              <h5 class="card-title" th:text="${car.brand + ' ' + car.model}"></h5>
+                              <div>
+                                <span th:each="starIndex : ${#numbers.sequence(1, 5)}">
+                                    <span th:if="${starIndex <= averageRatings[car.id]}">
+                                        <span class="fa fa-star"></span>
+                                    </span>
+                                    <span th:unless="${starIndex <= averageRatings[car.id]}">
+                                        <span class="fa fa-star-o"></span>
+                                    </span>
+                                </span>
+                              </div>
+                              <!-- Affichez entre parenthèses le nombre d'avis -->
+                              <div>(<span th:text="${reviewCounts[car.id]}"></span> avis)</div>
+                            </div>
+                            <div class="col-lg-1 col-md-2">
+                            </div>
+                            <div class="col-lg-3 col-md-4">
+                              <p th:text="${car.price + '€/j'}" class="priceIndex"></p>
+                            </div>
+                          </div>
+                          <div class="col-lg-12">
+                            <div class="row">
+                              <div class="col-lg-9">
+                                <p>
+                                  <img src="icones/voiture-electrique.png" alt="" height="15">
+                                  <span th:text="${car.category.category}"></span>
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-
   </div>
 </div>
-<script>
-    $(document).ready(function(){
-        $("#toggleFilters").click(function(){
-            $("#filters").slideToggle();
-        });
-    });
 
-
-</script>
 </body>
 </html>

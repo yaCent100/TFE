@@ -185,3 +185,45 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Récupérez les boutons précédent et suivant
+      var prevButton = document.querySelector('[data-bs-target="#rent"]');
+      var nextButton = document.getElementById('suivant');
+
+      // Ajoutez un gestionnaire d'événement clic au bouton suivant
+      nextButton.addEventListener('click', function () {
+        var activeTab = document.querySelector('.nav-link.active');
+        var nextTab = activeTab.parentElement.nextElementSibling.querySelector('.nav-link');
+        if (nextTab) {
+          nextTab.click();
+        }
+      });
+
+      // Ajoutez un gestionnaire d'événement clic au bouton précédent
+      prevButton.addEventListener('click', function () {
+        var activeTab = document.querySelector('.nav-link.active');
+        var prevTab = activeTab.parentElement.previousElementSibling.querySelector('.nav-link');
+        if (prevTab) {
+          prevTab.click();
+        }
+      });
+    });
+
+
+      // Sélection de l'élément input de type range
+    var rangeInput = document.getElementById('priceRange');
+
+    // Sélection de l'élément où afficher la valeur du range
+    var priceValue = document.getElementById('priceValue');
+
+    // Écouteur d'événement pour détecter le changement de valeur du range
+    rangeInput.addEventListener('input', function() {
+        // Mettre à jour la valeur affichée
+        priceValue.textContent = this.value + " €";
+    });
+

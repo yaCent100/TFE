@@ -1,37 +1,45 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.model.Car;
+import be.iccbxl.tfe.Driveshare.model.Category;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
+import be.iccbxl.tfe.Driveshare.service.serviceImpl.CategoryService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.EvaluationService;
-import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class CarController {
 
 
     private final CarService carService;
-    private final EvaluationService evaluationService;
+
+    private final CategoryService categoryService;
+
 
     @Autowired
-    public CarController(CarService carService, EvaluationService evaluationService) {
+    public CarController(CarService carService, CategoryService categoryService) {
         this.carService = carService;
-        this.evaluationService = evaluationService;
+        this.categoryService = categoryService;
     }
     @GetMapping("/cars")
     public String getAllCars(Model model) {
         List<Car> cars = carService.getAllCars();
+        List<Category> categories = categoryService.getAllCategory();
+        Map<Long, Double> averageRatings = carService.getAverageRatingsForCars();
+        Map<Long, Integer> reviewCounts = carService.getReviewCountsForCars();
+
         model.addAttribute("cars", cars);
+        model.addAttribute("categories", categories);
+        model.addAttribute("averageRatings", averageRatings);
+        model.addAttribute("reviewCounts", reviewCounts);
+
         return "car/index";
     }
 
@@ -48,7 +56,7 @@ public class CarController {
         }
 
         // Calculer la note moyenne associée à cette voiture
-        double averageRating = evaluationService.calculateAverageRating(car);
+        double averageRating = carService.calculateAverageRating(car);
 
         // Ajouter la voiture et la note moyenne au modèle
         model.addAttribute("car", car);

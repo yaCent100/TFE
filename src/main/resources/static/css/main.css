@@ -104,6 +104,29 @@ nav {
     border: 2px solid #354C6F; /* Couleur bleue par exemple */
 }
 
+.priceIndex {
+    padding: 10px;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    background-color: #354C6F;
+    border-radius: 20px;
+    color: white;
+    font-weight : bold
+}
+
+.form-shadow{
+    border-radius: 20px;
+    border: 2px solid black;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    padding : 20px;
+    padding-top : 30px;
+    padding-bottom : 30px;
+}
+
+
+
+
+
 /* CAR */
 
     .custom-border {
@@ -163,6 +186,19 @@ nav {
          box-shadow: none !important;
          height : 800px;
     }
+    .card {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+    .card,
+    .card-img {
+        border-radius: 20px;
+    }
+
+
 
     /* Style de l'onglet de connexion actif *//* Style de l'onglet de connexion actif */
   .nav-link#loginTab.active {
@@ -202,6 +238,47 @@ nav {
 
 
 
+
+.progress-container {
+  width: 100%; /* Largeur totale de la barre de progression */
+}
+
+
+
+
+.icon {
+  margin-right: 40px; /* Ajoute de l'espace entre les icônes */
+}
+
+.arrow {
+  position: relative; /* Position relative pour permettre le déplacement */
+  opacity: 0; /* Définir l'opacité à 0 au départ */
+  animation: moveArrow 4s infinite; /* Animation infinie */
+}
+
+@keyframes moveArrow {
+  0%, 20% {
+    opacity: 0; /* Flèche invisible au début et à la fin de chaque déplacement */
+    left: -5px; /* Déplacement initial (hors de la vue) */
+  }
+  25%, 30% {
+    opacity: 1; /* Flèche visible */
+    left: 0; /* Déplacement visible */
+  }
+  35%, 40% {
+    opacity: 1; /* Flèche visible */
+    left: 5px; /* Déplacement visible */
+  }
+  45%, 50% {
+    opacity: 1; /* Flèche visible */
+    left: 10px; /* Déplacement visible */
+  }
+  55%, 60% {
+    opacity: 1; /* Flèche visible */
+    left: 15px; /* Déplacement visible */
+  }
+  /* Continuer de la même manière pour les autres étapes */
+}
 
 
 

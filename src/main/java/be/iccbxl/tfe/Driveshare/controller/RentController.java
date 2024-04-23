@@ -8,10 +8,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class RentController {
 
+    @GetMapping("/whyRent")
+    public String whyRentYourCar(){
+        return "car/whyRent";
+    }
+
     @GetMapping("/rent")
     public String rentYourCar() {
 
 
         return "car/rent";
     }
+
 }

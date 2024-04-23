@@ -51,17 +51,5 @@ public class EvaluationService implements EvaluationServiceI {
         evaluationRepository.deleteById(id);
     }
 
-    @Override
-    public double calculateAverageRating(Car car) {
-        List<Evaluation> evaluations = car.getEvaluations();
-        if (evaluations.isEmpty()) {
-            return 0.0;
-        }
 
-        double sum = 0.0;
-        for (Evaluation evaluation : evaluations) {
-            sum += evaluation.getNote();
-        }
-
-        return Math.round((sum / evaluations.size()) * 2) / 2.0;    }
-}
+    }

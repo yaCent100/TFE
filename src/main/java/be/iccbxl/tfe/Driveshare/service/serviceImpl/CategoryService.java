@@ -4,11 +4,13 @@ import be.iccbxl.tfe.Driveshare.model.Category;
 import be.iccbxl.tfe.Driveshare.repository.CategoryRepository;
 import be.iccbxl.tfe.Driveshare.service.CategoryServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class CategoryService implements CategoryServiceI {
 
     private final CategoryRepository categoryRepository;

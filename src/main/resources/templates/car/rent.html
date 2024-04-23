@@ -11,17 +11,14 @@
 
   <div class="container">
     <div class="row justify-content-center mt-5">
-      <div class="col-md-10"> <!-- Changez la taille de la première colonne -->
+      <div class="col-md-6"> <!-- Changez la taille de la première colonne -->
         <div class="card custom-card">
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <ul class="nav nav-tabs fs-5" id="myTab" role="tablist">
               <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Accueil</button>
+                <button class="nav-link active" id="rent-tab" data-bs-toggle="tab" data-bs-target="#rent" type="button" role="tab" aria-controls="rent" aria-selected="false">Modéle</button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" id="rent-tab" data-bs-toggle="tab" data-bs-target="#rent" type="button" role="tab" aria-controls="rent" aria-selected="false">Modéle</button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab" aria-controls="search" aria-selected="false">Adresse</button>
+                <button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab" aria-controls="search" aria-selected="false">Localisation</button>
               </li>
               <li class="nav-item" role="presentation">
                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Kilométrage</button>
@@ -43,16 +40,6 @@
               </li>
             </ul>
             <div class="tab-content" id="myTabContent">
-              <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                <!-- Contenu pour l'onglet Accueil -->
-                <div class="text-center m-5">
-                  <h2>Explorez de nouvelles façons de rentabiliser votre voiture grâce à la location.</h2>
-                </div>
-
-                <div class="text-center">
-                  <button class="btn btn-info ps-3 pe-3 text-center">Commencer</button>
-                </div>
-              </div>
               <div class="tab-pane fade" id="rent" role="tabpanel" aria-labelledby="rent-tab">
                 <!-- Contenu pour l'onglet Location -->
                 <div class="d-flex justify-content-center">
@@ -85,6 +72,10 @@
                       </select>
                     </div>
                   </div>
+                  <div class="justify-content-center m-3">
+                    <button class="btn btn-outline-primary border-0 me-md-2" type="button">&lt; Precedent</button>
+                    <button class="btn btn-primary" type="button">Suivant</button>
+                  </div>
                 </div>
               </div>
               <div class="tab-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
@@ -92,26 +83,22 @@
                 <h2>Recherche de voiture</h2>
                 <p>Recherchez parmi notre large sélection de voitures pour trouver celle qui répond à vos besoins.</p>
                 <img src="/images/carAdresse.png" class="img-fluid mx-auto d-block" alt="adresse" width="400">
-                <div class="row m-3">
-                  <div class="col-md-4 offset-md-2">
+                  <div class="col-md-8 offset-md-2">
                     <label for="adresse" class="form-label">Adresse et n°</label>
                     <input type="text" id="adresse" name="adresse" class="form-control" placeholder="Votre adresse">
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-8 offset-md-2 mt-2">
                     <label for="code_postal" class="form-label">Code postal</label>
                     <select id="code_postal" name="code_postal" class="form-select" placeholder="Votre code postal">
                       <option value="">Sélectionnez un code postal</option>
                     </select>
                   </div>
-                </div>
-                <div class="row justify-content-center m-3">
-                  <div class="col-md-4">
+                  <div class="col-md-8 offset-md-2 mt-3">
                     <select id="commune" name="commune" class="form-select" placeholder="Votre commune">
                       <option value="">Commune</option>
                     </select>
                   </div>
-                </div>
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end m-3">
+                <div class="justify-content-center mt-3">
                   <button class="btn btn-outline-primary border-0 me-md-2" type="button">&lt; Precedent</button>
                   <button class="btn btn-primary" type="button">Suivant</button>
                 </div>
@@ -121,31 +108,55 @@
                 <!-- Contenu pour l'onglet Profil -->
                 <h2>Profil utilisateur</h2>
                 <p>Gérez votre profil et vos informations personnelles ici.</p>
+                <div class="justify-content-center m-3">
+                  <button class="btn btn-outline-primary border-0 me-md-2" type="button">&lt; Precedent</button>
+                  <button class="btn btn-primary" type="button">Suivant</button>
+                </div>
               </div>
               <div class="tab-pane fade" id="payment" role="tabpanel" aria-labelledby="payment-tab">
                 <!-- Contenu pour l'onglet Paiement -->
                 <h2>Paiement</h2>
                 <p>Effectuez vos paiements en toute sécurité et simplicité.</p>
+                <div class="justify-content-center m-3">
+                  <button class="btn btn-outline-primary border-0 me-md-2" type="button">&lt; Precedent</button>
+                  <button class="btn btn-primary" type="button">Suivant</button>
+                </div>
               </div>
               <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
                 <!-- Contenu pour l'onglet Historique -->
                 <h2>Historique des locations</h2>
                 <p>Consultez l'historique de vos locations précédentes.</p>
+                <div class="justify-content-center m-3">
+                  <button class="btn btn-outline-primary border-0 me-md-2" type="button">&lt; Precedent</button>
+                  <button class="btn btn-primary" type="button">Suivant</button>
+                </div>
               </div>
               <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
                 <!-- Contenu pour l'onglet Paramètres -->
                 <h2>Paramètres</h2>
                 <p>Personnalisez les paramètres de votre compte selon vos préférences.</p>
+                <div class="justify-content-center m-3">
+                  <button class="btn btn-outline-primary border-0 me-md-2" type="button">&lt; Precedent</button>
+                  <button class="btn btn-primary" type="button">Suivant</button>
+                </div>
               </div>
               <div class="tab-pane fade" id="help" role="tabpanel" aria-labelledby="help-tab">
                 <!-- Contenu pour l'onglet Aide -->
                 <h2>Aide</h2>
                 <p>Besoin d'aide? Consultez notre section d'aide pour obtenir des réponses à vos questions.</p>
+                <div class="justify-content-center m-3">
+                  <button class="btn btn-outline-primary border-0 me-md-2" type="button">&lt; Precedent</button>
+                  <button class="btn btn-primary" type="button">Suivant</button>
+                </div>
               </div>
               <div class="tab-pane fade" id="logout" role="tabpanel" aria-labelledby="logout-tab">
                 <!-- Contenu pour l'onglet Déconnexion -->
                 <h2>Déconnexion</h2>
                 <p>Déconnectez-vous de votre compte.</p>
+                <div class="justify-content-center m-3">
+                  <button class="btn btn-outline-primary border-0 me-md-2" type="button">&lt; Precedent</button>
+                  <button class="btn btn-primary" type="button">Suivant</button>
+                </div>
               </div>
           </div>
 
@@ -155,7 +166,7 @@
     </div>
   </div>
 
-</div>
+
 
 </body>
 </html>

@@ -1,14 +1,13 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.model.Car;
+import be.iccbxl.tfe.Driveshare.model.Evaluation;
 import be.iccbxl.tfe.Driveshare.repository.CarRepository;
 import be.iccbxl.tfe.Driveshare.service.CarServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CarService implements CarServiceI {
@@ -62,7 +61,53 @@ public class CarService implements CarServiceI {
         carRepository.deleteById(id);
     }
 
+    @Override
+    public double calculateAverageRating(Car car) {
+        List<Evaluation> evaluations = car.getEvaluations();
+        if (evaluations.isEmpty()) {
+            return 0.0;
+        }
+
+        double sum = 0.0;
+        for (Evaluation evaluation : evaluations) {
+            sum += evaluation.getNote();
+        }
+
+        return Math.round((sum / evaluations.size()) * 2) / 2.0;    }
+
+
+    @Override
+    public Map<Long, Double> getAverageRatingsForCars() {
+        Iterable<Car> cars = carRepository.findAll();
+        Map<Long, Double> averageRatings = new HashMap<>();
+
+        for (Car car : cars) {
+            double averageRating = calculateAverageRating(car);
+            averageRatings.put(car.getId(), averageRating);
+        }
+
+        return averageRatings;
+    }
+
+    @Override
+    public Map<Long, Integer> getReviewCountsForCars() {
+        Iterable<Car> cars = carRepository.findAll();
+        Map<Long, Integer> reviewCounts = new HashMap<>();
+
+        for (Car car : cars) {
+            int count = car.getEvaluations().size();
+            reviewCounts.put(car.getId(), count);
+        }
+
+        return reviewCounts;
+    }
 
 
 
 }
+
+
+
+
+
+

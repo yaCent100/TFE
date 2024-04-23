@@ -13,5 +13,4 @@ public interface EvaluationServiceI {
     Evaluation saveEvaluation(Evaluation evaluation);
     Evaluation updateEvaluation(Long id, Evaluation evaluation);
     void deleteEvaluation(Long id);
-    double calculateAverageRating(Car car);
 }

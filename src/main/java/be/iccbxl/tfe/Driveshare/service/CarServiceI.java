@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CarServiceI {
 
@@ -16,4 +17,10 @@ public interface CarServiceI {
 
     Car updateCar(Long id, Car car);
     void deleteCar(Long id);
+    double calculateAverageRating(Car car);
+
+
+    Map<Long, Double> getAverageRatingsForCars();
+
+    Map<Long, Integer> getReviewCountsForCars();
 }

@@ -131,13 +131,13 @@
                                     <span class="fw-bold" th:text="${evaluation.user.nom + ' ' + evaluation.user.prenom.substring(0,1) + '.'}"></span><br>
                                     <span th:text="${evaluation.avis}"></span><br>
                                     <span th:each="star : ${#numbers.sequence(1, 5)}">
-                        <span th:if="${evaluation.note >= star}">
-                            <span class="star-filled">&#9733;</span>
-                        </span>
-                        <span th:unless="${evaluation.note >= star}">
-                            <span class="star-filled">&#9734;</span>
-                        </span>
-                    </span>
+                                    <span th:if="${evaluation.note >= star}">
+                                        <span class="star-filled">&#9733;</span>
+                                    </span>
+                                    <span th:unless="${evaluation.note >= star}">
+                                        <span class="star-filled">&#9734;</span>
+                                    </span>
+                                </span>
                                 </div>
                                 <div class="col-md-2 text-end" >
                                     <span th:text="${#temporals.format(evaluation.createdAt, 'dd-MM-yyyy')}"></span>
