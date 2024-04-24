@@ -8,30 +8,27 @@
 <div layout:fragment="content">
   <div class="container pdb-30">
 
-    <form class="search-form" action="" method="GET">
-      <div class="row m-5">
-        <div class="col-md-4">
-          <div class="input-group">
-            <input type="text" class="form-control typeahead" placeholder="Lieu de départ" aria-label="Lieu de départ">
+    <div class="search-container">
+      <form class="search-form" action="" method="GET">
+        <div class="row m-5">
+          <div class="col-md-4 d-flex align-items-center">
+            <img src="icones/espace-reserve.png" alt="globe" style="width: 20px; height: auto;">
+            <input type="text" class="no-border rounded-start mb-0 ms-1" placeholder="Commune">
+          </div>
+          <div class="col-md-3 d-flex align-items-center">
+              <input type="text" class="no-border rounded-0" placeholder="Date de début" >
+              <i class="far fa-calendar-alt"></i>
+          </div>
+          <div class="col-md-3 d-flex align-items-center">
+              <input type="text" class="no-border rounded-end" placeholder="Date de fin">
+              <i class="far fa-calendar-alt"></i>
+          </div>
+          <div class="col-md-2 bold text-center c-white no-padding">
+            <button type="submit" class="btn btn-success bold no-padding" style="background-color: #354C6F;">Rechercher</button>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="input-group">
-            <input type="text" class="form-control datepicker start-date" placeholder="Date de début" readonly>
-            <span class="input-group-text" id="basic-addon2"><i class="far fa-calendar-alt"></i></span>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="input-group">
-            <input type="text" class="form-control datepicker end-date" placeholder="Date de fin" readonly>
-            <span class="input-group-text" id="basic-addon3"><i class="far fa-calendar-alt"></i></span>
-          </div>
-        </div>
-        <div class="col-md-2 d-flex align-items-center justify-content-center">
-          <button type="submit" class="btn btn-success bold">Rechercher</button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
 
     <div class="row justify-content-center mt-5">
       <!-- Colonne de filtres (sur les grands écrans uniquement) -->

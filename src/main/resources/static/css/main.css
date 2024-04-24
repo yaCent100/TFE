@@ -123,6 +123,43 @@ nav {
     padding-bottom : 30px;
 }
 
+.search-container {
+    margin-left : 100px;
+    margin-right : 100px;
+}
+
+.search-form{
+    background-color:#9EABB3;
+        border-radius: 20px;
+
+
+}
+
+
+.search-container input[type="text"] {
+    background-color: #9EABB3;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.search-container input[type="text"]:focus {
+    outline: none;
+}
+
+.search-container .btn {
+    background-color: #354C6F;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    margin : 20px
+}
+
+.search-container .btn:hover {
+    background-color: #2e425d;
+}
 
 
 
