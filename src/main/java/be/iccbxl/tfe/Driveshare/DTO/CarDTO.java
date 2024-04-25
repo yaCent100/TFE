@@ -1,6 +1,5 @@
-package be.iccbxl.tfe.Driveshare.classes;
+package be.iccbxl.tfe.Driveshare.DTO;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
@@ -18,7 +17,7 @@ public class CarDTO {
 
     private String adresse;
 
-    private String codePostal;
+    private int codePostal;
 
     private String locality;
 

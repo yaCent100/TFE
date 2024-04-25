@@ -7,6 +7,7 @@ import be.iccbxl.tfe.Driveshare.service.CarServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -101,6 +102,14 @@ public class CarService implements CarServiceI {
 
         return reviewCounts;
     }
+
+    @Override
+    public List<Car> searchAvailableCars(String address, Date dateDebut, Date dateFin) {
+        return carRepository.findAvailableCarsByAdresseAndDate(address, dateDebut, dateFin);
+    }
+
+
+
 
 
 
