@@ -33,6 +33,7 @@ nav {
 }
 
 /*HOME*/
+
 .big-circle-left {
     width: 550px; /* Ajustez selon vos besoins */
     height: 550px; /* Ajustez selon vos besoins */
@@ -46,13 +47,14 @@ nav {
 }
 
 
-.big-circle-right img {
-    margin-left: -125px; /* Décaler le rond de droite vers la gauche */
-    width: auto; /* Ajustez la taille du rond de droite */
-    height: 730px; /* Ajustez la taille du rond de droite */
+.map {
+ width: 700px; /* Remplacez par la largeur souhaitée */
+    height: 700px; /* Remplacez par la hauteur souhaitée */
+    margin-left : -125px;
     position: relative; /* Position relative pour le débordement */
-    z-index: 2; /* Assurer que le rond de droite est en dessous */
-    border-radius: 50%;
+    z-index: 1; /* Assurer que le rond de droite est en dessous */
+    border-radius: 50%; /* Assurez-vous que le conteneur de la carte est un cercle */
+    overflow: hidden; /* Mas
 }
 
 .form-control {

@@ -27,7 +27,8 @@
                 <div class="col-md-12">
                   <form class="form-inline">
                     <div class="form-group mb-3">
-                      <input type="text" class="form-control" id="codePostal" placeholder="Entrez votre code postal">
+                      <input type="text" class="form-control adresse" id="codePostal" placeholder="Entrez votre code postal">
+                      <div class="cobalt-Autocomplete__list"></div>
                     </div>
                     <div class="form-group mb-3">
                       <div class="row">
@@ -56,9 +57,7 @@
         </div>
       </div>
       <div class="col-md-5 d-flex justify-content-start align-items-center">
-        <div class="big-circle-right">
-          <img th:src="@{/images/map.png}" alt="map" class="img-fluid">
-        </div>
+        <div id="map" class="map"></div>
       </div>
     </div>
 
