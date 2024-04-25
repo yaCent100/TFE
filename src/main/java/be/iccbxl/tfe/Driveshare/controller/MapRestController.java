@@ -29,7 +29,7 @@ public class MapRestController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/search")
+    /*@GetMapping("/search")
     public ResponseEntity<List<CarDTO>> searchAvailableCars(@RequestParam String address,
                                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
                                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin) {
@@ -45,7 +45,7 @@ public class MapRestController {
         } else {
             return ResponseEntity.ok(availableCars);
         }
-    }
+    }*/
 
 
         // Méthode utilitaire pour convertir un objet Car en objet CarDTO
@@ -59,4 +59,5 @@ public class MapRestController {
         carDTO.setModel(car.getModel());
         return carDTO;
     }
+
 }

@@ -65,6 +65,9 @@ public class User {
     )
     private List<Role> roles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<Reservation> reservations;
+
 
     public User addRole(Role role) {
         if(!this.roles.contains(role)) {

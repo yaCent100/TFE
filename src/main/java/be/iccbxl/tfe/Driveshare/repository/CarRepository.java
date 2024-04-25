@@ -14,7 +14,6 @@ import java.util.List;
 @Repository
 public interface CarRepository extends CrudRepository<Car, Long> {
 
-    List<Car> findAvailableCarsByAdresseAndDate(String adresse, LocalDate dateDebut, LocalDate dateFin);
 }
 
 

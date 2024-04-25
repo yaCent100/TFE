@@ -23,9 +23,6 @@ public class CarService implements CarServiceI {
         return cars;
     }
 
-
-
-
     @Override
     public Car getCarById(Long id) {
         Optional<Car> optionalCar = carRepository.findById(id);
@@ -103,10 +100,12 @@ public class CarService implements CarServiceI {
         return reviewCounts;
     }
 
-    @Override
-    public List<Car> searchAvailableCars(String address, Date dateDebut, Date dateFin) {
+   /* @Override
+    public List<Car> searchAvailableCars(String address, LocalDate dateDebut, LocalDate dateFin) {
         return carRepository.findAvailableCarsByAdresseAndDate(address, dateDebut, dateFin);
-    }
+    }*/
+
+
 
 
 

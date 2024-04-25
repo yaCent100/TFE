@@ -1,12 +1,10 @@
 package be.iccbxl.tfe.Driveshare.service;
 
 import be.iccbxl.tfe.Driveshare.model.Car;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Date;
+
 import java.util.List;
 import java.util.Map;
 
@@ -27,5 +25,5 @@ public interface CarServiceI {
 
     Map<Long, Integer> getReviewCountsForCars();
 
-    List<Car> searchAvailableCars(String address, LocalDate dateDebut, LocalDate dateFin);
+   /* List<Car> searchAvailableCars(String address, LocalDate dateDebut, LocalDate dateFin);*/
 }

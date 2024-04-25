@@ -74,6 +74,9 @@ public class Car {
     )
     private List<Equipment> equipments;
 
+    @OneToMany(mappedBy = "car")
+    private List<Reservation> reservations;
+
 
     public void addCondition(Condition condition) {
         conditions.add(condition);

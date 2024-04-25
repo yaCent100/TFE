@@ -4,7 +4,6 @@ import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Category;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CategoryService;
-import be.iccbxl.tfe.Driveshare.service.serviceImpl.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

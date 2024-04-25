@@ -5,7 +5,9 @@ async function initMap() {
     const brussels = { lat: 50.8504500, lng: 4.3487800 };
 
     // Importer les bibliothèques nécessaires
-    const { Map, Autocomplete } = await google.maps.importLibrary("maps", "places");
+    const { Map } = await google.maps.importLibrary("maps");
+    const [{ Autocomplete }] = await Promise.all([google.maps.importLibrary("places")]);
+
 
     // Créer la carte centrée sur Bruxelles
     map = new Map(document.getElementById("map"), {
@@ -15,7 +17,7 @@ async function initMap() {
     });
 
     // Récupérer les données des voitures depuis le backend
-    const response = await fetch('/available-cars');
+    const response = await fetch('/cars/addresses');
     const cars = await response.json();
 
     cars.forEach(car => {
