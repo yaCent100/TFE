@@ -8,28 +8,33 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@Table(name="reservations")
 public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "debut_location")
+    @Column(name = "DebutLocation")
     private LocalDate debutLocation;
 
-    @Column(name = "fin_location")
+    @Column(name = "FinLocation")
     private LocalDate finLocation;
 
-    @Column(name = "created_at")
+    @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
 
     @ManyToOne
-    private User user;
-
-    @ManyToOne
+    @JoinColumn(name = "VoitureID")
     private Car car;
 
+    @ManyToOne
+    @JoinColumn(name = "UserID")
+    private User user;
+
+    @Column(name = "statut")
     private String statut;
 
+    @Column(name = "nb_jours")
     private int nbJours;
 }

@@ -25,5 +25,5 @@ public interface CarServiceI {
 
     Map<Long, Integer> getReviewCountsForCars();
 
-   /* List<Car> searchAvailableCars(String address, LocalDate dateDebut, LocalDate dateFin);*/
+   List<Car> searchAvailableCars(String address, LocalDate dateDebut, LocalDate dateFin);
 }

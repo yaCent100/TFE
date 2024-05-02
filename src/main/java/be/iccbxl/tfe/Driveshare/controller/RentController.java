@@ -17,7 +17,7 @@ public class RentController {
     public String rentYourCar() {
 
 
-        return "car/rent";
+        return "car/rent2";
     }
 
 }

@@ -1,6 +1,6 @@
 body {
- font-family: 'Nunito', sans-serif ;
- background-color: #FBFBFB;
+font-family: 'Nunito', sans-serif !important;
+    background-color: #F3F5F8 !important;
      }
 
 h1, h2, h3, h4, h5, h6 {
@@ -321,6 +321,265 @@ nav {
 
 
 
+/* FORMULAIRE AJOUT CAR */
+
+    /*PROGRESS BAR*/
+
+.form-step{
+    display:none;
+}
+
+.form-step.active{
+    display:block;
+}
+
+.form-control {
+        height: 2.5rem !important;
+        margin-bottom: 2rem;
+        border-radius: 15px !important;
+        font-size: 1.3rem;
+        padding: 0 2rem;
+        color: #323648;
+        border: 1px solid rgba(33, 61, 83, .1);
+
+}
+
+
+.question-badge{
+    margin-left: 1rem;
+    padding: 2px 7px;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 1rem;
+    font-weight: 400;
+    font-size: 1.2rem;
+    background-color: rgba(173, 191, 204, .4);
+    cursor: pointer;
+}
+
+.offer-container{
+    max-width: 350px !important;
+    position: relative;
+}
+
+.disabled{
+        cursor: default;
+        pointer-events: none;
+        opacity: .5;
+}
+
+.offer-container.disabled .unavailable-overlay{
+        position: absolute;
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+}
+
+.offer-container.disabled .unavailable-overlay p {
+
+        text-align: center;
+        font-weight: bold;
+        font-size: 30px;
+        transform: rotate(-45deg);
+        text-transform: uppercase;
+        background-color: rgb(218 218 218 / 70%);
+        padding: 8px;
+        border-radius: 5px;
+        z-index: 1;
+}
+
+.offer-hr{
+        border: solid 2px #323648;
+        width: 60%;
+        text-align:center;
+
+}
+
+.offer-card{
+    font-weight:bold;
+    font-size:0.5rem;
+}
+
+.offer-card-border{
+    border: solid 2px #354C6F;
+    border-radius : 15px;
+    padding:30px;
+    background-color:white;
+
+}
+
+.text-coin {
+    background-color: #354C6F;
+    color: white;
+    border-radius:20px;
+    padding : 10px;
+
+}
 
 
 
+
+ /* CSS pour la barre de progression verticale */
+.progress-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Alignement vertical vers le bas */
+  align-items: flex-start; /* Alignement horizontal vers la droite */
+  background-color: #CBD2D9 !important;
+  border-radius: 15px;
+  margin-right: 20px;
+  padding: 20px;
+}
+
+
+    .bloc-progress{
+      background-color: #CBD2D9 !important;
+      border-radius:15px;
+      margin-right : 20px;
+      padding: 20px;
+
+      }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .inner-circle {
+      width: 80%; /* ajustez la taille selon vos besoins */
+      height: 80%; /* ajustez la taille selon vos besoins */
+      border-radius: 50%; /* pour obtenir une forme circulaire */
+      background-color: #354C6F; /* couleur de remplissage du cercle */
+      border: 2px solid white; /* ajout d'une bordure blanche */
+      box-sizing: border-box; /* inclure la bordure dans les dimensions */
+      font-size: 12px; /* ajustez la taille de la police selon vos besoins */
+      display: flex;
+      justify-content: center; /* Centrer horizontalement */
+      align-items: center; /* Centrer verticalement */
+  }
+
+
+    .circle {
+      width: 30px;
+      height: 30px;
+      border: 2px solid  #354C6F;
+      border-radius: 50%;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      cursor: pointer;
+      color: black !important;
+      z-index:100;
+
+    }
+
+    .p {
+      margin-left: 10px; /* Ajoute une marge à gauche pour l'espace entre le cercle et le texte */
+      margin-bottom: 0; /* Supprime la marge en bas */
+      position: absolute;
+      left: 40px; /* Positionne le texte à droite du cercle */
+      top: 50%; /* Centre verticalement le texte par rapport au parent */
+      transform: translateY(-50%); /* Ajuste la position verticale du texte */
+       color:black;
+    }
+
+    .circle.active {
+      background-color: #007bff; /* Couleur active */
+      color: white !important;
+    }
+
+    .line {
+      width: 2px;
+      height: 50px; /* Longueur de la ligne entre les cercles */
+      background-color: lightgray;
+      position: absolute;
+      top: 30px; /* Positionnement de la ligne */
+    }
+
+    .line.active {
+      background-color: #007bff; /* Couleur active */
+    }
+
+    .btn-prev {
+      display: block !important;
+      width: 100%; /* Prend toute la largeur disponible */
+      padding: 15px !important;
+      text-align: center !important; /* Centrer le texte */
+      margin-top: 15px; /* Espacement en haut */
+      margin-bottom: 15px; /* Espacement en bas */
+      background-color:#354C6F !important;
+      color:white !important;
+    }
+
+    .btn-prev:hover {
+      cursor: pointer;
+      background-color: #DFE7EC;
+      color: black;
+      border: 2px solid #354C6F;
+    }
+
+
+/*FORMULAIRE PARTIE RESERVATION*/
+
+.reservation-col{
+    height:100%;
+    padding: 20px;
+    border-radius:1rem !important;
+    border : 1px solid #354C6F;
+    background-color : white;
+}
+
+
+
+/* CALENDRIER */
+
+#calendar {
+height: auto !important; /* Hauteur automatique pour s'adapter à la taille du contenu */
+  overflow: hidden; /* Masquer la barre de défilement */
+  }
+
+
+.fc-highlight {
+  cursor: pointer; /* Utilisez le curseur croixhair */
+
+}
+.fc-daygrid-day{
+    background-color: transparent;
+}
+
+:root {
+  --fc-border-color: none;
+  --fc-daygrid-event-dot-width: 5px;
+  --fc-page-bg-color: transparent;
+
+}
+
+.fc-daygrid-day {
+    vertical-align: top;
+    height: 5rem;
+    width: 14.285%;
+    line-height: 5rem;
+    margin: 0;
+    background-color: rgba(50,178,152,.25);
+    color: #32b298;
+    border-radius: .5rem;
+    border: 1px solid #fff;
+    cursor: pointer;
+
+
+}
+
+.fc-multimonth-header-table {
+    margin-bottom: 10px;
+    font-weight: 500;
+}

@@ -3,10 +3,13 @@ package be.iccbxl.tfe.Driveshare.controller;
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
+import ch.qos.logback.core.model.Model;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -18,6 +21,7 @@ public class MapRestController {
 
     private final CarService carService;
 
+    @Autowired
     public MapRestController(CarService carService) {
         this.carService = carService;
     }
@@ -29,23 +33,16 @@ public class MapRestController {
                 .collect(Collectors.toList());
     }
 
-    /*@GetMapping("/search")
-    public ResponseEntity<List<CarDTO>> searchAvailableCars(@RequestParam String address,
-                                                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
-                                                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin) {
+    @GetMapping("/search")
+    @ResponseBody
+    public ResponseEntity<List<CarDTO>> searchAvailableCars(Model model) {
         // Recherchez les voitures disponibles pour les paramètres de recherche
-        List<CarDTO> availableCars = carService.searchAvailableCars(address, dateDebut, dateFin)
-                .stream()
+        List<CarDTO> carDTOs = carService.getAllCars().stream()
                 .map(this::convertToCarDTO)
                 .collect(Collectors.toList());
+        return ResponseEntity.ok(carDTOs);
+    }
 
-        // Vérifiez si des voitures sont disponibles
-        if (availableCars.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.ok(availableCars);
-        }
-    }*/
 
 
         // Méthode utilitaire pour convertir un objet Car en objet CarDTO

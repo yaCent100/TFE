@@ -121,109 +121,109 @@ var marques = {
 });
 
 
+
+
+
+
+/*FORMULAIRE STEP*/
 document.addEventListener("DOMContentLoaded", function() {
-    // Sélecteur des codes postaux
-    var codePostalSelect = document.getElementById("code_postal");
-    // Sélecteur des communes
-    var communeSelect = document.getElementById("commune");
+  const nextButtons = document.querySelectorAll('.btn-next');
+  const prevButtons = document.querySelectorAll('.btn-prev');
+  const formSteps = document.querySelectorAll('.form-step');
+  const circles = document.querySelectorAll('.circle');
+  const lines = document.querySelectorAll('.line');
 
-    // Liste des codes postaux et des communes de Bruxelles
-    var codesPostauxCommunes = {
-        "1000": "Bruxelles",
-        "1020": "Laeken",
-        "1030": "Schaerbeek",
-        "1040": "Etterbeek",
-        "1050": "Ixelles",
-        "1060": "Saint-Gilles",
-        "1070": "Anderlecht",
-        "1080": "Molenbeek-Saint-Jean",
-        "1081": "Koekelberg",
-        "1082": "Berchem-Sainte-Agathe",
-        "1083": "Ganshoren",
-        "1090": "Jette",
-        "1120": "Neder-Over-Heembeek",
-        "1130": "Haren"
-        // Ajoutez d'autres codes postaux et communes si nécessaire
-    };
+  let currentStep = 0;
 
-    // Fonction pour ajouter les options des codes postaux
-    function addOptions(select, options) {
-        for (var codePostal in options) {
-            var option = document.createElement("option");
-            option.value = codePostal;
-            option.textContent = codePostal;
-            select.appendChild(option);
-        }
+  function updateProgress() {
+    circles.forEach(circle => circle.classList.remove('active'));
+    lines.forEach(line => line.classList.remove('active'));
+    for (let i = 0; i <= currentStep; i++) {
+      circles[i].classList.add('active');
+      if (lines[i]) {
+        lines[i].classList.add('active');
+      }
     }
+  }
 
-    // Ajout des options pour les codes postaux
-    addOptions(codePostalSelect, codesPostauxCommunes);
+  function addInnerCircle(step) {
+    const currentCircle = circles[step];
+    if (!currentCircle.querySelector('.inner-circle')) {
+      const innerCircle = document.createElement('div');
+      innerCircle.classList.add('inner-circle');
+      currentCircle.appendChild(innerCircle);
+    }
+  }
 
-    // Écouteur d'événement pour la sélection d'un code postal
-    codePostalSelect.addEventListener("change", function() {
-        var codePostal = this.value;
-        var commune = codesPostauxCommunes[codePostal];
-        if (commune) {
-            // Efface les options actuelles
-            communeSelect.innerHTML = "";
-            // Ajoute la commune correspondante comme option sélectionnée
-            var option = document.createElement("option");
-            option.value = commune;
-            option.textContent = commune;
-            communeSelect.appendChild(option);
-        }
+  function addCheckmark(step) {
+    const prevStep = step - 1;
+    if (prevStep >= 0) {
+      const prevCircle = circles[prevStep];
+      const prevInnerCircle = prevCircle.querySelector('.inner-circle');
+      if (prevInnerCircle) {
+        prevInnerCircle.innerHTML = '✔'; // Ajoutez le symbole de validation
+      }
+    }
+  }
+
+  function removeInnerCircle(step) {
+    const currentCircle = circles[step];
+    const innerCircle = currentCircle.querySelector('.inner-circle');
+    if (innerCircle) {
+      innerCircle.remove(); // Supprimez le inner-circle
+    }
+  }
+
+  function removeCheckmark(step) {
+    const prevStep = step + 1;
+    if (prevStep < circles.length) {
+      const prevCircle = circles[prevStep];
+      const prevInnerCircle = prevCircle.querySelector('.inner-circle');
+      if (prevInnerCircle) {
+        prevInnerCircle.innerHTML = ''; // Supprimez le symbole de validation
+      }
+    }
+  }
+
+  nextButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      if (currentStep < formSteps.length - 1) {
+        removeCheckmark(currentStep); // Supprimez le symbole de validation de l'étape précédente
+        formSteps[currentStep].classList.remove('active');
+        currentStep++;
+        formSteps[currentStep].classList.add('active');
+        addCheckmark(currentStep); // Ajoutez le symbole de validation pour l'étape actuelle
+        addInnerCircle(currentStep); // Ajoutez le inner-circle pour l'étape suivante
+        updateProgress();
+      }
     });
+  });
 
-    // Écouteur d'événement pour la sélection d'une commune
-    communeSelect.addEventListener("change", function() {
-        var commune = this.value;
-        // Recherche du code postal correspondant à la commune
-        var codePostal = Object.keys(codesPostauxCommunes).find(key => codesPostauxCommunes[key] === commune);
-        if (codePostal) {
-            // Sélectionne le code postal correspondant dans le premier select
-            codePostalSelect.value = codePostal;
-        }
+  prevButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      if (currentStep > 0) {
+        formSteps[currentStep].classList.remove('active');
+        currentStep--;
+        formSteps[currentStep].classList.add('active');
+        removeCheckmark(currentStep + 1); // Supprimez le symbole de validation de l'étape actuelle
+        removeInnerCircle(currentStep + 1); // Supprimez le inner-circle de l'étape actuelle
+        updateProgress();
+      }
     });
+  });
+
+  // Ajoutez d'abord le inner-circle au chargement de la page
+  addInnerCircle(currentStep);
+
+  updateProgress();
 });
 
 
 
 
 
-    document.addEventListener('DOMContentLoaded', function () {
-      // Récupérez les boutons précédent et suivant
-      var prevButton = document.querySelector('[data-bs-target="#rent"]');
-      var nextButton = document.getElementById('suivant');
-
-      // Ajoutez un gestionnaire d'événement clic au bouton suivant
-      nextButton.addEventListener('click', function () {
-        var activeTab = document.querySelector('.nav-link.active');
-        var nextTab = activeTab.parentElement.nextElementSibling.querySelector('.nav-link');
-        if (nextTab) {
-          nextTab.click();
-        }
-      });
-
-      // Ajoutez un gestionnaire d'événement clic au bouton précédent
-      prevButton.addEventListener('click', function () {
-        var activeTab = document.querySelector('.nav-link.active');
-        var prevTab = activeTab.parentElement.previousElementSibling.querySelector('.nav-link');
-        if (prevTab) {
-          prevTab.click();
-        }
-      });
-    });
 
 
-      // Sélection de l'élément input de type range
-    var rangeInput = document.getElementById('priceRange');
 
-    // Sélection de l'élément où afficher la valeur du range
-    var priceValue = document.getElementById('priceValue');
 
-    // Écouteur d'événement pour détecter le changement de valeur du range
-    rangeInput.addEventListener('input', function() {
-        // Mettre à jour la valeur affichée
-        priceValue.textContent = this.value + " €";
-    });
 
