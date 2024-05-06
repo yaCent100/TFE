@@ -1,0 +1,260 @@
+/*.logo-custom {*/
+/*    margin-left: 100px;*/
+/*    padding-top: 10px;*/
+/*}*/
+html, body {
+    font-family: Roboto !important;
+    font-weight: 400 !important;
+     margin: 0;
+     padding: 0;
+    overflow-x: hidden ;
+    background-color: #D5DDE1 !important;
+    width:100%;
+    height: 100%;
+}
+
+
+a{
+    text-decoration: none !important;
+}
+
+.align-nav-tab {
+    padding-top: 30px;
+    position: relative;
+    display: flex;
+}
+
+.ds-nav-link {
+    position: relative;
+    display: flex;
+    border-bottom: 1px solid;
+    border-color: #ADBFCC;
+    padding: 0, 24px;
+    text-align: center;
+    font-size: 14px;
+    color: #9EABB3 !important;
+
+}
+
+.ds-nav-link.active {
+    color: #00BFFF !important;
+    border-bottom: 3px solid;
+}
+
+.google-button-custom {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: grey;
+    border-radius: 1rem;
+    border-color:#32b298;
+    font-size: 15px;
+}
+
+.fb-custom-button {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 1rem;
+    font-size: 15px;
+    background-color: #3b5998;
+    color: white;
+
+}
+
+.submit-custom-button {
+    background-color: #00BFFF !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    font-size: 15px !important;
+    border-radius: 1rem !important;
+    color: white !important;
+    display: block !important;
+    width: 100% !important;
+    line-height: 1.5 !important;
+    font-weight: 400 !important;
+
+}
+
+.title-custom {
+    line-height: 36px;
+    padding-top: 5px;
+    padding-bottom: 20px;
+    font-size: 28px !important;
+    font-weight: 600 !important;
+    color: #3c3c3b !important;
+}
+
+.text-ajust {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.signin-layout {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    margin: auto;
+}
+
+.align_logo {
+    padding-right: 15px;
+}
+
+.fb-button {
+    padding-top: 10px;
+}
+
+.image-container {
+    height: 100vh;
+}
+
+.image-container img {
+   width: 50%;
+    position: fixed;
+}
+
+.input-custom {
+    border-color:  #00BFFF !important;
+    height: 2.5rem !important;
+}
+
+.input-custom:focus{
+    outline:none !important;
+    box-shadow: none !important; /* Supprime tout box-shadow ajouté */
+
+}
+
+
+.inner-addon {
+    position: relative;
+}
+
+.inner-addon .fa, .fa-solid{
+  position: absolute;
+  padding: 0 10px;
+  pointer-events: none;
+  line-height: 40px !important;
+}
+
+.fa, .fa-solid{
+    font-size: 20px !important;
+    color: #ADBFCC !important;
+    display: inline-block;
+        font: normal normal normal 14px / 1 FontAwesome;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+}
+
+/*#signin .left-addon .fa,*/
+/*#signup .left-addon .fa {*/
+/*    left:  15px;*/
+/*}*/
+
+
+.right-addon .fa {
+    right: 10px;
+    top: -5px;
+}
+
+.left-addon input  { padding-left:  40px; }
+
+.intl-tel-input {
+    margin-bottom: 2rem!important;
+    width: 100%;
+  }
+
+.custom-form {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.intl-tel-input .selected-flag .iti-flag {
+    margin-left: -13px;
+    margin-top: 12px;
+}
+
+.signin-picture {
+    height: 100vh;
+    object-fit: cover;
+    position: fixed;
+    text-align: center;
+}
+
+.left-container {
+    height: calc(100vh - 20px); /* Ajuster 20px en fonction du total des marges et paddings */
+}
+
+.zotcar-logo{
+    height: 42px;
+    margin-top: 30px;
+}
+
+@media (max-width: 480px) {
+    .signin-layout {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin: auto;
+    }
+    .small-footer p {
+         /*text-align: center!important;*/
+     }
+}
+
+@media (max-width: 768px) {
+    .small-footer p {
+        text-align: center!important;
+    }
+}
+
+.title-custom img {
+    height: 26px;
+    margin: 0;
+}
+
+.carfully-box .carfully-logo {
+    height: 16px;
+}
+
+#wrong-password-modal .modal-dialog{
+    max-width: 600px !important;
+}
+
+.btn.bg-blue{
+    background-color: #72acd0 !important;
+}
+.btn.bg-blue:hover{
+    background-color: #5f98bc !important;
+}
+
+.underlined-text {
+    color: #32b298;
+    text-decoration: underline;
+}
+
+.signin-layout-connexion
+{
+
+        width: 60%;
+        margin: auto;
+}
+
+.signin-layout-inscription{
+width: 70%;
+        margin: auto;
+}
+
+
+.form-control {
+    margin-bottom: 2rem;
+    border-radius: 0.5rem !important;
+    font-size: 1.3rem;
+    padding: 0 2rem;
+    color: #323648;
+    border: 1px solid rgba(33, 61, 83, .1);
+}
+
+
