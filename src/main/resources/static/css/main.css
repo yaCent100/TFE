@@ -542,3 +542,104 @@ nav {
 
 
 
+/* PROFIL */
+
+.tab-content {
+    display: none; /* Cache tous les contenus d'onglet */
+}
+
+.tab-content.active {
+    display: block; /* Affiche seulement le contenu de l'onglet actif */
+}
+
+.first-menu a.active {
+    color: #fff !important;
+    pointer-events: none;
+    border-bottom: 3px solid #213D53;
+    padding: 0rem 3rem;
+}
+
+.nav-profil{
+    height: 50px;
+    margin-bottom: 0 ;
+    color: #354C6F;
+    line-height: 50px !important;
+
+}
+.nav-profil.active{
+    color:	#00BFFF;
+}
+
+.first-menu a{
+    font-size: 14px;
+    padding: 0 15px;
+    transition: all .3s ease-in-out;
+    border: 0;
+    color: #213D53 !important;
+    line-height: 50px !important;
+    height: 50px !important;
+    display: inline-block !important;
+    font-weight: 500 !important;
+}
+
+.a{
+    text-decoration: none !important;
+    cursor: pointer !important;
+    color: inherit;
+
+}
+.a:hover {
+     background-color: #8EAAB3 !important;
+     color: white;
+ }
+
+.changePicture{
+    color: #707070 !important;
+    text-decoration: none;
+    font-size: 12px !important;
+}
+
+.nbsp-large{
+    margin-right: 8px !important;
+}
+
+#user-show .owner-picture img {
+    width: 9.5rem;
+    height: 9.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.iconeStat{
+    height:60px;
+    width:60px;
+}
+
+.statistique{
+   padding: 2rem;
+   border-radius: 1rem;
+   border: 1px solid rgba(33, 61, 83, 0.08);
+   background-color: #fff !important;
+}
+
+.user-card{
+   padding: 1rem;
+   border-radius: 1rem;
+   border: 1px solid rgba(33, 61, 83, 0.08);
+   background-color: #fff !important;
+   height: 100%;
+}
+
+.user-card-icon{
+    width: 2rem !important;
+    height: 2rem !important;
+    line-height: 30px !important;
+}
+
+.user-card-title{
+    font-size: 15px !important;
+    font-weight: 400 !important;
+
+}
+
+
