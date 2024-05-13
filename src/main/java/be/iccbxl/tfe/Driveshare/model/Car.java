@@ -2,10 +2,13 @@ package be.iccbxl.tfe.Driveshare.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name="voitures")
 public class Car {
@@ -45,20 +48,23 @@ public class Car {
     @JoinColumn(name = "UserID")
     private User user;
 
+    @ManyToMany(mappedBy = "rentedCars")
+    private List<User> renters;
+
     @ManyToOne
     @JoinColumn(name = "CategorieID")
     private Category category;
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Condition> conditions;
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Photo> photos;
 
     @OneToMany(mappedBy = "car")
     private List<Evaluation> evaluations;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "voitures_caracteristiques",
             joinColumns = @JoinColumn(name = "VoitureID"),
@@ -66,7 +72,7 @@ public class Car {
     )
     private List<Feature> features;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "voitures_equipements",
             joinColumns = @JoinColumn(name = "VoitureID"),
@@ -111,6 +117,15 @@ public class Car {
     }
 
 
-
-
+    @Override
+    public String toString() {
+        return "Car{" +
+                "id=" + id +
+                ", brand='" + brand + '\'' +
+                ", model='" + model + '\'' +
+                ", year=" + year +
+                '}';
+    }
 }
+
+

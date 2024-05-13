@@ -1,0 +1,180 @@
+<!-- fragments/annonce.html -->
+<div layout:fragment="annonce"  id="annonce-tab" class="tab-content active">
+  <div class="container mt-5">
+    <div class="vehicule-container">
+        <div class="row owner-pictures mb-4">
+            <div th:each="photo, iterStat : ${car.photos}" class="col-lg-3">
+                    <a href="#" class="add-picture-link">
+                        <div class="text-center border-dotted">
+                            <p>
+                                <!-- Afficher la photo de la voiture -->
+                                <img th:src="${photo.url}" class="no-picture">
+                            </p>
+                        </div>
+                        <!-- Images par défaut pour compléter jusqu'à quatre -->
+                        <div th:unless="${#lists.size(car.photos) >= 4}">
+                            <img src="/images/picture-icon.png" class="no-picture" alt="Image par défaut">
+                        </div>
+                        <div th:unless="${#lists.size(car.photos) >= 3}">
+                            <img src="/images/picture-icon.png" class="no-picture" alt="Image par défaut">
+                        </div>
+                        <div th:unless="${#lists.size(car.photos) >= 2}">
+                            <img src="/images/picture-icon.png" class="no-picture" alt="Image par défaut">
+                        </div>
+                        <div th:unless="${#lists.size(car.photos) >= 1}">
+                            <img src="/images/picture-icon.png" class="no-picture" alt="Image par défaut">
+                        </div>
+                        <!-- Input pour sélectionner une nouvelle photo -->
+                        <input type="file" th:id="'picture' + (${iterStat.index + 1}) + '-input'" class="picture-input" style="display: none;">
+                    </a>
+            </div>
+        </div>
+
+    <div class="row m">
+      <div class="col-lg-8">
+          <div class="vehicle-show-info bg-white bg-more-light mgb-20 " >
+              <div class="row">
+                  <div class="col-lg-9 col-md-9 col-xs-8">
+                      <h2 th:text="${car.brand + ' ' + car.model}" class="mb-3">BMW i8</h2>
+                          <span class="fs16 "> - KI523KI*</span>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-xs-4">
+                      <p class="text-right h45">
+                          <a class="fs14 c-main normal" href="/vehicle/29282/edit/informations">
+                              <i class="fa fa-edit nbsp-large"></i>Editer
+                          </a>
+                      </p>
+                  </div>
+              </div>
+              <div class="vehicle-labels mgb-60 text-center text-sm-left">
+                  <div class="c-white fs12 bg-warning medium p-2 inline-block bradius-bis nbsp-large mgt-15 w200 center">
+                <span class="bg-tooltip pd-10" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Vous pouvez réserver ce véhicule immédiatement.">
+                    <span><i class="fa fa-flash nbsp-large fs15"></i> Réservation instantanée</span>
+
+                </span>
+                  </div>
+                  <p class="fs12 italic pdt-10">* La plaque d’immatriculation n&nbsp;‘est pas visible par le locataire lorsqu’il visite votre annonce.</p>
+              </div>
+              <div class="vehicle-show-description mgb-40 bg-light">
+                  <div class="row">
+                      <div class="col-12 order-2 order-sm-1 col-sm-3 center d-flex flex-column justify-content-center align-items-center">
+                          <img class="media-object round w50 h50" width="50" height="50" th:src="${car.user.photoUrl}" alt="">
+                          <p th:text:${car.user.prenom} class="capitalize c-grey">yassin</p>
+                          <p class="fs12 lh-auto text-main">Membre depuis 2024</p>
+                      </div>
+                      <div class="col order-sm-2 order-sm-1">
+                          <p class="mgb-30 c-grey"></p>
+                      </div>
+
+                  </div>
+
+              </div>
+              <div class="vehicle-carac mgb-40">
+
+                  <div class="row">
+                      <div class="col-12">
+                          <h2 class="carac-icon pb-2 mb-0">
+                              <img src="/icones/carac-voiture.png" width="200" alt="">
+                              Caractéristiques de la voiture
+                          </h2>
+                          <ul class="mb-2 pl-4">
+                              <div class="row">
+                                  <div class="row">
+                                      <div class="col-lg-3 col-sm-2" th:each="carac, iterStat : ${car.features}">
+                                          <li class="vehicle-carac-item c-grey medium mb-1 mr-0">
+                                              <div class="row pb-1">
+
+                                                  <div class="col-12 center fs13" th:text="${carac.name}"></div>
+                                                  <div class="col-12 center fs13" th:text="${carac.description}"></div>
+                                              </div>
+                                          </li>
+                                      </div>
+                                  </div>
+
+                              </div>
+                          </ul>
+                      </div>
+                      <div class="col-12">
+                          <h5 class="fs16 bold text-main pdb-20 mgb-0 option-title"> <img width="200" src="/icones/equip-voiture.png" alt=""> Options &amp; accessoires</h5>
+                          <ul class="pl-4">
+                              <div class="row">
+
+
+                                  <div class="col-6 col-sm-3" th:each="equipement : ${car.equipments}">
+                                      <p class="fs14 c-grey medium center mgb-20">
+                                          <img class="bg-transparent" th:src="${equipement.icone}" alt="" width="50">
+                                      </p>
+                                      <p class="fs14 c-grey medium center mgb-20" th:text="${equipement.equipment}"></p>
+                                  </div>
+
+
+                              </div>
+                          </ul>
+                      </div>
+
+                  </div>
+
+
+              </div>
+              <hr class="w80p">
+          </div>
+
+      </div>
+        <div class="col-lg-4 col-md-12 mobile">
+
+
+
+
+            <!-- VEHICLE PRICE -->
+
+            <link rel="stylesheet" type="text/css" href="/css/vehicle-show-price.css?v=7.20.44">
+
+            <div id="vehicle-price-block" class="vehicle-price bg-white mgb-20 ">
+                <div class="row mgb-10 d-none d-lg-block">
+                    <div class="col-lg-9 col-xs-9">
+                        <p class="text-main medium fs16 mgt-20">A partir de</p>
+                        <h2 id="price"><span class="price-value text-main">55 €</span>
+                            <span class="fs20 text-main normal price-caption">/ prix par jour</span></h2>
+                    </div>
+                </div>
+                <p class="fs12 c-grey mgb-40 d-none d-lg-block">Le prix est susceptible de varier selon la saison et la durée d'une location.
+
+                </p>
+
+            </div>
+
+            <!-- VEHICLES ENABLE RULES -->
+
+
+
+            <div class="vehicle-disabled-checkmark bg-white mgb-20">
+                <h5 class="mgb-30">Informations manquantes</h5>
+                <ul>
+                    <p class="mgb-10"><i class="fa fa-check c-main nbsp-large"></i>Ajouter vos informations personnelles</p>
+                    <p class="normal text-light mgb-10"><a class="fs14 c-main normal underline" href="/user/111716/bank-account?redirect_uri=http%253A%252F%252Fwww.zotcar.com%252Flocation%252Fvoiture%252Fla-reunion-particulier-29282%252Fshow"><i class="fa fa-times c-danger nbsp-large"></i>Ajouter vos informations bancaires</a></p>
+                    <p class="normal text-light mgb-10"><a class="fs14 c-main normal underline" href="/user/111716/identity?redirect_uri=http%253A%252F%252Fwww.zotcar.com%252Flocation%252Fvoiture%252Fla-reunion-particulier-29282%252Fshow"><i class="fa fa-times c-danger nbsp-large"></i>Ajouter votre pièce d'identité</a></p>
+                </ul>
+            </div>
+
+
+
+            <div class="vehicle-disabled-checkmark bg-white mgb-30">
+                <h5 class="mgb-30">Complétez votre annonce</h5>
+                <p class="mgb-10 vehicle-picture-checked"><a class="fs14 c-main normal underline add-picture-link" href="/user/111716/account"><i class="fa fa-times c-danger nbsp-large"></i>Ajouter des photos du véhicule</a></p>
+
+                <p>
+                    <i class="fa fa-check c-main nbsp-large"></i>
+                    <a class="fs14 c-main normal underline" target="_blank" href="//s3-eu-west-1.amazonaws.com/zc-vehicles/vehicle/29282/registration_card/663b995175bb9.png">Ma carte grise</a>
+                </p><div class="bg-warning bradius-bis c-white center fs12 inline-block medium pl-2 pr-2 mt-3">
+                En attente de validation
+            </div>
+                <p></p>
+            </div>
+
+
+
+        </div>
+    </div>
+
+  </div>
+</div>

@@ -1,5 +1,6 @@
 package be.iccbxl.tfe.Driveshare.service;
 
+import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
 
@@ -15,4 +16,7 @@ public interface ReservationServiceI {
 
     Reservation updateReservation(Long id, Reservation reservation);
     void deleteReservation(Long id);
+
+    List<ReservationDTO> getReservationsForCurrentUser();
+
 }

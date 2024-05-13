@@ -2,10 +2,15 @@ package be.iccbxl.tfe.Driveshare.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.ToString.Exclude;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name="evaluations")
 public class Evaluation {
@@ -30,6 +35,15 @@ public class Evaluation {
 
     @Column(name = "Created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Override
+    public String toString() {
+        return "Evaluation{" +
+                "id=" + id +
+                ", rating=" + note +
+                ", comment='" + avis + '\'' +
+                '}';
+    }
 
 
 }

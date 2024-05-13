@@ -544,14 +544,6 @@ nav {
 
 /* PROFIL */
 
-.tab-content {
-    display: none; /* Cache tous les contenus d'onglet */
-}
-
-.tab-content.active {
-    display: block; /* Affiche seulement le contenu de l'onglet actif */
-}
-
 .first-menu a.active {
     color: #fff !important;
     pointer-events: none;
@@ -642,4 +634,392 @@ nav {
 
 }
 
+/* PROFIL VEHICULES*/
+
+#user-show .user-vehicle {
+    background-color: #f4f6f7;
+}
+
+.search-list-vehicle ul {
+    margin: 0;
+    padding: 0;
+    border-radius: 8px;
+}
+
+.bg-transparent {
+    background-color: transparent !important;
+}
+
+.search-list-vehicle li {
+    padding: 2.95rem;
+    width: 100%;
+    background-color: #FFF;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    transition: all 0.3s linear;
+}
+
+.search-list-vehicle .vehicle-picture {
+    position: relative;
+}
+
+.vehicle-picture img {
+    position: relative;
+    border-radius: 0.8rem;
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    background-image: url(/images/no-vehicle-picture-square.png);
+    background-size: cover;
+    height: 12.5rem;
+    background-position-y: -1.5rem;
+}
+
+.user-vehicle-picture {
+    height: 14.5rem !important;
+}
+
+.c-transparent {
+    color: transparent !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.fs16 {
+    font-size: 1.6rem !important;
+}
+
+.text-more-light {
+    color: #ADBFCC !important;
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.fs14 {
+    font-size: 14px !important;
+}
+.c-black {
+    color: #3C3C3B !important;
+}
+
+.bold {
+    font-weight: 600 !important;
+}
+
+.fs11 {
+    font-size: 11px !important;
+}
+
+.pdl-5 {
+    padding-left: 5px !important;
+}
+
+.fs12 {
+    font-size: 12px !important;
+}
+
+.c-grey {
+    color: #777 !important;
+}
+.medium, .semi-bold {
+    font-weight: 500 !important;
+}
+
+/*PROFIL VEHICULE PAR ID*/
+
+.mgr-40{
+    margin-right: 40px;
+}
+
+.mgb-0{
+    margin-bottom: 0px;
+}
+
+.second-menu {
+    padding: .8rem;
+    background-color: #CBD2D9;
+    color: black;
+    height: 50px;
+}
+
+.car-detail-onglet{
+    text-decoration: none;
+    color: grey;
+    font-size: 15px;
+
+}
+
+.car-detail-onglet:hover,
+.car-detail-onglet.active {
+    color: #00BFFF;
+    cursor:pointer;
+}
+
+/* Profil Vehicule menu */
+
+.tab-content {
+    display: none !important;
+}
+
+.tab-content.active {
+    display: block !important;
+}
+
+/* PROFIL ANNONCE */
+
+   .border-dotted {
+      position: relative;
+      border-radius: 10px;
+      border: 2px dotted #999;
+      width: 200px;
+      height: 175px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .no-picture {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .container {
+        max-width: 960px !important;
+    }
+
+    #vehicle-container .vehicle-show-info, #vehicle-container .vehicle-show-rating {
+        padding: 4rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(33, 61, 83, 0.08);
+    }
+
+    .vehiccle-show-info{
+        background-color: #fff !important;
+            margin-bottom: 20px !important;
+    }
+
+    .carac-icon{
+        font-size: 16px;
+        font-weight: 600 !important;
+        color: #3c3c3b !important;
+    }
+
+
+/*calendrier*/
+/* Supprime toute décoration de texte des événements */
+.fc .fc-event,
+.fc .fc-daygrid-day-top a {
+    text-decoration: none !important;
+}
+
+/* Supprime toute décoration de texte des titres */
+.fc .fc-toolbar-title {
+    text-decoration: none !important;
+
+}
+
+/* Supprime toute décoration de texte des en-têtes de jours */
+.fc .fc-daygrid-day-number,
+.fc .fc-col-header-cell {
+    text-decoration: none !important;
+    border:none;
+    color: #354C6F;
+}
+
+/* Supprime toute décoration de texte des liens dans les éléments */
+.fc a {
+    text-decoration: none !important;
+}
+
+/* Applique une couleur de fond aux jours du mois actif */
+.fc .fc-daygrid-day:not(.fc-day-other) {
+    background-color: #DFE7EC; /* Remplacez #f0f0f0 par la couleur désirée */
+}
+
+/* taille de case des chiffres */
+.fc .fc-daygrid-day-frame {
+    min-height: 100%;
+    position: relative;
+    height: 50px;
+}
+
+/* Optionnel : Personnalisez également le survol pour les jours actifs */
+.fc .fc-daygrid-day:not(.fc-day-other):hover {
+    background-color: #00BFFF; /* Remplacez par la couleur de survol désirée */
+}
+
+.fc {
+    background-color: transparent !important;
+    border: none;
+}
+
+/* Optionnel : Rendez le fond des événements aussi transparent */
+.fc .fc-event {
+    background-color: rgba(255, 255, 255, 0.8) !important; /* Exemple de fond semi-transparent pour les événements */
+}
+
+/* Supprimez la bordure autour du calendrier si nécessaire */
+.fc .fc-daygrid-day {
+    border-radius: 8px; /* Ajustez le rayon selon votre besoin */
+    margin: 2px; /* Ajustez l'espacement selon votre besoin */
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1); /* Ajoutez une ombre subtile pour séparer les jours */
+}
+
+
+/* Les événements eux-mêmes peuvent également être stylisés avec une bordure arrondie */
+.fc .fc-event {
+    border-radius: 4px; /* Bordure arrondie pour chaque événement */
+    padding: 2px;
+}
+
+.day-number-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.5; /* Rendre légèrement transparent pour voir le numéro */
+    border-radius: 50%; /* Style optionnel pour arrondir les coins */
+}
+
+/* Cible les numéros de jour dans le calendrier */
+.fc .fc-daygrid-day-number {
+    float: none; /* Annule tout float par défaut */
+    position: absolute; /* Permet le positionnement absolu à l'intérieur de la case du jour */
+    left: 50%; /* Centrer horizontalement */
+    top: 50%; /* Centrer verticalement */
+    transform: translate(-50%, -50%); /* Ajuste précisément le centrage */
+    font-size: 16px; /* Optionnel: ajuste la taille de la police */
+}
+
+/* effacer les case vide */
+.fc .fc-cell-shaded, .fc .fc-day-disabled{
+    visibility:hidden !important;
+    border:none !important;
+}
+
+/* background-color pour les mois */
+.fc .fc-multimonth-daygrid{
+    background-color: transparent;
+
+}
+
+.fc .fc-multimonth-singlecol .fc-multimonth-header{
+    background-color: transparent;
+}
+
+.fc .fc-bg-event{
+    background-color: green;
+}
+
+.fc .fc-multimonth{
+    border: none !important;
+}
+
+.fc .fc-multimonth-singlecol .fc-multimonth-header{
+
+}
+.fc-multimonth-daygrid-table
+
+/* Calendrier sur les coté */
+
+.ccm{
+    border-radius: 10px !important;
+    background-color:white !important;
+    padding: 15px !important;
+}
+
+.qsf{
+    border-radius: 10px !important;
+    background-color:white !important;
+    padding: 15px !important;
+}
+
+
+
+
+
+
+/* PROFIL MODE RESERVATION */
+
+.hide {
+    display: none; /* Cache les éléments */
+}
+
+.show {
+    display: block; /* Affiche les éléments */
+}
+
+
+.actually{
+        margin-right: 8px !important;
+        font-weight: 600 !important;
+        color: #32b298 !important;
+}
+
+.auto-manu{
+    color: #ffc107 !important;
+}
+
+.choose-automatic-reservation{
+    border: 1px solid #dee2e6 !important;
+    height: 100%;
+    width: 100% !important;
+    display: inline-block !important;
+    border-radius: 4px !important;
+    border: 1px solid #e9ecef !important;
+}
+.choose-automatic-reservation.active-button{
+    background-color: #00788d; /* Bleu foncé pour l'état actif */
+    color: white;
+}
+
+.choose-manuel-reservation{
+    border: 1px solid #dee2e6 !important;
+    height: 100%;
+    width: 100% !important;
+    display: inline-block !important;
+    border-radius: 4px !important;
+    border: 1px solid #e9ecef !important;
+}
+
+.choose-manuel-reservation.active-button{
+        background-color: #00788d; /* Bleu foncé pour l'état actif */
+        color: white;
+}
+
+
+
+.card-reservation{
+    height : 100%;
+    border-radius: 1rem;
+    border: 1px solid #e9ecef !important;
+    padding: 20px;
+}
+
+.p-reservation{
+    font-size : 1.6rem;
+    font-weight: 500;
+    line-height: 2.6rem;
+    margin-bottom: 0;
+}
+
+.p-manuel-auto{
+    padding: 30px;
+    font-weight: bold;
+    font-size : 18px;
+    text-align: center;
+    line-height: 2.6rem;
+    margin-bottom: 0;
+}
 

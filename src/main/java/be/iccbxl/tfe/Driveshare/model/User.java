@@ -1,8 +1,11 @@
 package be.iccbxl.tfe.Driveshare.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,7 +13,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name="users")
 public class User {
@@ -54,10 +58,21 @@ public class User {
     @Column(name="carte_identite")
     private String carteIdentite;
 
-    @OneToMany(mappedBy = "user")
-    private List<Evaluation> evaluations;
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
+    private List<Car> ownedCars;
 
     @ManyToMany
+    @JoinTable(
+            name = "car_user_rental",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "car_id")
+    )
+    private List<Car> rentedCars;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<Evaluation> evaluations;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "UserID"),
@@ -65,7 +80,7 @@ public class User {
     )
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Reservation> reservations;
 
 
@@ -85,6 +100,15 @@ public class User {
         }
 
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + nom + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 
 }

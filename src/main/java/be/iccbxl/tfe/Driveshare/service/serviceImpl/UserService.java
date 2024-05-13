@@ -85,6 +85,12 @@ public class UserService implements UserServiceI {
         }
     }
 
+    @Override
+    public long countCarsById(Long userId) {
+        return userRepository.countCarsById(userId);
+    }
+
+
 
     @Override
     public User updateUser(Long id, User newUser) {

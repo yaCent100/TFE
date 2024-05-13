@@ -22,14 +22,14 @@
                     Nos Locations
                 </a>
 
-               <div th:if="${#authorization.expression('isAnonymous()')}">
+                <div th:if="${#authorization.expression('isAnonymous()')}">
 
                 </div>
                 <div th:if="${#authorization.expression('isAuthenticated()')}">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <div>
-                                <img class="img-fluid rounded-circle" width="50" th:src="${user.photoUrl != null ? user.photoUrl : '/uploads/profil/defaultPhoto.png'}" />
+                            <div th:if="${user != null}">
+                                <img th:src="@{${user.photoUrl}}" alt="Profil" class="profile-image"/>
                             </div>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -47,7 +47,15 @@
 
         </div>
     </nav>
+    <div class="first-menu" style="background-color: #8EAAB3;">
+        <p class="nav-profil text-center">
+            <a th:href="@{/account}" class="a active" ><i class="fa-regular fa-file-lines nbsp-large"></i>Mon compte</a>
+            <a th:href="@{/voitures}" class="a ms-4" ><i class="fa fa-car nbsp-large"></i>Mes véhicules</a>
+            <a th:href="@{/account}" class="a ms-4" ><i class="fa-regular fa-calendar-check nbsp-large"></i>Mes réservations</a>
+        </p>
+    </div>
 </header>
+
 
 
 </body>

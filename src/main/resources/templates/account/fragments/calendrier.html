@@ -1,0 +1,41 @@
+<!-- fragments/calendrier.html -->
+<div layout:fragment="calendrier" id="calendrier-tab" class="tab-content" >
+    <!-- Contenu spécifique de l'onglet "Calendrier" -->
+    <div class="container-fluid">
+    <div class="row row justify-content-center pt-3 mt-5">
+        <div class="col-lg-2 m-3">
+            <div class="m-2 qsf" style="border-radius: 15px; background-color:#CBD2D9 ">
+                <div><h5>Que souhaitez-vous faire?</h5></div><br>
+                <input type="date" id="start-date" class="form-control" placeholder="date de début">
+                <input type="date" id="end-date" class="form-control" placeholder="date de fin">
+                <button id="mark-unavailable" class="btn btn-danger " style="display:inline; width:auto;">Indisponible</button>
+                <button id="mark-available" class="btn btn-success" style="display:inline; width:auto;">Disponible</button>
+            </div>
+            <br>
+            <div class="m-2 ccm">
+                <h5>Comment ça marche ?</h5><br>
+                <p class="medium fs14">Pour Modifier la disponibilité</p>
+                <p>Pour modifier la disponibilité de votre véhicule sur une période</p>
+                <p>1 - Sélectionnez la date de début de la période puis la date de fin.</p>
+                <p>2 - cliquer sur le bouton disponible ou indisponible.</p>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="row">
+                <div class="col-lg-9">
+                    <h3>Calendrier</h3>
+                </div>
+                <div class="col-lg-3">
+                    <button id="viewMonth">Mois</button>
+                    <button id="viewYear">Année</button>
+                </div>
+            </div>
+            <div id="calendrier"></div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+
+        </div>
+    </div>
+
+</div>

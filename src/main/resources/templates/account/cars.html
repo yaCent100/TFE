@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{account/layouts/main}">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Compte</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+
+    <div id="user-show" class="user-vehicle">
+        <div class="container pt-1">
+            <div class="row justify-content-center pt-4 pdb-80">
+                <div class="col-lg-8 col-md-12">
+                    <div class="search-list-vehicle vehicles-list">
+                        <ul class="bg-transparent">
+                            <li th:each="car : ${cars}" class="search-list-vehicle-item search-list-vehicle-item-responsive">
+                                <a th:href="@{/voitures/{id}(id=${car.id})}">
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-xs-5">
+                                            <div class="vehicle-picture">
+                                                <img th:if="${not #lists.isEmpty(car.photos)}" th:src="${car.photos[0].url}" alt="Car Photo">
+                                            </div>
+                                            <div class="text-center">
+                                                <p class="bold fs16 text-more-light" >Plate Number</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-xs-7 search-list-vehicle-desc-responsive">
+                                            <div class="search-list-vehicle-desc">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <div class="row">
+                                                            <div class="col-lg-8 col-md-12 col-xs-12">
+                                                                <div class="row">
+                                                                    <div class="col-lg-10 col-md-10 col-xs-10 no-padding">
+                                                                        <p class="fs14 bold c-black" th:text="${car.brand}">Car Model</p>
+                                                                        <p class="fs14 bold c-black" th:text="${car.model}">Car Model</p>
+                                                                        <p class="fs11 mobile pdl-5" >Car Details</p>
+                                                                        <p class="fs11 mobile pdl-5">
+                                                                            <span class="fa fa-map-marker mgr-10"></span>
+                                                                            <span >Car Location</span>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="col-lg-2 col-md-2 col-xs-2 no-padding">
+                                                                    <span class="fs12 medium c-grey mobile">
+                                                                        <span class="avg-rate">
+                                                                            <!-- Display car rating if available -->
+                                                                        </span>
+                                                                    </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-3 col-md-4 col-xs-10 text-right not-on-mobile on-ipad not-mobile">
+                                                                <p class="vehicle-pricing fs16 medium" th:text="${car.price + '€ /jour'}">Price</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-12 mgt-40">
+                    <p class="text-center"><a href="/new_vehicle" class="btn btn-success btn-success-shadowed"><i class="fa fa-plus-circle fs13 nbsp-large c-white" aria-hidden="true"></i>Ajouter un véhicule</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

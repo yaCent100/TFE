@@ -16,5 +16,8 @@ public interface UserServiceI {
 
     String uploadFile(MultipartFile file, String uploadDir) throws IOException;
 
+    long countCarsById(Long userId);
+
+
 
 }

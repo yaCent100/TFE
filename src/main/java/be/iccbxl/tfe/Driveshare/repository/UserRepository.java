@@ -4,4 +4,8 @@ import be.iccbxl.tfe.Driveshare.model.User;
 import org.springframework.data.repository.CrudRepository;
 
 public interface UserRepository extends CrudRepository<User, Long> {
+    User findByEmail(String email);
+
+    long countCarsById(Long userId);
+
 }

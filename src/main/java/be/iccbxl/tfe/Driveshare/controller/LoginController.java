@@ -5,6 +5,7 @@ import be.iccbxl.tfe.Driveshare.service.serviceImpl.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +29,9 @@ public class LoginController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Value("${upload.photo.dir}")
     private String photoUploadDir;
 
@@ -40,10 +44,10 @@ public class LoginController {
 
 
     @GetMapping("/login")
-    public String login(Model model) {
-        model.addAttribute("user", new User());
+    public String getLogin() {
         return "login/login";
     }
+
 
     @PostMapping("/register")
     public String processRegistrationForm(@ModelAttribute @Valid User user,
@@ -58,9 +62,8 @@ public class LoginController {
             return "redirect:/login";
         }
 
-        try {
-            // Enregistrer la photo
-            String profilePhotoUrl = userService.uploadFile(profilePhoto,photoUploadDir );
+        // Enregistrer la photo
+           /* String profilePhotoUrl = userService.uploadFile(profilePhoto,photoUploadDir );
             user.setPhotoUrl(profilePhotoUrl);
 
             // Enregistrer la licence
@@ -69,18 +72,13 @@ public class LoginController {
 
             // Enregistrer la carte d'identité
             String idCardUrl = userService.uploadFile(idCard, identityUploadDir);
-            user.setCarteIdentite(idCardUrl);
+            user.setCarteIdentite(idCardUrl);*/
 
-            // Ajout de l'utilisateur
-            userService.addUser(user);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
-            redirectAttributes.addFlashAttribute("successMessage", "Inscription réussie. Veuillez vous connecter.");
-            return "redirect:/login?success=true";
-        } catch (IOException e) {
-            // Gérer les erreurs d'entrée/sortie ici
-            redirectAttributes.addFlashAttribute("errorLogin", "Une erreur est survenue lors de l'enregistrement de l'utilisateur.");
-            return "redirect:/login";
-        }
+        userService.addUser(user);
+        redirectAttributes.addFlashAttribute("successMessage", "Inscription réussie. Veuillez vous connecter.");
+        return "redirect:/login?success=true";
     }
 
 

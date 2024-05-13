@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{account/layouts/main}">
 <head>
     <meta charset="UTF-8">
     <title>Mon Compte</title>
@@ -7,26 +7,20 @@
 <body>
 
 <div layout:fragment="content">
-    <div class="first-menu" style="background-color: #8EAAB3;">
-        <p class="nav-profil text-center">
-            <a href="#" class="a active" data-target="tab-mon-compte"><i class="fa-regular fa-file-lines nbsp-large"></i>Mon compte</a>
-            <a href="#" class="a ms-4" data-target="tab-mes-vehicules"><i class="fa fa-car nbsp-large"></i>Mes véhicules</a>
-            <a href="#" class="a ms-4" data-target="tab-mes-reservations"><i class="fa-regular fa-calendar-check nbsp-large"></i>Mes réservations</a>
-        </p>
-    </div>
+
 
     <div id="tab-mon-compte" class="tab-content active">
             <!-- Contenu de Mon compte -->
             <div id="user-show" class="user-section">
                 <div class="user-details bg-f6f8f9">
                     <div class="container-fluid">
-                        <h1 class="mb-4 mt-4">Bonjour, Yassin</h1>
+                        <h1 class="mb-4 mt-4">Bonjour, <span th:text="${user.prenom}"></span></h1>
                         <div class="row">
                             <div class="col-lg-3">
                                 <div class="row">
                                     <div class="col-lg-12 mt-2">
                                         <div class="owner-picture text-center">
-                                            <img alt="profil" class="userPicture" src="uploads/profil/photo8.png">
+                                            <img alt="profil" class="userPicture" th:src="${user.photoUrl != null} ? ${user.photoUrl} : '/uploads/profil/defaultPhoto.png'" />
                                         </div>
                                     </div>
                                     <input type="file" name="picture" id="pictureInput" accept="image/jpeg,image/jpg,image/png" hidden>
@@ -49,15 +43,13 @@
                                                             <div class="col-lg-3 col-md-6 col-xs-6 align-self-center text-center">
                                                                 <p><img class="iconeStat" src="/icones/graphique.png" alt="Location" data-toggle="tooltip" data-placement="top" title="Locations effectuées"></p>
                                                                 <p class="text-main-2 fs10 normal">
-                                                                    0
-                                                                    location
+                                                                    <span th:text="${confirmedCount}"></span> location(s) confirmée(s)
                                                                 </p>
                                                             </div>
                                                             <div class="col-lg-3 col-md-6 col-xs-6 align-self-center text-center">
                                                                 <p><img class="iconeStat" src="/icones/carStat.png" alt="Vehicule" data-toggle="tooltip" data-placement="top" title="Nombre de voitures"></p>
                                                                 <p class="text-main-2 fs10 normal">
-                                                                    4
-                                                                    voitures
+                                                                    <span th:text="${carCount}"></span> voitures
                                                                 </p>
                                                             </div>
 

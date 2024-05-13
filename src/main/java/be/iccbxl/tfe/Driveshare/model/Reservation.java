@@ -1,5 +1,6 @@
 package be.iccbxl.tfe.Driveshare.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
