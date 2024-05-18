@@ -19,13 +19,9 @@ public class Evaluation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "VoitureID", nullable = false)
-    private Car car;
-
-    @ManyToOne
-    @JoinColumn(name = "UserID", nullable = false)
-    private User user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "car_rental_id")
+    private CarRental carRental;
 
     @Column(nullable = false)
     private Integer note;

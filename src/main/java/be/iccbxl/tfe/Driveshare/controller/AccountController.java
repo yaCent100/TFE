@@ -1,6 +1,7 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.model.Car;
+import be.iccbxl.tfe.Driveshare.model.CarRental;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
@@ -40,9 +41,11 @@ public class AccountController {
             User user = userDetails.getUser();
 
             // Itérez sur les réservations de l'utilisateur pour compter les réservations confirmées
-            for (Reservation reservation : user.getReservations()) {
-                if ("confirmé".equals(reservation.getStatut())) {
-                    confirmedCount++;
+            for (CarRental carRental : user.getCarRentals()) {
+                for (Reservation reservation : carRental.getReservations()) {
+                    if ("confirmé".equals(reservation.getStatut())) {
+                        confirmedCount++;
+                    }
                 }
             }
 
@@ -65,7 +68,9 @@ public class AccountController {
             List<Car> userCars = userService.getUserById(user.getId()).getOwnedCars();
 
             // Ajouter les voitures au modèle
+            model.addAttribute("user", user);
             model.addAttribute("cars", userCars);
+
             return "account/cars";
         } else {
             // Gérer le cas où aucun utilisateur n'est connecté
@@ -92,6 +97,8 @@ public class AccountController {
 
                 // Ajouter les détails de la voiture au modèle
                 model.addAttribute("car", car);
+                model.addAttribute("user", user);
+
                 return "account/car-show"; // Page des détails de la voiture
             } else {
                 // Gérer le cas où la voiture n'est pas trouvée pour cet utilisateur

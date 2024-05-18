@@ -816,6 +816,8 @@ nav {
 
 
 /*calendrier*/
+
+/*
 /* Supprime toute décoration de texte des événements */
 .fc .fc-event,
 .fc .fc-daygrid-day-top a {
@@ -861,12 +863,9 @@ nav {
 .fc {
     background-color: transparent !important;
     border: none;
+    height: auto;
 }
 
-/* Optionnel : Rendez le fond des événements aussi transparent */
-.fc .fc-event {
-    background-color: rgba(255, 255, 255, 0.8) !important; /* Exemple de fond semi-transparent pour les événements */
-}
 
 /* Supprimez la bordure autour du calendrier si nécessaire */
 .fc .fc-daygrid-day {
@@ -918,18 +917,12 @@ nav {
     background-color: transparent;
 }
 
-.fc .fc-bg-event{
-    background-color: green;
-}
 
 .fc .fc-multimonth{
     border: none !important;
 }
 
-.fc .fc-multimonth-singlecol .fc-multimonth-header{
 
-}
-.fc-multimonth-daygrid-table
 
 /* Calendrier sur les coté */
 
@@ -984,7 +977,7 @@ nav {
     color: white;
 }
 
-.choose-manuel-reservation{
+.choose-manual-reservation{
     border: 1px solid #dee2e6 !important;
     height: 100%;
     width: 100% !important;
@@ -993,7 +986,7 @@ nav {
     border: 1px solid #e9ecef !important;
 }
 
-.choose-manuel-reservation.active-button{
+.choose-manual-reservation.active-button{
         background-color: #00788d; /* Bleu foncé pour l'état actif */
         color: white;
 }
@@ -1008,7 +1001,7 @@ nav {
 }
 
 .p-reservation{
-    font-size : 1.6rem;
+    font-size : 1.2rem;
     font-weight: 500;
     line-height: 2.6rem;
     margin-bottom: 0;
@@ -1017,9 +1010,33 @@ nav {
 .p-manuel-auto{
     padding: 30px;
     font-weight: bold;
-    font-size : 18px;
+    font-size : 1.2rem;
     text-align: center;
     line-height: 2.6rem;
     margin-bottom: 0;
+}
+
+.enregistrer{
+        padding: 0 !important;
+        width: 13rem !important;
+        font-size: 0.9rem !important;
+        line-height: 3rem !important;
+        border-radius: 10px !important;
+        background-color: #354C6F !important;
+        border: 1px solid #00BFFF !important; /* Bleu clair */
+}
+
+.enregistrer:hover{
+    background-color:#00BFFF !important;
+    border-radius: 10px !important;
+    border: 1px solid #354C6F !important;
+    color: #00788d !important;
+
+}
+
+a{
+    text-decoration:none;
+    cursor:pointer;
+    color: black;
 }
 

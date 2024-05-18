@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{account/layouts/main}">
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
 <head>
     <meta charset="UTF-8">
     <title>Mon Compte</title>
@@ -7,7 +7,7 @@
 <body>
 
 <div layout:fragment="content">
-
+    <div th:replace="account/fragments/account-header"></div>
 
     <div id="user-show" class="user-vehicle">
         <div class="container pt-1">

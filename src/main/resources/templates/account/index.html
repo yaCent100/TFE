@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{account/layouts/main}">
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
 <head>
     <meta charset="UTF-8">
     <title>Mon Compte</title>
@@ -8,13 +8,13 @@
 
 <div layout:fragment="content">
 
-
+    <div th:replace="account/fragments/account-header"></div>
     <div id="tab-mon-compte" class="tab-content active">
             <!-- Contenu de Mon compte -->
             <div id="user-show" class="user-section">
                 <div class="user-details bg-f6f8f9">
                     <div class="container-fluid">
-                        <h1 class="mb-4 mt-4">Bonjour, <span th:text="${user.prenom}"></span></h1>
+                        <h1 class="mb-4 mt-4">Bonjour, <span th:text="${user?.prenom}">Utilisateur</span></h1>
                         <div class="row">
                             <div class="col-lg-3">
                                 <div class="row">
@@ -59,7 +59,7 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
-                                            <a class="a" href="/user/111716/informations">
+                                            <a class="a" href="">
                                                 <div class="user-card">
                                                     <div class="row">
                                                         <div class="col-lg-10 col-md-10 col-xs-10">
@@ -78,7 +78,7 @@
                                             </a>
                                         </div>
                                         <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
-                                            <a class="a" href="/user/111716/identity">
+                                            <a class="a" href="">
                                                 <div class="user-card">
                                                     <div class="row">
                                                         <div class="col-lg-10 col-md-10 col-xs-10">
@@ -100,7 +100,7 @@
                                             </a>
                                         </div>
                                         <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
-                                            <a class="a" href="/user/111716/bank-account">
+                                            <a class="a" href="">
                                                 <div class="user-card">
                                                     <div class="row">
                                                         <div class="col-lg-10 col-md-10 col-xs-10">

@@ -100,52 +100,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 /* CALENDRIER */
-
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendrier');
-    const startDateInput = document.getElementById('start-date');
+   const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');
     const markUnavailableBtn = document.getElementById('mark-unavailable');
     const markAvailableBtn = document.getElementById('mark-available');
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
        schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
-       initialView: 'Mois', // Vue initiale
+       initialView: 'multiMonthView', // Vue initiale
 
         views: {
-            Mois: {
+            multiMonthView: {
                     type: 'multiMonth',
+                    multiMonthTitleFormat: { month: 'long', year: 'numeric' },
+                    multiMonthMaxColumns: 2,
                     duration: { months: 6 },
-                    multiMonthMaxColumns: 1,
-                    titleFormat: { month: 'long', year: 'numeric' },
-                    buttonText: 'Mois', // Texte du bouton pour la vue 'Mois'
                     dayHeaderContent: function(arg) {
                         const day = arg.date.toLocaleDateString('fr-FR', { weekday: 'long' });
                         const firstLetter = day.charAt(0).toUpperCase();
                         return firstLetter;
                     },
-                    monthHeaderFormat: { month: 'long', year: 'numeric' },
                     fixedWeekCount: false,
                     showNonCurrentDates: false
-            },
-            Année: {
-                type: 'multiMonth',
-                duration: { months: 6 },
-                multiMonthMaxColumns: 2,
-                buttonText: 'Année', // Texte du bouton pour la vue 'Année'
-                titleFormat: { month: 'long', year: 'numeric' },
-                dayHeaderContent: function(arg) {
-                    const day = arg.date.toLocaleDateString('fr-FR', { weekday: 'long' });
-                    const firstLetter = day.charAt(0).toUpperCase();
-                    return firstLetter;
-                },
-                monthHeaderFormat: { month: 'long', year: 'numeric' },
-                fixedWeekCount: false,
-                showNonCurrentDates: false
             }
 
         },
-        headerToolbar: false,
         selectable: true,
         initialDate: new Date(),
         locale: 'fr',
@@ -182,19 +163,10 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(info);
         }
     });
-
-
-    calendar.setOption('height', 'auto'); // Peut être un nombre, "auto", ou "parent"
+    calendar.setOption('height', 'auto');
     calendar.render();
 
 
- document.getElementById('viewMonth').addEventListener('click', function() {
-        calendar.changeView('Mois'); // Assurez-vous que c'est le bon identifiant de vue
-    });
-
-    document.getElementById('viewYear').addEventListener('click', function() {
-        calendar.changeView('Année'); // Assurez-vous que c'est le bon identifiant de vue
-    });
 
         // Ajout de l'indisponibilité
        markUnavailableBtn.addEventListener('click', function() {

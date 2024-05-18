@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             multiMonth: {
                 type: 'multiMonth',
                 duration: { months: 6 },
+                contentHeight: 'auto',
                 multiMonthTitleFormat: { month: 'long', year: 'numeric' },
                 multiMonthMaxColumns: 2,
                 fixedWeekCount: false,

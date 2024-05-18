@@ -11,8 +11,8 @@ public class ReservationMapper {
         dto.setDebutLocation(reservation.getDebutLocation());
         dto.setFinLocation(reservation.getFinLocation());
         dto.setCreatedAt(reservation.getCreatedAt());
-        dto.setCarName(reservation.getCar().getModel());
-        dto.setUserName(reservation.getUser().getNom());
+        dto.setCarName(reservation.getCarRental().getCar().getModel());
+        dto.setUserName(reservation.getCarRental().getUser().getNom());
         dto.setStatut(reservation.getStatut());
         dto.setNbJours(reservation.getNbJours());
         return dto;

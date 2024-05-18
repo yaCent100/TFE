@@ -61,17 +61,6 @@ public class User {
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<Car> ownedCars;
 
-    @ManyToMany
-    @JoinTable(
-            name = "car_user_rental",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "car_id")
-    )
-    private List<Car> rentedCars;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Evaluation> evaluations;
-
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
@@ -80,8 +69,11 @@ public class User {
     )
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Reservation> reservations;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<CarRental> carRentals;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Document> documents;
 
 
     public User addRole(Role role) {

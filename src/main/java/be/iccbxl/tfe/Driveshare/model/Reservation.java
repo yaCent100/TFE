@@ -16,6 +16,10 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rental_id", nullable = false)
+    private CarRental carRental;
+
     @Column(name = "DebutLocation")
     private LocalDate debutLocation;
 
@@ -24,14 +28,6 @@ public class Reservation {
 
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
-
-    @ManyToOne
-    @JoinColumn(name = "VoitureID")
-    private Car car;
-
-    @ManyToOne
-    @JoinColumn(name = "UserID")
-    private User user;
 
     @Column(name = "statut")
     private String statut;

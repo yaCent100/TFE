@@ -48,9 +48,6 @@ public class Car {
     @JoinColumn(name = "UserID")
     private User user;
 
-    @ManyToMany(mappedBy = "rentedCars")
-    private List<User> renters;
-
     @ManyToOne
     @JoinColumn(name = "CategorieID")
     private Category category;
@@ -60,9 +57,6 @@ public class Car {
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Photo> photos;
-
-    @OneToMany(mappedBy = "car")
-    private List<Evaluation> evaluations;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
@@ -81,7 +75,7 @@ public class Car {
     private List<Equipment> equipments;
 
     @OneToMany(mappedBy = "car")
-    private List<Reservation> reservations;
+    private List<CarRental> carRentals;
 
 
     public void addCondition(Condition condition) {

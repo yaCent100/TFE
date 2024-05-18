@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{account/layouts/main-car-details}">
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
 <head>
     <meta charset="UTF-8">
     <title>car-details</title>
@@ -7,11 +7,14 @@
 <body>
 
 <div layout:fragment="content">
+    <div th:replace="account/fragments/account-header"></div>
+    <div th:replace="account/fragments/account-header-car"></div>
 
     <div th:replace="account/fragments/tarification" ></div>
     <div th:replace="account/fragments/reservation" ></div>
     <div th:replace="account/fragments/calendrier" ></div>
     <div th:replace="account/fragments/annonce" ></div>
+
 
 
 </div>
