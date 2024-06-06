@@ -6,6 +6,7 @@ import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
+import be.iccbxl.tfe.Driveshare.service.serviceImpl.PriceService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,13 +24,12 @@ import java.util.Optional;
 public class AccountController {
 
     private final UserService userService;
-
-    private final CarService carService;
+    private final PriceService priceService;
 
     @Autowired
-    public AccountController(UserService userService, CarService carService) {
+    public AccountController(UserService userService, PriceService priceService) {
         this.userService = userService;
-        this.carService = carService;
+        this.priceService = priceService;
     }
 
 
@@ -60,12 +61,15 @@ public class AccountController {
         return "account/index";
     }
 
-    @GetMapping("/voitures")
+    @GetMapping("/account/cars")
     public String getCars(Model model, @AuthenticationPrincipal CustomUserDetail userDetails) {
         if (userDetails != null) {
             User user = userDetails.getUser();
 
             List<Car> userCars = userService.getUserById(user.getId()).getOwnedCars();
+            LocalDate today = LocalDate.now(); // Date actuelle pour déterminer la saison
+
+            // Calculer le prix pour chaque voiture et l'assigner
 
             // Ajouter les voitures au modèle
             model.addAttribute("user", user);

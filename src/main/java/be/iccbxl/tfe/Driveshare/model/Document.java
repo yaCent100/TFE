@@ -16,9 +16,10 @@ public class Document {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "identity_card_path")
-    private String identityCardPath;
+    @Column(name = "document_type")
+    private String documentType;
 
-    @Column(name = "driving_license_path")
-    private String drivingLicensePath;
+    @Column(name = "file_path")
+    private String url;
+
 }

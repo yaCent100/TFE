@@ -1,6 +1,8 @@
 package be.iccbxl.tfe.Driveshare.service;
 
+import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.time.LocalDate;
@@ -26,4 +28,7 @@ public interface CarServiceI {
     Map<Long, Integer> getReviewCountsForCars();
 
    List<Car> searchAvailableCars(String address, LocalDate dateDebut, LocalDate dateFin);
+
+    Car createCar(CarDTO carDTO);
+
 }

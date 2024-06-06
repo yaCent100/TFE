@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+  <title>DriveShare - Véhicule</title>
+</head>
+<body>
+<div th:fragment="vehicule-step" class="form-step" >
+    <div class="row">
+        <div class="col-lg-9" style="background-color:#D5DDE1; padding:80px; border-radius:10px;" >
+    <h2 class="fw-bold">
+        Dîtes-nous en plus sur votre carrosse 😍 . De quelle voiture s’agit-il ?
+    </h2>
+    <p class="mt-5">Pour apporter le maximum de visibilité à votre annonce, nous avons besoin de
+        connaître certaines caractéristiques de votre véhicule.
+        La marque et le modèle seront utilisés pour former le titre de votre annonce</p>
+    <div class="row justify content center ">
+        <div class="col-lg-6">
+            <label for="marque">Marque</label>
+            <select id="marque" class="form-control" th:field="*{brand}" required>
+                <option value="" disabled selected hidden>Marque*</option>
+            </select>
+        </div>
+        <div class="col-lg-6">
+            <label for="modele">Modèle</label>
+            <select id="modele" class="form-control" th:field="*{model}" required>
+                <option value="model" disabled selected hidden>Modele*</option>
+            </select>
+        </div>
+    </div>
+    <div class="row justify content center" >
+        <div class="col-lg-6">
+            <label for="categorie" class="mb-1">Catégorie du véhicule</label>
+            <select id="categorie" class="form-control" th:field="*{categoryId}" required >
+                <option value="Type de véhicule" disabled selected hidden>Type de véhicule*</option>
+                <option th:each="category : ${categories}" th:value="${category.id}"
+                        th:text="${category.category}">Catégorie
+                </option>
+            </select>
+        </div>
+        <div class="col-lg-6" >
+            <label for="plaque" class="mb-1">Immatriculation</label>
+            <input id="plaque" class="form-control" placeholder="1-KHJ-550" th:field="*{plaqueImmatriculation}">
+        </div>
+    </div>
+    <div class="row justify content center">
+
+        <div class="col-lg-6" >
+            <p class="mb-1">1ére mise en circulation
+                <span class="question-badge" data-toggle="tooltip" data-placement="right" title
+                      data-original-title="Saisissez votre plaque au format AB154ZT ou 123ABC974">?
+              </span>
+            </p>
+            <div class="row">
+                <div class="col-md-4">
+                    <select id="day" name="day" class="form-control" th:field="*{day}" required>
+                        <option value="" disabled selected hidden>Jours</option>
+                        <option th:each="day : ${days}" th:value="${day}" th:text="${day}">1</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select id="month" name="month" class="form-control" th:field="*{month}" required>
+                        <option value="" disabled selected hidden>Mois</option>
+                        <option th:each="entry : ${months}" th:value="${entry.key}" th:text="${entry.value}">January</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select id="year" name="year" class="form-control" th:field="*{year}" required>
+                        <option value="" disabled selected hidden>Année</option>
+                        <option th:each="year : ${years}" th:value="${year}" th:text="${year}">2022</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-6" >
+            <label for="Motorisation" class="mb-1">Motorisation</label>
+            <select id="Motorisation" th:field="*{fuelType}" class="form-control" required>
+                <option value="Motorisation du véhicule *" disabled selected hidden>Motorisation du véhicule*</option>
+                <option value="diesel">Diesel</option>
+                <option value="essence">Essence</option>
+                <option value="electrique">Electrique</option>
+                <option value="hybride">Hybride</option>
+            </select>
+        </div>
+    </div>
+    <div class="row justify content center">
+        <div class="col-lg-6" >
+            <label for="boite" class="mb-1">Boite de vitesse</label>
+            <select id="boite" class="form-control" th:field="*{boiteId}">
+                <option value="Boite de vitesse *" disabled selected hidden>Boite de vitesse*</option>
+                <option th:each="feature : ${boiteFeatures}" th:value="${feature.id}" th:text="${feature.description}">Type de boîte</option>
+            </select>
+        </div>
+        <div class="col-lg-6" >
+            <label for="compteur" class="mb-1">Kilometrage</label>
+            <select id="compteur" class="form-control" th:field="*{compteurId}">
+                <option value="Kilométrage *" disabled selected hidden>Kilométrage*</option>
+                <option th:each="feature : ${compteurFeatures}" th:value="${feature.id}" th:text="${feature.description}">Kilométrage</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="row justify content center">
+        <div class="col-lg-6">
+            <label for="places" class="mb-1">Nombres de places</label>
+            <select id="places" class="form-control" th:field="*{placesId}" required>
+                <option value="Nombres de places *" disabled selected hidden>Nombres de places*</option>
+                <option th:each="feature : ${placesFeatures}" th:value="${feature.id}" th:text="${feature.description}">Places</option>
+            </select>
+        </div>
+        <div class="col-lg-6">
+            <label for="portes" class="mb-1">Nombres de portes</label>
+            <select id="portes" class="form-control" th:field="*{portesId}" required>
+                <option value="Nombres de portes" disabled selected hidden>Nombres de portes*</option>
+                <option th:each="feature : ${portesFeatures}" th:value="${feature.id}" th:text="${feature.description}">Portes</option>
+            </select>
+        </div>
+    </div>
+    <br>
+    <br>
+    <h6>Equipements</h6>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="form-check d-flex flex-column align-items-center">
+                    <input type="checkbox" class="form-check-input" id="climatisation">
+                    <label class="form-check-label" for="climatisation">
+                        <img src="/icones/climatiseur.png" alt="clim" class="img-fluid" width="50">
+                    </label>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-check d-flex flex-column align-items-center">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck2">
+                    <label class="form-check-label" for="exampleCheck2">
+                        <img src="/icones/gps.png" alt="gps" class="img-fluid" width="50">
+                    </label>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-check d-flex flex-column align-items-center">
+                    <input type="checkbox" class="form-check-input" id="regulateur">
+                    <label class="form-check-label" for="regulateur">
+                        <img src="/icones/compteur-de-vitesse.png" alt="regulateur" class="img-fluid" width="50">
+                    </label>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-check d-flex flex-column align-items-center">
+                    <input type="checkbox" class="form-check-input" id="chauffants">
+                    <label class="form-check-label" for="chauffants">
+                        <img src="/icones/chauffants.png" alt="siége" class="img-fluid" width="50">
+                    </label>
+                </div>
+            </div>
+            <!-- Ajoutez autant de cases à cocher que nécessaire, en respectant le format de la grille de 3 colonnes -->
+        </div>
+
+
+    </div>
+    <div class="description">
+        <h6>Description</h6>
+        <div class="row">
+            <div class="col-md-12">
+                <label>
+                    <textarea maxlength="255" class="form-control full-width" style="height: auto;"></textarea>                </label>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h6>Localisation du véhicule</h6>
+        <div class="row">
+            <div class="col-md-4">
+                <input class="form-control" id="adresseInput" th:field="*{adresse} " placeholder="adresse (rue, avenue n°...)" oninput="updateLocation()">
+            </div>
+            <div class="col-md-4">
+                <select class="form-control" id="codePostalSelect" th:field="*{codePostal}" required>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select class="form-control" id="communeSelect" th:field="*{locality}" required>
+                </select>
+            </div>
+        </div>
+
+    </div>
+    <div>
+        <input type="checkbox" class="form-check-input" id="" required>
+        <label class="form-check-label" for="" >
+            Je certifie proposer un véhicule bien entretenu et disposant d’un contrôle technique à jour
+        </label>
+    </div>
+            <div class="col-lg-12">
+                <button class="btn btn-primary btn-next mt-4 text-right">Suivant</button>
+            </div>
+
+        </div>
+        <div class="col-lg-3">
+            <div class="p-2 position-relative">
+                <div class="text-center bg-light p-1 rounded-10px">
+                    <img src="images/info.png" class="info-image">
+                    <p>
+                        Le véhicule doit avoir<br>Moins de 8 ans<br>Moins de 200000 km
+                    </p>
+                </div>
+            </div>
+            <div class="p-2 position-relative">
+                <div class="text-center bg-light p-1 rounded-10px">
+                    <img src="images/info.png" class="info-image">
+                    <p>
+                        Le véhicule doit avoir<br>Moins de 8 ans<br>Moins de 200000 km
+                    </p>
+                </div>
+            </div>
+            <div class="p-2 position-relative">
+                <div class="text-center bg-light p-1 rounded-10px">
+                    <img src="images/info.png" class="info-image">
+                    <p>
+                        Le véhicule doit avoir<br>Moins de 8 ans<br>Moins de 200000 km
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

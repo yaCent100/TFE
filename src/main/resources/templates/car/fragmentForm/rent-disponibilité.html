@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DriveShare - Disponibilité</title>
+</head>
+<body>
+<div th:fragment="calendrier-step" class="form-step">
+    <div class="row">
+        <div class="col-lg-9" style="background-color:#D5DDE1; padding:80px; border-radius:10px;">
+            <div>
+                <span>Etape 5</span>
+                <div><h2 class="fw-bold">Mettez à jour votre calendrier</h2>
+                    <p>Ne recevez que les demandes qui vous intéressent en précisant
+                        les jours d’indisponibilité de votre véhicule.</p>
+                </div>
+                <div id="calendar"></div>
+                <div class="modal fade" id="availabilityModal" tabindex="-1" aria-labelledby="availabilityModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="availabilityModalLabel">Modifier la disponibilité</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Voulez-vous marquer ces dates comme :</p>
+                                <button id="availableButton" class="btn btn-success">Disponible</button>
+                                <button id="unavailableButton" class="btn btn-danger">Indisponible</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="indisponibleDatesStart" name="indisponibleDatesStart" />
+                <input type="hidden" id="indisponibleDatesEnd" name="indisponibleDatesEnd" />
+                <div class="col-lg-12">
+                    <button class="btn btn-primary btn-next mt-4 text-right">Suivant</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="calendar-caption fs10 pd-20 bradius bg-white border">
+                <p class="mgb-10 medium fs14 text-center">Légende</p>
+                <div class="caption-item">
+                    <div class="caption-icon available-caption nbsp"></div>
+                    <p class="caption-text">
+                        <span class="nbsp">Disponible</span>
+                        <span class="" data-toggle="tooltip" data-placement="top" title="" data-original-title="Le véhicule est disponible et peux recevoir des demandes de locations."><i class="fa fa-info-circle"></i></span>
+                    </p>
+                </div>
+                <div class="caption-item">
+                    <div class="caption-icon unavailable-caption nbsp"></div>
+                    <p class="caption-text">
+                        <span class="nbsp">Indisponible</span>
+                        <span class="" data-toggle="tooltip" data-placement="top" title="" data-original-title="Le véhicule n'est pas disponible."><i class="fa fa-info-circle"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -12,5 +12,5 @@ import java.util.List;
 @Repository
 public interface PriceRepository extends JpaRepository<Price, Long> {
 
-    Price findByCategoryAndSeason(Category category, String s);
+
 }

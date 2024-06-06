@@ -1,10 +1,12 @@
 package be.iccbxl.tfe.Driveshare.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -23,8 +25,14 @@ public class Car {
     @Column(name="Modele")
     private String model;
 
-    @Column(name="Annee")
-    private int year;
+    @Column(name="Offre")
+    private String offre;
+
+    @Column(name = "plaque_immatriculation", unique = true)
+    private String plaqueImmatriculation;
+
+    @Column(name = "first_immatriculation")
+    private LocalDate firstImmatriculation;
 
     @Column(name="Carburant")
     private String fuelType;
@@ -38,19 +46,25 @@ public class Car {
     @Column(name="locality")
     private String locality;
 
-    @Column(name="prix")
-    private double price;
+    @Column(name = "mode_reservation")
+    private String modeReservation;
 
-    @Column(name="kilometrage")
-    private double miles;
+    @Column(name = "carte_grise_path")
+    private String carteGrisePath;
+
 
     @ManyToOne
     @JoinColumn(name = "UserID")
     private User user;
 
+
     @ManyToOne
     @JoinColumn(name = "CategorieID")
     private Category category;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "price_id", referencedColumnName = "id")
+    private Price price;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Condition> conditions;
@@ -64,7 +78,7 @@ public class Car {
             joinColumns = @JoinColumn(name = "VoitureID"),
             inverseJoinColumns = @JoinColumn(name = "CaracteristiqueID")
     )
-    private List<Feature> features;
+    private List<Feature> features = new ArrayList<>();;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
@@ -74,7 +88,10 @@ public class Car {
     )
     private List<Equipment> equipments;
 
-    @OneToMany(mappedBy = "car")
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Indisponible> unavailable;
+
+    @OneToMany(mappedBy = "car", fetch = FetchType.LAZY)
     private List<CarRental> carRentals;
 
 
@@ -117,9 +134,9 @@ public class Car {
                 "id=" + id +
                 ", brand='" + brand + '\'' +
                 ", model='" + model + '\'' +
-                ", year=" + year +
                 '}';
     }
+
 }
 
 

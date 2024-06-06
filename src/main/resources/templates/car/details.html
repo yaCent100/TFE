@@ -33,7 +33,7 @@
                         <span>
                             <span th:each="star : ${#numbers.sequence(1, averageRating)}" class="star-filled">&#9733;</span>
                             <span th:each="star : ${#numbers.sequence(0, 5 - averageRating)}" class="star-filled">&#9734;</span>
-                            <span th:text="${averageRating}"></span> (<span th:text="${#lists.size(car.evaluations)}"></span>)
+                            <span th:text="${averageRating}"></span> (<span th:text="${totalEvaluations}"></span>)
                         </span>
                     </div>
                 </div>
@@ -121,36 +121,30 @@
 
                 <div class="rounded-custom-border p-4 mt-3">
                     <h2 class="fw-bold">Évaluations</h2>
-                    <div th:if="${car.evaluations != null and not #lists.isEmpty(car.evaluations)}">
-                        <div th:each="evaluation : ${car.evaluations}" class="col-md-12">
+                    <div th:if="${#lists.isEmpty(car.carRentals.![evaluations])}">
+                        <span>Aucune évaluation à ce jour.</span>
+                    </div>
+                    <div th:each="carRental : ${car.carRentals}" th:if="${not #lists.isEmpty(carRental.evaluations)}">
+                        <div th:each="evaluation : ${carRental.evaluations}" class="col-md-12">
                             <div class="row m-3">
-                                <div class="col-md-2 m-1v">
-                                    <img th:src="@{'/uploads/profil/' + ${evaluation.user.photoUrl}}" alt="Profil" width="100px" height="100px">
+                                <div class="col-md-2 m-1">
+                                    <img th:if="${evaluation.carRental.user.photoUrl != null}" th:src="@{'/uploads/profil/' + ${evaluation.carRental.user.photoUrl}}" alt="Profil" width="100px" height="100px">
                                 </div>
                                 <div class="col-md-7">
-                                    <span class="fw-bold" th:text="${evaluation.user.nom + ' ' + evaluation.user.prenom.substring(0,1) + '.'}"></span><br>
+                                    <span class="fw-bold" th:text="${evaluation.carRental.user.nom + ' ' + evaluation.carRental.user.prenom.substring(0,1) + '.'}"></span><br>
                                     <span th:text="${evaluation.avis}"></span><br>
                                     <span th:each="star : ${#numbers.sequence(1, 5)}">
-                                    <span th:if="${evaluation.note >= star}">
-                                        <span class="star-filled">&#9733;</span>
-                                    </span>
-                                    <span th:unless="${evaluation.note >= star}">
-                                        <span class="star-filled">&#9734;</span>
-                                    </span>
-                                </span>
+                        <span th:if="${evaluation.note >= star}" class="star-filled">&#9733;</span>
+                        <span th:unless="${evaluation.note >= star}" class="star-filled">&#9734;</span>
+                    </span>
                                 </div>
-                                <div class="col-md-2 text-end" >
+                                <div class="col-md-2 text-end">
                                     <span th:text="${#temporals.format(evaluation.createdAt, 'dd-MM-yyyy')}"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div th:if="${car.evaluations == null or #lists.isEmpty(car.evaluations)}">
-                        <span>Aucune évaluation à ce jour.</span>
-                    </div>
                 </div>
-
 
             </div>
             </div>
@@ -161,7 +155,7 @@
         <!-- Reservation FIXED -->
         <div class="col-md-3 d-flex align-items-center justify-content-center position-fixed top-50 end-0 translate-middle-y">
             <div class="custom-border p-3 text-center">
-                <p th:text="${car.price + '€'}" class="fw-bold fs-2 m-0"></p>
+                <p th:text="${car.displayPrice + '€'}" class="fw-bold fs-2 m-0"></p>
                 <p th:text="'/jour'" class="fs-6 m-0"></p>
                 <br>
                 <a th:href="@{'/reservation/' + ${car.id}}" class="custom-reserver btn fw-bold fw-italic">Réserver</a>

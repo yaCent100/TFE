@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-
 @Entity
 @Data
 @Table(name = "Prices")
@@ -14,19 +13,26 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")  // Ceci est la clé étrangère
-    private Category category;
+    @OneToOne(mappedBy = "price", cascade = CascadeType.ALL)
+    private Car car;
 
-    @Column
-    private Double price;
+    @Column(name = "high_price")
+    private Double highPrice;
 
-    @Column
-    private String season;
+    @Column(name = "middle_price")
+    private Double middlePrice;
+
+    @Column(name = "low_price")
+    private Double lowPrice;
 
     @Column(name = "is_promotion")
     private Boolean isPromotion;
 
-    @Column(name = "promotion_description")
-    private String promotionDescription;
+    @Column(name = "promo_1")
+    private Double promo1;  // Pourcentage de réduction si en promotion
+
+    @Column(name = "promo_2")
+    private Double promo2;
+
+
 }

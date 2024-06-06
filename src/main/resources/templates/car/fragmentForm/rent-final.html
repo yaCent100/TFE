@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DriveShare - Finalisation</title>
+</head>
+<body>
+<div th:fragment="final-step" class="form-step">
+    <div class="pdt-40 steps-container">
+        <div id="documents" class="step-item row mgb-60">
+            <div class="row">
+                <div class="col-xl-9 form-zone first" >
+                    <div style="background-color:#D5DDE1; padding:30px; border-radius:10px;">
+                        <div class="row">
+                            <div class="col-lg-9">
+                                <p class="normal uppercase fs12">
+                                    étape 7
+                                </p>
+                                <h2 class="fs24 mgb-10 mgt-30">
+                                    <span>Ajouter des photos à votre annonce</span>
+                                    <span class="c-white fs11 bg-warning medium pdl-6 pdr-6 h25 inline-block bradius-bis nbsp-large-left">Recommandé</span>
+                                </h2>
+                            </div>
+                            <div class="col-lg-3 not-mobile text-center mgt-20">
+                                <img src="/images/vehicle-registration/document_pictures.svg" class="w70">
+                            </div>
+
+                            <div class="col-lg-12">
+                                <p>Complétez votre annonce avec quelques photos dont une de l’intérieur</p>
+                                <p>Vous pouvez commencer par une photo, puis en ajouter d’autres après la publication.</p>
+                            </div>
+
+                            <div class="row">
+                                <div class="container mgt-30">
+                                    <div class="row owner-pictures mgb-40">
+                                        <!-- Boucle avec Thymeleaf pour générer 4 zones de téléchargement d'images -->
+                                        <th:block th:each="i : ${#numbers.sequence(1, 4)}">
+                                            <div class="col-lg-3 col-sm-12 owner-pic-item empty-item image-thumbnail">
+                                                <div class="text-center border-dotted" th:onclick="'triggerFileUpload(' + ${i} + ');'">
+                                                    <img src="/images/picture-icon.png" class="no-picture" alt="Image par défaut" th:id="'img-' + ${i}" />
+                                                    <input type="file" name="photos" multiple th:id="'file-upload-' + ${i}" style="display: none;" th:attr="onchange='previewImage(this, ' + ${i} + ')'" />
+                                                </div>
+                                                <div class="link-remove" th:id="'link-remove-' + ${i}" style="display:none;">
+                                                    <a href="#" th:onclick="'removeImage(' + ${i} + '); return false;'">Supprimer</a>
+                                                </div>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pt-4">
+                        <!-- Première Colonne pour la Carte Grise -->
+                        <div class="col-md-6 mb-4" style="padding-right: 15px;">
+                            <div class="h-100" style="background-color:#D5DDE1; padding:30px; border-radius:10px;">
+                                <div class="form-zone last h-100">
+                                    <h2 class="fs24">
+                                        <img src="/images/carte-grise.png" class="nbsp-large" height="70">
+                                        <span>Carte grise</span>
+                                        <span class="obligatoire">Obligatoire</span>
+                                    </h2>
+                                    <div id="registration-card-container">
+                                        <div class="row justify-content-center">
+                                            <div class="col-lg-12">
+                                                <p class="mgb-40 mgt-20">
+                                                    Déposez une copie de la carte grise de votre véhicule dans l'encart ci-dessous. La carte grise doit être lisible et au nom du propriétaire.
+                                                </p>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div id="dropzone-registration-card">
+                                                    <div class="carte-grise-input" style="position: relative; height: 200px;" onclick="document.getElementById('file-upload').click();">
+                                                        <img class="no-picture-2" src="/images/picture-icon.png" alt="photo">
+                                                        <!-- Zone cliquable qui déclenchera l'input file -->
+                                                        <div class="text-container" style="position: absolute; top: 60%; width: 100%; text-align: center; padding-top: 10px; cursor: pointer;" >
+                                                            <div class="mobile" style="font-weight: bold; font-size: 14px;">
+                                                                Touchez ici pour choisir une photo de votre carte grise.
+                                                            </div>
+                                                            <div class="not-mobile" style="font-weight: bold; font-size: 14px;">
+                                                                Glissez-déposez une photo ou un pdf de votre carte grise ici.
+                                                            </div>
+                                                        </div>
+                                                        <!-- Input file caché -->
+                                                        <input type="file" th:field="*{registrationCard}" id="file-upload" accept="image/*,.pdf" style="display: none;" onchange="handleFileUpload(this)"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="alert alert-success fs16 mgt-30 text-center" id="upload-success-message" style="display:none;">
+                                                    <span class="nbsp-large">Document envoyé !</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Deuxième Colonne pour la Pièce d'Identité -->
+                        <div class="col-md-6 mb-4" style="padding-left: 15px;">
+                            <div style="background-color:#D5DDE1; padding:30px; border-radius:10px;">
+                                <div class="form-zone last">
+                                    <h2 class="fs24">
+                                        <img src="/images/carte-identity.png" class="nbsp-large" height="70">
+                                        <span>Pièce d'identité</span>
+                                        <span class="obligatoire fs-11">Obligatoire</span>
+                                    </h2>
+                                    <div id="id-document-container">
+                                        <p class="mgb-40 mgt-20">
+                                            Déposez une copie de votre pièce d’identité (recto et verso). Le document doit être lisible et correspondre au propriétaire du véhicule.
+                                        </p>
+                                        <div class="row">
+                                            <!-- RECTO  -->
+                                            <div class="document-identity">
+                                                <div id="id-document-recto-container" class="col-lg-6">
+                                                    <div class="text-center border-dotted" onclick="triggerFileUpload('recto')">
+                                                        <img src="/images/picture-icon.png" class="no-picture" alt="Image par défaut" id="img-recto" />
+                                                        <input type="file"  th:field="*{identityVerso}" id="file-upload-recto" style="display: none;" onchange="previewImage(this, 'recto')"/>
+                                                    </div>
+                                                    <div class="alert alert-success fs16 mgt-30 text-center" id="upload-success-recto" style="display:none;">
+                                                        <span class="nbsp-large">Ok, en attente du verso!</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- VERSO -->
+                                            <div id="id-document-verso-container" class="col-lg-6">
+                                                <div class="text-center border-dotted" onclick="triggerFileUpload('verso')">
+                                                    <img src="/images/picture-icon.png" class="no-picture" alt="Image par défaut" id="img-verso" />
+                                                    <input type="file" th:field="*{identityRecto}" id="file-upload-verso" style="display: none;" onchange="previewImage(this, 'verso')"/>
+                                                </div>
+                                                <div class="alert alert-success fs16 mgt-30 text-center" id="upload-success-verso" style="display:none;">
+                                                    <span class="nbsp-large">Document complet!</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="pd-20 position-relative mgt-30">
+                            <div class="text-center bg-white pd-10 bradius">
+                                <img class="tip-picto" src="/images/picto/information.svg" alt="">
+                                <p class="fs12 medium">Une annonce avec des photos est susceptible d’être louée 3 fois plus qu’une autre !</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row pt-4">
+                    <div class="col-lg-9 text-end">
+                        <button id="monBouton" type="submit" class="btn btn-primary btn-next mt-4">
+                            Valider
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+

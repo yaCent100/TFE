@@ -3,8 +3,14 @@ font-family: 'Nunito', sans-serif !important;
     background-color: #F3F5F8 !important;
      }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h3, h4, h5, h6 {
  font-family: 'Roboto', sans-serif !important;
+
+ }
+ h2{
+  font-family: 'Roboto', sans-serif !important;
+ font-weight: 900 !important;
+ line-height: 2rem !important;
  }
 
 
@@ -271,9 +277,6 @@ nav {
         background-color : #FBFBFB;
     }
 
-    .form-control {
-        border-radius: 15px; /* Ajustez la valeur selon vos préférences */
-    }
 
 
 
@@ -335,12 +338,19 @@ nav {
 .form-control {
     height: 2.5rem !important;
     margin-bottom: 2rem;
-    border-radius: 15px !important;
-    font-size: 1.3rem;
+    border-radius: 10px !important;
+    font-size: 0.9rem !important;
     padding: 0 2rem;
     color: #323648;
     border: 1px solid rgba(33, 61, 83, .1);
 }
+
+.form-control:focus {
+    outline: none !important;
+    border: 2px solid #00BFFF !important; /* Ajoute une bordure bleue ou une autre indication visuelle */
+    box-shadow: none !important;
+}
+
 
 .question-badge{
     margin-left: 1rem;
@@ -513,6 +523,18 @@ nav {
     border: 2px solid #354C6F;
 }
 
+.btn-next{
+    padding: 0 !important;
+    width: 12rem;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    line-height: 3rem !important;
+    border-radius: 10px !important;
+    border: 0 !important;
+    background-color: #00788d !important;
+
+}
+
 /*FORMULAIRE PARTIE VEHICULE*/
 
 .info-image{
@@ -534,7 +556,31 @@ nav {
     background-color : white;
 }
 
-*/
+/* Formaulaire PARITE PHOTO*/
+
+.no-picture-2 {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.carte-grise-input {
+    position: relative;
+    height: 200px; /* Hauteur ajustable selon le besoin */
+    border: 1px dashed #ccc; /* Style de bordure pour visibilité, à supprimer si non nécessaire */
+}
+.obligatoire{
+    color: white !important;
+    background-color: #FF4F4A !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    border-radius: 4px !important;
+}
 
 /* CALENDRIER */
 
@@ -774,12 +820,14 @@ nav {
    .border-dotted {
       position: relative;
       border-radius: 10px;
-      border: 2px dotted #999;
-      width: 200px;
-      height: 175px;
+      border: 2px dashed #999;
+      width: 175px;
+      height: 150px;
       display: flex;
       justify-content: center;
       align-items: center;
+      background-color: #8EAAB3;
+
     }
 
     .no-picture {
@@ -794,7 +842,7 @@ nav {
     }
 
     .container {
-        max-width: 960px !important;
+        max-width: 1140px !important;
     }
 
     #vehicle-container .vehicle-show-info, #vehicle-container .vehicle-show-rating {
@@ -812,6 +860,51 @@ nav {
         font-size: 16px;
         font-weight: 600 !important;
         color: #3c3c3b !important;
+    }
+
+    .vehicle-show-info{
+        margin-bottom: 20px;
+        padding: 30px;
+        border-radius: 10px;
+    }
+
+    .vehicle-labels{
+        margin-bottom: 60px;
+        text-align: center;
+    }
+
+    .reservation-warning {
+        color: white;             /* Texte blanc */
+        font-size: 12px;          /* Taille de la police */
+        background-color: #ffc107; /* Couleur d'arrière-plan jaune d'alerte */
+        font-weight: 500;         /* Poids de la police à medium */
+        padding: 8px;             /* Padding autour du contenu */
+        display: inline-block;    /* L'élément s'affiche en inline-block */
+        border-radius: 10px;      /* Rayon des bords arrondis */
+        margin-top: 15px;         /* Marge supérieure */
+        width: 200px;             /* Largeur fixe */
+        text-align: center;       /* Texte centré à l'intérieur */
+    }
+
+    .vehicle-show-description{
+        margin-left: -2rem;
+        margin-right: -2rem;
+        padding: 2rem 4rem;
+        border-top-left-radius: 60px;
+        border-top-right-radius: 60px;
+        background-color: #DFE7EC !important;
+        margin-bottom: 40px !important;
+    }
+
+    .vehicle-disabled-checkmark{
+        padding: 15px 20px ;
+        border-radius: 1rem;
+        border: 1px solid rgba(33, 61, 83, 0.08);
+        margin-bottom: 20px;
+    }
+
+    .vehicle-price{
+        margin-bottom: 20px
     }
 
 
@@ -853,7 +946,28 @@ nav {
     min-height: 100%;
     position: relative;
     height: 50px;
+    background-color: #354C6F;
+    border-radius: 5px;
 }
+
+          .fc-daygrid-day.unavailable .fc-daygrid-day-frame {
+                     background: repeating-linear-gradient(
+                                              -45deg,
+                                              white,
+                                              white 5px,
+                                              lightgray 5px,
+                                              lightgray 10px
+                                          );
+                                          color:black;
+                 }
+
+                 /* Cette classe pour revenir à la couleur d'origine */
+                 .fc-daygrid-day.default .fc-daygrid-day-frame {
+                     background-color: #354C6F;
+                     border-radius: 5px;
+                 }
+
+
 
 /* Optionnel : Personnalisez également le survol pour les jours actifs */
 .fc .fc-daygrid-day:not(.fc-day-other):hover {
@@ -899,6 +1013,7 @@ nav {
     top: 50%; /* Centrer verticalement */
     transform: translate(-50%, -50%); /* Ajuste précisément le centrage */
     font-size: 16px; /* Optionnel: ajuste la taille de la police */
+    color: white;
 }
 
 /* effacer les case vide */
@@ -920,6 +1035,15 @@ nav {
 
 .fc .fc-multimonth{
     border: none !important;
+}
+
+.fc .fc-day:not(.fc-day-disabled):hover,
+.fc .fc-day:not(.fc-day-disabled).selected,
+.fc:not(.picking) .fc-day:not(.fc-day-disabled):hover {
+    background: rgba(173, 191, 204, 0.05);
+    color: rgba(173, 191, 204, 1);
+    border: 1px solid rgba(173, 191, 204, 0.25);
+    text-decoration: none;
 }
 
 

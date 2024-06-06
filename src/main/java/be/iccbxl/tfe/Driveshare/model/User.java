@@ -41,22 +41,14 @@ public class User {
     @Column(name="code_postal")
     private String codePostal;
 
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name="date_naissance")
-    private Date dateNaissance;
+    @Column(name = "telephone")
+    private String telephoneNumber;
 
     @Column(name="password")
     private String password;
 
     @Column(name="photo_profil")
     private String photoUrl;
-
-    @Column(name="permis_conduire")
-    private String permisConduire;
-
-    @Column(name="carte_identite")
-    private String carteIdentite;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<Car> ownedCars;
@@ -73,7 +65,7 @@ public class User {
     private List<CarRental> carRentals;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Document> documents;
+    private List<Document> documents = new ArrayList<>();
 
 
     public User addRole(Role role) {
@@ -93,6 +85,16 @@ public class User {
 
         return this;
     }
+
+    public void addDocument(Document document) {
+        documents.add(document);
+    }
+
+    public void removeDocument(Document document) {
+        documents.remove(document);
+    }
+
+
 
     @Override
     public String toString() {

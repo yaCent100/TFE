@@ -7,13 +7,13 @@
 <body>
 
 <div layout:fragment="content">
-    <div th:replace="account/fragments/account-header"></div>
-    <div th:replace="account/fragments/account-header-car"></div>
+    <div th:insert="~{account/fragments/account-header}"></div>
+    <div th:insert="~{account/fragments/account-header-car}"></div>
 
-    <div th:replace="account/fragments/tarification" ></div>
-    <div th:replace="account/fragments/reservation" ></div>
-    <div th:replace="account/fragments/calendrier" ></div>
-    <div th:replace="account/fragments/annonce" ></div>
+    <div th:insert="~{account/fragments/tarification}" ></div>
+    <div th:insert="~{account/fragments/reservation}" ></div>
+    <div th:insert="~{account/fragments/calendrier}" ></div>
+    <div th:insert="~{account/fragments/annonce}" ></div>
 
 
 

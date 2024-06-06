@@ -1,14 +1,17 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
-import be.iccbxl.tfe.Driveshare.model.Car;
-import be.iccbxl.tfe.Driveshare.model.CarRental;
-import be.iccbxl.tfe.Driveshare.model.Evaluation;
-import be.iccbxl.tfe.Driveshare.model.Reservation;
-import be.iccbxl.tfe.Driveshare.repository.CarRepository;
-import be.iccbxl.tfe.Driveshare.repository.ReservationRepository;
+import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
+import be.iccbxl.tfe.Driveshare.model.*;
+import be.iccbxl.tfe.Driveshare.repository.*;
 import be.iccbxl.tfe.Driveshare.service.CarServiceI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -21,8 +24,26 @@ public class CarService implements CarServiceI {
     private CarRepository carRepository;
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private UserRepository userRepository;
 
+    @Autowired
+    private DocumentRepository documentRepository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
+    private DocumentService documentService;
+
+    @Autowired
+    private FeatureRepository featureRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private PriceRepository priceRepository;
+    private static final Logger logger = LoggerFactory.getLogger(CarService.class);
 
     @Override
     public List<Car> getAllCars() {
@@ -54,8 +75,7 @@ public class CarService implements CarServiceI {
             Car existingCar = optionalCar.get();
             existingCar.setBrand(car.getBrand());
             existingCar.setModel(car.getModel());
-            existingCar.setYear(car.getYear());
-            // Mettre à jour d'autres attributs si nécessaire
+            /*....*/
             return carRepository.save(existingCar);
         } else {
             return null;
@@ -93,7 +113,6 @@ public class CarService implements CarServiceI {
         // Calculer la moyenne et arrondir à la demi-note la plus proche
         return Math.round((sum / totalEvaluations) * 2) / 2.0;
     }
-
 
     @Override
     public Map<Long, Double> getAverageRatingsForCars() {
@@ -145,6 +164,114 @@ public class CarService implements CarServiceI {
         return availableCars;
     }
 
+    @Override
+    public Car createCar(CarDTO carDTO) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUsername = authentication.getName();
+            User user = userRepository.findByEmail(currentUsername);
+
+            if (user == null) {
+                throw new RuntimeException("User not found: " + currentUsername);
+            }
+
+            Car car = new Car();
+            BeanUtils.copyProperties(carDTO, car);
+            car.setUser(user);
+
+
+            if (carDTO.getCategoryId() != null) {
+                Category category = categoryRepository.findById(carDTO.getCategoryId()).orElse(null);
+                car.setCategory(category);
+            }
+
+            // Créer et configurer l'objet Price
+            Price price = new Price();
+            price.setLowPrice(carDTO.getLowPrice());
+            price.setMiddlePrice(carDTO.getMiddlePrice());
+            price.setHighPrice(carDTO.getHighPrice());
+            price.setPromo1(carDTO.getPromo1());
+            price.setPromo2(carDTO.getPromo2());
+
+            // Définir isPromotion sur true ou false en fonction des valeurs de promo1 et promo2
+            boolean isPromotionActive = (carDTO.getPromo1() != null && carDTO.getPromo1() > 0) ||
+                    (carDTO.getPromo2() != null && carDTO.getPromo2() > 0);
+            price.setIsPromotion(isPromotionActive);
+
+            // Lier le prix à la voiture
+            price.setCar(car);
+            car.setPrice(price);
+
+            // Sauvegardez d'abord la voiture pour s'assurer que l'ID est généré
+            car = carRepository.save(car);
+            priceRepository.save(price); // Sauvegarder explicitement le prix
+
+
+            final Car finalCar = car; // Déclarez une constante finale pour l'utiliser dans les expressions lambda
+
+
+            // Ensuite, traitez et stockez les fichiers maintenant que vous avez un ID
+            if (carDTO.getRegistrationCard() != null && !carDTO.getRegistrationCard().isEmpty()) {
+                String registrationCardPath = fileStorageService.storeFile(carDTO.getRegistrationCard(), "registration", finalCar.getId());
+                finalCar.setCarteGrisePath(registrationCardPath);
+            }
+
+            if (carDTO.getIdentityRecto() != null && !carDTO.getIdentityRecto().isEmpty()) {
+                String identityRectoPath = fileStorageService.storeFile(carDTO.getIdentityRecto(), "identity", finalCar.getId());
+                Document identityRectoDocument = new Document();
+                identityRectoDocument.setUrl(identityRectoPath);
+                identityRectoDocument.setDocumentType("identity_recto");
+                identityRectoDocument.setUser(user);
+                finalCar.getUser().getDocuments().add(identityRectoDocument);
+            }
+
+            if (carDTO.getIdentityVerso() != null && !carDTO.getIdentityVerso().isEmpty()) {
+                String identityVersoPath = fileStorageService.storeFile(carDTO.getIdentityVerso(), "identity", finalCar.getId());
+                Document identityVersoDocument = new Document();
+                identityVersoDocument.setUrl(identityVersoPath);
+                identityVersoDocument.setDocumentType("identity_verso");
+                identityVersoDocument.setUser(user);
+                finalCar.getUser().getDocuments().add(identityVersoDocument);
+            }
+
+            if (carDTO.getPhotos() != null && !carDTO.getPhotos().isEmpty()) {
+                List<Photo> photoEntities = carDTO.getPhotos().stream()
+                        .filter(photo -> photo != null && !photo.isEmpty())
+                        .map(photo -> {
+                            Photo photoEntity = new Photo();
+                            photoEntity.setUrl(fileStorageService.storeFile(photo, "photo", finalCar.getId()));
+                            photoEntity.setCar(finalCar);
+                            return photoEntity;
+                        })
+                        .collect(Collectors.toList());
+                finalCar.setPhotos(photoEntities);
+            }
+
+            if (carDTO.getIndisponibleDatesStart() != null && !carDTO.getIndisponibleDatesStart().isEmpty()) {
+                List<Indisponible> periods = new ArrayList<>();
+                List<String> startDates = carDTO.getIndisponibleDatesStart();
+                List<String> endDates = carDTO.getIndisponibleDatesEnd();
+
+                for (int i = 0; i < startDates.size(); i++) {
+                    Indisponible indisponible = new Indisponible();
+                    indisponible.setCar(finalCar);
+                    indisponible.setDateDebut(LocalDate.parse(startDates.get(i)));
+                    indisponible.setDateFin(LocalDate.parse(endDates.get(i)));
+                    periods.add(indisponible);
+                }
+                finalCar.setUnavailable(periods);
+            }
+
+
+            return carRepository.save(finalCar);
+        } catch (Exception e) {
+            logger.error("Failed to create car due to error: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to create car: " + e.getMessage(), e);
+        }
+    }
+
+
+
 
     public boolean isCarAvailableForDates(Car car, LocalDate dateDebut, LocalDate dateFin) {
         // Récupérer toutes les réservations de la voiture
@@ -173,6 +300,9 @@ public class CarService implements CarServiceI {
         // Aucun chevauchement trouvé, la voiture est disponible
         return true;
     }
+
+
+
 
 
 

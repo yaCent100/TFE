@@ -32,14 +32,6 @@ public class LoginController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Value("${upload.photo.dir}")
-    private String photoUploadDir;
-
-    @Value("${upload.licence.dir}")
-    private String licenceUploadDir;
-
-    @Value("${upload.identity.dir}")
-    private String identityUploadDir;
 
 
 
@@ -62,17 +54,6 @@ public class LoginController {
             return "redirect:/login";
         }
 
-        // Enregistrer la photo
-           /* String profilePhotoUrl = userService.uploadFile(profilePhoto,photoUploadDir );
-            user.setPhotoUrl(profilePhotoUrl);
-
-            // Enregistrer la licence
-            String drivingLicenseUrl = userService.uploadFile(drivingLicense, licenceUploadDir);
-            user.setPermisConduire(drivingLicenseUrl);
-
-            // Enregistrer la carte d'identité
-            String idCardUrl = userService.uploadFile(idCard, identityUploadDir);
-            user.setCarteIdentite(idCardUrl);*/
 
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 

@@ -17,13 +17,13 @@ public class CarRental {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "voiture_id")
     private Car car;
 
     @OneToMany(mappedBy = "carRental", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Reservation> reservations;
 
-    @OneToMany(mappedBy = "carRental", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "carRental", cascade = CascadeType.ALL,  fetch = FetchType.LAZY)
     private List<Evaluation> evaluations;
 }

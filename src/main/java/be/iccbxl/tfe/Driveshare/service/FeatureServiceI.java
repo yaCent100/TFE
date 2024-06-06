@@ -12,4 +12,6 @@ public interface FeatureServiceI {
     Feature saveFeature(Feature feature);
     Feature updateFeature(Long id, Feature feature);
     void deleteFeature(Long id);
+
+    List<Feature> findByCategory(String name);
 }

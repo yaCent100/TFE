@@ -52,7 +52,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-lg-3 col-md-4 col-xs-10 text-right not-on-mobile on-ipad not-mobile">
-                                                                <p class="vehicle-pricing fs16 medium" th:text="${car.price + '€ /jour'}">Price</p>
+                                                                <p class="vehicle-pricing fs16 medium" th:text="${car.price.middlePrice}" >Price</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -66,7 +66,7 @@
                     </div>
                 </div>
                 <div class="col-md-12 mgt-40">
-                    <p class="text-center"><a href="/new_vehicle" class="btn btn-success btn-success-shadowed"><i class="fa fa-plus-circle fs13 nbsp-large c-white" aria-hidden="true"></i>Ajouter un véhicule</a></p>
+                    <p class="text-center"><a th:href="@{/rent}" class="btn btn-success btn-success-shadowed"><i class="fa fa-plus-circle fs13 nbsp-large c-white" aria-hidden="true"></i>Ajouter un véhicule</a></p>
                 </div>
             </div>
         </div>

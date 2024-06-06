@@ -49,4 +49,9 @@ public class FeatureService implements FeatureServiceI {
     public void deleteFeature(Long id) {
         featureRepository.deleteById(id);
     }
+
+    @Override
+    public List<Feature> findByCategory(String name) {
+        return featureRepository.findByName(name);
+    }
 }
