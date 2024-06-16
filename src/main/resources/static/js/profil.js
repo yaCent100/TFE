@@ -59,47 +59,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+    /*----------------- ALL CARS --------------*/
 
 
-
-
-
-
-
-
-
-
-/* annonce */
- document.querySelectorAll('.no-picture').forEach(function(img) {
-    img.addEventListener('click', function() {
-      // Récupérer l'identifiant unique de l'image
-      const imageId = this.parentNode.parentNode.parentNode.id;
-
-      // Récupérer l'élément d'entrée de fichier correspondant à l'image cliquée
-      const fileInput = document.getElementById(imageId + '-input');
-
-      // Simuler un clic sur l'élément d'entrée de fichier pour ouvrir la boîte de dialogue de sélection de fichier
-      fileInput.click();
+        /*----------------- ANNONCE ----------------*/
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.no-picture').forEach(function(img, index) {
+        img.addEventListener('click', function() {
+            const fileInput = document.querySelector('#photoInput_' + index);
+            if (fileInput) {
+                fileInput.click();
+            } else {
+                console.error('File input not found for index:', index);
+            }
+        });
     });
-  });
-
-  document.querySelectorAll('.picture-input').forEach(function(input) {
-    input.addEventListener('change', function() {
-      const file = this.files[0];
-      const preview = this.parentNode.querySelector('.no-picture');
-      const reader = new FileReader();
-
-      reader.onload = function(event) {
-        preview.src = event.target.result;
-      };
-
-      reader.readAsDataURL(file);
-    });
-  });
+});
 
 
 
-/* CALENDRIER */
+                /*------------ CALENDRIER ---------------*/
+
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendrier');
    const startDateInput = document.getElementById('start-date');

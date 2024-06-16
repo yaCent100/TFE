@@ -3,33 +3,54 @@
 
   <div class="container mt-5">
     <div class="vehicule-container">
-        <div class="row owner-pictures mb-4">
-            <!-- Affichage des photos existantes -->
-            <div th:each="photo, iterStat : ${car.photos}" class="col-lg-3">
-                <a href="#" class="add-picture-link">
-                    <div class="text-center border-dotted">
-                        <p>
-                            <img th:src="${photo.url}" class="no-picture">
-                        </p>
-                    </div>
-                </a>
+        <div class="row owner-pictures mb-4" data-car-id="${car.id}" >
+            <!-- Existing photos -->
+            <div th:each="photo, iterStat : ${car.photos}" class="col-lg-3" id="photo_${photo.id}">
+                <div class="text-center border-dotted">
+                    <p>
+                        <img th:src="@{'/uploads/' + ${photo.url}}" class="no-picture" alt="Car Photo" th:id="'noPicture_' + ${iterStat.index}">
+                    </p>
+
+                </div>
+                <form th:action="@{/account/cars/removePhoto/{id}(id=${photo.id})}" method="post">
+                    <button type="submit" class="btn btn-danger btn-sm mt-2 delete-photo">Supprimer</button>
+                </form>
             </div>
 
-            <!-- Affichage des emplacements par défaut pour compléter jusqu'à quatre photos -->
+            <!-- Default placeholders to add up to four photos -->
             <th:block th:each="i : ${#numbers.sequence(car.photos.size(), 3)}">
                 <div class="col-lg-3">
-                    <a href="#" class="add-picture-link">
-                        <div class="text-center border-dotted">
-                            <p>
-                                <img src="/images/picture-icon.png" class="no-picture" alt="Image par défaut">
-                            </p>
-                        </div>
-                    </a>
+                    <div class="text-center border-dotted">
+                        <p>
+                            <img src="/images/picture-icon.png" class="no-picture" alt="Add Photo" th:id="'addPhotoIcon_' + ${i}">
+                        </p>
+                        <form th:action="@{/account/cars/addPhoto}" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="carId" th:value="${car.id}">
+                            <input type="file" name="photo" class="picture-input" th:id="'photoInput_' + ${i}" style="display: none;">
+                            <button type="submit" class="btn btn-primary btn-sm mt-2" style="display: none;">Ajouter</button>
+                        </form>
+                    </div>
                 </div>
             </th:block>
         </div>
 
-    <div class="row m">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="row m">
       <div class="col-lg-8">
           <div class="vehicle-show-info bg-white bg-more-light mgb-20 " >
               <div class="row">
@@ -72,10 +93,10 @@
 
                   <div class="row">
                       <div class="col-12">
-                          <h2 class="carac-icon pb-2 mb-0">
-                              <img src="/icones/carac-voiture.png" width="200" alt="">
-                              Caractéristiques de la voiture
-                          </h2>
+                          <h3 class="carac-icon pb-2 mb-0">
+                              <img src="/icones/carac-voiture.png" width="100" alt="">
+                              Caractéristiques
+                          </h3>
                           <ul class="mb-2 pl-4">
                               <div class="row">
                                   <div class="row">
@@ -94,19 +115,31 @@
                           </ul>
                       </div>
                       <div class="col-12">
-                          <h5 class="fs16 bold text-main pdb-20 mgb-0 option-title"> <img width="200" src="/icones/equip-voiture.png" alt=""> Options &amp; accessoires</h5>
+                          <h3 class="fs16 bold text-main pdb-20 mgb-0 option-title"> <img width="100" src="/icones/equip-voiture.png" alt="">
+                              Equipements</h3>
                           <ul class="pl-4">
                               <div class="row">
-
-
                                   <div class="col-6 col-sm-3" th:each="equipement : ${car.equipments}">
                                       <p class="fs14 c-grey medium center mgb-20">
                                           <img class="bg-transparent" th:src="${equipement.icone}" alt="" width="50">
                                       </p>
                                       <p class="fs14 c-grey medium center mgb-20" th:text="${equipement.equipment}"></p>
                                   </div>
+                              </div>
+                          </ul>
+                      </div>
 
 
+                      <div class="col-12" th:if="${!#lists.isEmpty(car.conditions)}">
+                          <h3 class="fs16 bold text-main pdb-20 mgb-0 option-title">
+                              <img width="100" src="/images/conditionCar.png" alt="">
+                              Conditions de location
+                          </h3>
+                          <ul class="pl-4">
+                              <div class="row">
+                                  <div class="col-6 col-sm-3" th:each="condition : ${car.conditions}">
+                                      <p class="fs14 c-grey medium center mgb-20" th:text="${condition.condition}"></p>
+                                  </div>
                               </div>
                           </ul>
                       </div>
@@ -172,7 +205,12 @@
             <div class="">
 
                 <p>
-                    <a href="" data-toggle="tooltip" data-placement="top" title="" class="remove-btn btn btn-outline-danger w100p mgt-20 lh32 fs14 h45 bradius" data-original-title="Le véhicule sera supprimé définitivement.">
+                    <a th:href="@{/account/cars/{id}/delete(id=${car.id})}"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="Supprimer le véhicule"
+                       class="remove-btn btn btn-outline-danger w100p mgt-20 lh32 fs14 h45 bradius"
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette voiture ?');">
                         <span class="mgr-10"><i class="fa fa-remove" aria-hidden="true"></i></span>Supprimer le véhicule
                     </a>
                 </p>

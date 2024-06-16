@@ -88,7 +88,7 @@ public class Car {
     )
     private List<Equipment> equipments;
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Indisponible> unavailable;
 
     @OneToMany(mappedBy = "car", fetch = FetchType.LAZY)

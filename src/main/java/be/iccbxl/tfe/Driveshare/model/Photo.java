@@ -19,4 +19,5 @@ public class Photo {
     @JoinColumn(name = "VoitureID")
     private Car car;
 
+
 }

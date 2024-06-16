@@ -2,6 +2,7 @@ package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
 import be.iccbxl.tfe.Driveshare.model.Category;
+import be.iccbxl.tfe.Driveshare.model.Equipment;
 import be.iccbxl.tfe.Driveshare.model.Feature;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
@@ -16,17 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.sql.Date.*;
 
 @Controller
 public class RentController {
@@ -39,14 +30,17 @@ public class RentController {
 
     private final CarService carService;
 
+    private final EquipmentService equipmentService;
+
 
     @Autowired
     public RentController(CategoryService categoryService, DateService dateService, FeatureService featureService,
-                          CarService carService) {
+                          CarService carService, EquipmentService equipmentService) {
         this.dateService = dateService;
         this.categoryService = categoryService;
         this.featureService = featureService;
         this.carService = carService;
+        this.equipmentService = equipmentService;
     }
 
 
@@ -68,6 +62,8 @@ public class RentController {
         List<Feature> placesFeatures = featureService.findByCategory("Places");
         List<Feature> boiteFeatures = featureService.findByCategory("Boite");
         List<Feature> portesFeatures = featureService.findByCategory("Portes");
+        List<Equipment> equipments = equipmentService.getAllEquipments();
+
 
         List<Category> categories = categoryService.getAllCategory();
 
@@ -80,6 +76,8 @@ public class RentController {
         model.addAttribute("placesFeatures", placesFeatures);
         model.addAttribute("boiteFeatures", boiteFeatures);
         model.addAttribute("portesFeatures", portesFeatures);
+        model.addAttribute("equipments", equipments);
+
 
 
         return "car/rent";

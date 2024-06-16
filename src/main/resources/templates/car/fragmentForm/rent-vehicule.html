@@ -119,58 +119,41 @@
             </select>
         </div>
     </div>
-    <br>
-    <br>
-    <h6>Equipements</h6>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-lg-3">
-                <div class="form-check d-flex flex-column align-items-center">
-                    <input type="checkbox" class="form-check-input" id="climatisation">
-                    <label class="form-check-label" for="climatisation">
-                        <img src="/icones/climatiseur.png" alt="clim" class="img-fluid" width="50">
-                    </label>
-                </div>
-            </div>
-            <div class="col-lg-3">
-                <div class="form-check d-flex flex-column align-items-center">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck2">
-                    <label class="form-check-label" for="exampleCheck2">
-                        <img src="/icones/gps.png" alt="gps" class="img-fluid" width="50">
-                    </label>
-                </div>
-            </div>
-            <div class="col-lg-3">
-                <div class="form-check d-flex flex-column align-items-center">
-                    <input type="checkbox" class="form-check-input" id="regulateur">
-                    <label class="form-check-label" for="regulateur">
-                        <img src="/icones/compteur-de-vitesse.png" alt="regulateur" class="img-fluid" width="50">
-                    </label>
-                </div>
-            </div>
-            <div class="col-lg-3">
-                <div class="form-check d-flex flex-column align-items-center">
-                    <input type="checkbox" class="form-check-input" id="chauffants">
-                    <label class="form-check-label" for="chauffants">
-                        <img src="/icones/chauffants.png" alt="siége" class="img-fluid" width="50">
-                    </label>
-                </div>
-            </div>
-            <!-- Ajoutez autant de cases à cocher que nécessaire, en respectant le format de la grille de 3 colonnes -->
-        </div>
+ <div class="equipement mt-4">
+     <h6>Equipements</h6>
+     <div class="form-group">
+         <div class="row">
+             <div class="col-lg-3 col-md-4 col-sm-6 col-6" th:each="equipment : ${equipments}">
+                 <div class="form-check d-flex flex-column align-items-center equipment-item">
+                     <input type="checkbox" class="form-check-input" th:field="*{equipmentIds}" th:id="${'equipment_' + equipment.id}" th:value="${equipment.id}">
+                     <label class="form-check-label" th:for="${'equipment_' + equipment.id}">
+                         <img th:src="@{${equipment.icone}}" alt="equipment icon" class="img-fluid equipment-icon" width="50">
+                     </label>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
 
+            <div class="condition">
+                <h6>Condition de location</h6>
 
-    </div>
-    <div class="description">
-        <h6>Description</h6>
-        <div class="row">
-            <div class="col-md-12">
-                <label>
-                    <textarea maxlength="255" class="form-control full-width" style="height: auto;"></textarea>                </label>
+                <div class="row" id="conditionsList"></div>
+
+                <div class="row mb-2" id="inputRow">
+                    <div class="col-lg-8">
+                        <label>
+                <textarea id="conditionTextarea" maxlength="255" class="form-control"
+                          placeholder="4 Condition max (la décrire en quelque mots ex: voiture non fumeur.)"></textarea>
+                        </label>
+                    </div>
+                    <div class="col-lg-2 d-flex align-items-start">
+                        <button id="addConditionButton" class="btn btn-primary ml-2">Ajouter</button>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <div>
+
+    <div class="localisation mt-4">
         <h6>Localisation du véhicule</h6>
         <div class="row">
             <div class="col-md-4">
@@ -185,7 +168,6 @@
                 </select>
             </div>
         </div>
-
     </div>
     <div>
         <input type="checkbox" class="form-check-input" id="" required>

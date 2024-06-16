@@ -546,6 +546,39 @@ nav {
     padding-bottom: 20px;
 }
 
+.equipment-item {
+    cursor: pointer;
+    border: 2px solid #00BFFF;
+    border-radius: 20px;
+    padding: 2px;
+    text-align: center;
+
+}
+
+ #conditionTextarea {
+        height: 75px !important; /* Set your desired height */
+        width: 400px;
+
+    }
+    #addConditionButton {
+        height: fit-content; /* Adjust button height to fit the content */
+    }
+
+.equipment-item input[type="checkbox"] {
+    display: none;
+}
+
+.equipment-item.checked {
+    background-color: #f0f0f0; /* Changez la couleur de fond selon vos préférences */
+}
+
+.equipment-icon {
+    width: 50px;
+    height: 50px;
+    object-fit: cover; /* This ensures the image covers the area while preserving aspect ratio */
+    transition: background-color 0.3s ease;
+}
+
 /*FORMULAIRE PARTIE RESERVATION*/
 
 .reservation-col{
@@ -680,7 +713,16 @@ nav {
 
 }
 
-/* PROFIL VEHICULES*/
+/* PROFIL VEHICULES ALL*/
+
+.card-car-owner{
+    padding: 1.5rem;
+    width: 100%;
+    background-color: #FFF;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    transition: all 0.3s linear;
+}
 
 #user-show .user-vehicle {
     background-color: #f4f6f7;
@@ -817,16 +859,17 @@ nav {
 
 /* PROFIL ANNONCE */
 
-   .border-dotted {
+   .border-dotted{
       position: relative;
       border-radius: 10px;
-      border: 2px dashed #999;
-      width: 175px;
+      border: 2px dashed #DFE7EC;
+      width: auto;
       height: 150px;
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #8EAAB3;
+      background-color: transparent;
+      opacity:1;
 
     }
 
@@ -839,6 +882,7 @@ nav {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      border-radius: 10px;
     }
 
     .container {
@@ -1158,7 +1202,7 @@ nav {
 
 }
 
-a{
+a {
     text-decoration:none;
     cursor:pointer;
     color: black;

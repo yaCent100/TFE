@@ -1,5 +1,4 @@
 
-
 /*FORMULAIRE STEP*/
 document.addEventListener("DOMContentLoaded", function() {
   const nextButtons = document.querySelectorAll('.btn-next');
@@ -176,7 +175,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-/* FORMULAIRE  */
+/* ------------------- FORMULAIRE ---------------- */
+
+/* VEHICULE */
+
+$(document).ready(function() {
+    $('.equipment-item').click(function() {
+        var checkbox = $(this).find('input[type="checkbox"]');
+        checkbox.prop('checked', !checkbox.prop('checked'));
+        $(this).toggleClass('checked', checkbox.prop('checked'));
+    });
+});
+
+document.getElementById('addConditionButton').addEventListener('click', function () {
+        var textarea = document.getElementById('conditionTextarea');
+        var conditionText = textarea.value.trim();
+        var conditionsList = document.getElementById('conditionsList');
+        var inputRow = document.getElementById('inputRow');
+
+        if (conditionText !== "" && conditionsList.children.length < 4) {
+            var conditionCol = document.createElement('div');
+            conditionCol.className = 'col-lg-3 col-md-4 col-sm-6 mb-2';
+
+            var conditionItem = document.createElement('div');
+            conditionItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            conditionItem.textContent = conditionText;
+
+            var hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'conditions';
+            hiddenInput.value = conditionText;
+
+            var removeBtn = document.createElement('button');
+            removeBtn.className = 'btn btn-sm btn-danger';
+            removeBtn.innerHTML = '&times;';
+            removeBtn.addEventListener('click', function () {
+                conditionsList.removeChild(conditionCol);
+                if (conditionsList.children.length < 4) {
+                    inputRow.style.display = 'flex';
+                }
+            });
+
+            conditionItem.appendChild(removeBtn);
+            conditionCol.appendChild(conditionItem);
+            conditionCol.appendChild(hiddenInput);
+            conditionsList.appendChild(conditionCol);
+
+            textarea.value = "";
+
+            if (conditionsList.children.length >= 4) {
+                inputRow.style.display = 'none';
+            }
+        }
+    });
+
 /* PHOTOS */
 function previewImage(input, index) {
     if (input.files && input.files[0]) {

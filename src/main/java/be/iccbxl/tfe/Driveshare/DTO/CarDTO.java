@@ -54,6 +54,9 @@ public class CarDTO {
     private Long placesId;
     private Long portesId;
 
+    private List<Long> equipmentIds;
+    private List<String> conditions;
+
     // Ajout de l'identifiant de la catégorie
     private Long categoryId;
 

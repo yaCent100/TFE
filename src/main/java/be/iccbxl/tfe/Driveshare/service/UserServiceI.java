@@ -11,7 +11,7 @@ public interface UserServiceI {
     List<User> getAllUsers();
     User getUserById(Long id);
     void addUser(User user);
-    User updateUser(Long id, User user);
+    void updateUser(User user);
     void deleteUser(Long id);
 
     String uploadFile(MultipartFile file, String uploadDir) throws IOException;

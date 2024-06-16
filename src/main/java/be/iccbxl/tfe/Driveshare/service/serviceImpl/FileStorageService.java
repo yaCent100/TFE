@@ -13,8 +13,8 @@ import java.nio.file.StandardCopyOption;
 
 @Service
 public class FileStorageService implements FileStorageServiceI {
-    @Value("${file.upload-dir.photo}")
-    private String photoDir;
+    @Value("${file.upload-dir.photoCar}")
+    private String photoCarDir;
 
     @Value("${file.upload-dir.licence}")
     private String licenceDir;
@@ -25,20 +25,20 @@ public class FileStorageService implements FileStorageServiceI {
     private String registrationCardDir;
 
     @Override
-    public String storeFile(MultipartFile file, String directory, Long carId) {
+    public String storeFile(MultipartFile file, String directory) {
         String uploadDir;
         switch (directory) {
-            case "photo":
-                uploadDir = Paths.get(photoDir, "car" + carId).toString();
+            case "photo-car":
+                uploadDir = photoCarDir;
                 break;
             case "licence":
-                uploadDir = Paths.get(licenceDir, "car" + carId).toString();
+                uploadDir = licenceDir;
                 break;
             case "identity":
-                uploadDir = Paths.get(identityDir, "car" + carId).toString();
+                uploadDir = identityDir;
                 break;
             case "registration":
-                uploadDir = Paths.get(registrationCardDir, "car" + carId).toString();
+                uploadDir = registrationCardDir;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid directory: " + directory);
@@ -52,9 +52,19 @@ public class FileStorageService implements FileStorageServiceI {
             String fileName = file.getOriginalFilename();
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            return filePath.toString();
+            return Paths.get(directory, fileName).toString();
         } catch (IOException ex) {
             throw new RuntimeException("Failed to store file " + file.getOriginalFilename(), ex);
+        }
+    }
+
+    @Override
+    public void deleteFile(String fileName) {
+        try {
+            Path filePath = Paths.get("src/main/resources/static").resolve(fileName).normalize();
+            Files.deleteIfExists(filePath);
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not delete file: " + fileName, ex);
         }
     }
 

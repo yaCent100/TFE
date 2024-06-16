@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>Mon Compte</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+  <div th:replace="account/fragments/account-header"></div>
+
+
+    <div class="container">
+      <div>
+        <a href="/account">Précédent</a>
+      </div>
+      <div class="user-info-perso">
+        <h3>Informations générales</h3>
+        <form th:action="@{/account/info}" method="post">
+          <div class="row">
+            <div class="col-lg-6 mb-3">
+              <label for="prenom">Prénom</label>
+              <input id="prenom" class="form-control" type="text" name="prenom" th:value="${user.prenom}">
+            </div>
+            <div class="col-lg-6 mb-3">
+              <label for="nom">Nom</label>
+              <input id="nom" class="form-control" type="text" name="nom" th:value="${user.nom}">
+            </div>
+            <div class="col-lg-12 mb-3">
+              <label for="adresse">Adresse</label>
+              <input id="adresse" class="form-control" type="text" name="adresse" th:value="${user.adresse}">
+            </div>
+            <div class="col-lg-6 mb-3">
+              <label for="locality">Localité</label>
+              <input id="locality" class="form-control" type="text" name="locality" th:value="${user.locality}">
+            </div>
+            <div class="col-lg-6 mb-3">
+              <label for="codePostal">Code Postal</label>
+              <input id="codePostal" class="form-control" type="text" name="codePostal" th:value="${user.codePostal}">
+            </div>
+            <div class="col-lg-6 mb-3">
+              <label for="email">Email</label>
+              <input id="email" class="form-control" type="email" name="email" th:value="${user.email}">
+            </div>
+            <div class="col-lg-6 mb-3">
+              <label for="telephoneNumber">Téléphone</label>
+              <input id="telephoneNumber" class="form-control" type="text" name="telephoneNumber" th:value="${user.telephoneNumber}">
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+</div>
+
+
+
+</body>
+</html>

@@ -87,10 +87,9 @@ public class CarController {
         return "car/details"; // Nom de la vue pour afficher les détails de la voiture
     }
 
-    @GetMapping("/calendrier")
-    public String calendar(){
-        return "calendrier";
-    }
+
+
+
 
 
 
