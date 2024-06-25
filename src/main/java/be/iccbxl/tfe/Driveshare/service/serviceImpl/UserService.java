@@ -4,9 +4,12 @@ import be.iccbxl.tfe.Driveshare.model.Role;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.repository.RoleRepository;
 import be.iccbxl.tfe.Driveshare.repository.UserRepository;
+import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.UserServiceI;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -88,6 +91,11 @@ public class UserService implements UserServiceI {
         return userRepository.countCarsById(userId);
     }
 
+    @Override
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
 
     @Transactional
     @Override
@@ -98,5 +106,16 @@ public class UserService implements UserServiceI {
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public User getAuthenticatedUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof CustomUserDetail) {
+            return ((CustomUserDetail) principal).getUser();
+        } else if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            return userRepository.findByEmail(username);
+        }
+        return null;
     }
 }

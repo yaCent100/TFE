@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>Mon Compte</title>
+  <style>
+    .tab-pane {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+  <div th:replace="account/fragments/account-header"></div>
+
+  <div class="container">
+    <div>
+      <a href="/account">Précédent</a>
+    </div>
+
+    <div>
+      <h3>Mes notifications</h3>
+    </div>
+
+    <div class="row">
+      <ul class="nav nav-tabs col-lg-12" id="myTab" role="tablist">
+        <li class="nav-item col-lg-6" role="presentation">
+          <button class="nav-link active w-100 text-center" id="locataire-tab" data-bs-toggle="tab" data-bs-target="#locataire" type="button" role="tab" aria-controls="locataire" aria-selected="true">En tant que Locataire</button>
+        </li>
+        <li class="nav-item col-lg-6" role="presentation">
+          <button class="nav-link w-100 text-center" id="proprietaire-tab" data-bs-toggle="tab" data-bs-target="#proprietaire" type="button" role="tab" aria-controls="proprietaire" aria-selected="false">En tant que Propriétaire</button>
+        </li>
+      </ul>
+    </div>
+
+    <form th:object="${preferences}" th:action="@{/account/notifications}" method="post">
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="locataire" role="tabpanel" aria-labelledby="locataire-tab">
+          <div class="mb-3 notif-param">
+            <h5>Demandes de réservations</h5>
+            <p>À la réception d'une demande de location ou d'une demande de modification sur un de vos véhicules.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{reservationEmailLocataire}" id="reservation-email-locataire">
+                  <label class="form-check-label" for="reservation-email-locataire">Email</label>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{reservationSmsLocataire}" id="reservation-sms-locataire">
+                  <label class="form-check-label" for="reservation-sms-locataire">SMS</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 notif-param">
+            <h5>Nouveaux messages</h5>
+            <p>Chaque réservation dispose d'un espace de messagerie. Vous recevez une notification à la réception d'un nouveau message.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{messagesEmailLocataire}" id="messages-email-locataire">
+                  <label class="form-check-label" for="messages-email-locataire">Email</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 notif-param">
+            <h5>Location confirmée</h5>
+            <p>Lorsque le locataire a effectué un paiement et réserve votre voiture.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{confirmedEmailLocataire}" id="confirmed-email-locataire">
+                  <label class="form-check-label" for="confirmed-email-locataire">Email</label>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{confirmedSmsLocataire}" id="confirmed-sms-locataire">
+                  <label class="form-check-label" for="confirmed-sms-locataire">SMS</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 notif-param">
+            <h5>Début de location</h5>
+            <p>Vous recevez une notification 24 heures et 3 heures avant le début d'une location.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{startEmailLocataire}" id="start-email-locataire">
+                  <label class="form-check-label" for="start-email-locataire">Email</label>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{startSmsLocataire}" id="start-sms-locataire">
+                  <label class="form-check-label" for="start-sms-locataire">SMS</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 notif-param">
+            <h5>Fin de location</h5>
+            <p>Vous recevez une notification 3 heures avant la fin d'une location.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{endEmailLocataire}" id="end-email-locataire">
+                  <label class="form-check-label" for="end-email-locataire">Email</label>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{endSmsLocataire}" id="end-sms-locataire">
+                  <label class="form-check-label" for="end-sms-locataire">SMS</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 notif-param">
+            <h5>Annulation de location</h5>
+            <p>Lorsque le locataire annule sa location sur un de vos véhicules.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{cancelEmailLocataire}" id="cancel-email-locataire">
+                  <label class="form-check-label" for="cancel-email-locataire">Email</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="proprietaire" role="tabpanel" aria-labelledby="proprietaire-tab">
+          <div class="mb-3 notif-param">
+            <h5>Demandes de réservations</h5>
+            <p>À la réception d'une demande de location ou d'une demande de modification sur un de vos véhicules.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{reservationEmailProprietaire}" id="reservation-email-proprietaire">
+                  <label class="form-check-label" for="reservation-email-proprietaire">Email</label>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{reservationSmsProprietaire}" id="reservation-sms-proprietaire">
+                  <label class="form-check-label" for="reservation-sms-proprietaire">SMS</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 notif-param">
+            <h5>Nouveaux messages</h5>
+            <p>Chaque réservation dispose d'un espace de messagerie. Vous recevez une notification à la réception d'un nouveau message.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{messagesEmailProprietaire}" id="messages-email-proprietaire">
+                  <label class="form-check-label" for="messages-email-proprietaire">Email</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 notif-param">
+            <h5>Location confirmée</h5>
+            <p>Lorsque le locataire a effectué un paiement et réserve votre voiture.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{confirmedEmailProprietaire}" id="confirmed-email-proprietaire">
+                  <label class="form-check-label" for="confirmed-email-proprietaire">Email</label>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{confirmedSmsProprietaire}" id="confirmed-sms-proprietaire">
+                  <label class="form-check-label" for="confirmed-sms-proprietaire">SMS</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 notif-param">
+            <h5>Début de location</h5>
+            <p>Vous recevez une notification 24 heures et 3 heures avant le début d'une location.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{startEmailProprietaire}" id="start-email-proprietaire">
+                  <label class="form-check-label" for="start-email-proprietaire">Email</label>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{startSmsProprietaire}" id="start-sms-proprietaire">
+                  <label class="form-check-label" for="start-sms-proprietaire">SMS</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 notif-param">
+            <h5>Fin de location</h5>
+            <p>Vous recevez une notification 3 heures avant la fin d'une location.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{endEmailProprietaire}" id="end-email-proprietaire">
+                  <label class="form-check-label" for="end-email-proprietaire">Email</label>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{endSmsProprietaire}" id="end-sms-proprietaire">
+                  <label class="form-check-label" for="end-sms-proprietaire">SMS</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 notif-param">
+            <h5>Annulation de location</h5>
+            <p>Lorsque le locataire annule sa location sur un de vos véhicules.</p>
+            <div class="row">
+              <div class="col-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" th:field="*{cancelEmailProprietaire}" id="cancel-email-proprietaire">
+                  <label class="form-check-label" for="cancel-email-proprietaire">Email</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>

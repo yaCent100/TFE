@@ -18,6 +18,8 @@ public interface UserServiceI {
 
     long countCarsById(Long userId);
 
+    User save(User user);
+
 
 
 }

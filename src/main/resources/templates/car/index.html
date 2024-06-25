@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Liste des voitures</title>
+
+
 </head>
 <body>
 <div layout:fragment="content">
@@ -13,14 +15,14 @@
         <div class="row m-5">
           <div class="col-md-4 d-flex align-items-center">
             <img src="icones/espace-reserve.png" alt="globe" style="width: 20px; height: auto;">
-            <input type="text" class="no-border rounded-start mb-0 ms-1" placeholder="Commune">
+            <input type="text" class="no-border rounded-start mb-0 ms-1" placeholder="Commune" id="manualAddress" name="manualAddress" >
           </div>
           <div class="col-md-3 d-flex align-items-center">
-              <input type="text" class="no-border rounded-0" placeholder="Date de début" >
+              <input type="text" class="no-border rounded-0" placeholder="Date de début" id="dateDebut" name="dateDebut">
               <i class="far fa-calendar-alt"></i>
           </div>
           <div class="col-md-3 d-flex align-items-center">
-              <input type="text" class="no-border rounded-end" placeholder="Date de fin">
+              <input type="text" class="no-border rounded-end" placeholder="Date de fin" id="dateFin" name="dateFin">
               <i class="far fa-calendar-alt"></i>
           </div>
           <div class="col-md-2 bold text-center c-white no-padding">
@@ -158,19 +160,28 @@
             </ul>
           </nav>
         </div>
+        <div id="loading-spinner" style="display: none;">
+          <div class="spinner-border" role="status">
+            <span class="sr-only">Chargement...</span>
+          </div>
+        </div>
 
-        <div class="row g-3 p-3" id="carlist">
+        <div class="row g-3 p-3" id="carList" style="display: none;">
+          <div class="col-lg-12">
           <!-- Boucle sur chaque voiture pour créer une carte -->
-          <div class="col-12 mb-3" th:each="car : ${cars}">
+          <div class="mb-3" th:each="car : ${cars}">
             <div class="card p-3 rounded">
               <a th:href="@{'/cars/' + ${car.id}}" class="card-link">
                 <div class="row g-0">
                   <!-- Colonne pour l'image -->
                   <div class="col-md-3">
                     <!-- Afficher uniquement la première image de la voiture -->
-                    <img class="card-img-top" style="max-height: 150px;" th:src="${car.photos != null and car.photos.size() > 0 ? car.photos[0].url : '/path/to/default/image.jpg'}" alt="Photo de voiture">
+                    <img class="card-img-top" style="max-height: 150px;" th:src="${car.photos != null and car.photos.size() > 0 ? '/uploads/' + car.photos[0].url : '/images/carDefault.png'}" alt="Photo de voiture">
                   </div>
                   <!-- Colonne pour le contenu de la carte -->
+
+
+
                   <div class="col-md-9">
                     <div class="card-body">
                       <div class="row">
@@ -194,7 +205,7 @@
                             <div class="col-lg-1 col-md-2">
                             </div>
                             <div class="col-lg-3 col-md-4">
-                              <p th:text="${car.displayPrice + ' €/j'}" class="priceIndex"></p>
+                              <p th:text="${car.price.middlePrice + ' €/j'}" class="priceIndex"></p>
                             </div>
                           </div>
                           <div class="col-lg-12">
@@ -218,9 +229,16 @@
           </div>
         </div>
       </div>
-    </div>
+
+        <div id="pagination">
+
+        </div>
+
+
+      </div>
 
   </div>
+</div>
 </div>
 
 </body>

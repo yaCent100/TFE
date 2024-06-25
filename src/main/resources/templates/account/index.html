@@ -10,183 +10,183 @@
 
     <div th:replace="account/fragments/account-header"></div>
     <div id="tab-mon-compte" class="tab-content active">
-            <!-- Contenu de Mon compte -->
-            <div id="user-show" class="user-section">
-                <div class="user-details bg-f6f8f9">
-                    <div class="container-fluid" style="padding-right:80px; padding-left:80px;">
-                        <div th:if="${successMessage}" class="alert alert-success mt-1" role="alert">
-                            <span th:text="${successMessage}"></span>
-                        </div>
-                        <h1 class="mb-4 mt-4">Bonjour, <span th:text="${user?.prenom}">Utilisateur</span></h1>
-                        <div class="row">
-                            <div class="col-lg-3">
-                                <div class="owner-view-owner">
-                                    <div class="row">
-                                        <div class="col-lg-12 mt-2">
-                                            <div class="owner-picture text-center">
-                                                <img alt="profil" class="userPicture" th:src="${user.photoUrl != null} ? ${user.photoUrl} : '/uploads/profil/defaultPhoto.png'" />
-                                            </div>
-                                        </div>
-                                        <input type="file" name="picture" id="pictureInput" accept="image/jpeg,image/jpg,image/png" hidden>
-                                        <div class="text-center mt-2">
-                                            <a class="changePicture" href="#" id="editPictureLink"><i class="fa fa-edit fa-lg nbsp fs11"></i> Modifier ma photo</a>
+        <!-- Contenu de Mon compte -->
+        <div id="user-show" class="user-section">
+            <div class="user-details bg-f6f8f9">
+                <div class="container-fluid" style="padding-right:80px; padding-left:80px;">
+                    <div th:if="${successMessage}" class="alert alert-success mt-1" role="alert">
+                        <span th:text="${successMessage}"></span>
+                    </div>
+                    <h1 class="mb-4 mt-4">Bonjour, <span th:text="${user?.prenom}">Utilisateur</span></h1>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="owner-view-owner">
+                                <div class="row">
+                                    <div class="col-lg-12 mt-2">
+                                        <div class="owner-picture text-center">
+                                            <img alt="profil" class="userPicture" th:src="${user.photoUrl != null} ? ${user.photoUrl} : '/uploads/profil/defaultPhoto.png'" />
                                         </div>
                                     </div>
-
+                                    <input type="file" name="picture" id="pictureInput" accept="image/jpeg,image/jpg,image/png" hidden>
+                                    <div class="text-center mt-2">
+                                        <a class="changePicture" href="#" id="editPictureLink"><i class="fa fa-edit fa-lg nbsp fs11"></i> Modifier ma photo</a>
+                                    </div>
                                 </div>
+
                             </div>
-                            <div class="col-lg-9 mb-3">
-                                <div class="col-lg-12 col-md-12 col-xs-12">
-                                    <div class="row">
-                                        <div class="col-lg-12 mb-3">
-                                            <div class="statistique">
+                        </div>
+                        <div class="col-lg-9 mb-3">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="row">
+                                    <div class="col-lg-12 mb-3">
+                                        <div class="statistique">
+                                            <div class="row">
+                                                <div class="col-lg-6 pdl-40 pdb-20-mobile align-self-center">
+                                                    <p class="normal text-main-2 fs14">Vos statistiques au 06/05/2024</p>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="row">
+                                                        <div class="col-lg-3 col-md-6 col-xs-6 align-self-center text-center">
+                                                            <p><img class="iconeStat" src="/icones/graphique.png" alt="Location" data-toggle="tooltip" data-placement="top" title="Locations effectuées"></p>
+                                                            <p class="text-main-2 fs10 normal">
+                                                                <span th:text="${confirmedCount}"></span> location(s) confirmée(s)
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-6 col-xs-6 align-self-center text-center">
+                                                            <p><img class="iconeStat" src="/icones/carStat.png" alt="Vehicule" data-toggle="tooltip" data-placement="top" title="Nombre de voitures"></p>
+                                                            <p class="text-main-2 fs10 normal">
+                                                                <span th:text="${carCount}"></span> voitures
+                                                            </p>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
+                                        <a class="a" th:href="@{/account/info}">
+                                            <div class="user-card">
                                                 <div class="row">
-                                                    <div class="col-lg-6 pdl-40 pdb-20-mobile align-self-center">
-                                                        <p class="normal text-main-2 fs14">Vos statistiques au 06/05/2024</p>
+                                                    <div class="col-lg-10 col-md-10 col-xs-10">
+                                                        <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/information.png" alt="Informations">Informations personnelles</p>
                                                     </div>
-                                                    <div class="col-lg-6">
-                                                        <div class="row">
-                                                            <div class="col-lg-3 col-md-6 col-xs-6 align-self-center text-center">
-                                                                <p><img class="iconeStat" src="/icones/graphique.png" alt="Location" data-toggle="tooltip" data-placement="top" title="Locations effectuées"></p>
-                                                                <p class="text-main-2 fs10 normal">
-                                                                    <span th:text="${confirmedCount}"></span> location(s) confirmée(s)
-                                                                </p>
-                                                            </div>
-                                                            <div class="col-lg-3 col-md-6 col-xs-6 align-self-center text-center">
-                                                                <p><img class="iconeStat" src="/icones/carStat.png" alt="Vehicule" data-toggle="tooltip" data-placement="top" title="Nombre de voitures"></p>
-                                                                <p class="text-main-2 fs10 normal">
-                                                                    <span th:text="${carCount}"></span> voitures
-                                                                </p>
-                                                            </div>
-
-                                                        </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12 mt-1">
+                                                        <p class="fs11 lh-simple text-grey-soft">Renseignez vos informations personnelles pour qu’on puisse vous joindre</p>
+                                                    </div>
+                                                    <div class="col-lg-12 text-end">
+                                                        <p><img src="/icones/flecheProfile.png" alt="informations" height="19" width="19"> </p>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
-                                            <a class="a" th:href="@{/account/info}">
-                                                <div class="user-card">
-                                                    <div class="row">
-                                                        <div class="col-lg-10 col-md-10 col-xs-10">
-                                                            <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/information.png" alt="Informations">Informations personnelles</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-lg-12 mt-1">
-                                                            <p class="fs11 lh-simple text-grey-soft">Renseignez vos informations personnelles pour qu’on puisse vous joindre</p>
-                                                        </div>
-                                                        <div class="col-lg-12 text-end">
-                                                            <p><img src="/icones/flecheProfile.png" alt="informations" height="19" width="19"> </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
-                                            <a class="a" th:href="@{/account/document-identity}">
-                                                <div class="user-card">
-                                                    <div class="row">
-                                                        <div class="col-lg-10 col-md-10 col-xs-10">
-                                                            <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/document.png" alt="Documents">Documents d’identités</p>
-                                                        </div>
-                                                        <div class="col-lg-2 col-md-2 col-xs-2">
-                                                            <p class="text-right c-warning" data-toggle="tooltip" data-placement="top" title="Veuillez compléter les informations manquantes"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-lg-12 mt-1">
-                                                            <p class="fs11 lh-simple text-grey-soft">Ajoutez votre carte d’identité et votre permis de conduire pour pouvoir louer sereinement.</p>
-                                                        </div>
-                                                        <div class="col-lg-12 text-end">
-                                                            <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
-                                            <a class="a" href="">
-                                                <div class="user-card">
-                                                    <div class="row">
-                                                        <div class="col-lg-10 col-md-10 col-xs-10">
-                                                            <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/carteProfile.png" alt="Paiements">Paiements</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-lg-12 mt-1">
-                                                            <p class="fs11 lh-simple text-grey-soft">Renseignez vos informations bancaires afin de percevoir vos gains de locations.</p>
-                                                        </div>
-                                                        <div class="col-lg-12 text-end">
-                                                            <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
-                                            <a class="a" href="/user/111716/notification">
-                                                <div class="user-card">
-                                                    <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/notifProfile.png" alt="Notifications">Notifications</p>
-                                                    <div class="row">
-                                                        <div class="col-lg-12 mgt-10">
-                                                            <p class="fs11 lh-simple text-grey-soft">Propriétaire ou locataire, gérez vos paramètres de notifications afin d’être alerté à tout moment.</p>
-                                                        </div>
-                                                        <div class="col-lg-12 text-end">
-                                                            <p><img src="/icones/flecheProfile.png" alt="document"  height="19" width="19"> </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
-                                            <a class="a" href="/user/111716/password">
-                                                <div class="user-card">
-                                                    <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/securiteProfile.png" alt="document">Connexion et sécurité</p>
-                                                    <div class="row">
-                                                        <div class="col-lg-12 mgt-10">
-                                                            <p class="fs11 lh-simple text-grey-soft mgb-10">Gérez votre mot de passe à votre compte Zotcar.</p>
-                                                        </div>
-                                                        <div class="col-lg-12 text-end">
-                                                            <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
-                                            <a class="a" href="/user/111716/summary">
-                                                <div class="user-card">
-                                                    <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/paiementProfile.png" alt="document">Mes gains</p>
-                                                    <div class="row">
-                                                        <div class="col-lg-12 mgt-10">
-                                                            <p class="fs11 lh-simple text-grey-soft mgb-10">Récapitulatif de vos gains</p>
-                                                        </div>
-                                                        <div class="col-lg-12 text-end">
-                                                            <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-
+                                        </a>
                                     </div>
+                                    <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
+                                        <a class="a" th:href="@{/account/document-identity}">
+                                            <div class="user-card">
+                                                <div class="row">
+                                                    <div class="col-lg-10 col-md-10 col-xs-10">
+                                                        <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/document.png" alt="Documents">Documents d’identités</p>
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-2 col-xs-2">
+                                                        <p class="text-right c-warning" data-toggle="tooltip" data-placement="top" title="Veuillez compléter les informations manquantes"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></p>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12 mt-1">
+                                                        <p class="fs11 lh-simple text-grey-soft">Ajoutez votre carte d’identité et votre permis de conduire pour pouvoir louer sereinement.</p>
+                                                    </div>
+                                                    <div class="col-lg-12 text-end">
+                                                        <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
+                                        <a class="a" th:href="@{/account/bank-account}">
+                                            <div class="user-card">
+                                                <div class="row">
+                                                    <div class="col-lg-10 col-md-10 col-xs-10">
+                                                        <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/carteProfile.png" alt="Paiements">Paiements</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12 mt-1">
+                                                        <p class="fs11 lh-simple text-grey-soft">Renseignez vos informations bancaires afin de percevoir vos gains de locations.</p>
+                                                    </div>
+                                                    <div class="col-lg-12 text-end">
+                                                        <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
+                                        <a class="a" th:href="@{/account/notifications}">
+                                            <div class="user-card">
+                                                <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/notifProfile.png" alt="Notifications">Notifications</p>
+                                                <div class="row">
+                                                    <div class="col-lg-12 mgt-10">
+                                                        <p class="fs11 lh-simple text-grey-soft">Propriétaire ou locataire, gérez vos paramètres de notifications afin d’être alerté à tout moment.</p>
+                                                    </div>
+                                                    <div class="col-lg-12 text-end">
+                                                        <p><img src="/icones/flecheProfile.png" alt="document"  height="19" width="19"> </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
+                                        <a class="a" th:href="@{/account/change-password}">
+                                            <div class="user-card">
+                                                <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/securiteProfile.png" alt="document">Connexion et sécurité</p>
+                                                <div class="row">
+                                                    <div class="col-lg-12 mgt-10">
+                                                        <p class="fs11 lh-simple text-grey-soft mgb-10">Gérez votre mot de passe à votre compte Zotcar.</p>
+                                                    </div>
+                                                    <div class="col-lg-12 text-end">
+                                                        <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
+                                        <a class="a" th:href="@{/account/gains}">
+                                            <div class="user-card">
+                                                <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/paiementProfile.png" alt="document">Mes gains</p>
+                                                <div class="row">
+                                                    <div class="col-lg-12 mgt-10">
+                                                        <p class="fs11 lh-simple text-grey-soft mgb-10">Récapitulatif de vos gains</p>
+                                                    </div>
+                                                    <div class="col-lg-12 text-end">
+                                                        <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+
                                 </div>
+                            </div>
 
-                            </div>
-                            </div>
                         </div>
-
-
                     </div>
                 </div>
+
+
             </div>
-        <div id="tab-mes-vehicules" class="tab-content">
-            <!-- Contenu de Mes véhicules -->
         </div>
-        <div id="tab-mes-reservations" class="tab-content">
-            <!-- Contenu de Mes réservations -->
-        </div>
+    </div>
+    <div id="tab-mes-vehicules" class="tab-content">
+        <!-- Contenu de Mes véhicules -->
+    </div>
+    <div id="tab-mes-reservations" class="tab-content">
+        <!-- Contenu de Mes réservations -->
+    </div>
 
 
 

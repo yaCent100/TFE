@@ -1,5 +1,7 @@
 package be.iccbxl.tfe.Driveshare.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,11 +23,18 @@ public class Indisponible {
 
     @Column(name = "date_debut", nullable = false)
     @Temporal(TemporalType.DATE)
-    private LocalDate dateDebut;
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private LocalDate startDate;
 
     @Column(name = "date_fin", nullable = false)
     @Temporal(TemporalType.DATE)
-    private LocalDate dateFin;
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private LocalDate endDate;
 
+    public Indisponible(long l, LocalDate of, LocalDate of1, Long carId) {
+    }
+
+    public Indisponible() {
+    }
 }
 

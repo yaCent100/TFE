@@ -7,3 +7,31 @@
 
 }
 
+.notif-param{
+    background-color: #ffff;
+    padding: 20px;
+    margin-top: 15px;
+    border: 1px solid white;
+    border-radius: 15px;
+}
+
+.update-car-form{
+    background-color: white;
+    margin-top: 30px;
+    padding: 40px;
+    padding-top: 60px;
+    border:2px solid white;
+    border-radius:10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stripe-background {
+    background: repeating-linear-gradient(
+      45deg,
+      #354C6F,
+      #354C6F 10px,
+      white 10px,
+      white 20px
+    );
+}
+

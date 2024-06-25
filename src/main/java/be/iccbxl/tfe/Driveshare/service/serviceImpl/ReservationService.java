@@ -1,12 +1,13 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
-import be.iccbxl.tfe.Driveshare.DTO.ReservationMapper;
+import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.CarRental;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.repository.CarRentalRepository;
+import be.iccbxl.tfe.Driveshare.repository.CarRepository;
 import be.iccbxl.tfe.Driveshare.repository.ReservationRepository;
 import be.iccbxl.tfe.Driveshare.repository.UserRepository;
 import be.iccbxl.tfe.Driveshare.service.ReservationServiceI;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ReservationService implements ReservationServiceI {
@@ -30,7 +30,8 @@ public class ReservationService implements ReservationServiceI {
 
     @Autowired
     private CarRentalRepository carRentalRepository;
-
+    @Autowired
+    private CarRepository carRepository;
 
     @Override
     public List<Reservation> getAllReservations() {
@@ -83,25 +84,31 @@ public class ReservationService implements ReservationServiceI {
         }
 
         // Récupérer toutes les locations de voiture associées à l'utilisateur
-        List<CarRental> carRentals = carRentalRepository.findByUser(currentUser);
+        List<Car> userCars = carRepository.findByUser(currentUser);
 
         // Liste pour stocker toutes les réservations
         List<ReservationDTO> allReservations = new ArrayList<>();
 
-        // Parcourir chaque location de voiture
-        for (CarRental carRental : carRentals) {
-            // Récupérer les réservations de chaque location de voiture
-            List<Reservation> reservations = carRental.getReservations();
+        // Parcourir chaque voiture de l'utilisateur
+        for (Car car : userCars) {
+            // Récupérer les locations de voiture (UserCarRental) associées à chaque voiture
+            List<CarRental> carRentals = carRentalRepository.findByCar(car);
 
-            // Transformer chaque réservation en DTO
-            for (Reservation reservation : reservations) {
-                ReservationDTO reservationDTO = ReservationMapper.toDto(reservation);
-                allReservations.add(reservationDTO);
+            // Récupérer les réservations associées à chaque location de voiture
+            for (CarRental carRental : carRentals) {
+                List<Reservation> reservations = reservationRepository.findByCarRental(carRental);
+
+                // Transformer chaque réservation en DTO
+                for (Reservation reservation : reservations) {
+                    ReservationDTO reservationDTO = CarMapper.toReservationDTO(reservation);
+                    allReservations.add(reservationDTO);
+                }
             }
         }
 
         return allReservations;
     }
+
 
 
 

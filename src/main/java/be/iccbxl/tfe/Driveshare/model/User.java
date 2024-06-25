@@ -49,8 +49,14 @@ public class User {
     @Column(name="password")
     private String password;
 
-    @Column(name="photo_profil")
+    @Column(name="photo_profil", nullable = true)
     private String photoUrl;
+
+    @Column(name="iban", nullable = true)
+    private String iban;
+
+    @Column(name="bic", nullable = true)
+    private String bic;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<Car> ownedCars;
@@ -96,8 +102,6 @@ public class User {
         documents.remove(document);
     }
 
-
-
     @Override
     public String toString() {
         return "User{" +
@@ -118,6 +122,12 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public boolean hasIdentityDocuments() {
+        boolean hasRecto = documents.stream().anyMatch(doc -> "identity_recto".equals(doc.getDocumentType()));
+        boolean hasVerso = documents.stream().anyMatch(doc -> "identity_verso".equals(doc.getDocumentType()));
+        return hasRecto && hasVerso;
     }
 
 

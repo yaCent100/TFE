@@ -27,6 +27,10 @@ public class EquipmentService implements EquipmentServiceI {
         Optional<Equipment> optionalEquipment = equipmentRepository.findById(id);
         return optionalEquipment.orElse(null);
     }
+    @Override
+    public List<Equipment> getEquipmentByIds(List<Long> ids) {
+        return (List<Equipment>) equipmentRepository.findAllById(ids);
+    }
 
     @Override
     public Equipment saveEquipment(Equipment equipment) {

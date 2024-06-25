@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>Mon Compte</title>
+  <style>
+  .container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  }
+
+  .bg-white {
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .form-control {
+  padding-right: 40px;
+  }
+
+  .btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+  }
+
+  .btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+  }
+
+  .alert {
+  position: relative;
+  padding: 1rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  }
+
+  .alert-success {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  }
+
+  .alert-dismissible .close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.75rem 1.25rem;
+  color: inherit;
+  background-color:transparent;
+  }
+  </style>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+  <div th:replace="account/fragments/account-header"></div>
+  <div>
+    <a href="/account">Précédent</a>
+  </div>
+
+  <div class="container">
+
+    <div class="user-info-perso">
+      <div class="bg-white">
+        <div th:if="${success}" class="contain-flashbag">
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <p th:text="${success}">Vos informations ont bien été mises à jour.</p>
+          </div>
+        </div>
+        <form id="iban-form" method="POST" th:action="@{/account/bank-account}" data-parsley-validate="" novalidate="">
+          <div class="row">
+            <div class="col-lg-10 col-sm-9">
+              <h2 class="fs24 mgb-20" id="bankIds">
+                <span class="nbsp-large bold"><img src="/images/picto/money.svg?v=7.20.64" class="w70 nbsp" alt="Informations bancaires"></span>
+                Informations bancaires
+                <span class="nbsp-left c-main rounded-circle bg-main-light">&nbsp;<i class="fa fa-check"></i>&nbsp;</span>
+              </h2>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12 col-sm-12">
+              <div class="bg-light bradius pd-10 mgb-20">
+                <p class="fs14 nbsp-left">Indiquez vos informations bancaires afin de recevoir les gains de vos locations sur votre compte bancaire.</p>
+                <p class="fs14 nbsp-left">Vous êtes payé 3 jours après la fin de la location.</p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6 col-sm-12">
+              <p class="fs14 mgb-10 medium">IBAN</p>
+              <input class="form-control w100p" name="wallet[iban]" th:value="*{iban}" required="">
+            </div>
+            <div class="col-lg-6 col-sm-12">
+              <p class="fs14 mgb-10 medium">BIC</p>
+              <input class="form-control w100p" name="wallet[bic]" th:value="*{bic}" required="">
+            </div>
+          </div>
+
+          <input type="hidden" name="redirect_uri" value="http%3A%2F%2Fwww.zotcar.com%2Fuser%2F111716%2Fbank-account">
+          <input type="hidden" name="user_id" th:value="${user.id}">
+
+          <div class="row">
+            <div class="col-lg-12 text-center">
+              <button class="btn btn-success">
+                <span class="not-load-el">Enregistrer</span>
+              </button>
+            </div>
+          </div>
+          <hr class="mgt-30 mgb-30">
+
+        </form>      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const alertCloseButtons = document.querySelectorAll('.alert-dismissible .close');
+    alertCloseButtons.forEach(button => {
+      button.addEventListener('click', function(event) {
+        const alert = button.closest('.alert');
+        alert.style.display = 'none';
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

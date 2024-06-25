@@ -1,10 +1,7 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
-import be.iccbxl.tfe.Driveshare.model.Category;
-import be.iccbxl.tfe.Driveshare.model.Equipment;
-import be.iccbxl.tfe.Driveshare.model.Feature;
-import be.iccbxl.tfe.Driveshare.model.User;
+import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
 import jakarta.validation.Valid;
@@ -53,10 +50,13 @@ public class RentController {
 
     @GetMapping("/rent")
     public String rentYourCar(Model model, @AuthenticationPrincipal CustomUserDetail userDetails) {
+
         if (userDetails != null) {
             User user = userDetails.getUser();
             model.addAttribute("user", user);
         }
+
+
 
         List<Feature> compteurFeatures = featureService.findByCategory("Compteur");
         List<Feature> placesFeatures = featureService.findByCategory("Places");
@@ -67,7 +67,9 @@ public class RentController {
 
         List<Category> categories = categoryService.getAllCategory();
 
-        model.addAttribute("carDTO", new CarDTO()); // Ajout de CarDTO au modèle
+        CarDTO carDTO = new CarDTO();
+
+        model.addAttribute("carDTO", carDTO);
         model.addAttribute("categories", categories);
         model.addAttribute("days", dateService.range(1, 31));
         model.addAttribute("months", dateService.getMonths());

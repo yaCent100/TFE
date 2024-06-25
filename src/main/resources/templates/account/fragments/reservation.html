@@ -1,23 +1,26 @@
 <!-- fragments/reservation.html -->
-<div layout:fragment="reservation" id="reservation-tab" class="tab-content">
-    <!-- Contenu spécifique de l'onglet "Mode de réservation" -->
+<div layout:fragment="reservation" id="reservation-tab" class="tab-content-car">
     <div class="container mt-5">
-
         <div id="booking-mode" class="step-item">
-            <form class="mb-6 form-with-tip" method="POST" action="/vehicle/update" data-parsley-validate="" novalidate="">
-                <div class="row border justify-content-center" style="margin-top:30px; border-radius: 1rem !important;background-color:white;">
+            <!-- Afficher le message flash s'il existe -->
+            <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                <span th:text="${successMessage}"></span>
+            </div>
+            <form class="mb-6 form-with-tip" method="POST" th:action="@{/car/update/reservation}" th:object="${car}" data-parsley-validate="" novalidate="">
+                <div class="row border justify-content-center" style="margin-top:30px; border-radius: 1rem !important; background-color:white;">
                     <div class="col-lg-12">
-                        <h3 style="margin-top:20px; padding-left:20px"><span class="actually"><i class="fa fa-check"></i></span>Actuellement, vous êtes en mode
-                            <span class="reservation-mode-span"><span class="auto-manu">automatique</span></span></h3>
-
+                        <h3 style="margin-top:20px; padding-left:20px">
+                            <span class="actually"><i class="fa fa-check"></i></span> Actuellement, vous êtes en mode
+                            <span id="current-mode" class="auto-manu" th:text="${car.modeReservation}"></span>
+                        </h3>
                         <div class="row mt-3">
                             <div class="col-lg-6" style="padding: 10px;">
-                                <a class="choose-automatic-reservation">
+                                <a href="#" class="choose-automatic-reservation">
                                     <p class="p-manuel-auto">Mode automatique <span class="c-white fs10 bg-warning medium pdl-6 pe-6 h25 inline-block bradius-bis nbsp-large-left">Recommandé</span></p>
                                 </a>
                             </div>
                             <div class="col-lg-6" style="padding: 10px;">
-                                <a class="choose-manual-reservation">
+                                <a href="#" class="choose-manual-reservation">
                                     <p class="p-manuel-auto">Mode manuel</p>
                                 </a>
                             </div>
@@ -37,7 +40,7 @@
                                     </div>
                                     <div class="col-lg-4" style="margin-bottom: 20px;">
                                         <div class="card-reservation p-2">
-                                            <div class="text-center  mt-3 mb-3">
+                                            <div class="text-center mt-3 mb-3">
                                                 <img width="160" src="/images/carte2.png" alt="">
                                             </div>
                                             <p class="p-reservation">Vous définissez vos règles de location</p>
@@ -73,7 +76,7 @@
                                     <div class="col-lg-4" style="margin-bottom: 20px;">
                                         <div class="card-reservation p-2">
                                             <div class="text-center  mgt-30 mgb-30">
-                                                <img width="w160" src="/images/carte5.png" alt="">
+                                                <img width="160" src="/images/carte5.png" alt="">
                                             </div>
                                             <p class="p-reservation">Vous choisissez d'accepter ou refuser chaque demande</p>
                                             <p class="">Vous disposez de 48h maximum pour accepter ou refuser la demande. Vous pouvez aussi discuter avec le locataire.</p>
@@ -85,7 +88,7 @@
                                     <div class="col-lg-4 " style="margin-bottom: 20px;">
                                         <div class="card-reservation p-2">
                                             <div class="text-center mt-3 mb-3">
-                                                <img width="w160" src="/images/carte6.png" alt="">
+                                                <img width="160" src="/images/carte6.png" alt="">
                                             </div>
                                             <p class="p-reservation">Le locataire doit alors confirmer la réservation</p>
                                             <p class="">Une fois la demande acceptée, le locataire dispose de 48h pour procéder au paiement et confirmer ou non la réservation.</p>
@@ -96,8 +99,8 @@
                         </div>
                     </div>
                     <input type="hidden" name="page" value="booking_mode">
-                    <input type="hidden" name="booking_mode" value="1">
-                    <input type="hidden" name="vehicle_id" value="29282">
+                    <input type="hidden" name="booking_mode" value="1" id="booking-mode-input">
+                    <input type="hidden" name="vehicle_id" th:value="${car.id}">
 
                     <div class="col-lg-12 text-center" style="margin-bottom:30px; margin-top: 30px;">
                         <button class="btn btn-success enregistrer" style="margin-top: 30px;">
@@ -106,7 +109,6 @@
                         </button>
                     </div>
                 </div>
-
             </form>
         </div>
     </div>

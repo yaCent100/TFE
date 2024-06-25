@@ -13,7 +13,8 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "price", cascade = CascadeType.ALL)
+    @OneToOne
+    @JoinColumn(name = "car_id")
     private Car car;
 
     @Column(name = "high_price")
@@ -24,9 +25,6 @@ public class Price {
 
     @Column(name = "low_price")
     private Double lowPrice;
-
-    @Column(name = "is_promotion")
-    private Boolean isPromotion;
 
     @Column(name = "promo_1")
     private Double promo1;  // Pourcentage de réduction si en promotion

@@ -1,11 +1,13 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
+import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.repository.*;
 import be.iccbxl.tfe.Driveshare.service.CarServiceI;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import com.google.maps.model.GeocodingResult;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -49,6 +51,12 @@ public class CarService implements CarServiceI {
 
     @Autowired
     private EquipmentService equipmentService;
+
+    @Autowired
+    private GeocodingService geocodingService;
+
+    private final Logger logger = LoggerFactory.getLogger(CarService.class);
+
 
     @Override
     public List<Car> getAllCars() {
@@ -155,52 +163,92 @@ public class CarService implements CarServiceI {
     }
 
     @Override
-    public List<Car> searchAvailableCars(String address, LocalDate dateDebut, LocalDate dateFin) {
-        // Récupérer toutes les voitures
-        List<Car> allCars = (List<Car>) carRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<CarDTO> searchAvailableCars(String address, double lat, double lng, LocalDate dateDebut, LocalDate dateFin) throws Exception {
+        GeocodingResult userLocation = geocodingService.geocode(address);
+        if (userLocation == null) {
+            throw new Exception("Unable to geocode the provided address.");
+        }
 
-        // Filtrer les voitures disponibles pour l'adresse spécifiée
+        double userLat = userLocation.geometry.location.lat;
+        double userLng = userLocation.geometry.location.lng;
+        logger.info("User Location: Lat: {}, Lng: {}", userLat, userLng);
+
+        List<Car> allCars = carRepository.findAll();
+        logger.info("Total cars retrieved from DB: {}", allCars.size());
+
         List<Car> availableCars = allCars.stream()
-                .filter(car -> car.getAdresse().equalsIgnoreCase(address))
-                .collect(Collectors.toList());
-
-        // Filtrer les voitures disponibles pour la période de temps spécifiée
-        availableCars = availableCars.stream()
                 .filter(car -> isCarAvailableForDates(car, dateDebut, dateFin))
+                .filter(car -> isCarNearby(car, userLat, userLng, 10)) // 10 km threshold
                 .collect(Collectors.toList());
 
-        return availableCars;
+        logger.info("Nearby available cars: {}", availableCars.size());
+        return availableCars.stream().map(CarMapper::toCarDTO).collect(Collectors.toList());
     }
 
-
-
-    public boolean isCarAvailableForDates(Car car, LocalDate dateDebut, LocalDate dateFin) {
-        // Récupérer toutes les réservations de la voiture
+    private boolean isCarAvailableForDates(Car car, LocalDate dateDebut, LocalDate dateFin) {
         List<CarRental> carRentals = car.getCarRentals();
 
-        // Parcourir chaque location de voiture (CarRental) pour vérifier les dates de réservation
         for (CarRental carRental : carRentals) {
             List<Reservation> reservations = carRental.getReservations();
 
-            // Vérifier chaque réservation pour un chevauchement avec les dates spécifiées
             for (Reservation reservation : reservations) {
                 LocalDate reservationStartDate = reservation.getDebutLocation();
                 LocalDate reservationEndDate = reservation.getFinLocation();
 
-                // Vérifier s'il y a un chevauchement entre les dates de réservation et les dates spécifiées
                 if ((dateDebut.isEqual(reservationStartDate) || dateDebut.isAfter(reservationStartDate)) &&
                         (dateDebut.isEqual(reservationEndDate) || dateDebut.isBefore(reservationEndDate)) ||
                         (dateFin.isEqual(reservationStartDate) || dateFin.isAfter(reservationStartDate)) &&
                                 (dateFin.isEqual(reservationEndDate) || dateFin.isBefore(reservationEndDate))) {
-                    // Il y a un chevauchement de dates, la voiture n'est pas disponible
                     return false;
                 }
             }
         }
 
-        // Aucun chevauchement trouvé, la voiture est disponible
+        List<Indisponible> indisponibilites = car.getUnavailable();
+
+        for (Indisponible indisponibilite : indisponibilites) {
+            LocalDate indisponibiliteStartDate = indisponibilite.getStartDate();
+            LocalDate indisponibiliteEndDate = indisponibilite.getEndDate();
+
+            if ((dateDebut.isEqual(indisponibiliteStartDate) || dateDebut.isAfter(indisponibiliteStartDate)) &&
+                    (dateDebut.isEqual(indisponibiliteEndDate) || dateDebut.isBefore(indisponibiliteEndDate)) ||
+                    (dateFin.isEqual(indisponibiliteStartDate) || dateFin.isAfter(indisponibiliteStartDate)) &&
+                            (dateFin.isEqual(indisponibiliteEndDate) || dateFin.isBefore(indisponibiliteEndDate))) {
+                return false;
+            }
+        }
+
         return true;
     }
+
+
+    private boolean isCarNearby(Car car, double userLat, double userLng, double distanceThreshold) {
+        double carLat = car.getLatitude();
+        double carLng = car.getLongitude();
+        if (carLat == 0.0 && carLng == 0.0) {
+            logger.warn("Car ID: {} has default coordinates (0.0, 0.0), skipping distance check.", car.getId());
+            return false;
+        }
+        logger.info("Car ID: {}, Car Lat: {}, Car Lng: {}", car.getId(), carLat, carLng);
+        double distance = calculateHaversineDistance(userLat, userLng, carLat, carLng);
+        logger.info("Car ID: {}, Distance: {}", car.getId(), distance);
+        return distance <= distanceThreshold;
+    }
+
+    private double calculateHaversineDistance(double lat1, double lng1, double lat2, double lng2) {
+        final int R = 6371; // Radius of the Earth in kilometers
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lngDistance = Math.toRadians(lng2 - lng1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+
+
 
     @Transactional
     @Override
@@ -232,7 +280,7 @@ public class CarService implements CarServiceI {
             List<Condition> conditions = getConditions(carDTO, car);
             car.setConditions(conditions);
 
-            Price price = configurePrice(carDTO, car);
+            Price price = CarMapper.toPrice(carDTO.getPrice()); // Conversion du DTO en entité Price
             car.setPrice(price);
 
             // Sauvegarder la voiture sans les photos et documents
@@ -285,8 +333,8 @@ public class CarService implements CarServiceI {
                 for (int i = 0; i < startDates.size(); i++) {
                     Indisponible indisponible = new Indisponible();
                     indisponible.setCar(car);
-                    indisponible.setDateDebut(LocalDate.parse(startDates.get(i)));
-                    indisponible.setDateFin(LocalDate.parse(endDates.get(i)));
+                    indisponible.setStartDate(LocalDate.parse(startDates.get(i)));
+                    indisponible.setEndDate(LocalDate.parse(endDates.get(i)));
                     periods.add(indisponible);
                 }
                 car.setUnavailable(periods);
@@ -358,23 +406,67 @@ public class CarService implements CarServiceI {
         return conditions;
     }
 
-    private Price configurePrice(CarDTO carDTO, Car car) {
-        Price price = new Price();
-        price.setLowPrice(carDTO.getLowPrice());
-        price.setMiddlePrice(carDTO.getMiddlePrice());
-        price.setHighPrice(carDTO.getHighPrice());
-        price.setPromo1(carDTO.getPromo1());
-        price.setPromo2(carDTO.getPromo2());
 
-        boolean isPromotionActive = (carDTO.getPromo1() != null && carDTO.getPromo1() > 0) ||
-                (carDTO.getPromo2() != null && carDTO.getPromo2() > 0);
-        price.setIsPromotion(isPromotionActive);
 
-        price.setCar(car);
-        return price;
+    @Override
+    public void updateCar(Long id, CarDTO carDTO) {
+        Optional<Car> carOptional = carRepository.findById(id);
+        if (carOptional.isPresent()) {
+            Car car = carOptional.get();
+
+            // Mettez à jour les propriétés de la voiture avec les données de CarDTO
+            car.setBrand(carDTO.getBrand());
+            car.setModel(carDTO.getModel());
+            car.setFuelType(carDTO.getFuelType());
+            car.setAdresse(carDTO.getAdresse());
+            car.setCodePostal(carDTO.getCodePostal());
+            car.setLocality(carDTO.getLocality());
+            car.setPlaqueImmatriculation(carDTO.getPlaqueImmatriculation());
+            car.setFirstImmatriculation(carDTO.getFirstImmatriculation());
+            car.setCategory(categoryRepository.findById(carDTO.getCategoryId()).orElse(null));
+
+            // Mettez à jour les identifiants des caractéristiques
+            List<Feature> features = car.getFeatures();
+            features.clear();
+
+            Feature boite = featureRepository.findById(carDTO.getBoiteId()).orElse(null);
+            if (boite != null) features.add(boite);
+
+            Feature compteur = featureRepository.findById(carDTO.getCompteurId()).orElse(null);
+            if (compteur != null) features.add(compteur);
+
+            Feature places = featureRepository.findById(carDTO.getPlacesId()).orElse(null);
+            if (places != null) features.add(places);
+
+            Feature portes = featureRepository.findById(carDTO.getPortesId()).orElse(null);
+            if (portes != null) features.add(portes);
+
+            car.setFeatures(features);
+
+            // Mettez à jour les équipements
+            List<Equipment> equipments = equipmentService.getEquipmentByIds(carDTO.getEquipmentIds());
+            car.setEquipments(equipments);
+
+            // Enregistrez les mises à jour
+            carRepository.save(car);
+        } else {
+            throw new EntityNotFoundException("Car not found with id " + carDTO.getId());
+        }
     }
 
 
+    public void updateCarCoordinates() {
+        List<Car> cars = carRepository.findAll();
+        for (Car car : cars) {
+            String fullAddress = car.getAdresse() + ", " + car.getCodePostal() + " " + car.getLocality();
+            GeocodingResult result = geocodingService.geocode(fullAddress);
+            if (result != null) {
+                car.setLatitude(result.geometry.location.lat);
+                car.setLongitude(result.geometry.location.lng);
+                carRepository.save(car);
+            }
+        }
+    }
 
 }
 

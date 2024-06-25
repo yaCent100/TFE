@@ -1,16 +1,22 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
+import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,26 +26,38 @@ public class AccountController {
 
     private final UserService userService;
     private final PhotoService photoService;
-
     private final CarService carService;
-
     private final FileStorageService fileStorageService;
-
     private final DocumentService documentService;
+    private final NotificationPreferenceService preferenceService;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final PaymentService paymentService;
+    private final DateService dateService;
+    private final CategoryService categoryService;
+    private final FeatureService featureService;
+    private final EquipmentService equipmentService;
+
 
 
     @Autowired
-    public AccountController(UserService userService, PriceService priceService, PhotoService photoService, CarService carService, FileStorageService fileStorageService, DocumentService documentService) {
+    public AccountController(UserService userService, PriceService priceService, PhotoService photoService, CarService carService, FileStorageService fileStorageService, DocumentService documentService, NotificationPreferenceService preferenceService, BCryptPasswordEncoder passwordEncoder, PaymentService paymentService, DateService dateService, CategoryService categoryService, FeatureService featureService, EquipmentService equipmentService) {
         this.userService = userService;
         this.photoService = photoService;
         this.carService = carService;
         this.fileStorageService = fileStorageService;
         this.documentService = documentService;
+        this.preferenceService = preferenceService;
+        this.passwordEncoder = passwordEncoder;
+        this.paymentService = paymentService;
+        this.dateService = dateService;
+        this.categoryService = categoryService;
+        this.featureService = featureService;
+        this.equipmentService = equipmentService;
     }
 
 
     @GetMapping("/account")
-    public String getAccount(Model model, @AuthenticationPrincipal CustomUserDetail userDetails) {
+    public String getAccount(Model model, @AuthenticationPrincipal CustomUserDetail userDetails, HttpServletRequest request) {
         int confirmedCount = 0; // Initialisez le compteur de réservations confirmées à 0
         int carCount = 0; // Initialisez le compteur de voitures à 0
 
@@ -62,15 +80,19 @@ public class AccountController {
             model.addAttribute("confirmedCount", confirmedCount);
             model.addAttribute("carCount", carCount);
             model.addAttribute("user", user);
+            model.addAttribute("requestURI", request.getRequestURI());
         }
         return "account/index";
     }
 
+
     @GetMapping("account/info")
-    public String info(@AuthenticationPrincipal CustomUserDetail userDetails, Model model) {
+    public String info(@AuthenticationPrincipal CustomUserDetail userDetails, Model model, HttpServletRequest request) {
         // Ajouter l'utilisateur au modèle
         User user = userDetails.getUser();
         model.addAttribute("user", user);
+        model.addAttribute("requestURI", request.getRequestURI());
+
 
         return "account/info-personnel";
     }
@@ -106,7 +128,7 @@ public class AccountController {
 
 
     @GetMapping("account/document-identity")
-    public String document(@AuthenticationPrincipal CustomUserDetail userDetails, Model model) {
+    public String document(@AuthenticationPrincipal CustomUserDetail userDetails, Model model, HttpServletRequest request) {
         User user = userDetails.getUser();
         List<Document> documents = documentService.getByUserId(user.getId());
 
@@ -116,6 +138,8 @@ public class AccountController {
         model.addAttribute("user", user);
         model.addAttribute("hasRecto", hasRecto);
         model.addAttribute("hasVerso", hasVerso);
+        model.addAttribute("requestURI", request.getRequestURI());
+
 
         return "account/document-identity";
     }
@@ -154,10 +178,160 @@ public class AccountController {
         return "redirect:/account/document-identity";
     }
 
+    @GetMapping("/account/notifications")
+    public String showNotificationPreferences(@AuthenticationPrincipal CustomUserDetail userDetails, Model model, HttpServletRequest request) {
+        User user = userDetails.getUser();
+        NotificationPreference preferences = preferenceService.getPreferences(user);
+        if (preferences == null) {
+            preferences = new NotificationPreference();
+            preferences.setUser(user);
+            preferenceService.savePreferences(preferences);
+        }
+        model.addAttribute("preferences", preferences);
+        model.addAttribute("user", user);
+        model.addAttribute("requestURI", request.getRequestURI());
+
+        return "account/notification-user";
+    }
+
+    @PostMapping("/account/notifications")
+    public String saveNotificationPreferences(@AuthenticationPrincipal CustomUserDetail userDetails, @ModelAttribute NotificationPreference preferences) {
+        User user = userDetails.getUser();
+        NotificationPreference existingPreferences = preferenceService.getPreferences(user);
+
+        if (existingPreferences != null) {
+            existingPreferences.setCancelEmailLocataire(preferences.isCancelEmailLocataire());
+            existingPreferences.setCancelEmailProprietaire(preferences.isCancelEmailProprietaire());
+            existingPreferences.setConfirmedEmailLocataire(preferences.isConfirmedEmailLocataire());
+            existingPreferences.setConfirmedEmailProprietaire(preferences.isConfirmedEmailProprietaire());
+            existingPreferences.setConfirmedSmsLocataire(preferences.isConfirmedSmsLocataire());
+            existingPreferences.setConfirmedSmsProprietaire(preferences.isConfirmedSmsProprietaire());
+            existingPreferences.setEndEmailLocataire(preferences.isEndEmailLocataire());
+            existingPreferences.setEndEmailProprietaire(preferences.isEndEmailProprietaire());
+            existingPreferences.setEndSmsLocataire(preferences.isEndSmsLocataire());
+            existingPreferences.setEndSmsProprietaire(preferences.isEndSmsProprietaire());
+            existingPreferences.setMessagesEmailLocataire(preferences.isMessagesEmailLocataire());
+            existingPreferences.setMessagesEmailProprietaire(preferences.isMessagesEmailProprietaire());
+            existingPreferences.setReservationEmailLocataire(preferences.isReservationEmailLocataire());
+            existingPreferences.setReservationEmailProprietaire(preferences.isReservationEmailProprietaire());
+            existingPreferences.setReservationSmsLocataire(preferences.isReservationSmsLocataire());
+            existingPreferences.setReservationSmsProprietaire(preferences.isReservationSmsProprietaire());
+            existingPreferences.setStartEmailLocataire(preferences.isStartEmailLocataire());
+            existingPreferences.setStartEmailProprietaire(preferences.isStartEmailProprietaire());
+            existingPreferences.setStartSmsLocataire(preferences.isStartSmsLocataire());
+            existingPreferences.setStartSmsProprietaire(preferences.isStartSmsProprietaire());
+
+            preferenceService.savePreferences(existingPreferences);
+        } else {
+            preferences.setUser(user);
+            preferenceService.savePreferences(preferences);
+        }
+
+        return "redirect:/account/notifications?success";
+    }
+
+    @GetMapping("/account/change-password")
+    public String modifiePassword(@AuthenticationPrincipal CustomUserDetail userDetails, Model model, HttpServletRequest request) {
+        User user = userDetails.getUser();
+
+        model.addAttribute("user", user);
+        model.addAttribute("requestURI", request.getRequestURI());
+
+        return "account/change-password";
+    }
+
+    @PostMapping("/account/change-password")
+    public String changePassword(@AuthenticationPrincipal CustomUserDetail userDetails,
+                                 @RequestParam("current_password") String currentPassword,
+                                 @RequestParam("password") String newPassword,
+                                 @RequestParam("password_confirm") String confirmPassword,
+                                 RedirectAttributes redirectAttributes) {
+
+        User user = userService.getUserById(userDetails.getUser().getId());
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            redirectAttributes.addFlashAttribute("error", "Le mot de passe actuel est incorrect.");
+            return "redirect:/account/change-password";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "Les nouveaux mots de passe ne correspondent pas.");
+            return "redirect:/account/change-password";
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userService.save(user);
+
+        redirectAttributes.addFlashAttribute("success", "Votre mot de passe a été modifié avec succès.");
+        return "redirect:/account/change-password";
+    }
+
+    @GetMapping("/account/bank-account")
+    public String bankAccount(@AuthenticationPrincipal CustomUserDetail userDetails, Model model, HttpServletRequest request) {
+        User user = userDetails.getUser();
+
+        model.addAttribute("user", user);
+        model.addAttribute("requestURI", request.getRequestURI());
+
+        return "account/bank-account";
+    }
+
+    @PostMapping("/account/bank-account")
+    public String updateBankAccount(@AuthenticationPrincipal CustomUserDetail userDetails,
+                                    @RequestParam("wallet[iban]") String iban,
+                                    @RequestParam("wallet[bic]") String bic,
+                                    RedirectAttributes redirectAttributes, Model model) {
+        User user = userDetails.getUser();
+        user.setIban(iban);
+        user.setBic(bic);
+        userService.save(user);
+        redirectAttributes.addFlashAttribute("success", "Vos informations ont bien été mises à jour.");
+
+
+        return "redirect:/account/bank-account";
+    }
+
+    @GetMapping("/account/gains")
+    public String recapGains(@AuthenticationPrincipal CustomUserDetail userDetails, Model model) {
+        User user = userDetails.getUser();
+
+        model.addAttribute("user", user);
+        return "account/gains";
+    }
+
+    @PostMapping("/account/gains")
+    public String getSummary(@AuthenticationPrincipal CustomUserDetail userDetails,
+                             @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                             @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                             Model model) {
+        User user = userDetails.getUser();
+
+        // Ajout de logs pour vérifier les dates reçues
+        System.out.println("Date de début: " + startDate);
+        System.out.println("Date de fin: " + endDate);
+
+        List<Payment> payments = paymentService.getPaymentsForUser(user, startDate, endDate);
+        model.addAttribute("payments", payments);
+        model.addAttribute("user", user);
+
+
+        if (payments.isEmpty()) {
+            System.out.println("Aucun paiement trouvé pour les dates sélectionnées.");
+        } else {
+            System.out.println("Paiements trouvés : " + payments.size());
+            for (Payment payment : payments) {
+                System.out.println(payment.toString());
+            }
+        }
+
+        return "account/gains";
+    }
+
+
 
 
     @GetMapping("/account/cars")
-    public String getCars(Model model, @AuthenticationPrincipal CustomUserDetail userDetails) {
+    public String getCars(Model model, @AuthenticationPrincipal CustomUserDetail userDetails, HttpServletRequest request) {
         if (userDetails != null) {
             User user = userDetails.getUser();
 
@@ -166,6 +340,7 @@ public class AccountController {
             // Ajouter les voitures au modèle
             model.addAttribute("user", user);
             model.addAttribute("cars", userCars);
+            model.addAttribute("requestURI", request.getRequestURI());
 
             return "account/cars";
         } else {
@@ -175,7 +350,8 @@ public class AccountController {
     }
 
     @GetMapping("/account/cars/{id}")
-    public String getCarDetails(@PathVariable("id") Long carId, Model model, @AuthenticationPrincipal CustomUserDetail userDetails) {
+    public String getCarDetails(@PathVariable("id") Long carId, Model model, @AuthenticationPrincipal CustomUserDetail userDetails,
+                                HttpServletRequest request) {
         // Vérifier si l'utilisateur est connecté
         if (userDetails != null) {
             // Récupérer l'utilisateur connecté
@@ -204,6 +380,8 @@ public class AccountController {
                 // Ajouter les détails de la voiture au modèle
                 model.addAttribute("car", car);
                 model.addAttribute("user", user);
+                model.addAttribute("requestURI", request.getRequestURI());
+
 
                 return "account/car-show"; // Page des détails de la voiture
             } else {
@@ -221,6 +399,7 @@ public class AccountController {
     @GetMapping("/account/cars/{id}/delete")
     public String deleteCar(@PathVariable("id") Long carId, @AuthenticationPrincipal CustomUserDetail userDetails, RedirectAttributes redirectAttributes) {
         System.out.println("Received request to delete car with ID: " + carId);
+
 
         if (userDetails != null) {
             User user = userDetails.getUser();
@@ -241,6 +420,56 @@ public class AccountController {
         }
         return "redirect:/account/cars";
     }
+
+    @GetMapping("/account/cars/edit/{id}")
+    public String showEditCarForm(@PathVariable("id") Long id, Model model,  @AuthenticationPrincipal CustomUserDetail userDetails) {
+        Car car = carService.getCarById(id);
+        User user = userDetails.getUser();
+
+        if (car == null) {
+            // Handle car not found
+            return "redirect:/account/cars";
+        }
+
+        model.addAttribute("user", user);
+        model.addAttribute("carDTO", new CarDTO(car));
+        model.addAttribute("categories", categoryService.getAllCategory());
+        model.addAttribute("boiteFeatures", featureService.findByCategory("Boite"));
+        model.addAttribute("compteurFeatures", featureService.findByCategory("Compteur"));
+        model.addAttribute("placesFeatures", featureService.findByCategory("Places"));
+        model.addAttribute("portesFeatures", featureService.findByCategory("Portes"));
+        model.addAttribute("equipments", equipmentService.getAllEquipments());
+        model.addAttribute("days", dateService.range(1, 31));
+        model.addAttribute("months", dateService.getMonths());
+        model.addAttribute("years", dateService.getYears(10));
+
+
+        return "account/car-edit";
+    }
+
+    @PostMapping("/account/cars/edit/{id}")
+    public String updateCar(@PathVariable("id") Long id, @ModelAttribute("carDTO") CarDTO carDTO, BindingResult result, Model model ) {
+
+
+        if (result.hasErrors()) {
+            model.addAttribute("categories", categoryService.getAllCategory());
+            model.addAttribute("boiteFeatures", featureService.findByCategory("Boite"));
+            model.addAttribute("compteurFeatures", featureService.findByCategory("Compteur"));
+            model.addAttribute("placesFeatures", featureService.findByCategory("Places"));
+            model.addAttribute("portesFeatures", featureService.findByCategory("Portes"));
+            model.addAttribute("equipments", equipmentService.getAllEquipments());
+            model.addAttribute("days", dateService.range(1, 31));
+            model.addAttribute("months", dateService.getMonths());
+            model.addAttribute("years", dateService.getYears(10));
+
+            return "account/car-edit";
+        }
+
+        carService.updateCar(id, carDTO);
+        return "redirect:/account/cars";
+    }
+
+
 
 
    /* @PostMapping("/account/cars/addPhoto")
@@ -278,6 +507,47 @@ public class AccountController {
         }
         return "redirect:/account/cars/" + photo.getCar().getId();
     }*/
+
+    @PostMapping("/car/update/reservation")
+    public String updateBookingMode(@RequestParam("vehicle_id") Long vehicleId,
+                                    @RequestParam("booking_mode") String bookingMode,
+                                    RedirectAttributes redirectAttributes) {
+        Car car = carService.getCarById(vehicleId);
+        car.setModeReservation(bookingMode);
+        carService.updateCar(car.getId(), car);
+
+        // Ajouter un message flash
+        redirectAttributes.addFlashAttribute("successMessage", "Le mode de réservation a été mis à jour avec succès.");
+
+        // Rediriger vers la même page avec l'ancre "reservation-tab"
+        return "redirect:/account/cars/" + vehicleId + "#reservation-tab";
+    }
+
+    @PostMapping("/car/update/tarification")
+    public String updateVehiclePricing(@RequestParam("vehicle_id") Long vehicleId,
+                                       @RequestParam("low_season_price") double lowPrice,
+                                       @RequestParam("medium_season_price") double middlePrice,
+                                       @RequestParam("high_season_price") double highPrice,
+                                       @RequestParam("promo1") double promo1,
+                                       @RequestParam("promo2") double promo2,
+                                       Model model) {
+        Car car = carService.getCarById(vehicleId);
+        Price price = car.getPrice();
+        if (price == null) {
+            price = new Price();
+            car.setPrice(price);
+        }
+        price.setLowPrice(lowPrice);
+        price.setMiddlePrice(middlePrice);
+        price.setHighPrice(highPrice);
+        price.setPromo1(promo1);
+        price.setPromo2(promo2);
+
+        carService.updateCar(car.getId(), car);
+
+        model.addAttribute("successMessage", "Tarification mise à jour avec succès.");
+        return "redirect:/account/cars/" + vehicleId + "#tarification-tab";
+    }
 
 
 

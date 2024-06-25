@@ -25,9 +25,9 @@
             </div>
               <div class="row">
                 <div class="col-md-12">
-                  <form class="form-inline searchForm" id="searchForm" th:action="@{/cars}" method="GET">
+                  <form class="form-inline searchForm" id="rechercheForm" onsubmit="return searchCars(event)" method="GET">
                     <div class="form-group mb-3">
-                      <input type="text" class="form-control" id="manualAddress" name="address" placeholder="Entrez votre adresse">
+                      <input type="text" class="form-control" id="manualAddress" name="manualAddress" placeholder="Entrez votre adresse">
                     </div>
                     <div class="form-group mb-3">
                       <div class="row">

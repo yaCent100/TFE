@@ -2,14 +2,21 @@ package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Category;
+import be.iccbxl.tfe.Driveshare.model.User;
+import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CategoryService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -34,18 +41,17 @@ public class CarController {
         this.priceService = priceService;
     }
     @GetMapping("/cars")
-    public String getAllCars(Model model) {
+    public String getAllCars(Model model, @AuthenticationPrincipal CustomUserDetail userDetails) {
+        User user = userDetails.getUser();
+
         List<Car> cars = carService.getAllCars();
         List<Category> categories = categoryService.getAllCategory();
         Map<Long, Double> averageRatings = carService.getAverageRatingsForCars();
         Map<Long, Integer> reviewCounts = carService.getReviewCountsForCars();
-        LocalDate today = LocalDate.now();
 
-        // Créer un Map pour stocker les prix des voitures
-        Map<Long, Double> carPrices = new HashMap<>();
+        // Récupérer l'utilisateur actuel
 
-
-
+        model.addAttribute("user", user);
         model.addAttribute("cars", cars);
         model.addAttribute("categories", categories);
         model.addAttribute("averageRatings", averageRatings);
@@ -57,8 +63,9 @@ public class CarController {
 
 
     @GetMapping("/cars/{id}")
-    public String getCarById(@PathVariable Long id, Model model) {
-        LocalDate today = LocalDate.now();  // Obtenir la date actuelle pour déterminer la saison
+    public String getCarById(@PathVariable Long id,@AuthenticationPrincipal CustomUserDetail userDetails, Model model) {
+        User user = userDetails.getUser();
+
 
         // Récupérer la voiture par son ID
         Car car = carService.getCarById(id);
@@ -76,6 +83,8 @@ public class CarController {
         int totalEvaluations = car.getCarRentals().stream()
                 .mapToInt(rental -> rental.getEvaluations().size())
                 .sum();
+
+        model.addAttribute("user", user);
 
         // Ajouter la voiture, la note moyenne, et le prix calculé au modèle pour l'affichage
         model.addAttribute("car", car);

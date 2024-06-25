@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>DriveShare - Modifier Voiture</title>
+  <link rel="stylesheet" href="path/to/your/css/styles.css"> <!-- Assurez-vous d'inclure le chemin vers vos fichiers CSS -->
+</head>
+<body>
+<div layout:fragment="content" class="container mt-5">
+  <div class="update-car-form">
+    <div class="row">
+      <div class="col-lg-8 mb-3">
+        <h3>Informations générales de votre véhicule -
+          <span th:text="${carDTO.plaqueImmatriculation != null ? #strings.replace(carDTO.plaqueImmatriculation, '-', '').toUpperCase() : ''}"></span>
+        </h3>
+      </div>
+    </div>
+    <form th:action="@{/account/cars/edit/{id}(id=${carDTO.id})}" th:object="${carDTO}" method="post">
+      <div class="row">
+        <div class="col-lg-6">
+          <label for="marque">Marque</label>
+          <select id="marque" class="form-control" th:field="*{brand}" required>
+            <option value="" disabled selected hidden>Marque*</option>
+          </select>
+        </div>
+        <div class="col-lg-6">
+          <label for="modele">Modèle</label>
+          <select id="modele" class="form-control" th:field="*{model}" required>
+            <option value="model" disabled selected hidden>Modele*</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="category">Catégorie</label>
+          <select id="category" class="form-control" th:field="*{categoryId}" required>
+            <option value="" disabled selected hidden>Choisir la catégorie</option>
+            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.category}"></option>
+          </select>
+        </div>
+        <div>
+          <div class="col-lg-6">
+            <div class="row">
+              <div class="col-lg-12">
+                <p>1ére mise en circulation</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <select id="day" name="day" class="form-control" th:field="*{day}" required>
+                  <option value="" disabled selected hidden>Jour</option>
+                  <option th:each="day : ${days}" th:value="${day}" th:text="${day}"></option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <select id="month" name="month" class="form-control" th:field="*{month}" required>
+                  <option value="" disabled selected hidden>Mois</option>
+                  <option th:each="entry : ${months}" th:value="${entry.key}" th:text="${entry.value}"></option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <select id="year" name="year" class="form-control" th:field="*{year}" required>
+                  <option value="" disabled selected hidden>Année</option>
+                  <option th:each="year : ${years}" th:value="${year}" th:text="${year}"></option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="fuelType">Type de carburant:</label>
+          <select id="fuelType" class="form-control" th:field="*{fuelType}" required>
+            <option value="" disabled selected hidden>Choisir le type de carburant</option>
+            <option value="diesel">Diesel</option>
+            <option value="essence">Essence</option>
+            <option value="electrique">Électrique</option>
+            <option value="hybride">Hybride</option>
+          </select>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="boite">Boîte de vitesses:</label>
+          <select id="boite" class="form-control" th:field="*{boiteId}" required>
+            <option value="" disabled selected hidden>Choisir la boîte de vitesses</option>
+            <option th:each="feature : ${boiteFeatures}" th:value="${feature.id}" th:text="${feature.description}"></option>
+          </select>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="compteur">Compteur</label>
+          <select id="compteur" class="form-control" th:field="*{compteurId}" required>
+            <option value="" disabled selected>Choisir le compteur</option>
+            <option th:each="feature : ${compteurFeatures}" th:value="${feature.id}" th:text="${feature.description}"></option>
+          </select>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="places">Nombre de places</label>
+          <select id="places" class="form-control" th:field="*{placesId}" required>
+            <option value="" disabled selected>Choisir le nombre de places</option>
+            <option th:each="feature : ${placesFeatures}" th:value="${feature.id}" th:text="${feature.description}"></option>
+          </select>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="portes">Nombre de portes</label>
+          <select id="portes" class="form-control" th:field="*{portesId}" required>
+            <option value="" disabled selected>Choisir le nombre de portes</option>
+            <option th:each="feature : ${portesFeatures}" th:value="${feature.id}" th:text="${feature.description}"></option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <label for="equipments">Équipements:</label>
+          <div class="form-group">
+            <div class="form-check" th:each="equipment : ${equipments}">
+              <input type="checkbox" class="form-check-input" th:field="*{equipmentIds}" th:id="${'equipment_' + equipment.id}" th:value="${equipment.id}">
+              <label class="form-check-label" th:for="${'equipment_' + equipment.id}" th:text="${equipment.equipment}"></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <h3>Localisation du véhicule</h3>
+        <div class="col-md-4 mb-3">
+          <label for="adresse">Adresse:</label>
+          <input type="text" id="adresse" class="form-control" th:field="*{adresse}" required>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="codePostal">Code Postal:</label>
+          <input type="text" id="codePostal" class="form-control" th:field="*{codePostal}" required>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="locality">Localité:</label>
+          <input type="text" id="locality" class="form-control" th:field="*{locality}" required>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+
+</div>
+</body>
+</html>

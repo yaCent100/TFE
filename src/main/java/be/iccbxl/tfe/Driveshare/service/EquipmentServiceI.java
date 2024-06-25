@@ -12,4 +12,6 @@ public interface EquipmentServiceI {
     Equipment saveEquipment(Equipment equipment);
     Equipment updateEquipment(Long id, Equipment equipment);
     void deleteEquipment(Long id);
+
+    List<Equipment> getEquipmentByIds(List<Long> ids);
 }

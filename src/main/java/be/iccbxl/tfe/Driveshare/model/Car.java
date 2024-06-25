@@ -62,17 +62,16 @@ public class Car {
     @JoinColumn(name = "CategorieID")
     private Category category;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "price_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Price price;
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Condition> conditions;
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Photo> photos;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "voitures_caracteristiques",
             joinColumns = @JoinColumn(name = "VoitureID"),
@@ -80,7 +79,7 @@ public class Car {
     )
     private List<Feature> features = new ArrayList<>();;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "voitures_equipements",
             joinColumns = @JoinColumn(name = "VoitureID"),
@@ -88,11 +87,17 @@ public class Car {
     )
     private List<Equipment> equipments;
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Indisponible> unavailable;
 
     @OneToMany(mappedBy = "car", fetch = FetchType.LAZY)
     private List<CarRental> carRentals;
+
+
+    private double latitude;
+    private double longitude;
+    @Transient
+    private double distance;
 
 
     public void addCondition(Condition condition) {

@@ -2,14 +2,14 @@ package be.iccbxl.tfe.Driveshare.service;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface CarServiceI {
 
@@ -28,8 +28,14 @@ public interface CarServiceI {
 
     Map<Long, Integer> getReviewCountsForCars();
 
-   List<Car> searchAvailableCars(String address, LocalDate dateDebut, LocalDate dateFin);
+
+
+    @Transactional(readOnly = true)
+    List<CarDTO> searchAvailableCars(String address, double lat, double lng, LocalDate dateDebut, LocalDate dateFin) throws Exception;
 
     Car createCar(CarDTO carDTO);
+
+
+    void updateCar(Long id,CarDTO carDTO);
 
 }

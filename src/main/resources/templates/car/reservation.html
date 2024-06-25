@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>Liste des voitures</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6 col-xl-6_4 col-12 zotcar-header mb-1">
+        <div class="zotcar-header__logo-container ">
+          <a href="/">
+            <img src="/images/logo/zotcar-logo.svg?v=7.20.71" alt="Zotcar">
+          </a>
+        </div>
+        <div class="zotcar-header__back-button btn btn-success-outline" onclick="goBack()"><i class="fa fa-arrow-left"></i> Retour</div>
+        <script>
+                function goBack() {
+                    if(history ){
+                        history.back();
+                        if(history.length == 1) window.close()
+                    }else if ( window.opener &&  window.opener.history && window.opener.history.length > 1) {
+                        window.opener.history.back();
+                    } else if(window.history){
+                        window.history.back();
+                        if(window.history.length == 1) window.close()
+                    } else{
+                        window.close();
+                    }
+                }
+            </script>
+      </div>
+      <div class="col-md-6 col-xl-5_6 col-12 header-panel-right d-none d-md-block"></div>
+    </div>
+
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="main-panel col-md-6">
+
+      </div>
+      <div class="side-panel col-md-6">
+
+      </div>
+    </div>
+  </div>
+
+
+</div>
+</body>
+</html>
+

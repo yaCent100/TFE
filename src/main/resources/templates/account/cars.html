@@ -57,7 +57,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-lg-3 col-md-4 col-xs-10 text-right not-on-mobile on-ipad not-mobile">
-                                                                <p class="vehicle-pricing fs16 medium" th:text="${car.price.middlePrice}" >Price</p>
+                                                                <p class="vehicle-pricing fs16 medium" th:text="${car.price != null ? car.price.middlePrice : 0}">Price</p>
                                                             </div>
                                                         </div>
                                                     </div>

@@ -24,14 +24,19 @@ public class ReservationDTO {
     }
 
     public String getBackgroundColor() {
-        if (statut.equals("confirmé")) {
-            return "#28a745"; // Vert
-        } else if (statut.equals("en attente")) {
-            return "#ffc107"; // Jaune
-        } else if (statut.equals("annulée")) {
-            return "#dc3545"; // Rouge
+        if (statut == null) {
+            return "white"; // couleur par défaut si statut est null
         }
-        return "white"; // blanc par défaut
+        switch (statut.toLowerCase()) {
+            case "confirmé":
+                return "#28a745"; // Vert
+            case "en attente":
+                return "#ffc107"; // Jaune
+            case "annulée":
+                return "#dc3545"; // Rouge
+            default:
+                return "white"; // blanc par défaut pour tous les autres cas
+        }
     }
 }
 

@@ -1,15 +1,17 @@
 <!-- fragments/tarification.html -->
-<div layout:fragment="tarification" id="tarification-tab" class="tab-content">
+<div layout:fragment="tarification" id="tarification-tab" class="tab-content-car">
     <!-- Contenu spécifique de l'onglet "Tarification" -->
     <div id="vehicle-edit" class="body-container bg-f6f8f9">
-        <div class="container">
+        <div class="container mt-5">
 
 
             <div id="pricing" class="step-item">
-                <form class="mgb-60 form-with-tip" method="POST" action="/vehicle/update" data-parsley-validate="" novalidate="">
+                <form class="mgb-60 form-with-tip" method="POST" th:action="@{/car/update/tarification}" data-parsley-validate="" novalidate="">
                     <div class="row">
                         <div class="col-lg-12 bg-white border bradius mgt-30 ">
-                            <h3 class="mgt-20 pdl-20"><span class="nbsp-large c-main bold"><i class="fa fa-check"></i></span>Actuellement, vous êtes en tarification <span class="pricing-mode-span c-main"><span class="c-main">intelligente</span></span></h3>
+                            <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                                <span th:text="${successMessage}"></span>
+                            </div>
                             <div class="row mgt-30 pdl-20 pdr-20">
                                 <div class="col-lg-6 pd-10">
                                     <a class="inline-block bradius-bis border h100p w100p bg-main-light choose-smart-pricing">
@@ -23,105 +25,7 @@
                                 </div>
                             </div>
                             <div class="pricing-detail pdl-20 pdr-20">
-                                <div class="smart-pricing ">
-                                    <div class="row">
-                                        <div class="col-lg-12 mgt-20 mgb-30">
-                                            <p>Configurez la tarification intelligente et confier nous la tarification de votre voiture : nous adaptons le tarif de votre voiture à la demande de location et aux tendances du marché de la location de voiture.</p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-3 col-xs-12">
-                                            <p class="medium mgb-10">Prix minimum</p>
-                                            <div class="input-group mb-3 w100p">
-                                                <div class="input-group-prepend">
-                                                    <button class="btn btn-success h45 btn-group first" type="button" id="minus-btn-min-price">-</button>
-                                                </div>
-                                                <input id="minimum-price-input p-0" type="number" name="minimum_price" class="border text-center h45 fs18 medium w60p" placeholder="€" min="10" max="200" value="40" data-parsley-id="4">
-                                                <div class="input-group-prepend">
-                                                    <button class="btn btn-success h45 btn-group last" type="button" id="plus-btn-min-price">+</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9 col-xs-12 pdl-20 pdr-20">
-                                            <p class="fs16 mgb-10">Lorsque la demande est faible, les prix s’adapteront automatiquement pour inciter les locataires à réserver.  De cette façon votre voiture sera louée et vous gagnerez de l’argent !</p>
-                                            <p class="italic medium"><span class="fs16">Prix conseillé :</span><span class="c-main">40 €</span></p>                                </div>
-                                    </div>
-
-                                    <hr class="mgt-30 mgb-20">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <h3>Tarifs du véhicule</h3>
-                                        </div>
-                                        <div class="col-lg-12">
-                                            <p class="mgb-10">Le prix du véhicule peut varier en fonction de la durée de la location, de la saisonnalités et des paramètres choisis par le propriétaire. Des majorations peuvent être appliquées les week-ends et jours fériés.</p>
-                                        </div>
-                                        <div class="col-lg-12">
-                                            <table id="decreasing-price-table" class="w100p table table-striped fs12 mgt-20">
-                                                <thead>
-                                                <tr>
-                                                    <th><span class="block w100p uppercase">Durée de la location</span></th>
-                                                    <th><span class="block w100p uppercase text-center">Prix basse saison</span></th>
-                                                    <th><span class="block w100p uppercase text-center">Prix moyenne saison</span></th>
-                                                    <th><span class="block w100p uppercase text-center">Prix haute saison</span></th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr class="line-default">
-                                                    <th>Prix par défaut </th>
-                                                    <td class="text-center">45 €</td>
-                                                    <td class="text-center">55 €</td>
-                                                    <td class="text-center">74 €</td>
-                                                </tr>
-                                                <tr class="line-1 ">
-
-                                                    <th>De 1 à 7 jours </th>
-
-                                                    <td class="text-center">45 €</td>
-                                                    <td class="text-center">56 €</td>
-                                                    <td class="text-center">74 €</td>
-                                                </tr>
-                                                <tr class="line-2 ">
-
-                                                    <th>De 8 à 14 jours </th>
-
-                                                    <td class="text-center">45 €</td>
-                                                    <td class="text-center">51 €</td>
-                                                    <td class="text-center">74 €</td>
-                                                </tr>
-                                                <tr class="line-3 ">
-
-                                                    <th>De 15 à 29 jours </th>
-
-                                                    <td class="text-center">45 €</td>
-                                                    <td class="text-center">50 €</td>
-                                                    <td class="text-center">75 €</td>
-                                                </tr>
-                                                <tr class="line-4 ">
-
-                                                    <th>De 30 à 60 jours </th>
-
-                                                    <td class="text-center">45 €</td>
-                                                    <td class="text-center">50 €</td>
-                                                    <td class="text-center">65 €</td>
-                                                </tr>
-                                                <tr class="line-5 ">
-
-                                                    <th>Plus de 61 jours</th>
-
-                                                    <td class="text-center">45 €</td>
-                                                    <td class="text-center">50 €</td>
-                                                    <td class="text-center">64 €</td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                            <a class="tright c-main italic light fs12" href="/calendrier-saison?territory_code=MQ" target="_blank">Voir le calendrier de saison</a>
-
-
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="manual-pricing hide">
+                                <div class="manual-pricing">
                                     <div class="row">
                                         <div class="col-lg-12 mgt-20 mgb-30">
                                             <p>Choisissez un tarif fixe pour chaque saison. <a class="c-main italic underline" href="/calendrier-saison?territory_code=MQ" target="_blank">Voir le calendrier de saison</a></p>
@@ -132,7 +36,7 @@
                                             <p class="medium mgb-10 tcenter">Prix basse saison <span class="normal italic">(€)</span></p>
                                             <div class="row">
                                                 <div class="col-lg-12">
-                                                    <input type="number" class="form-control bradius-bis w100p text-center price-input" name="low_season_price" min="10" max="200" value="45" data-parsley-id="6">
+                                                    <input type="number" class="form-control bradius-bis w100p text-center price-input" name="low_season_price" min="10" max="200" value="45" data-parsley-id="6" th:value="${car.price.lowPrice}">
                                                 </div>
                                                 <div class="col-lg-12">
                                                     <p class="fs16 mgl-40 tcenter">Prix de votre voiture pour une journée de location  en basse saison.</p>
@@ -143,7 +47,7 @@
                                             <p class="medium mgb-10 tcenter">Prix Moyenne saison <span class="light italic">(€)</span></p>
                                             <div class="row">
                                                 <div class="col-lg-12">
-                                                    <input type="number" class="form-control bradius-bis w100p text-center price-input" name="medium_season_price" min="10" max="200" value="55" data-parsley-id="8">
+                                                    <input type="number" class="form-control bradius-bis w100p text-center price-input" name="medium_season_price" min="10" max="200" value="55" data-parsley-id="8" th:value="${car.price.middlePrice}">
                                                 </div>
                                                 <div class="col-lg-12">
                                                     <p class="fs16 mgl-40 tcenter">Prix de votre voiture pour une journée de location , en moyenne saison.</p>
@@ -154,7 +58,7 @@
                                             <p class="medium mgb-10 tcenter">Prix Haute saison <span class="light">(€)</span></p>
                                             <div class="row">
                                                 <div class="col-lg-12">
-                                                    <input type="number" class="form-control bradius-bis w100p text-center price-input" name="high_season_price" min="10" max="200" value="74" data-parsley-id="10">
+                                                    <input type="number" class="form-control bradius-bis w100p text-center price-input" name="high_season_price" min="10" max="200" value="74" data-parsley-id="10" th:value="${car.price.highPrice}">
                                                 </div>
                                                 <div class="col-lg-12">
                                                     <p class="fs16 mgl-40 tcenter">Prix de votre voiture pour une journée de location, en haute saison.</p>
@@ -172,13 +76,13 @@
                                             <p class="medium mgb-10">Location moyenne durée <span class="light italic fs12">(supérieure ou égale à 14 jours)</span></p>
                                             <div class="row mgt-20">
                                                 <div class="col-lg-2">
-                                                    <select class="form-control text-center bradius-bis " name="long_term_rate" data-parsley-id="12">
-                                                        <option value="0" selected="">0%</option>
-                                                        <option value="10">10%</option>
-                                                        <option value="20">20%</option>
-                                                        <option value="30">30%</option>
-                                                        <option value="40">40%</option>
-                                                        <option value="50">50%</option>
+                                                    <select class="form-control text-center bradius-bis " name="promo1" data-parsley-id="12" >
+                                                        <option value="0" th:selected="${car.price.promo1 == 0}">0%</option>
+                                                        <option value="10" th:selected="${car.price.promo1 == 10}">10%</option>
+                                                        <option value="20" th:selected="${car.price.promo1 == 20}">20%</option>
+                                                        <option value="30" th:selected="${car.price.promo1 == 30}">30%</option>
+                                                        <option value="40" th:selected="${car.price.promo1 == 40}">40%</option>
+                                                        <option value="50" th:selected="${car.price.promo1 == 50}">50%</option>
                                                     </select>
                                                     <span class="select-icon text-more-light"><i class="fa fa-angle-down fa-2x"></i></span>
                                                 </div>
@@ -191,13 +95,13 @@
                                             <p class="medium mgb-10">Location longue durée <span class="light italic fs12">(supérieure ou égale à 60 jours)</span></p>
                                             <div class="row">
                                                 <div class="col-lg-2">
-                                                    <select class="form-control text-center bradius-bis" name="lld_rate" data-parsley-id="14">
-                                                        <option value="0" selected="">0%</option>
-                                                        <option value="10">10%</option>
-                                                        <option value="20">20%</option>
-                                                        <option value="30">30%</option>
-                                                        <option value="40">40%</option>
-                                                        <option value="50">50%</option>
+                                                    <select class="form-control text-center bradius-bis" name="promo2" data-parsley-id="14">
+                                                        <option value="0" th:selected="${car.price.promo2 == 0}">0%</option>
+                                                        <option value="10" th:selected="${car.price.promo2 == 10}">10%</option>
+                                                        <option value="20" th:selected="${car.price.promo2 == 20}">20%</option>
+                                                        <option value="30" th:selected="${car.price.promo2 == 30}">30%</option>
+                                                        <option value="40" th:selected="${car.price.promo2 == 40}">40%</option>
+                                                        <option value="50" th:selected="${car.price.promo2 == 50}">50%</option>
                                                     </select>
                                                     <span class="select-icon text-more-light"><i class="fa fa-angle-down fa-2x"></i></span>
                                                 </div>
@@ -208,10 +112,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <input type="hidden" name="smart_pricing" value="1">
-                                <input type="hidden" name="vehicle_id" value="29820">
-                                <input type="hidden" name="page" value="pricing">
-                                <div class="row justify-content-center mgb-30 mgt-30">
+                                <input type="hidden" th:value="${car.id}" name="vehicle_id">                                <div class="row justify-content-center mgb-30 mgt-30">
                                     <div class="col-lg-3">
                                         <button class="btn btn-success w100p mgt-30">
                                             <span class="load-el hide"><i class="fa fa-spinner fa-spin"></i></span>

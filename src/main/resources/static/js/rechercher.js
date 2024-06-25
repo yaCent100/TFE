@@ -1,87 +1,228 @@
-// Fonction pour envoyer la requête AJAX au serveur et récupérer les voitures disponibles
-function searchAvailableCars() {
-    const address = document.getElementById("manualAddress").value;
-    const dateDebut = document.getElementById("dateDebut").value;
-    const dateFin = document.getElementById("dateFin").value;
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log("Initializing car results script...");
 
-    fetch(`/search?address=${address}&dateDebut=${dateDebut}&dateFin=${dateFin}`)
-        .then(response => response.json())
-        .then(data => {
-            const filteredAndSortedCars = filterAndSortCars(data);
-            displayCars(filteredAndSortedCars);
-        })
-        .catch(error => console.error('Une erreur s\'est produite lors de la recherche des voitures :', error));
-}
+    const carResultsElement = document.getElementById('carList');
+    const spinnerElement = document.getElementById('loading-spinner');
 
-// Fonction pour filtrer et trier les voitures par proximité et disponibilité
-// Fonction pour filtrer et trier les voitures par proximité et disponibilité
-function filterAndSortCars(cars) {
-    // Coordonnées de l'utilisateur (par exemple, Paris)
-    const userCoordinates = { latitude: 48.8566, longitude: 2.3522 };
+    // Initialement, masquer carlist et afficher le spinner
+    carResultsElement.style.display = 'none';
+    spinnerElement.style.display = 'block';
 
-    // Fonction pour calculer la distance entre deux coordonnées géographiques (en kilomètres)
-    function calculateDistance(point1, point2) {
-        const earthRadiusKm = 6371;
+    const urlParams = new URLSearchParams(window.location.search);
+    const address = urlParams.get('address');
+    const dateDebut = urlParams.get('dateDebut');
+    const dateFin = urlParams.get('dateFin');
+    const lat = parseFloat(urlParams.get('lat'));
+    const lng = parseFloat(urlParams.get('lng'));
 
-        const lat1 = degreesToRadians(point1.latitude);
-        const lon1 = degreesToRadians(point1.longitude);
-        const lat2 = degreesToRadians(point2.latitude);
-        const lon2 = degreesToRadians(point2.longitude);
+    console.log(`Parameters - Address: ${address}, DateDebut: ${dateDebut}, DateFin: ${dateFin}, Lat: ${lat}, Lng: ${lng}`);
 
-        const dLat = lat2 - lat1;
-        const dLon = lon2 - lon1;
+    if (address && dateDebut && dateFin && lat && lng) {
+        try {
+            const response = await fetch(`/api/cars/search?address=${encodeURIComponent(address)}&lat=${lat}&lng=${lng}&dateDebut=${dateDebut}&dateFin=${dateFin}`);
+            const cars = await response.json();
+            console.log("Fetched available cars:", cars);
+            if (cars && cars.length > 0) {
+                cars.forEach(car => {
+                    car.distance = calculateDistance(lat, lng, car.latitude, car.longitude);
+                });
+                displayCarResults(cars);
+            } else {
+                console.log('No cars found for the given criteria.');
+                carResultsElement.innerHTML = '<p>No cars available for the given criteria.</p>';
+            }
+        } catch (error) {
+            console.error('Error fetching car data:', error);
+            carResultsElement.innerHTML = '<p>An error occurred while fetching car data. Please try again later.</p>';
+        } finally {
+            // Masquer le spinner et afficher carlist après le chargement des données
+            spinnerElement.style.display = 'none';
+            carResultsElement.style.display = 'block';
+        }
+    } else {
+        console.log('Missing required parameters.');
+        spinnerElement.style.display = 'none';
+        carResultsElement.style.display = 'block';
+        carResultsElement.innerHTML = '<p>Please provide all the required search parameters.</p>';
+    }
 
+    function displayCarResults(cars) {
+        carResultsElement.innerHTML = ''; // Effacer les anciens résultats
+
+        cars.forEach(car => {
+            const carCard = `
+                <div class="card p-3 rounded">
+                    <a href="/cars/${car.id}">
+                        <div class="row g-0">
+                            <div class="col-md-3">
+                                <div class="vehicle-picture">
+                                    <img src="${car.photoUrl ? '/uploads/' + car.photoUrl[0] : '/images/carDefault.png'}" alt="Car Photo" loading="lazy">
+                                </div>
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-xs-7 search-list-vehicle-desc-responsive">
+                                <div class="search-list-vehicle-desc">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="row">
+                                                <div class="col-lg-8 col-md-12 col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-10 col-md-10 col-xs-10 no-padding">
+                                                            <p class="fs14 bold c-black">${car.brand} ${car.model}</p>
+                                                            <span class="fs11 mobile pdl-5">${car.adresse}, ${car.codePostal} ${car.locality}</span>
+                                                            <p class="fs11 mobile pdl-5">
+                                                                <span class="fa fa-map-marker mgr-10"></span>
+                                                                <span>${car.distance.toFixed(1)} km</span>
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2 col-xs-2 no-padding">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3 col-md-4 col-xs-10 text-right not-on-mobile on-ipad not-mobile">
+                                                    <p class="vehicle-pricing fs16 medium">${car.price.middlePrice}€</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+            carResultsElement.insertAdjacentHTML('beforeend', carCard);
+        });
+    }
+
+    function calculateDistance(lat1, lng1, lat2, lng2) {
+        const R = 6371; // Radius of the Earth in kilometers
+        const dLat = toRad(lat2 - lat1);
+        const dLng = toRad(lng2 - lng1);
         const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                  Math.cos(lat1) * Math.cos(lat2) *
-                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
+                  Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                  Math.sin(dLng / 2) * Math.sin(dLng / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return earthRadiusKm * c;
+        return R * c; // Distance in kilometers
     }
 
-    // Fonction utilitaire pour convertir degrés en radians
-    function degreesToRadians(degrees) {
-        return degrees * Math.PI / 180;
+    function toRad(value) {
+        return value * Math.PI / 180;
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Initializing script...");
+
+    const searchForm = document.getElementById('rechercheForm');
+    if (searchForm) {
+        console.log("Form found. Adding event listener...");
+        searchForm.addEventListener('submit', searchCars);
+    } else {
+        console.error("Element with id 'rechercheForm' not found.");
     }
 
-    // Filtrer les voitures disponibles
-    const availableCars = cars.filter(car => car.available);
+    async function searchCars(event) {
+        event.preventDefault(); // Empêche la soumission du formulaire
 
-    // Trier les voitures par proximité
-    const sortedCars = availableCars.sort((car1, car2) => {
-        const distanceToCar1 = calculateDistance(userCoordinates, car1.coordinates);
-        const distanceToCar2 = calculateDistance(userCoordinates, car2.coordinates);
-        return distanceToCar1 - distanceToCar2;
-    });
+        const address = document.getElementById('manualAddress').value;
+        const dateDebut = document.getElementById('dateDebut').value;
+        const dateFin = document.getElementById('dateFin').value;
 
-    return sortedCars;
-}
+        // Stocker dans localStorage
+        localStorage.setItem('manualAddress', address);
+        localStorage.setItem('dateDebut', dateDebut);
+        localStorage.setItem('dateFin', dateFin);
 
-// Fonction pour afficher les voitures filtrées et triées
-function displayCars(cars) {
-    const carlistContainer = document.getElementById("carlist");
-    carlistContainer.innerHTML = ""; // Efface le contenu précédent
+        if (!address || !dateDebut || !dateFin) {
+            alert('Veuillez remplir tous les champs.');
+            return;
+        }
 
-    cars.forEach(car => {
-        const carCard = createCarCard(car);
-        carlistContainer.appendChild(carCard);
-    });
-}
+        const geocoder = new google.maps.Geocoder();
 
-// Fonction pour créer une carte HTML représentant une voiture
-function createCarCard(car) {
-    const card = document.createElement("div");
-    card.classList.add("col-12", "mb-3");
+        geocoder.geocode({ 'address': address }, async function(results, status) {
+            if (status === 'OK') {
+                const location = results[0].geometry.location;
+                const userLat = location.lat();
+                const userLng = location.lng();
 
-    const innerHTML = `
-        <div class="card p-3 rounded">
-            <!-- Insérez ici le contenu de la carte représentant la voiture -->
-        </div>
-    `;
-    card.innerHTML = innerHTML;
+                // Redirection vers la page /cars avec les paramètres de recherche
+                window.location.href = `/cars?address=${encodeURIComponent(address)}&lat=${userLat}&lng=${userLng}&dateDebut=${dateDebut}&dateFin=${dateFin}`;
+            } else {
+                console.error('Geocode was not successful for the following reason:', status);
+            }
+        });
 
-    // Modifiez le contenu de la carte pour afficher les détails de la voiture
+        return false;
+    }
+});
 
-    return card;
-}
+
+/* METTRE LES CHAMPS DANS LA PAGE CARS */
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Initializing script...");
+
+    const searchForm = document.getElementById('rechercheForm');
+    if (searchForm) {
+        console.log("Form found. Adding event listener...");
+        searchForm.addEventListener('submit', searchCars);
+    } else {
+        console.error("Element with id 'rechercheForm' not found.");
+    }
+
+    async function searchCars(event) {
+        event.preventDefault(); // Empêche la soumission du formulaire
+
+        const address = document.getElementById('manualAddress').value;
+        const dateDebut = document.getElementById('dateDebut').value;
+        const dateFin = document.getElementById('dateFin').value;
+
+        // Stocker dans localStorage
+        localStorage.setItem('manualAddress', address);
+        localStorage.setItem('dateDebut', dateDebut);
+        localStorage.setItem('dateFin', dateFin);
+
+        if (!address || !dateDebut || !dateFin) {
+            alert('Veuillez remplir tous les champs.');
+            return;
+        }
+
+        const geocoder = new google.maps.Geocoder();
+
+        geocoder.geocode({ 'address': address }, async function(results, status) {
+            if (status === 'OK') {
+                const location = results[0].geometry.location;
+                const userLat = location.lat();
+                const userLng = location.lng();
+
+                // Redirection vers la page /cars avec les paramètres de recherche
+                window.location.href = `/cars?address=${encodeURIComponent(address)}&lat=${userLat}&lng=${userLng}&dateDebut=${dateDebut}&dateFin=${dateFin}&page=0&size=15`;
+            } else {
+                console.error('Geocode was not successful for the following reason:', status);
+            }
+        });
+
+        return false;
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const adresse = localStorage.getItem('manualAddress');
+    const dateDebut = localStorage.getItem('dateDebut');
+    const dateFin = localStorage.getItem('dateFin');
+
+    if (adresse) {
+        document.getElementById('manualAddress').value = adresse;
+        localStorage.removeItem('manualAddress');
+    }
+    if (dateDebut) {
+        document.getElementById('dateDebut').value = dateDebut;
+        localStorage.removeItem('dateDebut');
+    }
+    if (dateFin) {
+        document.getElementById('dateFin').value = dateFin;
+        localStorage.removeItem('dateFin');
+    }
+});

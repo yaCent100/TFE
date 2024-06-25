@@ -1,5 +1,5 @@
 <!-- fragments/annonce.html -->
-<div layout:fragment="annonce"  id="annonce-tab" class="tab-content active">
+<div layout:fragment="annonce"  id="annonce-tab" class="tab-content-car active">
 
   <div class="container mt-5">
     <div class="vehicule-container">
@@ -60,7 +60,7 @@
                   </div>
                   <div class="col-lg-3 col-md-3 col-xs-4">
                       <p class="text-right h45">
-                          <a class="fs14 c-main normal" href="/vehicle/29282/edit/informations">
+                          <a class="fs14 c-main normal" th:href="@{/account/cars/edit/{id}(id=${car.id})}">
                               <i class="fa fa-edit nbsp-large"></i>Editer
                           </a>
                       </p>
@@ -182,9 +182,14 @@
             <div class="vehicle-disabled-checkmark bg-white mgb-20">
                 <h5 class="mgb-30">Informations manquantes</h5>
                 <ul>
-                    <p class="mgb-10"><i class="fa fa-check c-main nbsp-large"></i>Ajouter vos informations personnelles</p>
-                    <p class="normal text-light mgb-10"><a class="fs14 c-main normal underline" href="/user/111716/bank-account?redirect_uri=http%253A%252F%252Fwww.zotcar.com%252Flocation%252Fvoiture%252Fla-reunion-particulier-29282%252Fshow"><i class="fa fa-times c-danger nbsp-large"></i>Ajouter vos informations bancaires</a></p>
-                    <p class="normal text-light mgb-10"><a class="fs14 c-main normal underline" href="/user/111716/identity?redirect_uri=http%253A%252F%252Fwww.zotcar.com%252Flocation%252Fvoiture%252Fla-reunion-particulier-29282%252Fshow"><i class="fa fa-times c-danger nbsp-large"></i>Ajouter votre pièce d'identité</a></p>
+                    <p class="normal text-light mgb-10"><a class="fs14 c-main normal underline" th:href="@{/account/bank-account}">
+                        <i class="fa" th:classappend="${user.iban != null && user.bic != null ? 'fa-check c-main' : 'fa-times c-danger'}"></i>
+                        Ajouter vos informations bancaires
+                    </a></p>
+                    <p class="normal text-light mgb-10"><a class="fs14 c-main normal underline" th:href="@{/account/identity}">
+                        <i class="fa" th:classappend="${user.hasIdentityDocuments() ? 'fa-check c-main' : 'fa-times c-danger'}"></i>
+                        Ajouter votre pièce d'identité
+                    </a></p>
                 </ul>
             </div>
 

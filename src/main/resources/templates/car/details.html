@@ -14,7 +14,7 @@
                         <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" style="max-width: 700px;">
                             <div class="carousel-inner">
                                 <div th:each="photo, iterStat : ${car.photos}" class="carousel-item" th:classappend="${iterStat.first}? 'active'">
-                                    <img th:src="${photo.url}" class="d-block w-100" alt="...">
+                                    <img th:src="'/uploads/' +${photo.url}" class="d-block w-100" alt="...">
                                 </div>
                             </div>
                             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -29,7 +29,7 @@
                     </div>
                     <div>
                         <h1 class="fw-bold mt-2" th:text="${car.brand + ' ' + car.model}"></h1><br>
-                        <span th:text="${car.year} + ' - ' + ${car.fuelType} + ' - ' + ${car.miles} + ' Km'"></span><br>
+                        <span th:text="${car.fuelType}"></span><br>
                         <span>
                             <span th:each="star : ${#numbers.sequence(1, averageRating)}" class="star-filled">&#9733;</span>
                             <span th:each="star : ${#numbers.sequence(0, 5 - averageRating)}" class="star-filled">&#9734;</span>
@@ -155,13 +155,12 @@
         <!-- Reservation FIXED -->
         <div class="col-md-3 d-flex align-items-center justify-content-center position-fixed top-50 end-0 translate-middle-y">
             <div class="custom-border p-3 text-center">
-                <p th:text="${car.displayPrice + '€'}" class="fw-bold fs-2 m-0"></p>
+                <p th:text="${car.price.middlePrice + '€'}" class="fw-bold fs-2 m-0"></p>
                 <p th:text="'/jour'" class="fs-6 m-0"></p>
                 <br>
                 <a th:href="@{'/reservation/' + ${car.id}}" class="custom-reserver btn fw-bold fw-italic">Réserver</a>
             </div>
         </div>
     </div>
-</div>
 </body>
 </html>

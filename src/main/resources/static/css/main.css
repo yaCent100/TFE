@@ -88,6 +88,16 @@ nav {
 
 /* CARS */
 
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: .3em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 #filters {
     /* Style de la section des filtres */
     /* Par exemple : */
@@ -849,11 +859,11 @@ nav {
 
 /* Profil Vehicule menu */
 
-.tab-content {
+.tab-content-car {
     display: none !important;
 }
 
-.tab-content.active {
+.tab-content-car.active {
     display: block !important;
 }
 
@@ -981,9 +991,9 @@ nav {
 }
 
 /* Applique une couleur de fond aux jours du mois actif */
-.fc .fc-daygrid-day:not(.fc-day-other) {
-    background-color: #DFE7EC; /* Remplacez #f0f0f0 par la couleur désirée */
-}
+/*.fc .fc-daygrid-day:not(.fc-day-other) {
+    background-color: #DFE7EC; /* Remplacez #f0f0f0 par la couleur désirée
+}*/
 
 /* taille de case des chiffres */
 .fc .fc-daygrid-day-frame {
