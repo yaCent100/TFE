@@ -19,7 +19,7 @@ public class CarRental {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "voiture_id")
+    @JoinColumn(name = "car_id")
     private Car car;
 
     @OneToMany(mappedBy = "carRental", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

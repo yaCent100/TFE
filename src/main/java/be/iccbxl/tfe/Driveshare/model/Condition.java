@@ -16,6 +16,6 @@ public class Condition {
     private String condition;
 
     @ManyToOne
-    @JoinColumn(name = "VoitureID")
+    @JoinColumn(name = "car_id")
     private Car car;
 }

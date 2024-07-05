@@ -16,7 +16,7 @@ public class Photo {
     private String url;
 
     @ManyToOne
-    @JoinColumn(name = "VoitureID")
+    @JoinColumn(name = "car_id")
     private Car car;
 
 

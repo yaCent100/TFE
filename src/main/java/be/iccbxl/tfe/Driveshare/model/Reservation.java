@@ -21,13 +21,13 @@ public class Reservation {
     @JoinColumn(name = "rental_id", nullable = false)
     private CarRental carRental;
 
-    @Column(name = "DebutLocation")
+    @Column(name = "debut_location")
     private LocalDate debutLocation;
 
-    @Column(name = "FinLocation")
+    @Column(name = "fin_location")
     private LocalDate finLocation;
 
-    @Column(name = "CreatedAt")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "statut")

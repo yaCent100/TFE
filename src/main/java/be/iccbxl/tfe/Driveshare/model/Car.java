@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name="voitures")
+@Table(name="cars")
 public class Car {
 
     @Id
@@ -54,12 +54,12 @@ public class Car {
 
 
     @ManyToOne
-    @JoinColumn(name = "UserID")
+    @JoinColumn(name = "user_id")
     private User user;
 
 
     @ManyToOne
-    @JoinColumn(name = "CategorieID")
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @OneToOne(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -73,17 +73,17 @@ public class Car {
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
-            name = "voitures_caracteristiques",
-            joinColumns = @JoinColumn(name = "VoitureID"),
-            inverseJoinColumns = @JoinColumn(name = "CaracteristiqueID")
+            name = "car_features",
+            joinColumns = @JoinColumn(name = "car_id"),
+            inverseJoinColumns = @JoinColumn(name = "feature_id")
     )
     private List<Feature> features = new ArrayList<>();;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
-            name = "voitures_equipements",
-            joinColumns = @JoinColumn(name = "VoitureID"),
-            inverseJoinColumns = @JoinColumn(name = "EquipementID")
+            name = "car_equipments",
+            joinColumns = @JoinColumn(name = "car_id"),
+            inverseJoinColumns = @JoinColumn(name = "equipment_id")
     )
     private List<Equipment> equipments;
 
@@ -94,10 +94,12 @@ public class Car {
     private List<CarRental> carRentals;
 
 
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+
+    private Double longitude;
+
     @Transient
-    private double distance;
+    private Double distance;
 
 
     public void addCondition(Condition condition) {

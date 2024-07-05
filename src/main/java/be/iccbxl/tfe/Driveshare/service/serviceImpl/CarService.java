@@ -6,7 +6,6 @@ import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.repository.*;
 import be.iccbxl.tfe.Driveshare.service.CarServiceI;
 import com.google.maps.model.GeocodingResult;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,17 +223,30 @@ public class CarService implements CarServiceI {
 
 
     private boolean isCarNearby(Car car, double userLat, double userLng, double distanceThreshold) {
-        double carLat = car.getLatitude();
-        double carLng = car.getLongitude();
+        Double carLatDouble = car.getLatitude();
+        Double carLngDouble = car.getLongitude();
+
+        // Check if latitude or longitude is null
+        if (carLatDouble == null || carLngDouble == null) {
+            logger.warn("Car ID: {} has null coordinates, skipping distance check.", car.getId());
+            return false;
+        }
+
+        // Convert Double to double (primitive type)
+        double carLat = carLatDouble.doubleValue();
+        double carLng = carLngDouble.doubleValue();
+
         if (carLat == 0.0 && carLng == 0.0) {
             logger.warn("Car ID: {} has default coordinates (0.0, 0.0), skipping distance check.", car.getId());
             return false;
         }
+
         logger.info("Car ID: {}, Car Lat: {}, Car Lng: {}", car.getId(), carLat, carLng);
         double distance = calculateHaversineDistance(userLat, userLng, carLat, carLng);
         logger.info("Car ID: {}, Distance: {}", car.getId(), distance);
         return distance <= distanceThreshold;
     }
+
 
     private double calculateHaversineDistance(double lat1, double lng1, double lat2, double lng2) {
         final int R = 6371; // Radius of the Earth in kilometers

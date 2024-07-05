@@ -1,124 +1,46 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log("Initializing car results script...");
-
-    const carResultsElement = document.getElementById('carList');
-    const spinnerElement = document.getElementById('loading-spinner');
-
-    // Initialement, masquer carlist et afficher le spinner
-    carResultsElement.style.display = 'none';
-    spinnerElement.style.display = 'block';
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const address = urlParams.get('address');
-    const dateDebut = urlParams.get('dateDebut');
-    const dateFin = urlParams.get('dateFin');
-    const lat = parseFloat(urlParams.get('lat'));
-    const lng = parseFloat(urlParams.get('lng'));
-
-    console.log(`Parameters - Address: ${address}, DateDebut: ${dateDebut}, DateFin: ${dateFin}, Lat: ${lat}, Lng: ${lng}`);
-
-    if (address && dateDebut && dateFin && lat && lng) {
-        try {
-            const response = await fetch(`/api/cars/search?address=${encodeURIComponent(address)}&lat=${lat}&lng=${lng}&dateDebut=${dateDebut}&dateFin=${dateFin}`);
-            const cars = await response.json();
-            console.log("Fetched available cars:", cars);
-            if (cars && cars.length > 0) {
-                cars.forEach(car => {
-                    car.distance = calculateDistance(lat, lng, car.latitude, car.longitude);
-                });
-                displayCarResults(cars);
-            } else {
-                console.log('No cars found for the given criteria.');
-                carResultsElement.innerHTML = '<p>No cars available for the given criteria.</p>';
-            }
-        } catch (error) {
-            console.error('Error fetching car data:', error);
-            carResultsElement.innerHTML = '<p>An error occurred while fetching car data. Please try again later.</p>';
-        } finally {
-            // Masquer le spinner et afficher carlist après le chargement des données
-            spinnerElement.style.display = 'none';
-            carResultsElement.style.display = 'block';
-        }
-    } else {
-        console.log('Missing required parameters.');
-        spinnerElement.style.display = 'none';
-        carResultsElement.style.display = 'block';
-        carResultsElement.innerHTML = '<p>Please provide all the required search parameters.</p>';
-    }
-
-    function displayCarResults(cars) {
-        carResultsElement.innerHTML = ''; // Effacer les anciens résultats
-
-        cars.forEach(car => {
-            const carCard = `
-                <div class="card p-3 rounded">
-                    <a href="/cars/${car.id}">
-                        <div class="row g-0">
-                            <div class="col-md-3">
-                                <div class="vehicle-picture">
-                                    <img src="${car.photoUrl ? '/uploads/' + car.photoUrl[0] : '/images/carDefault.png'}" alt="Car Photo" loading="lazy">
-                                </div>
-                            </div>
-                            <div class="col-lg-8 col-md-8 col-xs-7 search-list-vehicle-desc-responsive">
-                                <div class="search-list-vehicle-desc">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="row">
-                                                <div class="col-lg-8 col-md-12 col-xs-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-10 col-md-10 col-xs-10 no-padding">
-                                                            <p class="fs14 bold c-black">${car.brand} ${car.model}</p>
-                                                            <span class="fs11 mobile pdl-5">${car.adresse}, ${car.codePostal} ${car.locality}</span>
-                                                            <p class="fs11 mobile pdl-5">
-                                                                <span class="fa fa-map-marker mgr-10"></span>
-                                                                <span>${car.distance.toFixed(1)} km</span>
-                                                            </p>
-                                                        </div>
-                                                        <div class="col-lg-2 col-md-2 col-xs-2 no-padding">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3 col-md-4 col-xs-10 text-right not-on-mobile on-ipad not-mobile">
-                                                    <p class="vehicle-pricing fs16 medium">${car.price.middlePrice}€</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            `;
-            carResultsElement.insertAdjacentHTML('beforeend', carCard);
-        });
-    }
-
-    function calculateDistance(lat1, lng1, lat2, lng2) {
-        const R = 6371; // Radius of the Earth in kilometers
-        const dLat = toRad(lat2 - lat1);
-        const dLng = toRad(lng2 - lng1);
-        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                  Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                  Math.sin(dLng / 2) * Math.sin(dLng / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // Distance in kilometers
-    }
-
-    function toRad(value) {
-        return value * Math.PI / 180;
-    }
-});
-
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Initializing script...");
 
     const searchForm = document.getElementById('rechercheForm');
+    const nosLocationsTab = document.getElementById('nosLocationsTab');
+    const carListElement = document.getElementById('carList');
+    const carList2Element = document.getElementById('carList2');
+    const spinnerElement = document.getElementById('loading-spinner');
+
     if (searchForm) {
         console.log("Form found. Adding event listener...");
         searchForm.addEventListener('submit', searchCars);
     } else {
         console.error("Element with id 'rechercheForm' not found.");
+    }
+
+    if (nosLocationsTab) {
+        console.log("Nos Locations tab found. Adding event listener...");
+        nosLocationsTab.addEventListener('click', (event) => {
+            event.preventDefault(); // Empêche le comportement par défaut du lien
+            window.location.href = '/cars'; // Redirection vers /cars avec un paramètre pour indiquer que carList2 doit être affiché
+        });
+    } else {
+        console.error("Element with id 'nosLocationsTab' not found.");
+    }
+
+    // Vérifiez l'URL pour le paramètre showCarList2
+    const urlParams = new URLSearchParams(window.location.search);
+    const showCarList2 = urlParams.get('showCarList2');
+
+    if (showCarList2 === 'true') {
+        // Afficher carList2 et masquer carList seulement si les éléments existent
+        if (carListElement && carList2Element) {
+            carListElement.style.display = 'none';
+            carList2Element.style.display = 'block';
+        } else {
+            console.error("Elements 'carList' or 'carList2' not found.");
+        }
+
+        // Masquer le spinner si nécessaire
+        if (spinnerElement) {
+            spinnerElement.style.display = 'none';
+        }
     }
 
     async function searchCars(event) {
@@ -158,56 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-/* METTRE LES CHAMPS DANS LA PAGE CARS */
-
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("Initializing script...");
-
-    const searchForm = document.getElementById('rechercheForm');
-    if (searchForm) {
-        console.log("Form found. Adding event listener...");
-        searchForm.addEventListener('submit', searchCars);
-    } else {
-        console.error("Element with id 'rechercheForm' not found.");
-    }
-
-    async function searchCars(event) {
-        event.preventDefault(); // Empêche la soumission du formulaire
-
-        const address = document.getElementById('manualAddress').value;
-        const dateDebut = document.getElementById('dateDebut').value;
-        const dateFin = document.getElementById('dateFin').value;
-
-        // Stocker dans localStorage
-        localStorage.setItem('manualAddress', address);
-        localStorage.setItem('dateDebut', dateDebut);
-        localStorage.setItem('dateFin', dateFin);
-
-        if (!address || !dateDebut || !dateFin) {
-            alert('Veuillez remplir tous les champs.');
-            return;
-        }
-
-        const geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode({ 'address': address }, async function(results, status) {
-            if (status === 'OK') {
-                const location = results[0].geometry.location;
-                const userLat = location.lat();
-                const userLng = location.lng();
-
-                // Redirection vers la page /cars avec les paramètres de recherche
-                window.location.href = `/cars?address=${encodeURIComponent(address)}&lat=${userLat}&lng=${userLng}&dateDebut=${dateDebut}&dateFin=${dateFin}&page=0&size=15`;
-            } else {
-                console.error('Geocode was not successful for the following reason:', status);
-            }
-        });
-
-        return false;
-    }
-});
-
-
 document.addEventListener('DOMContentLoaded', function() {
     const adresse = localStorage.getItem('manualAddress');
     const dateDebut = localStorage.getItem('dateDebut');
@@ -215,14 +87,107 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (adresse) {
         document.getElementById('manualAddress').value = adresse;
-        localStorage.removeItem('manualAddress');
     }
     if (dateDebut) {
         document.getElementById('dateDebut').value = dateDebut;
-        localStorage.removeItem('dateDebut');
     }
     if (dateFin) {
         document.getElementById('dateFin').value = dateFin;
-        localStorage.removeItem('dateFin');
     }
 });
+
+
+
+/* ALLEZ A LA PAGE RESERVATION */
+
+ document.addEventListener('DOMContentLoaded', function() {
+        const reservationForm = document.getElementById('reservationForm');
+        const dateDebutInput = document.getElementById('dateDebut');
+        const dateFinInput = document.getElementById('dateFin');
+
+        // Assurez-vous que les données nécessaires sont disponibles
+        const dateDebut = localStorage.getItem('dateDebut') || dateDebutInput.value;
+        const dateFin = localStorage.getItem('dateFin') || dateFinInput.value;
+
+        console.log('dateDebut:', dateDebut);
+        console.log('dateFin:', dateFin);
+
+        if (dateDebut && dateFin) {
+            // Mettez à jour les valeurs des champs de formulaire
+            dateDebutInput.value = dateDebut;
+            dateFinInput.value = dateFin;
+        } else {
+            alert('Les dates de début et de fin sont nécessaires pour afficher la réservation.');
+        }
+    });
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Initializing script...");
+
+    const searchForm = document.getElementById('rechercheForm');
+    const dateDebutSearch = document.getElementById('dateDebut');
+    const dateFinSearch = document.getElementById('dateFin');
+
+    const reservationForm = document.getElementById('reservationForm');
+    const dateDebutHidden = document.getElementById('dateDebutHidden');
+    const dateFinHidden = document.getElementById('dateFinHidden');
+    const dateDebutInput = document.getElementById('dateDebutInput');
+    const dateFinInput = document.getElementById('dateFinInput');
+
+    if (searchForm) {
+        searchForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Empêche la soumission du formulaire
+
+            const address = document.getElementById('manualAddress').value;
+            const dateDebut = dateDebutSearch.value;
+            const dateFin = dateFinSearch.value;
+
+            // Stocker dans localStorage
+            localStorage.setItem('manualAddress', address);
+            localStorage.setItem('dateDebut', dateDebut);
+            localStorage.setItem('dateFin', dateFin);
+
+            if (!address || !dateDebut || !dateFin) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+
+            // Redirection vers la page /cars avec les paramètres de recherche
+            window.location.href = `/cars?address=${encodeURIComponent(address)}&dateDebut=${dateDebut}&dateFin=${dateFin}`;
+        });
+    }
+
+    if (reservationForm) {
+        // Copier les valeurs de localStorage vers le formulaire de réservation
+        const storedDateDebut = localStorage.getItem('dateDebut');
+        const storedDateFin = localStorage.getItem('dateFin');
+
+        if (storedDateDebut && storedDateFin) {
+            dateDebutHidden.value = storedDateDebut;
+            dateFinHidden.value = storedDateFin;
+            dateDebutInput.value = storedDateDebut;
+            dateFinInput.value = storedDateFin;
+        }
+
+        reservationForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Empêche la soumission par défaut du formulaire
+
+            // Copier les dates des champs d'entrée vers les champs cachés
+            dateDebutHidden.value = dateDebutInput.value;
+            dateFinHidden.value = dateFinInput.value;
+
+            // Construire l'URL de redirection
+            const carId = reservationForm.getAttribute('action').split('/').pop();
+            const reservationUrl = `/reservation/${carId}?dateDebut=${encodeURIComponent(dateDebutHidden.value)}&dateFin=${encodeURIComponent(dateFinHidden.value)}`;
+
+            // Rediriger vers l'URL de réservation
+            window.location.href = reservationUrl;
+        });
+    }
+});
+
+
+

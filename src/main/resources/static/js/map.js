@@ -84,5 +84,6 @@ async function initMap() {
     });
 }
 
+
 // Appel de la fonction initMap lorsque la page est chargée
 initMap();

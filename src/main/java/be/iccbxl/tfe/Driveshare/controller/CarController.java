@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +65,8 @@ public class CarController {
 
 
     @GetMapping("/cars/{id}")
-    public String getCarById(@PathVariable Long id,@AuthenticationPrincipal CustomUserDetail userDetails, Model model) {
+    public String getCarById(@PathVariable Long id,@AuthenticationPrincipal CustomUserDetail userDetails,  @RequestParam(required = false) String dateDebut,
+                             @RequestParam(required = false) String dateFin, Model model) {
         User user = userDetails.getUser();
 
 
@@ -84,12 +87,33 @@ public class CarController {
                 .mapToInt(rental -> rental.getEvaluations().size())
                 .sum();
 
+        // Formatter les dates
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String formattedDateDebut = "";
+        String formattedDateFin = "";
+
+        try {
+            if (dateDebut != null && !dateDebut.isEmpty()) {
+                LocalDate localDateDebut = LocalDate.parse(dateDebut);
+                formattedDateDebut = localDateDebut.format(formatter);
+            }
+            if (dateFin != null && !dateFin.isEmpty()) {
+                LocalDate localDateFin = LocalDate.parse(dateFin);
+                formattedDateFin = localDateFin.format(formatter);
+            }
+        } catch (DateTimeParseException e) {
+            // Handle the parse exception
+            e.printStackTrace();
+        }
+
         model.addAttribute("user", user);
 
         // Ajouter la voiture, la note moyenne, et le prix calculé au modèle pour l'affichage
         model.addAttribute("car", car);
         model.addAttribute("averageRating", averageRating);
         model.addAttribute("totalEvaluations", totalEvaluations);
+        model.addAttribute("dateDebut", formattedDateDebut);
+        model.addAttribute("dateFin", formattedDateFin);
 
 
 

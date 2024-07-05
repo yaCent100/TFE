@@ -13,13 +13,8 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="categorie")
+    @Column(name="category")
     private String category;
 
-    @Column(name = "min_price")
-    private Double minPrice;
-
-    @Column(name = "max_price")
-    private Double maxPrice;
 
 }

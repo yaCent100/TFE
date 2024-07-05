@@ -1,0 +1,33 @@
+
+.right-panel {
+  padding-left: auto;
+  padding-right: auto;
+  padding: 30px !important;
+
+}
+
+.left-panel{
+    padding: 30px !important;
+}
+
+.title-ligne{
+    margin:5px;
+    color:	#00BFFF;
+    font-size: 1.2rem;
+}
+
+.big-title{
+    margin-top:20px;
+    margin-bottom:20px;
+}
+
+.number-custom{
+    background-color:#00BFFF;
+    color:white;
+    border: 1px solid white;
+    border-radius: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+}
+

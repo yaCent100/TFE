@@ -20,7 +20,7 @@ public class Payment {
     @Column(name = "prix_total", nullable = false)
     private Double prixTotal;
 
-    @Column(name = "Statut", nullable = false)
+    @Column(name = "statut", nullable = false)
     private String statut;
 
     @Column(name = "paiement_mode", nullable = false)
@@ -30,7 +30,7 @@ public class Payment {
     private LocalDate createdAt;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ReservationID")
+    @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
 }
