@@ -9,13 +9,21 @@ import java.time.LocalDateTime;
 public class ReservationDTO {
 
     private Long id;
-    private LocalDate debutLocation;
-    private LocalDate finLocation;
+    private Long carRentalId;
+    private Long carId;
+    private String debutLocation;
+    private String finLocation;
     private LocalDateTime createdAt;
     private String carName;
     private String userName;
     private String statut;
     private int nbJours;
+    private String carBrand;
+    private String carModel;
+    private String userProfileImage;
+    private String carImage;
+
+
 
 
 

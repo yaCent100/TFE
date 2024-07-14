@@ -103,6 +103,11 @@ public class CarService implements CarServiceI {
     }
 
     @Override
+    public List<Car> getCarsByUser(User user) {
+        return carRepository.findByUser(user);
+    }
+
+    @Override
     public double calculateAverageRating(Car car) {
         List<CarRental> carRentals = car.getCarRentals();
         if (carRentals.isEmpty()) {

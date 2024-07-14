@@ -1,14 +1,18 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
+import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
 import be.iccbxl.tfe.Driveshare.DTO.IndisponibleDTO;
 import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
 import be.iccbxl.tfe.Driveshare.model.Indisponible;
+import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.IndisponibleService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -35,5 +39,7 @@ public class ApiReservationRestController {
         System.out.println("Dates indisponibles pour la voiture ID " + carId + ": " + dates);
         return dates;
     }
+
+
 
 }

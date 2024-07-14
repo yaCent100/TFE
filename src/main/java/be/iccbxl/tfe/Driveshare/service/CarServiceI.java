@@ -2,6 +2,7 @@ package be.iccbxl.tfe.Driveshare.service;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
+import be.iccbxl.tfe.Driveshare.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,8 @@ public interface CarServiceI {
 
     Car updateCar(Long id, Car car);
     void deleteCar(Long id);
+
+    List<Car> getCarsByUser(User user);
     double calculateAverageRating(Car car);
 
 

@@ -35,10 +35,33 @@ public class CarMapper {
         public static ReservationDTO toReservationDTO(Reservation reservation) {
             ReservationDTO reservationDTO = new ReservationDTO();
             reservationDTO.setId(reservation.getId());
-            reservationDTO.setDebutLocation(reservation.getDebutLocation());
-            reservationDTO.setFinLocation(reservation.getFinLocation());
+            reservationDTO.setCarRentalId(reservation.getCarRental().getId());
+            reservationDTO.setCarId(reservation.getCarRental().getCar().getId());
+            reservationDTO.setDebutLocation(reservation.getDebutLocation().toString());
+            reservationDTO.setFinLocation(reservation.getFinLocation().toString());
+            reservationDTO.setStatut(reservation.getStatut());
+            reservationDTO.setCarBrand(reservation.getCarRental().getCar().getBrand());
+            reservationDTO.setCarModel(reservation.getCarRental().getCar().getModel());
+            reservationDTO.setUserName(reservation.getCarRental().getUser().getPrenom() + " " + reservation.getCarRental().getUser().getNom());
+
+
+            String photoUrl = reservation.getCarRental().getUser().getPhotoUrl();
+            if (photoUrl != null && !photoUrl.isEmpty()) {
+                reservationDTO.setUserProfileImage("/uploads/profil/" + photoUrl);
+            } else {
+                reservationDTO.setUserProfileImage("/uploads/profil/defaultPhoto.png");
+            }
+
+            // Obtenez l'URL de la première photo de la liste des photos de la voiture
+            if (!reservation.getCarRental().getCar().getPhotos().isEmpty()) {
+                reservationDTO.setCarImage("/uploads/"+reservation.getCarRental().getCar().getPhotos().get(0).getUrl());
+            } else {
+                reservationDTO.setCarImage("images/carDefault.png"); // URL par défaut si aucune photo n'est disponible
+            }
             return reservationDTO;
         }
+
+
 
         public static IndisponibleDTO toIndisponibleDTO(Indisponible indisponible) {
             IndisponibleDTO indisponibleDTO = new IndisponibleDTO();
@@ -87,6 +110,25 @@ public class CarMapper {
         price.setPromo2(priceDTO.getPromo2());
         return price;
     }
+
+    public static ChatMessage toChatMessage(ChatMessageDTO chatMessageDTO) {
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setContent(chatMessageDTO.getContent());
+        chatMessage.setReservationId(chatMessageDTO.getReservationId());
+
+        return chatMessage;
+    }
+
+    public static ChatMessageDTO toChatMessageDTO(ChatMessage chatMessage) {
+        ChatMessageDTO chatMessageDTO = new ChatMessageDTO();
+        chatMessageDTO.setContent(chatMessage.getContent());
+        chatMessageDTO.setFromUserNom(chatMessage.getFromUser().getNom()); // Assurez-vous d'avoir une méthode getNom() dans la classe User
+        chatMessageDTO.setFromUserId(chatMessage.getFromUser().getId());
+        chatMessageDTO.setToUserId(chatMessage.getToUser().getId());
+        chatMessageDTO.setReservationId(chatMessage.getReservationId());
+        return chatMessageDTO;
+    }
+
 
 
 }

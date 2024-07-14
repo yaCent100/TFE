@@ -30,4 +30,15 @@ public class CarRentalService implements CarRentalServiceI {
         return carRentalRepository.findAll();
     }
 
+    @Override
+    public List<CarRental> getCarById(List<Long> carRentalIds) {
+        return carRentalRepository.findAllById(carRentalIds);
+    }
+    @Override
+    public List<CarRental> getCarRentalsByCarIds(List<Long> carIds) {
+        return carRentalRepository.findByCarIdIn(carIds);
+    }
+
+
+
 }

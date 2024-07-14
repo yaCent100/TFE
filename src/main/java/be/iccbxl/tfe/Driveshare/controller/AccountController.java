@@ -5,9 +5,12 @@ import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,12 +19,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 
 @Controller
+@SessionAttributes("auth")
 public class AccountController {
 
     private final UserService userService;
@@ -37,10 +44,12 @@ public class AccountController {
     private final FeatureService featureService;
     private final EquipmentService equipmentService;
 
+    private final ReservationService reservationService;
+
 
 
     @Autowired
-    public AccountController(UserService userService, PriceService priceService, PhotoService photoService, CarService carService, FileStorageService fileStorageService, DocumentService documentService, NotificationPreferenceService preferenceService, BCryptPasswordEncoder passwordEncoder, PaymentService paymentService, DateService dateService, CategoryService categoryService, FeatureService featureService, EquipmentService equipmentService) {
+    public AccountController(UserService userService, PriceService priceService, PhotoService photoService, CarService carService, FileStorageService fileStorageService, DocumentService documentService, NotificationPreferenceService preferenceService, BCryptPasswordEncoder passwordEncoder, PaymentService paymentService, DateService dateService, CategoryService categoryService, FeatureService featureService, EquipmentService equipmentService, ReservationService reservationService) {
         this.userService = userService;
         this.photoService = photoService;
         this.carService = carService;
@@ -53,6 +62,7 @@ public class AccountController {
         this.categoryService = categoryService;
         this.featureService = featureService;
         this.equipmentService = equipmentService;
+        this.reservationService = reservationService;
     }
 
 
@@ -547,6 +557,83 @@ public class AccountController {
 
         model.addAttribute("successMessage", "Tarification mise à jour avec succès.");
         return "redirect:/account/cars/" + vehicleId + "#tarification-tab";
+    }
+
+
+    /*  ONGLET RESERVATIONS */
+
+    @GetMapping("/account/reservations")
+    public String getReservations(@AuthenticationPrincipal CustomUserDetail userDetails, Model model,
+                                  HttpServletRequest request) {
+        User user = userDetails.getUser();
+
+        // Récupérer les voitures de l'utilisateur
+        List<Car> userCars = carService.getCarsByUser(user);
+
+        model.addAttribute("user", user);
+        model.addAttribute("userCars", userCars);
+        model.addAttribute("requestURI", request.getRequestURI());
+
+        return "account/car-reservation/index";
+    }
+
+    @GetMapping("/account/car/{carId}/reservations/{reservationId}")
+    public String chatPage(
+            @AuthenticationPrincipal CustomUserDetail userDetails,
+            @PathVariable Long carId,
+            @PathVariable Long reservationId,
+            Model model) {
+
+        User user = userDetails.getUser();
+
+        // Récupérer les détails de la réservation
+        Reservation reservation = reservationService.getReservationById(reservationId);
+        Car car = carService.getCarById(carId);
+
+        // Détails de la voiture
+        String reservationStatus = reservation.getStatut();
+        String carBrand = car.getBrand();
+        String carModel = car.getModel();
+        String carFuel = car.getFuelType();
+        String carImageUrl = (car.getPhotos() != null && !car.getPhotos().isEmpty())
+                ? "/uploads/" + car.getPhotos().get(0).getUrl()
+                : "default-car.png";
+        String carAddress = car.getAdresse() + ", " + car.getCodePostal() + " " + car.getLocality();
+
+        // Déterminer si l'utilisateur est le propriétaire ou le locataire
+        boolean isOwner = user.getId().equals(car.getUser().getId());
+        User profileUser = isOwner ? reservation.getCarRental().getUser() : car.getUser();
+
+        // Définir la photo de profil par défaut si elle est manquante
+        if (profileUser.getPhotoUrl() == null || profileUser.getPhotoUrl().isEmpty()) {
+            profileUser.setPhotoUrl("/uploads/profil/defaultPhoto.png");
+        }
+
+        // Conversion des dates en objets LocalDate si nécessaire
+        LocalDate debutLocation = reservation.getDebutLocation();
+        LocalDate finLocation = reservation.getFinLocation();
+
+        String formattedStartDate = dateService.formatAndCapitalizeDate(debutLocation);
+        String formattedEndDate = dateService.formatAndCapitalizeDate(finLocation);
+
+        // Ajouter les attributs au modèle
+        model.addAttribute("user", user);
+        model.addAttribute("reservationId", reservationId);
+        model.addAttribute("carId", carId);
+        model.addAttribute("reservationStatus", reservationStatus);
+        model.addAttribute("carBrand", carBrand);
+        model.addAttribute("carModel", carModel);
+        model.addAttribute("carFuel", carFuel);
+        model.addAttribute("carImageUrl", carImageUrl);
+        model.addAttribute("reservationStartDate", formattedStartDate);
+        model.addAttribute("reservationEndDate", formattedEndDate);
+        model.addAttribute("carAddress", carAddress);
+        model.addAttribute("profileUser", profileUser);
+        model.addAttribute("isOwner", isOwner);
+        model.addAttribute("toUserId", profileUser.getId());
+        model.addAttribute("fromUserId", user.getId());
+
+        return "account/car-reservation/chat";
     }
 
 

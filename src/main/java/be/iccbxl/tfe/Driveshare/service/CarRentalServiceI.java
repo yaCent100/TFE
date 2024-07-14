@@ -12,5 +12,10 @@ public interface CarRentalServiceI {
 
     List<CarRental> getAllCarRentals();
 
+    List<CarRental> getCarById(List<Long> ids);
+
+    List<CarRental> getCarRentalsByCarIds(List<Long> carIds);
+
+
 
 }

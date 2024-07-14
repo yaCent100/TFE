@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>DriveShare - Mes Réservations</title>
+</head>
+<body>
+<div layout:fragment="content" class="container mt-5 mb-5">
+  <div class="row">
+    <div class="col-lg-3">
+      <h5>Mes voitures</h5>
+      <hr>
+      <div id="cars-filters">
+        <div th:each="car : ${userCars}">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" th:value="${car.id}" th:id="${'filter-car-' + car.id}">
+            <label class="form-check-label" th:for="${'filter-car-' + car.id}" th:text="${car.brand + ' ' + car.model}"></label>
+          </div>
+        </div>
+      </div>
+      <h5>Statut des locations</h5>
+      <hr>
+      <div id="status-filters">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="CONFIRMED" id="filter-confirmed">
+          <label class="form-check-label" for="filter-confirmed">Location Confirmées</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="CANCELLED" id="filter-cancelled">
+          <label class="form-check-label" for="filter-cancelled">Location Annulées</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="COMPLETED" id="filter-completed">
+          <label class="form-check-label" for="filter-completed">Location Terminées</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="PENDING" id="filter-pending">
+          <label class="form-check-label" for="filter-pending">Location en attente</label>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-9">
+      <div id="result-container"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

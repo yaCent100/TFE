@@ -12,4 +12,9 @@ public interface CarRentalRepository extends JpaRepository<CarRental, Long> {
     List<CarRental> findByUser(User user);
 
     List<CarRental> findByCar(Car car);
+
+    List<CarRental> findByCarIdIn(List<Long> carIds);
+
+
+
 }

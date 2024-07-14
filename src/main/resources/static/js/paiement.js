@@ -65,7 +65,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
             console.log("Payment Intent Client Secret: ", clientSecret);
 
-            const appearance = { theme: 'night' };
+           const appearance = {
+             theme: 'stripe',
+
+             variables: {
+               colorPrimary: '#00BFFF',
+               colorBackground: '#DFE7EC',
+               colorText: '#9EABB3',
+               colorDanger: '#df1b41',
+               fontFamily: 'Ideal Sans, system-ui, sans-serif',
+               spacingUnit: '2px',
+               borderRadius: '4px',
+               // See all possible variables below
+             }
+           };
             elements = stripe.elements({ appearance, clientSecret });
 
             const paymentElementOptions = { layout: "tabs" };

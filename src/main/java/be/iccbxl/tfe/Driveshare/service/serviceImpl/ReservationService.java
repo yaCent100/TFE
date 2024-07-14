@@ -111,6 +111,28 @@ public class ReservationService implements ReservationServiceI {
 
 
 
+    @Override
+    public List<Reservation> getReservationsByCarRentals(List<CarRental> carRentals) {
+        return reservationRepository.findByCarRentalIn(carRentals);
+    }
+
+    @Override
+    public List<Reservation> getReservationsByCarRentalsAndStatuses(List<CarRental> carRentals, List<String> statuses) {
+        return null;
+    }
+
+    @Override
+    public List<Reservation> getReservationsByCarIds(List<Long> carIds) {
+        return reservationRepository.findByCarRentalCarIdIn(carIds);
+    }
+
+    @Override
+    public List<Reservation> getReservationsByStatusesAndUser(List<String> statuses, User user) {
+        return reservationRepository.findByStatusesAndUser(statuses, user);
+    }
+
+
+
 
 
 }

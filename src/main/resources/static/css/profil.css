@@ -35,3 +35,97 @@
     );
 }
 
+
+
+
+/* ONGLET RESERVATIONS */
+
+.car-reservation-card {
+    border: 1px solid white;
+    background-color: #DFE7EC;
+    border-radius: 10px;
+}
+
+.car-reservation-card img {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+ .date-container {
+    display: flex;
+    align-items: center;
+}
+
+.date-container img {
+    margin: 0 5px; /* Ajouter de l'espace autour de l'image */
+}
+
+.car-reservation-body {
+    padding:25px;
+}
+
+.car-reservation-user{
+   padding:25px;
+    border: 1px solid white;
+   background-color: #DFE7EC;
+   border-radius: 10px;
+}
+
+.statut-box{
+    padding: 3rem;
+    border-radius: 1rem;
+    margin-bottom: 3rem;
+    background-color:#8EAAB3;
+    color:white;
+    font-weight: bold;
+
+}
+.discussion{
+    border: 1px solid black;
+    border-radius : 10px;
+    background-color: white;
+    padding: 15px;
+}
+
+.discussion img {
+    width: 60px; /* Ajustez la taille de l'image si nécessaire */
+    height: 60px; /* Ajustez la taille de l'image si nécessaire */
+    margin-right: 10px; /* Pour espacer l'image du texte */
+}
+.discussion h3 {
+    margin-bottom: 15px;; /* Enlève la marge par défaut de h5 */
+    font-weight: bold;
+
+}
+.chat-area {
+    margin-top: 20px; /* Espace entre le titre et la zone de chat */
+    padding: 10px; /* Espacement interne pour la zone de chat */
+    height: 300px; /* Hauteur de la zone de chat, ajustez selon vos besoins */
+    overflow-y: auto; /* Scroll si le contenu dépasse la hauteur */
+}
+.chat-input {
+    margin-top: 20px; /* Espace au-dessus de la zone de saisie */
+}
+
+.chat-area {
+    padding: 10px;
+    height: 400px;
+    overflow-y: auto;
+}
+
+.chat-message {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #f1f1f1;
+}
+
+.chat-message span {
+    font-weight: bold;
+}
+
+.full-width {
+    height: 65px;
+    box-sizing: border-box; /* Ensure padding and border are included in the width */
+    margin-bottom: 0 !important;
+}

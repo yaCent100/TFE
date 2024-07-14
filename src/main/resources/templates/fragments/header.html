@@ -11,24 +11,23 @@
     <nav class="navbar bg-body-tertiary p-0 fst-italic">
         <div class="container-fluid">
             <div class="d-flex align-items-center">
-                <a class="navbar-brand p-0 m-0" th:href="@{/home}" >
+                <a class="navbar-brand p-0 m-0" th:href="@{/home}">
                     <img th:src="@{/images/DriveShareLogo.png}" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                 </a>
-
             </div>
             <div class="d-flex align-items-center">
                 <a class="navbar-brand text-light p-0 m-0 me-3" th:href="@{/cars}" id="nosLocationsTab">
                     Nos Locations
                 </a>
 
-               <div th:if="${#authorization.expression('isAnonymous()')}">
-
+                <div th:if="${#authorization.expression('isAnonymous()')}">
+                    <!-- Contenu pour les utilisateurs anonymes -->
                 </div>
                 <div th:if="${#authorization.expression('isAuthenticated()')}">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <div>
-                                <img class="img-fluid rounded-circle" width="50" th:src="${user.photoUrl != null ? user.photoUrl : '/uploads/profil/defaultPhoto.png'}" alt="Photo de profil">
+                                <!--<img class="img-fluid rounded-circle" width="50" th:src="@{${user.photoUrl != null ? '/uploads/' + user.photoUrl : '/uploads/profil/defaultPhoto.png'}}" alt="Photo de profil">-->
                             </div>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -42,13 +41,8 @@
                     Louez votre voiture
                 </a>
             </div>
-
-
         </div>
     </nav>
 </header>
-
-
 </body>
-
 </html>
