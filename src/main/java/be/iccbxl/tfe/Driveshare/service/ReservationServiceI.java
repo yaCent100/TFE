@@ -2,7 +2,6 @@ package be.iccbxl.tfe.Driveshare.service;
 
 import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
-import be.iccbxl.tfe.Driveshare.model.CarRental;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
 
@@ -21,9 +20,7 @@ public interface ReservationServiceI {
 
     List<ReservationDTO> getReservationsForCurrentUser();
 
-    List<Reservation> getReservationsByCarRentals(List<CarRental> carRentals);
 
-    List<Reservation> getReservationsByCarRentalsAndStatuses(List<CarRental> carRentals, List<String> statuses);
 
     List<Reservation> getReservationsByStatusesAndUser(List<String> statuses, User user);
     List<Reservation> getReservationsByCarIds(List<Long> carIds);

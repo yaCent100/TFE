@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,7 +59,10 @@ public class User {
     @Column(name="bic", nullable = true)
     private String bic;
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
+    @Column(name="created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Car> ownedCars;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -69,12 +73,17 @@ public class User {
     )
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<CarRental> carRentals;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Document> documents = new ArrayList<>();
 
+    @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL)
+    private List<Notification> notificationsSent;
+
+    @OneToMany(mappedBy = "toUser", cascade = CascadeType.ALL)
+    private List<Notification> notificationsReceived;
 
     public User addRole(Role role) {
         if(!this.roles.contains(role)) {
@@ -101,6 +110,7 @@ public class User {
     public void removeDocument(Document document) {
         documents.remove(document);
     }
+
 
     @Override
     public String toString() {

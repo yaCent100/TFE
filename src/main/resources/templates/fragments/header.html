@@ -21,13 +21,14 @@
                 </a>
 
                 <div th:if="${#authorization.expression('isAnonymous()')}">
-                    <!-- Contenu pour les utilisateurs anonymes -->
+                    <a th:href="@{/login}">Se connceter</a>
                 </div>
                 <div th:if="${#authorization.expression('isAuthenticated()')}">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <div>
-                                <!--<img class="img-fluid rounded-circle" width="50" th:src="@{${user.photoUrl != null ? '/uploads/' + user.photoUrl : '/uploads/profil/defaultPhoto.png'}}" alt="Photo de profil">-->
+                                <img class="img-fluid rounded-circle" width="50" th:src="@{${authenticatedUser != null and authenticatedUser.photoUrl != null} ? '/uploads/' + authenticatedUser.photoUrl : '/uploads/profil/defaultPhoto.png'}" alt="Photo de profil">
+                                <div id="notification-badge" class="badge" style="display:none;">1</div>
                             </div>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">

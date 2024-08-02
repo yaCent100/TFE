@@ -52,4 +52,7 @@ public class EquipmentService implements EquipmentServiceI {
     public void deleteEquipment(Long id) {
         equipmentRepository.deleteById(id);
     }
+
+    public void saveEquipment(Equipment equipmentName, String icone) {
+    }
 }

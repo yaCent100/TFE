@@ -8,7 +8,7 @@
 
 <div layout:fragment="content">
 
-    <div th:replace="account/fragments/account-header"></div>
+    <div th:insert="account/fragments/account-header"></div>
     <div id="tab-mon-compte" class="tab-content active">
         <!-- Contenu de Mon compte -->
         <div id="user-show" class="user-section">
@@ -29,7 +29,9 @@
                                     </div>
                                     <input type="file" name="picture" id="pictureInput" accept="image/jpeg,image/jpg,image/png" hidden>
                                     <div class="text-center mt-2">
-                                        <a class="changePicture" href="#" id="editPictureLink"><i class="fa fa-edit fa-lg nbsp fs11"></i> Modifier ma photo</a>
+                                        <a class="changePicture" href="#" id="editPictureLink">
+                                            <i class="fa fa-edit fa-lg nbsp fs11"></i> Modifier ma photo
+                                        </a>
                                     </div>
                                 </div>
 
@@ -189,13 +191,52 @@
     </div>
 
 
-
-
-
-
 </div>
 
+<script>
 
+        // Affiche le sélecteur de fichiers lorsque l'utilisateur clique sur le lien
+        document.getElementById('editPictureLink').addEventListener('click', function(event) {
+            event.preventDefault(); // Empêche le comportement par défaut du lien
+            document.getElementById('pictureInput').click(); // Simule un clic sur l'input de fichier
+        });
+
+        // Gère le changement de fichier et envoie une requête AJAX pour mettre à jour la photo de profil
+        document.getElementById('pictureInput').addEventListener('change', function() {
+            const fileInput = document.getElementById('pictureInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // Remplacez le chemin ci-dessous par l'URL correcte de votre API
+                fetch('/api/account/update-profile-picture', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Met à jour l'image de profil affichée
+                        document.getElementById('currentProfilePicture').src = data.newProfilePictureUrl;
+                        alert('Photo de profil mise à jour avec succès!');
+                    } else {
+                        alert('Erreur lors de la mise à jour de la photo de profil.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la mise à jour de la photo de profil.');
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>

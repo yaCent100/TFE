@@ -26,63 +26,65 @@
 </div>
 
 <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const amount = urlParams.get('amount');
-            const reservationId = urlParams.get('reservationId');
-            const paymentIntentId = urlParams.get('paymentIntentId');
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const amount = urlParams.get('amount');
+        const reservationId = urlParams.get('reservationId');
+        const paymentIntentId = urlParams.get('paymentIntentId');
+        const insurance = urlParams.get('insurance');
 
-            console.log("Amount:", amount);
-            console.log("Reservation ID:", reservationId);
-            console.log("Payment Intent ID:", paymentIntentId);
+        console.log("Amount:", amount);
+        console.log("Reservation ID:", reservationId);
+        console.log("Payment Intent ID:", paymentIntentId);
+        console.log("Insurance:", insurance);
 
-            async function confirmPayment() {
-                try {
-                    const response = await fetch("/api/payments/confirm", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            reservationId: reservationId,
-                            paymentIntentId: paymentIntentId,
-                        }),
-                    });
+        async function confirmPayment() {
+            try {
+                const response = await fetch("/api/payments/confirm", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        reservationId: reservationId,
+                        paymentIntentId: paymentIntentId,
+                        insurance: insurance
+                    }),
+                });
 
-                    if (response.ok) {
-                        console.log("Payment and reservation confirmed successfully!");
-                        showMessage("Payment and reservation confirmed successfully!");
-                    } else {
-                        const errorText = await response.text();
-                        console.error("Error confirming reservation:", errorText);
-                        showMessage("An error occurred while confirming the reservation.");
-                    }
-                } catch (error) {
-                    console.error("Error during confirmation:", error);
-                    showMessage("An error occurred while confirming the reservation: " + error.message);
+                if (response.ok) {
+                    console.log("Payment and reservation confirmed successfully!");
+                    showMessage("Payment and reservation confirmed successfully!");
+                } else {
+                    const errorText = await response.text();
+                    console.error("Error confirming reservation:", errorText);
+                    showMessage("An error occurred while confirming the reservation.");
                 }
+            } catch (error) {
+                console.error("Error during confirmation:", error);
+                showMessage("An error occurred while confirming the reservation: " + error.message);
             }
+        }
 
-            function showMessage(messageText) {
-                const messageContainer = document.querySelector("#payment-message");
-                if (messageContainer) {
-                    messageContainer.classList.remove("hidden");
-                    messageContainer.textContent = messageText;
+        function showMessage(messageText) {
+            const messageContainer = document.querySelector("#payment-message");
+            if (messageContainer) {
+                messageContainer.classList.remove("hidden");
+                messageContainer.textContent = messageText;
 
-                    setTimeout(() => {
-                        messageContainer.classList.add("hidden");
-                        messageContainer.textContent = "";
-                    }, 4000);
-                }
+                setTimeout(() => {
+                    messageContainer.classList.add("hidden");
+                    messageContainer.textContent = "";
+                }, 4000);
             }
+        }
 
-            if (amount && reservationId && paymentIntentId) {
-                confirmPayment();
-            } else {
-                console.error("Required parameters are missing in the URL.");
-                showMessage("Required parameters are missing in the URL.");
-            }
-        });
-    </script>
-
+        if (amount && reservationId && paymentIntentId && insurance) {
+            confirmPayment();
+        } else {
+            console.error("Required parameters are missing in the URL.");
+            showMessage("Required parameters are missing in the URL.");
+        }
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

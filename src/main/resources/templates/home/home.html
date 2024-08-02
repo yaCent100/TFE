@@ -6,60 +6,110 @@
 </head>
 <body>
 <div layout:fragment="content">
-  <div class="container">
-    <div class="row m-5">
-      <div  class="col-md-8 d-flex justify-content-center align-items-center">
-        <h1 class="fw-bold fst-italic">“Louez votre voiture,<br> partagez votre aventure.”</h1>
-      </div>
-      <div class="col-md-4">
-        <img th:src="@{/images/clé.jpeg}" class="img-fluid rounded-circle" alt="Clé">
-      </div>
-    </div>
-
-    <div class="row justify-content-center">
-      <div class="col-md-7 d-flex justify-content-end align-items-center">
-        <div class="big-circle-left">
+  <div class="container-fluid">
+    <div class="row justify-content-center top-home ">
+      <div class="col-md-6 d-flex justify-content-center align-items-center col-recherche">
           <div class="d-flex flex-column align-items-center">
-            <div class="m-0">
-              <img th:src="@{/images/iconMap.png}" class="img-fluid" alt="iconMap">
-            </div>
               <div class="row">
                 <div class="col-md-12">
-                  <form class="form-inline searchForm" id="rechercheForm" onsubmit="return searchCars(event)" method="GET">
+                  <div class="title-top-home">
+                    <h1>Louez une voiture à <span>Bruxelles</span></h1>
+                    <h6>Location de voitures entre particuliers</h6>
+                  </div>
+                  <form class="form-inline searchForm" id="rechercheForm" onsubmit="return searchCars(event)" method="GET" action="/cars">
                     <div class="form-group mb-3">
-                      <input type="text" class="form-control" id="manualAddress" name="manualAddress" placeholder="Entrez votre adresse">
+                      <input type="text" class="form-control w-100" id="manualAddress" name="manualAddress" placeholder="Entrez votre adresse">
                     </div>
                     <div class="form-group mb-3">
                       <div class="row">
-                        <label for="dateDebut" class="col-form-label col-sm-5">Date de Début</label>
-                        <div class="col-sm-7">
-                          <input type="date" class="form-control" id="dateDebut" name="dateDebut">
+                        <div class="col-sm-6">
+                          <input type="date" class="form-control w-100" id="dateDebut" name="dateDebut" placeholder="Date de Début">
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="date" class="form-control w-100" id="dateFin" name="dateFin" placeholder="Date de Fin">
                         </div>
                       </div>
                     </div>
                     <div class="form-group mb-3">
-                      <div class="row">
-                        <label for="dateFin" class="col-form-label col-sm-5">Date de Fin</label>
-                        <div class="col-sm-7">
-                          <input type="date" class="form-control" id="dateFin" name="dateFin">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="form-group mb-3 col-sm-6 mx-auto">
-                      <button type="submit" class="btn btn-block custom-search-button" id="searchButton">Rechercher</button>
+                      <button type="submit" class="btn btn-block custom-search-button w-100" id="searchButton">Rechercher</button>
                     </div>
                   </form>
                 </div>
               </div>
           </div>
-        </div>
       </div>
-      <div class="col-md-5 d-flex justify-content-start align-items-center">
+      <div class="col-md-6 d-flex justify-content-end align-items-center col-map">
         <div id="map" class="map"></div>
+      </div>
+
+    </div>
+    <div class="row besoins text-center justify-content-center">
+      <div class="besoins-container d-flex flex-row w-100 justify-content-between">
+        <div class="besoins-content">
+          <div class="besoins-item">
+            <p class="besoin-text">Besoin <span class="c-main">d’une voiture</span><br>pour aller à la plage ? </p>
+          </div>
+        </div>
+        <div class="besoins-content">
+          <div class="besoins-line"></div>
+        </div>
+        <div class="besoins-content">
+          <div class="besoins-item">
+            <p class="besoin-text">Besoin <span class="c-main">d’un utilitaire</span><br>pour un déménagement ? </p>
+          </div>
+        </div>
+        <div class="besoins-content">
+          <div class="besoins-line"></div>
+        </div>
+        <div class="besoins-content">
+          <div class="besoins-item">
+            <p class="besoin-text">Besoin <span class="c-main">d’un 4x4</span><br>pour aller à la montagne ? </p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <br>
+  <section class="middle-home">
+<div class="d-flex justify-content-center">
+  <div>
+    <h2 class="fs32 medium text-center">🚗 Louez une voiture <span class="c-main">où que vous soyez</span></h2>  </div>
+</div>
+    <div class="d-flex flex-lg-row flex-column justify-content-center align-items-center mgb-50">
+      <div class="home-page-link text-center">
+        <a class="medium fs14 d-flex flex-column align-items-center category-link" href="#" data-category="Citadine">
+          <img src="/icons/home-citadine.png" alt="Citadine Icon" class="category-icon">
+          Citadine
+        </a>
+      </div>
+      <div class="home-page-link text-center">
+        <a class="medium fs14 d-flex flex-column align-items-center category-link" href="#" data-category="Berline">
+          <img src="/icons/home-berline.png" alt="Berline Icon" class="category-icon">
+          Berline
+        </a>
+      </div>
+      <div class="home-page-link text-center">
+        <a class="medium fs14 d-flex flex-column align-items-center category-link" href="#" data-category="Familial">
+          <img src="/icons/home-break.png" alt="Familial Icon" class="category-icon">
+          Familial
+        </a>
+      </div>
+      <div class="home-page-link text-center">
+        <a class="medium fs14 d-flex flex-column align-items-center category-link" href="#" data-category="MonoSpace">
+          <img src="/icons/home-monospace.png" alt="Monospace Icon" class="category-icon">
+          MonoSpace
+        </a>
+      </div>
+      <div class="home-page-link text-center">
+        <a class="medium fs14 d-flex flex-column align-items-center category-link" href="#" data-category="4X4">
+          <img src="/icons/home-4x4.png" alt="4X4 Icon" class="category-icon">
+          4X4
+        </a>
+      </div>
+    </div>
+
+
+
+  </section>
     <h1 class="text-center m-2 fw-bold fst-italic">
       Un Large Choix
     </h1>
@@ -97,6 +147,7 @@
 
 
   </div>
+
 </body>
 </html>
 

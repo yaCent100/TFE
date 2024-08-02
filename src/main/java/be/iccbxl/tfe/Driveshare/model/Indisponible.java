@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "indisponibilites")
+@Table(name = "unavailability")
 public class Indisponible {
 
     @Id
@@ -21,12 +21,12 @@ public class Indisponible {
     @JoinColumn(name = "car_id")  // Clé étrangère vers Car
     private Car car;
 
-    @Column(name = "date_debut", nullable = false)
+    @Column(name = "start_date", nullable = false)
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate startDate;
 
-    @Column(name = "date_fin", nullable = false)
+    @Column(name = "end_date", nullable = false)
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate endDate;

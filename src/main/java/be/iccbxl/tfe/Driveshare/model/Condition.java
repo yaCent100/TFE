@@ -12,7 +12,7 @@ public class Condition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="Description")
+    @Column(name="description")
     private String condition;
 
     @ManyToOne

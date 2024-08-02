@@ -19,18 +19,19 @@ public class Evaluation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "car_rental_id")
-    private CarRental carRental;
 
     @Column(nullable = false)
     private Integer note;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", name = "comment")
     private String avis;
 
-    @Column(name = "Created_at", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @OneToOne
+    @JoinColumn(name = "reservation_id", nullable = false)
+    private Reservation reservation;
 
     @Override
     public String toString() {

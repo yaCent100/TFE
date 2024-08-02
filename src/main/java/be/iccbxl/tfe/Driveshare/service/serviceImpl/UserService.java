@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,10 +28,8 @@ public class UserService implements UserServiceI {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RoleRepository roleRepository;
-
 
     @Override
     public List<User> getAllUsers() {
@@ -96,6 +96,11 @@ public class UserService implements UserServiceI {
         return userRepository.save(user);
     }
 
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
 
     @Transactional
     @Override
@@ -118,4 +123,29 @@ public class UserService implements UserServiceI {
         }
         return null;
     }
+
+
+    // METHODE POUR INTERFACE ADMIN
+
+
+    public long getTotalUsers() {
+        return userRepository.count();
+    }
+
+    public long getNewUsersThisMonth() {
+        LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
+        return userRepository.countByCreatedAtAfter(startOfMonth);
+    }
+
+    public List<Integer> getUserGrowth() {
+        // Assume this method returns user counts per month for the last 12 months
+        return userRepository.getUserGrowthPerMonth();
+    }
+
+    public List<User> getRecentUsers() {
+        return userRepository.findTop10ByOrderByCreatedAtDesc();
+    }
+
+
+
 }

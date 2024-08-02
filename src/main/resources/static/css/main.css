@@ -40,32 +40,102 @@ nav {
 
 /*HOME*/
 
-.big-circle-left {
-    width: 550px; /* Ajustez selon vos besoins */
-    height: 550px; /* Ajustez selon vos besoins */
-    background-color: #DFE7EC; /* Couleur du rond */
-    border-radius: 50%; /* Rendre le rond */
-    position: relative; /* Position relative pour le débordement */
-    z-index: 1; /* Assurer que le rond de gauche est au-dessus */
-    display: flex;
-    justify-content: center; /* Centrer horizontalement */
-    align-items: center; /* Centrer verticalement */
+.top-home {
+    background-image: url('/images/bruxelles-home.png');
+    background-size: cover; /* This makes the background image cover the entire element*/
+    background-repeat: no-repeat;
+}
+
+.title-top-home{
+    color: white;
+    margin-bottom: 60px;
 }
 
 
+.col-map{
+    padding-right:0 !important;
+}
+
 .map {
- width: 700px; /* Remplacez par la largeur souhaitée */
-    height: 700px; /* Remplacez par la hauteur souhaitée */
-    margin-left : -125px;
-    position: relative; /* Position relative pour le débordement */
+ width: 600px; /* Remplacez par la largeur souhaitée */
+    height: 600px; /* Remplacez par la hauteur souhaitée */
     z-index: 1; /* Assurer que le rond de droite est en dessous */
-    border-radius: 50%; /* Assurez-vous que le conteneur de la carte est un cercle */
+    border-radius: 50% 0 0 50%; /* Top-left, top-right, bottom-right, bottom-left */
     overflow: hidden; /* Mas
 }
 
 .form-control {
     border-radius: 20px; /* Ajustez la valeur selon vos préférences */
 }
+
+.besoins{
+ background-color: #DFE7EC;
+  display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     padding: 20px; /* Ajustez le padding selon vos besoins */
+     position: relative;
+     overflow: hidden;
+     border-radius: 75px 0px 0px 0px; /* Les coins inférieurs arrondis */
+}
+
+.besoins-container{
+    display: flex;
+    flex-direction: row;
+    padding-right: 50px;
+    padding-left: 50px;
+}
+
+
+
+.besoin-text{
+    margin-top: 35px;
+    margin-bottom: 35px;
+    font-size: 1rem;
+    font-weight: 500;
+
+}
+
+.besoins-container .besoins-item {
+    display: block;
+    height: auto;
+    width: 100%;
+    max-width: 190px;
+}
+
+.besoins-container .besoins-line {
+    width: 100%;
+    max-width: 146px;
+    height: 2px;
+    border: solid 1px #00BFFF;
+}
+
+.besoins-content {
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     height: 100%;
+     width: 100%;
+ }
+
+ .middle-home{
+    margin-top: 80px;
+ }
+
+ .category-icon {
+     width: 100px; /* Ajustez la taille de l'icône selon vos besoins */
+     height: 100px;
+     margin-right: 8px; /* Espace entre l'icône et le texte */
+     vertical-align: middle; /* Alignement vertical de l'icône */
+ }
+
+ .home-page-link {
+     margin: 10px;
+ }
+
+ .d-flex.flex-lg-row.flex-column.justify-content-center.align-items-center {
+     gap: 40px; /* Espace entre les éléments, ajustez selon vos besoins */
+ }
 
 .custom-search-button {
   background-color: #354C6F; /* Couleur de fond */

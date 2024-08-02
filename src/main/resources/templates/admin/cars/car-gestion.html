@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+
+</head>
+<body>
+<div layout:fragment="content">
+  <nav class="navbar navbar-expand px-4 py-3">
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
+            <img src="/account.png" class="avatar img-fluid" alt="">
+          </a>
+          <div class="dropdown-menu dropdown-menu-end rounded">
+            <!-- Dropdown items here -->
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <main class="content px-3 py-4">
+    <h2>Gestion des Véhicules</h2>
+    <div class="row justify-content-start">
+      <div class="col-lg-4">
+        <h3>Ajouter une Catégorie</h3>
+        <form action="/admin/cars/gestion/category" method="post">
+          <label for="category">Nom de la catégorie:</label>
+          <input type="text" id="category" name="category" required>
+
+          <button type="submit">Ajouter Catégorie</button>
+        </form>
+        <h3>Catégories Existantes</h3>
+        <ul>
+          <th:block th:each="category : ${categories}">
+            <li th:text="${category.category}"></li>
+          </th:block>
+        </ul>
+      </div>
+      </div>
+
+
+    <div class="row justify-content-center">
+      <div class="col-lg-4">
+        <h3>Ajouter un Équipement</h3>
+        <form action="/admin/cars/gestion/equipment" method="post" enctype="multipart/form-data">
+          <input type="text" name="equipmentName" required placeholder="Nom de l'Équipement">
+          <input type="file" name="equipmentIcon" required>
+          <button type="submit">Ajouter</button>
+        </form>
+        <h3>Équipements Existants</h3>
+        <ul>
+          <th:block th:each="equipment : ${equipments}">
+            <li><img th:src="@{${equipment.icone}}" width="50"></li>
+            <li th:text="${equipment.equipment}"></li>
+          </th:block>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row justify-content-end">
+      <div class="col-lg-4">
+        <h3>Ajouter une Caractéristique</h3>
+        <form action="/admin/cars/gestion/feature" method="post">
+          <input type="text" name="featureName" required placeholder="Nom de la Caractéristique">
+          <textarea name="featureDescription" required placeholder="Description"></textarea>
+          <button type="submit">Ajouter</button>
+        </form>
+        <h3>Caractéristiques Existantes</h3>
+        <ul>
+          <th:block th:each="feature : ${features}">
+            <li th:text="${feature.name + ' - ' + feature.description}"></li>
+          </th:block>
+        </ul>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+
+</body>
+</html>

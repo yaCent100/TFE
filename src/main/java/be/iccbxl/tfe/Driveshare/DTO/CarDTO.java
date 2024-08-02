@@ -20,9 +20,8 @@ public class CarDTO {
     private String fuelType;
 
     private String adresse;
+
     private  String url;
-
-
 
     private int codePostal;
 
@@ -33,7 +32,7 @@ public class CarDTO {
     private LocalDate firstImmatriculation;
     private String carteGrisePath;
 
-    private List<CarRentalDTO> carRentals;
+    private List<ReservationDTO> reservationDTOS;
     private User user;
     private String offre  = "standard";
 
@@ -48,6 +47,7 @@ public class CarDTO {
     private List<FeatureDTO> features;
 
     private Long boiteId;
+    private String boite;
     private Long compteurId;
     private Long placesId;
     private Long portesId;
@@ -57,6 +57,7 @@ public class CarDTO {
 
     // Ajout de l'identifiant de la catégorie
     private Long categoryId;
+    private String categoryName;
 
     //indisponibilités
     private List<String> indisponibleDatesStart;

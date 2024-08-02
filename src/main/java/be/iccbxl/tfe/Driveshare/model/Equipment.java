@@ -17,7 +17,7 @@ public class Equipment {
     @Column(name="description")
     private String equipment;
 
-    @Column(name="icones")
+    @Column(name="icon")
     private String icone;
 
     @ManyToMany(mappedBy = "equipments")

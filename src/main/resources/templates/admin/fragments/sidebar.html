@@ -18,10 +18,22 @@
         </div>
         <ul class="sidebar-nav">
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
+                <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                   data-bs-target="#users" aria-expanded="false" aria-controls="users">
                     <i class="lni lni-user"></i>
-                    <span>Profile</span>
+                    <span>Users</span>
                 </a>
+                <ul id="users" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                    <li class="sidebar-item">
+                        <a th:href="@{/admin/users/all}" class="sidebar-link">All Users</a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a th:href="@{/admin/users/add}" class="sidebar-link">Add New User</a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a th:href="@{/admin/users/roles}" class="sidebar-link">Roles & Permissions</a>
+                    </li>
+                </ul>
             </li>
             <li class="sidebar-item">
                 <a href="#" class="sidebar-link">
@@ -29,6 +41,33 @@
                     <span>Task</span>
                 </a>
             </li>
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                   data-bs-target="#cars" aria-expanded="false" aria-controls="cars">
+                    <i class="lni lni-car"></i>
+                    <span>Véhicules</span>
+                </a>
+                <ul id="cars" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                    <li class="sidebar-item">
+                        <a th:href="@{/admin/cars/online}" class="sidebar-link">Online</a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a th:href="@{/admin/cars/pending}" class="sidebar-link">Pending...</a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a th:href="@{/admin/cars/gestion}" class="sidebar-link">Gestion</a>
+                    </li>
+                </ul>
+
+
+            </li>
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link">
+                    <i class="lni lni-calendar"></i>
+                    <span>Reservations</span>
+                </a>
+            </li>
+
             <li class="sidebar-item">
                 <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
                    data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
@@ -50,22 +89,8 @@
                     <i class="lni lni-layout"></i>
                     <span>Multi Level</span>
                 </a>
-                <ul id="multi" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
-                           data-bs-target="#multi-two" aria-expanded="false" aria-controls="multi-two">
-                            Two Links
-                        </a>
-                        <ul id="multi-two" class="sidebar-dropdown list-unstyled collapse">
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link">Link 1</a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link">Link 2</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+
+
             </li>
             <li class="sidebar-item">
                 <a href="#" class="sidebar-link">

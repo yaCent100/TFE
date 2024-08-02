@@ -2,7 +2,6 @@ package be.iccbxl.tfe.Driveshare.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Data
@@ -12,11 +11,19 @@ public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "from_user_id", nullable = false)
+    private User fromUser;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "to_user_id", nullable = false)
+    private User toUser;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "car_id", nullable = false)
+    private Car car;
 
     @Column(nullable = false)
     private String type;
@@ -24,8 +31,9 @@ public class Notification {
     @Column
     private String message;
 
-    @Column(name = "date_envoi")
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime dateEnvoi;
+    @Column
+    private boolean lu;
 
+    @Column(name = "created_at")
+    private LocalDateTime dateEnvoi;
 }

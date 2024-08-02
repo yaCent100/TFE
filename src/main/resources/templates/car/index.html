@@ -41,14 +41,16 @@
             <hr>
             <div th:each="categorie : ${categories}">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" th:value="${categorie}" th:id="${categorie}">
-                <label class="form-check-label" th:for="${categorie}" th:text="${categorie.category}"></label>
+                <input class="form-check-input category-filter" type="checkbox" th:value="${categorie.category}" th:id="${categorie.id}">
+                <label class="form-check-label" th:for="${categorie.id}" th:text="${categorie.category}"></label>
               </div>
             </div>
           </div>
           <br>
           <div class="form-group">
-            <label for="priceRange"><img src="icones/prix.png" class="img-fluid" width="25" alt="voiture"> Prix</label>
+            <label for="priceRange">
+              <img src="icones/prix.png" class="img-fluid" width="25" alt="voiture"> Prix
+            </label>
             <input type="range" class="form-range" id="priceRange" min="0" max="150" step="1" value="0">
             <div id="priceValue">0 €</div>
           </div>
@@ -56,85 +58,88 @@
           <div class="search-filter-item mb-3">
             <h6 class="search-title"><img src="icones/boite-de-vitesses.png" class="img-fluid" width="25" alt="voiture"> Boite de vitesse</h6>
             <hr>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox">
-                <label class="form-check-label">Manuelle</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox">
-                <label class="form-check-label" >Automatique</label>
-              </div>
-
+            <div class="form-check">
+              <input class="form-check-input gearbox-filter" type="checkbox" value="manuelle">
+              <label class="form-check-label">Manuelle</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input gearbox-filter" type="checkbox" value="automatique">
+              <label class="form-check-label">Automatique</label>
+            </div>
           </div>
           <br>
+
           <div class="search-filter-item mb-3">
             <h6 class="search-title"><img src="icones/pompe-a-essence.png" class="img-fluid" width="25" alt="voiture"> Motorisation</h6>
             <hr>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox">
-                <label class="form-check-label" >Essence</label>
-              </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >Diesel</label>
+              <input class="form-check-input motorisation-filter" type="checkbox" value="essence">
+              <label class="form-check-label">Essence</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >Hybride</label>
+              <input class="form-check-input motorisation-filter" type="checkbox" value="diesel">
+              <label class="form-check-label">Diesel</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >Electrique</label>
+              <input class="form-check-input motorisation-filter" type="checkbox" value="hybride">
+              <label class="form-check-label">Hybride</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input motorisation-filter" type="checkbox" value="electrique">
+              <label class="form-check-label">Electrique</label>
             </div>
           </div>
           <br>
           <div class="search-filter-item mb-3">
-            <h6 class="search-title"><img src="icones/compteur-de-vitesse.png" class="img-fluid" width="25" alt="voiture"> Kilometrage du véhicule</h6>
+            <h6 class="search-title"><img src="icones/compteur-de-vitesse.png" class="img-fluid" width="25" alt="voiture"> Kilométrage du véhicule</h6>
             <hr>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >0 - 10 000</label>
+              <input class="form-check-input kilometrage-filter" type="checkbox" value="0 - 15 000 km">
+              <label class="form-check-label">0 - 15 000 km</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >10 000 - 50 000</label>
+              <input class="form-check-input kilometrage-filter" type="checkbox" value="15 000 - 50 000 km">
+              <label class="form-check-label">15 000 - 50 000 km</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >50 000 - 100 000</label>
+              <input class="form-check-input kilometrage-filter" type="checkbox" value="50 000 - 100 000 km">
+              <label class="form-check-label">50 000 - 100 000 km</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >100 000 - 150 000</label>
+              <input class="form-check-input kilometrage-filter" type="checkbox" value="100 000 - 150 000 km">
+              <label class="form-check-label">100 000 - 150 000 km</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >plus de 150 000</label>
+              <input class="form-check-input kilometrage-filter" type="checkbox" value="Plus de 150 000 km">
+              <label class="form-check-label">Plus de 150 000 km</label>
             </div>
+
           </div>
+
           <br>
           <div class="search-filter-item mb-3">
             <h6 class="search-title"><img src="icones/siege.png" class="img-fluid" width="25" alt="voiture"> Nombre de places</h6>
             <hr>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >3 places</label>
+              <input class="form-check-input places-filter" type="checkbox" value="3 places">
+              <label class="form-check-label">3 places</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >4 places</label>
+              <input class="form-check-input places-filter" type="checkbox" value="4 places">
+              <label class="form-check-label">4 places</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >5 places</label>
+              <input class="form-check-input places-filter" type="checkbox" value="5 places">
+              <label class="form-check-label">5 places</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox">
-              <label class="form-check-label" >7 places</label>
+              <input class="form-check-input places-filter" type="checkbox" value="7 places">
+              <label class="form-check-label">7 places</label>
             </div>
           </div>
+
           <div class="text-center">
-            <button class="btn btn-primary ps-3 pe-3">Reinitialiser</button>
+            <button class="btn btn-primary ps-3 pe-3 " id="resetButton">Réinitialiser</button>
           </div>
         </form>
       </div>
@@ -146,16 +151,16 @@
           <nav class="filter-top">
             <ul class="nav nav-pills justify-content-end">
               <li class="nav-item">
-                <a href="#" class="nav-link sort-link active">Classement des véhicules</a>
+                <a href="#" class="nav-link sort-link active" data-sort="default">Classement des véhicules</a>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link sort-link">Taux d'acceptation</a>
+                <a href="#" class="nav-link sort-link" data-sort="acceptance">Taux d'acceptation</a>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link sort-link">Prix croissant</a>
+                <a href="#" class="nav-link sort-link" data-sort="price">Prix croissant</a>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link sort-link">Evaluation</a>
+                <a href="#" class="nav-link sort-link" data-sort="rating">Evaluation</a>
               </li>
             </ul>
           </nav>
@@ -165,9 +170,9 @@
             <span class="sr-only">Chargement...</span>
           </div>
         </div>
-        <div class="row g-3 p-3" id="carList" style="display:none;"></div>
+        <!--<div class="row g-3 p-3" id="carList"></div>-->
 
-        <div class="row g-3 p-3" id="carList2" style="">
+        <div class="row g-3 p-3" id="carList" >
           <div class="col-lg-12">
           <!-- Boucle sur chaque voiture pour créer une carte -->
           <div class="mb-3" th:each="car : ${cars}">

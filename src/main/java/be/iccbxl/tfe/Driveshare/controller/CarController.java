@@ -33,27 +33,21 @@ public class CarController {
 
     private final CategoryService categoryService;
 
-    private final PriceService priceService;
 
 
     @Autowired
     public CarController(CarService carService, CategoryService categoryService, PriceService priceService) {
         this.carService = carService;
         this.categoryService = categoryService;
-        this.priceService = priceService;
     }
     @GetMapping("/cars")
-    public String getAllCars(Model model, @AuthenticationPrincipal CustomUserDetail userDetails) {
-        User user = userDetails.getUser();
+    public String getAllCars(Model model) {
 
         List<Car> cars = carService.getAllCars();
         List<Category> categories = categoryService.getAllCategory();
         Map<Long, Double> averageRatings = carService.getAverageRatingsForCars();
         Map<Long, Integer> reviewCounts = carService.getReviewCountsForCars();
 
-        // Récupérer l'utilisateur actuel
-
-        model.addAttribute("user", user);
         model.addAttribute("cars", cars);
         model.addAttribute("categories", categories);
         model.addAttribute("averageRatings", averageRatings);
@@ -65,10 +59,11 @@ public class CarController {
 
 
     @GetMapping("/cars/{id}")
-    public String getCarById(@PathVariable Long id,@AuthenticationPrincipal CustomUserDetail userDetails,  @RequestParam(required = false) String dateDebut,
-                             @RequestParam(required = false) String dateFin, Model model) {
-        User user = userDetails.getUser();
-
+    public String getCarById(
+            @PathVariable Long id,
+            @RequestParam(required = false) String dateDebut,
+            @RequestParam(required = false) String dateFin,
+            Model model) {
 
         // Récupérer la voiture par son ID
         Car car = carService.getCarById(id);
@@ -79,13 +74,13 @@ public class CarController {
             return "error/404"; // Vue d'erreur personnalisée
         }
 
-
-
         // Calculer la note moyenne associée à cette voiture
         double averageRating = carService.calculateAverageRating(car);
-        int totalEvaluations = car.getCarRentals().stream()
-                .mapToInt(rental -> rental.getEvaluations().size())
-                .sum();
+
+        // Calculer le nombre total d'évaluations
+        int totalEvaluations = (int) car.getReservations().stream()
+                .filter(reservation -> reservation.getEvaluation() != null)
+                .count();
 
         // Formatter les dates
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -94,31 +89,29 @@ public class CarController {
 
         try {
             if (dateDebut != null && !dateDebut.isEmpty()) {
-                LocalDate localDateDebut = LocalDate.parse(dateDebut);
+                LocalDate localDateDebut = LocalDate.parse(dateDebut, DateTimeFormatter.ISO_LOCAL_DATE);
                 formattedDateDebut = localDateDebut.format(formatter);
             }
             if (dateFin != null && !dateFin.isEmpty()) {
-                LocalDate localDateFin = LocalDate.parse(dateFin);
+                LocalDate localDateFin = LocalDate.parse(dateFin, DateTimeFormatter.ISO_LOCAL_DATE);
                 formattedDateFin = localDateFin.format(formatter);
             }
         } catch (DateTimeParseException e) {
-            // Handle the parse exception
+            // Gérer l'exception de parsing
             e.printStackTrace();
         }
 
-        model.addAttribute("user", user);
-
-        // Ajouter la voiture, la note moyenne, et le prix calculé au modèle pour l'affichage
+        // Ajouter les attributs au modèle
         model.addAttribute("car", car);
         model.addAttribute("averageRating", averageRating);
         model.addAttribute("totalEvaluations", totalEvaluations);
         model.addAttribute("dateDebut", formattedDateDebut);
         model.addAttribute("dateFin", formattedDateFin);
 
-
-
-        return "car/details"; // Nom de la vue pour afficher les détails de la voiture
+        return "car/details"; // Vue pour afficher les détails de la voiture
     }
+
+
 
 
 

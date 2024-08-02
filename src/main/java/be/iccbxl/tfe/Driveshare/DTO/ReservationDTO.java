@@ -1,5 +1,6 @@
 package be.iccbxl.tfe.Driveshare.DTO;
 
+import be.iccbxl.tfe.Driveshare.model.Car;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -9,8 +10,8 @@ import java.time.LocalDateTime;
 public class ReservationDTO {
 
     private Long id;
-    private Long carRentalId;
     private Long carId;
+    private Car car;
     private String debutLocation;
     private String finLocation;
     private LocalDateTime createdAt;
@@ -22,7 +23,10 @@ public class ReservationDTO {
     private String carModel;
     private String userProfileImage;
     private String carImage;
-
+    private Integer carPostal;
+    private String carLocality;
+    private String insurance;
+    private String modeReservation;
 
 
 
@@ -46,6 +50,8 @@ public class ReservationDTO {
                 return "white"; // blanc par défaut pour tous les autres cas
         }
     }
+
+
 }
 
 

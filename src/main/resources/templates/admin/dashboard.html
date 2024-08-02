@@ -6,102 +6,73 @@
 </head>
 <body>
 <div layout:fragment="content">
-
-      <nav class="navbar navbar-expand px-4 py-3">
-        <form action="#" class="d-none d-sm-inline-block">
-
-        </form>
-        <div class="navbar-collapse collapse">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-              <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
-                <img src="/account.png" class="avatar img-fluid" alt="">
-              </a>
-              <div class="dropdown-menu dropdown-menu-end rounded">
-
-              </div>
-            </li>
-          </ul>
-        </div>
-      </nav>
-      <main class="content px-3 py-4">
-        <div class="container-fluid">
-          <div class="mb-3">
-            <h3 class="fw-bold fs-4 mb-3">Admin Dashboard</h3>
-            <div class="row">
-              <div class="col-12 col-md-4 ">
-                <div class="card border-0">
-                  <div class="card-body py-4">
-                    <h5 class="mb-2 fw-bold">
-                      Memebers Progress
-                    </h5>
-                    <p class="mb-2 fw-bold">
-                      $72,540
-                    </p>
-                    <div class="mb-0">
-                      <span class="badge text-success me-2">
-                          +9.0%
-                      </span>
-                      <span class=" fw-bold">
-                      Since Last Month
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-md-4 ">
-                <div class="card  border-0">
-                  <div class="card-body py-4">
-                    <h5 class="mb-2 fw-bold">
-                      Memebers Progress
-                    </h5>
-                    <p class="mb-2 fw-bold">
-                      $72,540
-                    </p>
-                    <div class="mb-0">
-                      <span class="badge text-success me-2">
-                          +9.0%
-                      </span>
-                      <span class="fw-bold">
-                          Since Last Month
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-md-4 ">
-                <div class="card border-0">
-                  <div class="card-body py-4">
-                    <h5 class="mb-2 fw-bold">
-                      Memebers Progress
-                    </h5>
-                    <p class="mb-2 fw-bold">
-                      $72,540
-                    </p>
-                    <div class="mb-0">
-                                            <span class="badge text-success me-2">
-                                                +9.0%
-                                            </span>
-                      <span class="fw-bold">
-                                                Since Last Month
-                                            </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <h3 class="fw-bold fs-4 my-3">Avg. Agent Earnings
-            </h3>
-            <div class="row">
-              <div class="col-6">
-                <canvas id="revenueByCommuneChart" width="400" height="400"></canvas>
-
+  <nav class="navbar navbar-expand px-4 py-3">
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
+            <img src="/account.png" class="avatar img-fluid" alt="">
+          </a>
+          <div class="dropdown-menu dropdown-menu-end rounded">
+            <!-- Dropdown items here -->
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <main class="content px-3 py-4">
+    <div class="container-fluid">
+      <div class="mb-3">
+        <h3 class="fw-bold fs-4 mb-3">Admin Dashboard</h3>
+        <div class="row">
+          <div class="col-12 col-md-4">
+            <div class="card border-0">
+              <div class="card-body py-4">
+                <h5 class="mb-2 fw-bold">Total Revenue</h5>
+                <p id="total-revenue" class="mb-2 fw-bold">Loading...</p>
               </div>
             </div>
           </div>
+          <!-- Add more cards here if needed -->
         </div>
-    </div>
-  </div>
+        <h3 class="fw-bold fs-4 my-3">Revenues by Month</h3>
+        <div class="row">
+          <div class="col-4">
+            <canvas id="revenueByMonthChart" width="400" height="400"></canvas>
+          </div>
+        </div>
+        <h3 class="fw-bold fs-4 my-3">Revenues by Commune</h3>
+        <div class="row">
+          <div class="col-4">
+            <label for="year-select">Année: </label>
+            <select id="year-select"></select>
+
+            <label for="month-select">Mois: </label>
+            <select id="month-select">
+              <option value="1">Janvier</option>
+              <option value="2">Février</option>
+              <option value="3">Mars</option>
+              <option value="4">Avril</option>
+              <option value="5">Mai</option>
+              <option value="6">Juin</option>
+              <option value="7">Juillet</option>
+              <option value="8">Août</option>
+              <option value="9">Septembre</option>
+              <option value="10">Octobre</option>
+              <option value="11">Novembre</option>
+              <option value="12">Décembre</option>
+            </select>
+          </div>
+
+          <canvas id="reservationByLocalityChart"></canvas>
+          </div>
+        </div>
+      </div>
+  </main>
+</div>
+
+
+
+
 </body>
 </html>
-

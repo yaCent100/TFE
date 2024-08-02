@@ -8,10 +8,11 @@ document.addEventListener("DOMContentLoaded", function() {
             const paymentForm = document.querySelector("#payment-form");
             const amountElement = document.querySelector("#amount");
             const reservationIdElement = document.querySelector("#reservation-id");
+            const insuranceElement = document.querySelector("#selected-insurance"); // Assurez-vous que l'ID est correct
             const submitBtn = document.querySelector("#submit");
 
-            if (paymentForm && amountElement && reservationIdElement && submitBtn) {
-                return { paymentForm, amountElement, reservationIdElement, submitBtn };
+            if (paymentForm && amountElement && reservationIdElement && insuranceElement && submitBtn) {
+                return { paymentForm, amountElement, reservationIdElement, insuranceElement, submitBtn };
             }
 
             console.log("Waiting for elements to load...");
@@ -20,23 +21,23 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     async function initializeStripe() {
-        const { paymentForm, amountElement, reservationIdElement, submitBtn } = await waitForElements();
+        const { paymentForm, amountElement, reservationIdElement, insuranceElement, submitBtn } = await waitForElements();
 
-        console.log("Elements loaded:", { paymentForm, amountElement, reservationIdElement, submitBtn });
+        console.log("Elements loaded:", { paymentForm, amountElement, reservationIdElement, insuranceElement, submitBtn });
 
-        if (!paymentForm || !amountElement || !reservationIdElement || !submitBtn) {
+        if (!paymentForm || !amountElement || !reservationIdElement || !insuranceElement || !submitBtn) {
             console.error("Form or required elements are not found in the DOM.");
             return;
         }
 
-        initialize(amountElement, reservationIdElement);
+        initialize(amountElement, reservationIdElement, insuranceElement);
 
-        paymentForm.addEventListener("submit", async (event) => handleSubmit(event, amountElement, reservationIdElement, submitBtn));
+        paymentForm.addEventListener("submit", async (event) => handleSubmit(event, amountElement, reservationIdElement, insuranceElement, submitBtn));
     }
 
     initializeStripe();
 
-    async function initialize(amountElement, reservationIdElement) {
+    async function initialize(amountElement, reservationIdElement, insuranceElement) {
         try {
             const totalAmount = amountElement.value;
             const reservationId = reservationIdElement.value;
@@ -65,20 +66,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
             console.log("Payment Intent Client Secret: ", clientSecret);
 
-           const appearance = {
-             theme: 'stripe',
-
-             variables: {
-               colorPrimary: '#00BFFF',
-               colorBackground: '#DFE7EC',
-               colorText: '#9EABB3',
-               colorDanger: '#df1b41',
-               fontFamily: 'Ideal Sans, system-ui, sans-serif',
-               spacingUnit: '2px',
-               borderRadius: '4px',
-               // See all possible variables below
-             }
-           };
+            const appearance = {
+                theme: 'stripe',
+                variables: {
+                    colorPrimary: '#00BFFF',
+                    colorBackground: '#DFE7EC',
+                    colorText: '#9EABB3',
+                    colorDanger: '#df1b41',
+                    fontFamily: 'Ideal Sans, system-ui, sans-serif',
+                    spacingUnit: '2px',
+                    borderRadius: '4px',
+                    // See all possible variables below
+                }
+            };
             elements = stripe.elements({ appearance, clientSecret });
 
             const paymentElementOptions = { layout: "tabs" };
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (submitBtn) submitBtn.disabled = false;
     }
 
-    async function handleSubmit(event, amountElement, reservationIdElement, submitBtn) {
+    async function handleSubmit(event, amountElement, reservationIdElement, insuranceElement, submitBtn) {
         event.preventDefault();
 
         if (submitBtn.disabled) {
@@ -118,6 +118,7 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("Fetching client secret for payment confirmation...");
         const totalAmount = amountElement.value;
         const reservationId = reservationIdElement.value;
+        const insurance = insuranceElement.value; // Assurez-vous que cette ligne utilise bien `insuranceElement`
 
         const response = await fetch("/api/payments/create-payment-intent", {
             method: "POST",
@@ -139,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function() {
         returnUrl.searchParams.set('amount', totalAmount);
         returnUrl.searchParams.set('reservationId', reservationId);
         returnUrl.searchParams.set('paymentIntentId', paymentIntentId);
+        returnUrl.searchParams.set('insurance', insurance);
 
         const { error } = await stripe.confirmPayment({
             elements,

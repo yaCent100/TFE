@@ -1,83 +1,67 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Initializing script...");
 
-    const searchForm = document.getElementById('rechercheForm');
-    const nosLocationsTab = document.getElementById('nosLocationsTab');
-    const carListElement = document.getElementById('carList');
-    const carList2Element = document.getElementById('carList2');
-    const spinnerElement = document.getElementById('loading-spinner');
-
-    if (searchForm) {
-        console.log("Form found. Adding event listener...");
-        searchForm.addEventListener('submit', searchCars);
-    } else {
-        console.error("Element with id 'rechercheForm' not found.");
-    }
-
-    if (nosLocationsTab) {
-        console.log("Nos Locations tab found. Adding event listener...");
-        nosLocationsTab.addEventListener('click', (event) => {
-            event.preventDefault(); // Empêche le comportement par défaut du lien
-            window.location.href = '/cars'; // Redirection vers /cars avec un paramètre pour indiquer que carList2 doit être affiché
-        });
-    } else {
-        console.error("Element with id 'nosLocationsTab' not found.");
-    }
-
-    // Vérifiez l'URL pour le paramètre showCarList2
-    const urlParams = new URLSearchParams(window.location.search);
-    const showCarList2 = urlParams.get('showCarList2');
-
-    if (showCarList2 === 'true') {
-        // Afficher carList2 et masquer carList seulement si les éléments existent
-        if (carListElement && carList2Element) {
-            carListElement.style.display = 'none';
-            carList2Element.style.display = 'block';
-        } else {
-            console.error("Elements 'carList' or 'carList2' not found.");
-        }
-
-        // Masquer le spinner si nécessaire
-        if (spinnerElement) {
-            spinnerElement.style.display = 'none';
-        }
-    }
-
+    // Fonction de recherche de voitures
     async function searchCars(event) {
-        event.preventDefault(); // Empêche la soumission du formulaire
+        event.preventDefault();
 
         const address = document.getElementById('manualAddress').value;
         const dateDebut = document.getElementById('dateDebut').value;
         const dateFin = document.getElementById('dateFin').value;
 
-        // Stocker dans localStorage
-        localStorage.setItem('manualAddress', address);
-        localStorage.setItem('dateDebut', dateDebut);
-        localStorage.setItem('dateFin', dateFin);
-
         if (!address || !dateDebut || !dateFin) {
             alert('Veuillez remplir tous les champs.');
-            return;
+            return false;
         }
 
         const geocoder = new google.maps.Geocoder();
-
         geocoder.geocode({ 'address': address }, async function(results, status) {
             if (status === 'OK') {
                 const location = results[0].geometry.location;
                 const userLat = location.lat();
                 const userLng = location.lng();
 
-                // Redirection vers la page /cars avec les paramètres de recherche
-                window.location.href = `/cars?address=${encodeURIComponent(address)}&lat=${userLat}&lng=${userLng}&dateDebut=${dateDebut}&dateFin=${dateFin}`;
+                try {
+                    const response = await fetch(`/api/cars/search?address=${encodeURIComponent(address)}&lat=${userLat}&lng=${userLng}&dateDebut=${dateDebut}&dateFin=${dateFin}`);
+
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la récupération des voitures');
+                    }
+
+                    const cars = await response.json();
+                    console.log('Voitures reçues:', cars);
+
+                    // Stocker les résultats dans localStorage
+                    localStorage.setItem('searchResults', JSON.stringify(cars));
+
+                    // Redirection vers la page /cars avec les paramètres de recherche
+                    window.location.href = `/cars?address=${encodeURIComponent(address)}&dateDebut=${dateDebut}&dateFin=${dateFin}`;
+
+                } catch (error) {
+                    console.error('Erreur lors de la recherche des voitures :', error);
+                    alert('Une erreur est survenue lors de la recherche des voitures. Veuillez réessayer.');
+                }
             } else {
                 console.error('Geocode was not successful for the following reason:', status);
+                alert('Une erreur est survenue lors du géocodage de l\'adresse. Veuillez vérifier l\'adresse et réessayer.');
             }
         });
 
         return false;
     }
+
+    // Ajout de l'écouteur d'événement pour le formulaire
+    const searchForm = document.getElementById('rechercheForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', searchCars);
+    } else {
+        console.error("Element with id 'rechercheForm' not found.");
+    }
 });
+
+
+
+
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -98,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-/* ALLEZ A LA PAGE RESERVATION */
+// ALLEZ A LA PAGE RESERVATION
 
  document.addEventListener('DOMContentLoaded', function() {
         const reservationForm = document.getElementById('reservationForm');
@@ -186,6 +170,31 @@ document.addEventListener('DOMContentLoaded', () => {
             // Rediriger vers l'URL de réservation
             window.location.href = reservationUrl;
         });
+    }
+
+    // Fonction pour reformater les dates
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+
+    // Fonction pour initialiser les dates dans le modal
+    const initializeModalDates = () => {
+        const storedDateDebut = localStorage.getItem('dateDebut');
+        const storedDateFin = localStorage.getItem('dateFin');
+
+        if (storedDateDebut && storedDateFin) {
+            modalDateDebut.textContent = formatDate(storedDateDebut);
+            modalDateFin.textContent = formatDate(storedDateFin);
+        }
+    };
+
+    // Appeler cette fonction lorsque le modal est affiché
+    if (messageModal) {
+        messageModal.addEventListener('show.bs.modal', initializeModalDates);
     }
 });
 

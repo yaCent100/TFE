@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -84,7 +85,20 @@ public class PaymentService {
 
 
 
+    // Obtenir le revenu total
+    public BigDecimal getTotalRevenue() {
+        return paymentRepository.calculateTotalRevenue();
+    }
 
+    // Obtenir le revenu par mois et année
+    public BigDecimal getMonthlyRevenue(int month, int year) {
+        return paymentRepository.calculateRevenueForMonth(month, year);
+    }
+
+    // Obtenir les revenus par mois pour une vue historique
+    public List<Object[]> getRevenueByMonth() {
+        return paymentRepository.getRevenuePerMonth();
+    }
 
 
 }

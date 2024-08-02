@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <nav class="navbar navbar-expand px-4 py-3">
+        <div class="navbar-collapse collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
+                        <img src="/account.png" class="avatar img-fluid" alt="">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end rounded">
+                        <!-- Dropdown items here -->
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <main class="content px-3 py-4">
+        <h1>Roles & Permissions</h1>
+        <form action="/admin/users/roles" method="POST">
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <input type="text" class="form-control" id="role" name="role" required>
+            </div>
+            <div class="mb-3">
+                <label for="permissions" class="form-label">Permissions</label>
+                <input type="text" class="form-control" id="permissions" name="permissions" placeholder="Comma-separated list of permissions">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Role</button>
+        </form>
+        <h2>Existing Roles</h2>
+        <ul>
+            <li th:each="role : ${roles}" th:text="${role}"></li>
+        </ul>
+    </main>
+</div>
+
+
+
+
+</body>
+</html>

@@ -54,4 +54,7 @@ public class FeatureService implements FeatureServiceI {
     public List<Feature> findByCategory(String name) {
         return featureRepository.findByName(name);
     }
+
+    public void saveFeature(Feature featureName, String featureDescription) {
+    }
 }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Voitures en Attente</title>
+    <script>
+  $(document).ready(function() {
+    $('#pendingCarsTable').DataTable();
+  });
+</script>
+</head>
+<body>
+<div layout:fragment="content">
+    <nav class="navbar navbar-expand px-4 py-3">
+        <div class="navbar-collapse collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
+                        <img src="/account.png" class="avatar img-fluid" alt="">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end rounded">
+                        <!-- Dropdown items here -->
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <main class="content px-3 py-4">
+        <h1>Voitures en Attente</h1>
+        <table class="table table-striped" id="pendingCarsTable">
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>Marque</th>
+                <th>Modèle</th>
+                <th>Année</th>
+                <th>Accepter</th>
+                <th>Détails</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="car : ${pendingCars}">
+                <td th:text="${car.id}"></td>
+                <td th:text="${car.brand}">Marque</td>
+                <td th:text="${car.model}">Modèle</td>
+                <td th:text="${car.online ? 'Oui' : 'Non'}">En Ligne</td>
+                <td>
+                    <button class="btn btn-success" onclick="approveCar(${car.id})">Accepter</button>
+                </td>
+                <td><a th:href="@{/cars/details/{id}(id=${car.id})}" class="btn btn-info">Détails</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+
+</body>
+</html>

@@ -19,6 +19,12 @@ import java.util.List;
 public interface CarRepository extends JpaRepository<Car, Long> {
 
     List<Car> findByUser(User user);
+    List<Car> findByOnline(boolean online);
+
+    List<Car> findByModeReservation(String modeReservation);
+
+
+
 
 
 }

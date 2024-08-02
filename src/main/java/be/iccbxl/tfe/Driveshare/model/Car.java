@@ -19,44 +19,45 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="Marque")
+    @Column(name="brand")
     private String brand;
 
-    @Column(name="Modele")
+    @Column(name="model")
     private String model;
 
-    @Column(name="Offre")
+    @Column(name="offer")
     private String offre;
 
-    @Column(name = "plaque_immatriculation", unique = true)
+    @Column(name = "immatriculation_plate", unique = true)
     private String plaqueImmatriculation;
 
     @Column(name = "first_immatriculation")
     private LocalDate firstImmatriculation;
 
-    @Column(name="Carburant")
+    @Column(name="fuel_type")
     private String fuelType;
 
-    @Column(name="Adresse")
+    @Column(name="adresse")
     private String adresse;
 
-    @Column(name="code_postal")
+    @Column(name="postal_code")
     private int codePostal;
 
     @Column(name="locality")
     private String locality;
 
-    @Column(name = "mode_reservation")
+    @Column(name = "reservation_mode")
     private String modeReservation;
 
-    @Column(name = "carte_grise_path")
+    @Column(name = "car_registration_path")
     private String carteGrisePath;
 
+    @Column(name = "online")
+    private Boolean online; // Utilisation de Boolean au lieu de boolean
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -73,7 +74,7 @@ public class Car {
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
-            name = "car_features",
+            name = "car_feature",
             joinColumns = @JoinColumn(name = "car_id"),
             inverseJoinColumns = @JoinColumn(name = "feature_id")
     )
@@ -81,7 +82,7 @@ public class Car {
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
-            name = "car_equipments",
+            name = "car_equipment",
             joinColumns = @JoinColumn(name = "car_id"),
             inverseJoinColumns = @JoinColumn(name = "equipment_id")
     )
@@ -90,8 +91,11 @@ public class Car {
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Indisponible> unavailable;
 
-    @OneToMany(mappedBy = "car", fetch = FetchType.LAZY)
-    private List<CarRental> carRentals;
+    @OneToMany(mappedBy = "car", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Reservation> reservations;
+
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
 
 
     private Double latitude;

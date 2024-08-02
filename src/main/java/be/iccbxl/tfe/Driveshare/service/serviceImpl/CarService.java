@@ -109,18 +109,18 @@ public class CarService implements CarServiceI {
 
     @Override
     public double calculateAverageRating(Car car) {
-        List<CarRental> carRentals = car.getCarRentals();
-        if (carRentals.isEmpty()) {
-            return 0.0; // Retourne 0 si aucune location n'est associée à la voiture
+        List<Reservation> reservations = car.getReservations();
+        if (reservations == null || reservations.isEmpty()) {
+            return 0.0; // Retourne 0 si aucune réservation n'est associée à la voiture
         }
 
         double sum = 0.0;
         int totalEvaluations = 0; // Compte le nombre total d'évaluations pour faire la moyenne
 
-        // Parcourir chaque location de la voiture
-        for (CarRental carRental : carRentals) {
-            List<Evaluation> evaluations = carRental.getEvaluations(); // Obtenir les évaluations de chaque location
-            for (Evaluation evaluation : evaluations) {
+        // Parcourir chaque réservation de la voiture
+        for (Reservation reservation : reservations) {
+            Evaluation evaluation = reservation.getEvaluation(); // Obtenir l'évaluation de chaque réservation
+            if (evaluation != null) {
                 sum += evaluation.getNote(); // Ajouter la note de l'évaluation au total
                 totalEvaluations++; // Incrémenter le compteur d'évaluations
             }
@@ -153,11 +153,14 @@ public class CarService implements CarServiceI {
         Map<Long, Integer> reviewCounts = new HashMap<>();
 
         for (Car car : cars) {
-            List<CarRental> carRentals = car.getCarRentals(); // Obtenir toutes les locations de la voiture
+            List<Reservation> reservations = car.getReservations(); // Obtenir toutes les réservations de la voiture
             int count = 0;
 
-            for (CarRental carRental : carRentals) {
-                count += carRental.getEvaluations().size(); // Ajouter le nombre d'évaluations pour chaque location
+            for (Reservation reservation : reservations) {
+                Evaluation evaluation = reservation.getEvaluation();
+                if (evaluation != null) {
+                    count++; // Incrémenter le compteur si une évaluation est présente pour cette réservation
+                }
             }
 
             reviewCounts.put(car.getId(), count); // Stocker le nombre total d'évaluations pour cette voiture
@@ -191,38 +194,19 @@ public class CarService implements CarServiceI {
     }
 
     private boolean isCarAvailableForDates(Car car, LocalDate dateDebut, LocalDate dateFin) {
-        List<CarRental> carRentals = car.getCarRentals();
+        List<Reservation> reservations = car.getReservations();
 
-        for (CarRental carRental : carRentals) {
-            List<Reservation> reservations = carRental.getReservations();
+        for (Reservation reservation : reservations) {
+            LocalDate reservationStartDate = reservation.getDebutLocation();
+            LocalDate reservationEndDate = reservation.getFinLocation();
 
-            for (Reservation reservation : reservations) {
-                LocalDate reservationStartDate = reservation.getDebutLocation();
-                LocalDate reservationEndDate = reservation.getFinLocation();
-
-                if ((dateDebut.isEqual(reservationStartDate) || dateDebut.isAfter(reservationStartDate)) &&
-                        (dateDebut.isEqual(reservationEndDate) || dateDebut.isBefore(reservationEndDate)) ||
-                        (dateFin.isEqual(reservationStartDate) || dateFin.isAfter(reservationStartDate)) &&
-                                (dateFin.isEqual(reservationEndDate) || dateFin.isBefore(reservationEndDate))) {
-                    return false;
-                }
-            }
-        }
-
-        List<Indisponible> indisponibilites = car.getUnavailable();
-
-        for (Indisponible indisponibilite : indisponibilites) {
-            LocalDate indisponibiliteStartDate = indisponibilite.getStartDate();
-            LocalDate indisponibiliteEndDate = indisponibilite.getEndDate();
-
-            if ((dateDebut.isEqual(indisponibiliteStartDate) || dateDebut.isAfter(indisponibiliteStartDate)) &&
-                    (dateDebut.isEqual(indisponibiliteEndDate) || dateDebut.isBefore(indisponibiliteEndDate)) ||
-                    (dateFin.isEqual(indisponibiliteStartDate) || dateFin.isAfter(indisponibiliteStartDate)) &&
-                            (dateFin.isEqual(indisponibiliteEndDate) || dateFin.isBefore(indisponibiliteEndDate))) {
+            if ((dateDebut.isEqual(reservationStartDate) || dateDebut.isAfter(reservationStartDate)) &&
+                    (dateDebut.isEqual(reservationEndDate) || dateDebut.isBefore(reservationEndDate)) ||
+                    (dateFin.isEqual(reservationStartDate) || dateFin.isAfter(reservationStartDate)) &&
+                            (dateFin.isEqual(reservationEndDate) || dateFin.isBefore(reservationEndDate))) {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -483,6 +467,24 @@ public class CarService implements CarServiceI {
                 carRepository.save(car);
             }
         }
+    }
+
+    public List<Car> getPendingCars() {
+        return carRepository.findByOnline(false);
+    }
+
+    public List<Car> getOnlineCars() {
+        return carRepository.findByOnline(true);
+    }
+
+    public boolean approveCar(Long id) {
+        return carRepository.findById(id)
+                .map(car -> {
+                    car.setOnline(true);
+                    carRepository.save(car);
+                    return true;
+                })
+                .orElse(false);
     }
 
 }

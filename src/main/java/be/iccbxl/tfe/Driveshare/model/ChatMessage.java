@@ -15,18 +15,12 @@ public class ChatMessage {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_user_id", nullable = false)
-    private User fromUser;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_user_id", nullable = false)
-    private User toUser;
+    @JoinColumn(name = "reservation_id", nullable = false)
+    private Reservation reservation; // Lien vers Reservation
 
     @Column(nullable = false)
     private String content;
 
-    @Column(name = "reservation_id", nullable = false)
-    private Long reservationId;
 
     @Column(name = "sent_at", nullable = false)
     private LocalDateTime sentAt;

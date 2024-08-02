@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name="categorie")
+@Table(name="categories")
 public class Category {
 
     @Id

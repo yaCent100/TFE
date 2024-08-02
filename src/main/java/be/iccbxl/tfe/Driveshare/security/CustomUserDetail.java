@@ -60,4 +60,8 @@ public class CustomUserDetail implements UserDetails {
 	public boolean isEnabled() {
 		return true; // Assurez-vous que votre entité User a un champ 'active'
 	}
+
+	public User getUser() {
+		return user;
+	}
 }

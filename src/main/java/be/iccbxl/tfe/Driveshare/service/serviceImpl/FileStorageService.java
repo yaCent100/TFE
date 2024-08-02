@@ -24,6 +24,11 @@ public class FileStorageService implements FileStorageServiceI {
     @Value("${file.upload-dir.registrationCard}")
     private String registrationCardDir;
 
+    @Value("${file.upload-dir.icons}")
+    private String iconsDir;
+
+
+
     @Override
     public String storeFile(MultipartFile file, String directory) {
         String uploadDir;
@@ -39,6 +44,9 @@ public class FileStorageService implements FileStorageServiceI {
                 break;
             case "registration":
                 uploadDir = registrationCardDir;
+                break;
+            case "icons":
+                uploadDir = iconsDir;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid directory: " + directory);

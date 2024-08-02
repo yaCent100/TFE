@@ -8,13 +8,13 @@
 <div layout:fragment="content">
     <div class="container">
         <div class="row mt-3">
-            <div class="col-md-9">
+            <div class="col-md-8">
                 <div class="rounded-custom-border p-4">
                     <div class="d-flex justify-content-center">
                         <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" style="max-width: 700px;">
                             <div class="carousel-inner">
                                 <div th:each="photo, iterStat : ${car.photos}" class="carousel-item" th:classappend="${iterStat.first}? 'active'">
-                                    <img th:src="'/uploads/' +${photo.url}" class="d-block w-100" alt="...">
+                                    <img th:src="'/uploads/' + ${photo.url}" class="d-block w-100" alt="...">
                                 </div>
                             </div>
                             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -53,7 +53,6 @@
                     </div>
                 </div>
 
-
                 <div class="rounded-custom-border p-4 mt-3">
                     <h2 class="fw-bold">Propriétaire</h2>
                     <div class="row m-3">
@@ -65,14 +64,18 @@
                             <span th:text="${car.user.adresse}"></span><br>
                             <span th:text="${car.user.codePostal + ' ' + car.user.locality}"></span>
                         </div>
-
+                    </div>
+                    <div class="row">
+                        <div>
+                            <button id="send-message-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#messageModal">Envoyer un message au propriétaire</button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="rounded-custom-border p-4 mt-3">
                     <h2 class="fw-bold">Conditions requises par le propriétaire</h2>
-                        <div th:if="${car.conditions != null}">
-                            <div class="row m-3">
+                    <div th:if="${car.conditions != null}">
+                        <div class="row m-3">
                             <div th:each="condition, iterStat : ${car.conditions}" class="col-md-6">
                                 <div class="text-center m-1 custom-cond">
                                     <span th:text="${condition.condition}"></span>
@@ -88,7 +91,7 @@
                 <div class="rounded-custom-border p-4 mt-3">
                     <h2 class="fw-bold">Caractéristiques techniques</h2>
                     <div th:if="${car.features != null}">
-                        <div class="row m-3" >
+                        <div class="row m-3">
                             <div th:each="feature, iterStat : ${car.features}" class="col-md-3">
                                 <div class="text-center m-1">
                                     <span style="font-style: italic;" th:text="${feature.name}"></span><br>
@@ -97,10 +100,10 @@
                             </div>
                         </div>
                     </div>
-                        <div th:if="${car.features == null or #lists.isEmpty(car.features)}">
-                            <span>Aucune caractéristique associée à la voiture.</span>
-                        </div>
+                    <div th:if="${car.features == null or #lists.isEmpty(car.features)}">
+                        <span>Aucune caractéristique associée à la voiture.</span>
                     </div>
+                </div>
 
                 <div class="rounded-custom-border p-4 mt-3">
                     <h2 class="fw-bold">Équipements</h2>
@@ -115,31 +118,31 @@
                         </div>
                     </div>
                     <div th:if="${car.equipments == null or #lists.isEmpty(car.equipments)}">
-                        <span>Aucun equipements associée à la voiture.</span>
+                        <span>Aucun équipement associé à la voiture.</span>
                     </div>
                 </div>
 
                 <div class="rounded-custom-border p-4 mt-3">
                     <h2 class="fw-bold">Évaluations</h2>
-                    <div th:if="${#lists.isEmpty(car.carRentals.![evaluations])}">
+                    <div th:if="${#lists.isEmpty(car.reservations.![evaluation])}">
                         <span>Aucune évaluation à ce jour.</span>
                     </div>
-                    <div th:each="carRental : ${car.carRentals}" th:if="${not #lists.isEmpty(carRental.evaluations)}">
-                        <div th:each="evaluation : ${carRental.evaluations}" class="col-md-12">
+                    <div th:each="reservation : ${car.reservations}" th:if="${reservation.evaluation != null}">
+                        <div class="col-md-12">
                             <div class="row m-3">
                                 <div class="col-md-2 m-1">
-                                    <img th:if="${evaluation.carRental.user.photoUrl != null}" th:src="@{'/uploads/profil/' + ${evaluation.carRental.user.photoUrl}}" alt="Profil" width="100px" height="100px">
+                                    <img th:if="${reservation.user.photoUrl != null}" th:src="@{'/uploads/profil/' + ${reservation.user.photoUrl}}" alt="Profil" width="100px" height="100px">
                                 </div>
                                 <div class="col-md-7">
-                                    <span class="fw-bold" th:text="${evaluation.carRental.user.nom + ' ' + evaluation.carRental.user.prenom.substring(0,1) + '.'}"></span><br>
-                                    <span th:text="${evaluation.avis}"></span><br>
+                                    <span class="fw-bold" th:text="${reservation.user.nom + ' ' + reservation.user.prenom.substring(0, 1) + '.'}"></span><br>
+                                    <span th:text="${reservation.evaluation.avis}"></span><br>
                                     <span th:each="star : ${#numbers.sequence(1, 5)}">
-                        <span th:if="${evaluation.note >= star}" class="star-filled">&#9733;</span>
-                        <span th:unless="${evaluation.note >= star}" class="star-filled">&#9734;</span>
-                    </span>
+                                        <span th:if="${reservation.evaluation.note >= star}" class="star-filled">&#9733;</span>
+                                        <span th:unless="${reservation.evaluation.note >= star}" class="star-filled">&#9734;</span>
+                                    </span>
                                 </div>
                                 <div class="col-md-2 text-end">
-                                    <span th:text="${#temporals.format(evaluation.createdAt, 'dd-MM-yyyy')}"></span>
+                                    <span th:text="${#temporals.format(reservation.evaluation.createdAt, 'dd-MM-yyyy')}"></span>
                                 </div>
                             </div>
                         </div>
@@ -147,39 +150,73 @@
                 </div>
 
             </div>
+            <div class="col-md-4 d-flex align-items-center justify-content-center position-fixed top-50 end-0 translate-middle-y">
+                <div class="custom-border p-3 text-center">
+                    <span th:text="${car.price.middlePrice + '€'}" class="fw-bold fs-2 m-0"></span>
+                    <span th:text="'/jour'" class="fs-6 m-0"></span>
+                    <br>
+                    <div>
+                        <form id="reservationForm" th:action="@{'/reservation/' + ${car.id}}" method="get">
+                            <input type="hidden" id="dateDebutHidden" name="dateDebut" th:value="${dateDebut}">
+                            <input type="hidden" id="dateFinHidden" name="dateFin" th:value="${dateFin}">
+                            <button type="submit" class="custom-reserver btn fw-bold fw-italic">
+                                <p>
+                                    Du
+                                    <input type="date" id="dateDebutInput" name="dateDebut" th:value="${dateDebut}" required>
+                                    Au
+                                    <input type="date" id="dateFinInput" name="dateFin" th:value="${dateFin}" required>
+                                </p>
+                                <span>Réserver</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
+
         </div>
 
+    </div>
 
-
-        <!-- Reservation FIXED -->
-        <div class="col-md-3 d-flex align-items-center justify-content-center position-fixed top-50 end-0 translate-middle-y">
-            <div class="custom-border p-3 text-center">
-                <span th:text="${car.price.middlePrice + '€'}" class="fw-bold fs-2 m-0"></span>
-                <span th:text="'/jour'" class="fs-6 m-0"></span>
-                <br>
-                <div>
-                    <form id="reservationForm" th:action="@{'/reservation/' + ${car.id}}" method="get">
-                        <input type="hidden" id="dateDebutHidden" name="dateDebut" th:value="${dateDebut}">
-                        <input type="hidden" id="dateFinHidden" name="dateFin" th:value="${dateFin}">
-                        <button type="submit" class="custom-reserver btn fw-bold fw-italic">
-                            <p>
-                                Du
-                                <input type="date" id="dateDebutInput" name="dateDebut" th:value="${dateDebut}" required>
-                                Au
-                                <input type="date" id="dateFinInput" name="dateFin" th:value="${dateFin}" required>
-                            </p>
-                            <span>Réserver</span>
-                        </button>
-                    </form>
-
+    <!-- Modal Envoi de message -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Envoyer un message au propriétaire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
-
-
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <img th:src="${'/uploads/' + car.user.photoUrl}" class="img-fluid" alt="User Profile Picture" width="100px">
+                        </div>
+                        <div class="col-md-9">
+                            <h5 class="fw-bold" th:text="${car.user.prenom + ' ' + car.user.nom}"></h5>
+                            <p>Dates de location :</p>
+                            <p>Du <span id="modalDateDebut"></span> au <span id="modalDateFin"></span></p>
+                        </div>
+                    </div>
+                    <form id="notification-form">
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="notification-message"></textarea>
+                        </div>
+                        <input type="hidden" id="toUserId" th:value="${car.user.id}">
+                        <input type="hidden" id="fromUserId" th:value="${authenticatedUser.id}">
+                        <input type="hidden" id="vehicleId" th:value="${car.id}">
+                        <button type="button" id="sendNotificationButton" class="btn btn-primary">Envoyer</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
+</div>
+<script type="text/javascript">
+    var authenticatedUserId = /*[[${authenticatedUser.id}]]*/;
+    var carUserId = /*[[${car.user.id}]]*/;
+    var vehicleId = /*[[${car.id}]]*/;
+</script>
+<!-- Modal Envoi de message -->
 </body>
 </html>

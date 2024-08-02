@@ -5,44 +5,82 @@
   <title>DriveShare - Mes Réservations</title>
 </head>
 <body>
-<div layout:fragment="content" class="container mt-5 mb-5">
-  <div class="row">
-    <div class="col-lg-3">
-      <h5>Mes voitures</h5>
-      <hr>
-      <div id="cars-filters">
-        <div th:each="car : ${userCars}">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" th:value="${car.id}" th:id="${'filter-car-' + car.id}">
-            <label class="form-check-label" th:for="${'filter-car-' + car.id}" th:text="${car.brand + ' ' + car.model}"></label>
+<div layout:fragment="content" >
+  <div th:insert="account/fragments/account-header"></div>
+
+  <div class="container" style="padding-top:5rem; padding-bottom:5rem;">
+
+    <div class="row justify-content-center">
+      <div class="col-lg-12">
+        <!-- Message de succès -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <!-- Message d'erreur -->
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+      </div>
+      <div class="col-12 col-lg-3">
+        <div class="reservation-custom-filter text-center">
+          <div th:if="${not #lists.isEmpty(userCars)}" id="cars-filters" class="cars-filters-reservation">
+            <h5 class="filter-title-reservation">Mes voitures</h5>
+            <hr>
+            <div th:each="car : ${userCars}">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" th:value="${car.id}" th:id="${'filter-car-' + car.id}">
+                <label class="form-check-label" th:for="${'filter-car-' + car.id}" th:text="${car.brand + ' ' + car.model}"></label>
+              </div>
+            </div>
+          </div>
+
+          <div id="status-filters">
+            <h5 class="filter-title-reservation">Statut des locations</h5>
+            <hr>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="RESPONSE_PENDING" id="filter-reponse-attente">
+              <label class="form-check-label" for="filter-reponse-attente">En attente de réponse</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="PAYMENT_PENDING" id="filter-attente-paiement">
+              <label class="form-check-label" for="filter-attente-paiement">En attente de paiement</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="CONFIRMED" id="filter-confirmed">
+              <label class="form-check-label" for="filter-confirmed">Locations à venir (confirmées)</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="NOW" id="filter-now">
+              <label class="form-check-label" for="filter-now">Locations en cours</label>
+            </div>
+            <div class="form-check" style="display:none;">
+              <input class="form-check-input" type="checkbox" value="FINISHED" id="filter-finished">
+              <label class="form-check-label" for="filter-finished">Location terminées</label>
+            </div>
+            <div class="form-check" style="display:none;">
+              <input class="form-check-input" type="checkbox" value="CANCELLED" id="filter-cancelled">
+              <label class="form-check-label" for="filter-cancelled">Location annulées</label>
+            </div>
+            <div class="form-check" style="display:none;">
+              <input class="form-check-input" type="checkbox" value="COMPLETED" id="filter-completed">
+              <label class="form-check-label" for="filter-completed">Demande refusées</label>
+            </div>
+            <div class="form-check" style="display:none;">
+              <input class="form-check-input" type="checkbox" value="PENDING" id="filter-pending">
+              <label class="form-check-label" for="filter-pending">Demande expirées</label>
+            </div>
+          </div>
+          <div class="button-container">
+            <button id="current-locations-button" style="display:none;">Locations en cours</button>
+            <button id="history-button" >Historique de location</button>
           </div>
         </div>
       </div>
-      <h5>Statut des locations</h5>
-      <hr>
-      <div id="status-filters">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="CONFIRMED" id="filter-confirmed">
-          <label class="form-check-label" for="filter-confirmed">Location Confirmées</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="CANCELLED" id="filter-cancelled">
-          <label class="form-check-label" for="filter-cancelled">Location Annulées</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="COMPLETED" id="filter-completed">
-          <label class="form-check-label" for="filter-completed">Location Terminées</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="PENDING" id="filter-pending">
-          <label class="form-check-label" for="filter-pending">Location en attente</label>
-        </div>
+      <div class="col-lg-9">
+        <div id="result-container"></div>
+        <div id="manual-requests" class="manual-requests mt-4"></div>
+
       </div>
-    </div>
-    <div class="col-lg-9">
-      <div id="result-container"></div>
     </div>
   </div>
 </div>
+
 </body>
 </html>

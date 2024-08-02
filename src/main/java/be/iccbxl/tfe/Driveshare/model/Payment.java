@@ -10,20 +10,20 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "paiement")
+@Table(name = "payments")
 public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "prix_total", nullable = false)
-    private Double prixTotal;
+    @Column(name = "total_price", nullable = false)
+    private double prixTotal;
 
     @Column(name = "statut", nullable = false)
     private String statut;
 
-    @Column(name = "paiement_mode", nullable = false)
+    @Column(name = "payment_mode", nullable = false)
     private String paiementMode;
 
     @Column(name = "created_at", nullable = false)

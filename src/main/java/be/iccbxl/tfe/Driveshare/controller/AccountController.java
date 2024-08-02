@@ -1,34 +1,38 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
+import be.iccbxl.tfe.Driveshare.DTO.NotificationDTO;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.text.SimpleDateFormat;
+import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Controller
-@SessionAttributes("auth")
 public class AccountController {
 
     private final UserService userService;
@@ -36,7 +40,6 @@ public class AccountController {
     private final CarService carService;
     private final FileStorageService fileStorageService;
     private final DocumentService documentService;
-    private final NotificationPreferenceService preferenceService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final PaymentService paymentService;
     private final DateService dateService;
@@ -45,17 +48,23 @@ public class AccountController {
     private final EquipmentService equipmentService;
 
     private final ReservationService reservationService;
+    private final NotificationService notificationService;
+
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
+
+
 
 
 
     @Autowired
-    public AccountController(UserService userService, PriceService priceService, PhotoService photoService, CarService carService, FileStorageService fileStorageService, DocumentService documentService, NotificationPreferenceService preferenceService, BCryptPasswordEncoder passwordEncoder, PaymentService paymentService, DateService dateService, CategoryService categoryService, FeatureService featureService, EquipmentService equipmentService, ReservationService reservationService) {
+    public AccountController(UserService userService, PhotoService photoService, CarService carService, FileStorageService fileStorageService, DocumentService documentService,
+                             BCryptPasswordEncoder passwordEncoder, PaymentService paymentService, DateService dateService, CategoryService categoryService,
+                             FeatureService featureService, EquipmentService equipmentService, ReservationService reservationService, NotificationService notificationService) {
         this.userService = userService;
         this.photoService = photoService;
         this.carService = carService;
         this.fileStorageService = fileStorageService;
         this.documentService = documentService;
-        this.preferenceService = preferenceService;
         this.passwordEncoder = passwordEncoder;
         this.paymentService = paymentService;
         this.dateService = dateService;
@@ -63,28 +72,27 @@ public class AccountController {
         this.featureService = featureService;
         this.equipmentService = equipmentService;
         this.reservationService = reservationService;
+        this.notificationService = notificationService;
     }
 
 
     @GetMapping("/account")
     public String getAccount(Model model, @AuthenticationPrincipal CustomUserDetail userDetails, HttpServletRequest request) {
         int confirmedCount = 0; // Initialisez le compteur de réservations confirmées à 0
-        int carCount = 0; // Initialisez le compteur de voitures à 0
+        long carCount = 0; // Initialisez le compteur de voitures à 0
 
         if (userDetails != null) {
             User user = userDetails.getUser();
 
             // Itérez sur les réservations de l'utilisateur pour compter les réservations confirmées
-            for (CarRental carRental : user.getCarRentals()) {
-                for (Reservation reservation : carRental.getReservations()) {
-                    if ("confirmé".equals(reservation.getStatut())) {
-                        confirmedCount++;
-                    }
+            for (Reservation reservation : user.getReservations()) {
+                if ("CONFIRMED".equalsIgnoreCase(reservation.getStatut())) {
+                    confirmedCount++;
                 }
             }
 
             // Récupérez le nombre de voitures liées à l'utilisateur depuis la base de données
-            carCount = Math.toIntExact(userService.countCarsById(user.getId())); // Suppose que vous avez un repository pour les voitures
+            carCount = userService.countCarsById(user.getId());
 
             // Ajoutez les compteurs au modèle
             model.addAttribute("confirmedCount", confirmedCount);
@@ -92,6 +100,7 @@ public class AccountController {
             model.addAttribute("user", user);
             model.addAttribute("requestURI", request.getRequestURI());
         }
+
         return "account/index";
     }
 
@@ -189,56 +198,22 @@ public class AccountController {
     }
 
     @GetMapping("/account/notifications")
-    public String showNotificationPreferences(@AuthenticationPrincipal CustomUserDetail userDetails, Model model, HttpServletRequest request) {
+    public String getNotifications(HttpServletRequest request, Model model, @AuthenticationPrincipal CustomUserDetail userDetails) {
         User user = userDetails.getUser();
-        NotificationPreference preferences = preferenceService.getPreferences(user);
-        if (preferences == null) {
-            preferences = new NotificationPreference();
-            preferences.setUser(user);
-            preferenceService.savePreferences(preferences);
-        }
-        model.addAttribute("preferences", preferences);
+        List<Notification> notifications = notificationService.getNotificationsForUser(user.getId());
+
+        List<Notification> notificationsNonLues = notifications.stream().filter(n -> !n.isLu()).collect(Collectors.toList());
+        List<Notification> notificationsLues = notifications.stream().filter(Notification::isLu).collect(Collectors.toList());
+
         model.addAttribute("user", user);
+        model.addAttribute("notificationsNonLues", notificationsNonLues);
+        model.addAttribute("notificationsLues", notificationsLues);
         model.addAttribute("requestURI", request.getRequestURI());
 
         return "account/notification-user";
     }
 
-    @PostMapping("/account/notifications")
-    public String saveNotificationPreferences(@AuthenticationPrincipal CustomUserDetail userDetails, @ModelAttribute NotificationPreference preferences) {
-        User user = userDetails.getUser();
-        NotificationPreference existingPreferences = preferenceService.getPreferences(user);
 
-        if (existingPreferences != null) {
-            existingPreferences.setCancelEmailLocataire(preferences.isCancelEmailLocataire());
-            existingPreferences.setCancelEmailProprietaire(preferences.isCancelEmailProprietaire());
-            existingPreferences.setConfirmedEmailLocataire(preferences.isConfirmedEmailLocataire());
-            existingPreferences.setConfirmedEmailProprietaire(preferences.isConfirmedEmailProprietaire());
-            existingPreferences.setConfirmedSmsLocataire(preferences.isConfirmedSmsLocataire());
-            existingPreferences.setConfirmedSmsProprietaire(preferences.isConfirmedSmsProprietaire());
-            existingPreferences.setEndEmailLocataire(preferences.isEndEmailLocataire());
-            existingPreferences.setEndEmailProprietaire(preferences.isEndEmailProprietaire());
-            existingPreferences.setEndSmsLocataire(preferences.isEndSmsLocataire());
-            existingPreferences.setEndSmsProprietaire(preferences.isEndSmsProprietaire());
-            existingPreferences.setMessagesEmailLocataire(preferences.isMessagesEmailLocataire());
-            existingPreferences.setMessagesEmailProprietaire(preferences.isMessagesEmailProprietaire());
-            existingPreferences.setReservationEmailLocataire(preferences.isReservationEmailLocataire());
-            existingPreferences.setReservationEmailProprietaire(preferences.isReservationEmailProprietaire());
-            existingPreferences.setReservationSmsLocataire(preferences.isReservationSmsLocataire());
-            existingPreferences.setReservationSmsProprietaire(preferences.isReservationSmsProprietaire());
-            existingPreferences.setStartEmailLocataire(preferences.isStartEmailLocataire());
-            existingPreferences.setStartEmailProprietaire(preferences.isStartEmailProprietaire());
-            existingPreferences.setStartSmsLocataire(preferences.isStartSmsLocataire());
-            existingPreferences.setStartSmsProprietaire(preferences.isStartSmsProprietaire());
-
-            preferenceService.savePreferences(existingPreferences);
-        } else {
-            preferences.setUser(user);
-            preferenceService.savePreferences(preferences);
-        }
-
-        return "redirect:/account/notifications?success";
-    }
 
     @GetMapping("/account/change-password")
     public String modifiePassword(@AuthenticationPrincipal CustomUserDetail userDetails, Model model, HttpServletRequest request) {
@@ -602,7 +577,7 @@ public class AccountController {
 
         // Déterminer si l'utilisateur est le propriétaire ou le locataire
         boolean isOwner = user.getId().equals(car.getUser().getId());
-        User profileUser = isOwner ? reservation.getCarRental().getUser() : car.getUser();
+        User profileUser = isOwner ? reservation.getCar().getUser() : car.getUser();
 
         // Définir la photo de profil par défaut si elle est manquante
         if (profileUser.getPhotoUrl() == null || profileUser.getPhotoUrl().isEmpty()) {
@@ -615,6 +590,19 @@ public class AccountController {
 
         String formattedStartDate = dateService.formatAndCapitalizeDate(debutLocation);
         String formattedEndDate = dateService.formatAndCapitalizeDate(finLocation);
+
+        // Calculer les détails de la location
+        long duration = ChronoUnit.DAYS.between(debutLocation, finLocation);
+
+        double totalPrice = 0;
+        if ("PAYMENT_PENDING".equals(reservationStatus)) {
+            // Calculer le prix total si la réservation est en attente de paiement
+            double pricePerDay = reservation.getCar().getPrice().getMiddlePrice();
+            totalPrice = duration * pricePerDay;
+        } else if (reservation.getPayment() != null) {
+            // Utiliser le prix total de la table Payment s'il existe
+            totalPrice = reservation.getPayment().getPrixTotal();
+        }
 
         // Ajouter les attributs au modèle
         model.addAttribute("user", user);
@@ -632,9 +620,58 @@ public class AccountController {
         model.addAttribute("isOwner", isOwner);
         model.addAttribute("toUserId", profileUser.getId());
         model.addAttribute("fromUserId", user.getId());
+        model.addAttribute("duration", duration);
+        model.addAttribute("totalPrice", totalPrice);
 
         return "account/car-reservation/chat";
     }
+
+
+    @PostMapping("/account/notifications/reply")
+    public String replyToNotification(@RequestParam Long notificationId, @RequestParam String replyMessage, Principal principal) {
+        logger.debug("Entering replyToNotification");
+        logger.debug("Notification ID: " + notificationId);
+        logger.debug("Reply Message: " + replyMessage);
+
+        // Obtenez l'utilisateur actuel
+        String email = principal.getName();
+        User fromUser = userService.findByEmail(email);
+        logger.debug("From User: " + fromUser.getEmail());
+
+        // Trouvez la notification d'origine
+        Notification originalNotification = notificationService.getNotificationById(notificationId);
+        if (originalNotification == null) {
+            logger.error("Notification not found with ID: " + notificationId);
+            return "redirect:/notifications?error";
+        }
+
+        // Créez une nouvelle notification de réponse
+        Notification replyNotification = new Notification();
+        replyNotification.setCar(originalNotification.getCar());
+        replyNotification.setFromUser(fromUser);
+        replyNotification.setToUser(originalNotification.getFromUser());
+        replyNotification.setMessage(replyMessage);
+        replyNotification.setDateEnvoi(LocalDateTime.now());
+        replyNotification.setLu(false);
+        replyNotification.setType("reply"); // Assurez-vous de définir le type
+        notificationService.save(replyNotification);
+        logger.debug("Reply notification saved");
+
+        // Redirigez vers la page des notifications
+        return "redirect:/account/notifications";
+    }
+
+    @GetMapping("/notifications/filter")
+    @ResponseBody
+    public String filterNotifications(@RequestParam boolean nouveauxMessages, @RequestParam boolean tousMessages, @RequestParam boolean notifications, Model model) {
+        List<Notification> filteredNotifications = notificationService.filterNotifications(nouveauxMessages, tousMessages, notifications);
+        model.addAttribute("filteredNotifications", filteredNotifications);
+        return "fragments/notifications :: filteredNotifications";
+    }
+
+
+
+
 
 
 
