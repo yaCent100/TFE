@@ -14,13 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,11 +72,35 @@ public class NotificationRestController {
     }
 
 
-    @GetMapping("/api/notifications/car/{carId}")
+    @GetMapping("/api/notifications/filter")
     @ResponseBody
-    public List<Notification> getNotificationsForVehicle(@PathVariable Long vehicleId) {
-        return notificationService.getNotificationsForCar(vehicleId);
+    public String filterNotifications(@RequestParam boolean tousMessages,
+                                      @RequestParam boolean recuMessages,
+                                      @RequestParam boolean envoyeMessages,
+                                      @RequestParam boolean notifications,
+                                      Principal principal) {
+        String email = principal.getName();
+        User currentUser = userService.findByEmail(email);
+
+        List<Notification> filteredNotifications;
+
+        if (tousMessages) {
+            filteredNotifications = notificationService.getAllNotifications(currentUser);
+        } else if (recuMessages) {
+            filteredNotifications = notificationService.getReceivedNotifications(currentUser);
+        } else if (envoyeMessages) {
+            filteredNotifications = notificationService.getSentNotifications(currentUser);
+        } else if (notifications) {
+            filteredNotifications = notificationService.getNotifications(currentUser);
+        } else {
+            filteredNotifications = Collections.emptyList(); // Cas par défaut si aucun filtre n'est sélectionné
+        }
+
+        return notificationService.renderNotificationsHtml(filteredNotifications, currentUser);
     }
 
 
 }
+
+
+

@@ -123,23 +123,28 @@ public class PaymentRestController {
                     String text = "Vous avez une nouvelle demande de réservation pour votre voiture " + car.getBrand() + " " + car.getModel() +
                             " du " + reservation.getDebutLocation() + " au " + reservation.getFinLocation() + ". Veuillez vous connecter pour confirmer ou refuser la demande.";
                     emailService.sendNotificationEmail(ownerEmail, subject, text);
+
+                    reservationService.saveReservation(reservation);
+
+                    // Notify the user that the reservation is pending owner's response
+                    return ResponseEntity.ok("Reservation is pending owner's response. You will be notified once the owner responds, and you can proceed with the payment.");
                 } else {
                     reservation.setStatut("CONFIRMED");
+
+                    reservation.setInsurance(insurance);
+                    reservationService.saveReservation(reservation);
+
+                    Payment payment = new Payment();
+                    payment.setPrixTotal(paymentIntent.getAmountReceived());
+                    payment.setStatut(paymentIntent.getStatus());
+                    payment.setPaiementMode(paymentIntent.getPaymentMethodTypes().get(0));
+                    payment.setCreatedAt(LocalDate.now());
+                    payment.setReservation(reservation);
+
+                    paymentService.save(payment);
+
+                    return ResponseEntity.ok("Reservation processed successfully!");
                 }
-
-                reservation.setInsurance(insurance);
-                reservationService.saveReservation(reservation);
-
-                Payment payment = new Payment();
-                payment.setPrixTotal(paymentIntent.getAmountReceived());
-                payment.setStatut(paymentIntent.getStatus());
-                payment.setPaiementMode(paymentIntent.getPaymentMethodTypes().get(0));
-                payment.setCreatedAt(LocalDate.now());
-                payment.setReservation(reservation);
-
-                paymentService.save(payment);
-
-                return ResponseEntity.ok("Reservation processed successfully!");
             } else {
                 return ResponseEntity.status(400).body("Payment failed, reservation not confirmed.");
             }
@@ -151,6 +156,7 @@ public class PaymentRestController {
             return ResponseEntity.status(500).body("General exception: " + e.getMessage());
         }
     }
+
 
 
 }

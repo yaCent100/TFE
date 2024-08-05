@@ -40,7 +40,7 @@ public class CarController {
         this.carService = carService;
         this.categoryService = categoryService;
     }
-    @GetMapping("/cars")
+   /* @GetMapping("/cars")
     public String getAllCars(Model model) {
 
         List<Car> cars = carService.getAllCars();
@@ -53,6 +53,13 @@ public class CarController {
         model.addAttribute("averageRatings", averageRatings);
         model.addAttribute("reviewCounts", reviewCounts);
 
+        return "car/index";
+    }*/
+
+    @GetMapping("/cars")
+    public String getAllCars() {
+
+        System.out.println("La méthode showNosLocationPage a été appelée");
         return "car/index";
     }
 

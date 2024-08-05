@@ -127,14 +127,27 @@ nav {
      height: 100px;
      margin-right: 8px; /* Espace entre l'icône et le texte */
      vertical-align: middle; /* Alignement vertical de l'icône */
+         margin-bottom: 5px;
  }
+ .category-link {
+     text-align: center;
+ }
+ .category-link-text{
+    font-size: 20px;
+    text-decoration: none;
 
+ }
  .home-page-link {
      margin: 10px;
  }
 
  .d-flex.flex-lg-row.flex-column.justify-content-center.align-items-center {
      gap: 40px; /* Espace entre les éléments, ajustez selon vos besoins */
+ }
+
+.insurance-home{
+   margin-top: 80px;
+   background-color: #DFE7EC;
  }
 
 .custom-search-button {

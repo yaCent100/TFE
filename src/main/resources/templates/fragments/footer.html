@@ -3,62 +3,60 @@
 <head>
     <meta charset="utf-8">
     <title>Footer fragment</title>
-    <style>
-        .footer-list a {
-            color: #6c757d;
-            text-decoration: none;
-        }
-        .footer-list a:hover {
-            color: #343a40;
-        }
-        .list-title {
-            font-weight: bold;
-        }
-        .separator {
-            border-top: 1px solid #dee2e6;
-            width: 100%;
-            margin: 20px 0;
-        }
-        .zotcar-logo {
-            height: 50px;
-            margin-top: 20px;
-        }
-    </style>
+
 </head>
 <body>
 <footer th:fragment="footer" id="footer">
     <div class="d-flex flex-column">
         <div class="separator"></div>
-        <div class="d-flex flex-row justify-content-start justify-content-lg-around flex-wrap">
+        <div class="d-flex flex-row justify-content-start justify-content-lg-around flex-wrap contenu">
             <div class="footer-list d-flex flex-column justify-content-start">
-                <p class="list-title fs16 medium">A propos</p>
+                <span class="list-title">A propos</span>
                 <a class="fs15 lh32" href="/team">Notre équipe</a>
-                <a class="fs15 lh32" href="/how-it-works">Comment ça marche</a>
+                <a class="fs15 lh32" href="/comment-ça-marche">Comment ça marche</a>
                 <a class="fs15 lh32" href="/faq">Nous contacter</a>
             </div>
             <div class="footer-list d-flex flex-column justify-content-start">
-                <p class="list-title fs16 medium">Découvrir</p>
+                <span class="list-title">Découvrir</span>
                 <a class="fs15 lh32" href="/louer-ma-voiture">Vous avez un véhicule ?</a>
                 <a class="fs15 lh32" href="/guide-location-voiture">Le guide pour louer sa voiture</a>
                 <a class="fs15 lh32" href="/assurance">Assurance et sécurité</a>
             </div>
-            <div class="footer-list d-flex flex-column justify-content-start">
-                <p class="list-title fs16 medium c-main" href="/location-voiture-reunion">Locations populaires</p>
-                <a class="fs15 lh32" href="/location-voiture-aeroport-reunion">Aéroport</a>
-                <a class="fs15 lh32" href="/location-voiture-ville1">Ville 1</a>
-                <a class="fs15 lh32" href="/location-voiture-ville2">Ville 2</a>
-                <a class="fs15 lh32" href="/location-voiture-ville3">Ville 3</a>
-            </div>
         </div>
         <div class="d-flex flex-row justify-content-center align-content-center">
             <a href="/">
-                <img class="driveshare-logo" src="/images/DriveShareLogo.png" alt="Logo DriveShare">
+                <img class="driveshare-logo" src="/images/DriveShareLogo.png" alt="Logo DriveShare" height="50">
             </a>
         </div>
-        <div class="text-center mt-3">
-            &copy; 2023-2024 – ICC – DriveShare
-        </div>
     </div>
+
+    <section id="footer-legal-notice" class="text-center">
+        <div class="container-fluid">
+            <div class="separator2"></div>
+            <div class="d-flex flex-lg-row flex-column justify-content-between align-items-center">
+                <div class="copyright d-flex flex-row">
+                    <p class="fs12">DriveShare © <span class="years-reserved-right">2023 - 2024</span> - Tous droits réservés.</p>
+                </div>
+                <div class="links d-flex flex-lg-row flex-column justify-content-between text-xs-center">
+                    <div>
+                        <a class="fs13 medium underline" href="/documents/conditions-generales.pdf">Condition générales et mentions légales</a>
+                    </div>
+                    <div>
+                        <a class="fs13 medium underline" href="/documents/politique-de-confidentialite.pdf">Politique de confidentialité</a>
+                    </div>
+                    <div class="social-links d-flex flex-row justify-content-around align-items-center">
+                        <a class="fs16 bold" href="https://www.facebook.com/zotcar/" target="_blank"><i class="fa fa-facebook-square fa-lg"></i></a>
+                        <a class="fs16 bold" href="https://www.instagram.com/zotcar/" target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+                        <a class="fs16 bold" href="https://www.twitter.com/zotcar974/" target="_blank"><i class="fa fa-twitter fa-lg"></i></a>
+                        <a class="fs16 bold" href="https://www.linkedin.com/company/zotcar/" target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
 </footer>
+
 </body>
 </html>

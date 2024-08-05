@@ -80,7 +80,12 @@
 
 <script>
         $(document).ready(function() {
-            $('#usersTable').DataTable();
+            $('#usersTable').DataTable(
+            crollY: '200px',
+            scrollCollapse: true,
+            paging: false
+            );
+
         });
     </script>
 

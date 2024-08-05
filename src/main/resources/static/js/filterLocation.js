@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     console.log("Initializing cars page script...");
 
     let carData = [];
@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const priceElement = document.createElement('p');
             priceElement.classList.add('priceIndex');
 
-            // Vérification de l'existence de `car.price` et `car.price.middlePrice`
             if (car.price && car.price.middlePrice !== undefined) {
                 priceElement.textContent = `${car.price.middlePrice} €/jour`;
             } else {
@@ -103,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const colDetails = document.createElement('div');
             colDetails.classList.add('col-lg-9');
             const details = document.createElement('p');
-            // Vérifie si `car.category` est défini et contient un champ `category`
             if (car.categoryName) {
                 console.log("Car category:", car.categoryName);
                 details.innerHTML = `<img src="icones/voiture-electrique.png" alt="" height="15"> ${car.categoryName || 'Catégorie non spécifiée'}`;
@@ -115,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Afficher la distance
             const distanceElement = document.createElement('p');
-            distanceElement.textContent = `Distance: ${car.distance.toFixed(2)} km`;
+            distanceElement.textContent = `Distance: ${car.distance ? car.distance.toFixed(2) : 'N/A'} km`;
             colDetails.appendChild(distanceElement);
 
             cardBody.appendChild(colDetails);
@@ -134,6 +132,23 @@ document.addEventListener('DOMContentLoaded', () => {
         carListElement.style.display = 'block';
     }
 
+    function loadAllCars() {
+            fetch('/api/cars')
+                .then(response => response.json())
+                .then(data => {
+                    carData = data.cars.map(car => ({
+                        car: car,
+                        averageRating: data.averageRatings[car.id] || 0,
+                        reviewCount: data.reviewCounts[car.id] || 0,
+                        acceptanceRate: data.acceptanceRate ? data.acceptanceRate[car.id] : 0 // Vérifiez si acceptanceRate est présent
+                    }));
+                    console.log("Loaded all cars:", carData);
+                    displayCars(carData);
+                    filterCars(); // Appliquer les filtres après chargement des voitures
+                })
+                .catch(error => console.error('Error fetching cars:', error));
+        }
+
     // Récupérer les résultats de recherche stockés dans localStorage
     const searchResults = localStorage.getItem('searchResults');
     if (searchResults) {
@@ -148,115 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Aucun résultat de recherche trouvé dans localStorage.');
     }
 
-
-    // Fonction pour déterminer le type de boîte de vitesses à partir des features
-    function determineGearboxType(features) {
-        let gearboxType = 'inconnu'; // Valeur par défaut
-
-        if (!features || features.length === 0) {
-            console.warn("No features available or features list is empty.");
-            return gearboxType;
-        }
-
-        features.forEach((feature, index) => {
-            if (feature && feature.name) {
-                const name = feature.name.toLowerCase();
-                console.log(`Inspecting feature name at index ${index}: ${name}`);
-                if (name.includes('manuelle')) {
-                    gearboxType = 'manuelle';
-                } else if (name.includes('automatique')) {
-                    gearboxType = 'automatique';
-                }
-            } else {
-                console.warn(`Feature or feature name is undefined at index ${index}. Feature data:`, feature);
-            }
-        });
-
-        console.log(`Determined gearbox type: ${gearboxType}`);
-        return gearboxType;
-    }
-
-    // Fonction pour déterminer la motorisation
-    function determineMotorisation(features) {
-        let motorisation = 'inconnu'; // Valeur par défaut
-
-        if (!features || features.length === 0) {
-            console.warn("No features available or features list is empty.");
-            return motorisation;
-        }
-
-        features.forEach((feature, index) => {
-            if (feature && feature.name) {
-                const name = feature.name.toLowerCase();
-                console.log(`Inspecting feature name at index ${index}: ${name}`);
-                if (['essence', 'diesel', 'hybride', 'electrique'].includes(name)) {
-                    motorisation = name;
-                }
-            } else {
-                console.warn(`Feature or feature name is undefined at index ${index}. Feature data:`, feature);
-            }
-        });
-
-        console.log(`Determined motorisation: ${motorisation}`);
-        return motorisation;
-    }
-
-    function determineKilometrage(features) {
-        let kilometrage = 'inconnu'; // Valeur par défaut
-
-        if (!features || features.length === 0) {
-            console.warn("No features available or features list is empty.");
-            return kilometrage;
-        }
-
-        features.forEach((feature, index) => {
-            if (feature && feature.name) {
-                let name = feature.name.trim();
-                console.log(`Inspecting feature name at index ${index}: ${name}`);
-
-                // Comparaison directe avec les valeurs définies
-                if (name === '0 - 15 000 km' || name === '15 000 - 50 000 km' ||
-                    name === '50 000 - 100 000 km' || name === '100 000 - 150 000 km' ||
-                    name === 'Plus de 150 000 km') {
-                    kilometrage = name;
-                } else {
-                    console.log(`Kilometrage format not recognized for feature name at index ${index}. Feature data:`, feature);
-                }
-            } else {
-                console.warn(`Feature or feature name is undefined at index ${index}. Feature data:`, feature);
-            }
-        });
-
-        console.log(`Determined kilometrage: ${kilometrage}`);
-        return kilometrage;
-    }
-
-
-    function determinePlaces(features) {
-        let places = 'inconnu'; // Valeur par défaut
-
-        if (!features || features.length === 0) {
-            console.warn("No features available or features list is empty.");
-            return places;
-        }
-
-        features.forEach((feature, index) => {
-            if (feature && feature.name) {
-                let name = feature.name.toLowerCase().replace(/ /g, "");
-                console.log(`Inspecting feature name at index ${index}: ${name}`);
-                if (['3', '4', '5', '7'].includes(name)) {
-                    places = name + " places";
-                }
-            } else {
-                console.warn(`Feature or feature name is undefined at index ${index}. Feature data:`, feature);
-            }
-        });
-
-        console.log(`Determined places: ${places}`);
-        return places;
-    }
-
-
+    // Fonction de filtrage des voitures
     function filterCars() {
         const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked')).map(cb => cb.value);
         const selectedGearboxTypes = Array.from(document.querySelectorAll('.gearbox-filter:checked')).map(cb => cb.value);
@@ -265,10 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedPlaces = Array.from(document.querySelectorAll('.places-filter:checked')).map(cb => cb.value);
         let priceRange = parseFloat(document.getElementById('priceRange').value);
 
-        // Assurez-vous que priceRange est une valeur réaliste
         if (isNaN(priceRange) || priceRange <= 0) {
             console.warn("Price range is not valid, setting to default high value.");
-            priceRange = 1000; // Une valeur élevée par défaut pour le test
+            priceRange = 1000;
         }
 
         console.log("Selected categories:", selectedCategories);
@@ -279,43 +185,109 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Selected price range:", priceRange);
 
         let filteredCars = carData.filter(item => {
+            if (!item.car) {
+                console.warn("Item without car data:", item);
+                return false;
+            }
+
             const car = item.car;
 
             console.log("Inspecting car:", car);
 
-            const categoryMatch = selectedCategories.length === 0 || (car.categoryName && selectedCategories.includes(car.categoryName));
-            console.log(`Car: ${car.brand} ${car.model}, Category: ${car.categoryName || 'undefined'}, Category Match: ${categoryMatch}`);
+            const categoryMatch = matchCategory(selectedCategories, car);
+            const gearboxMatch = matchGearbox(selectedGearboxTypes, car);
+            const motorisationMatch = matchMotorisation(selectedMotorisations, car);
+            const kilometrageMatch = matchKilometrage(selectedKilometrages, car);
+            const placesMatch = matchPlaces(selectedPlaces, car);
+            const priceMatch = matchPrice(priceRange, car);
 
-            const gearboxType = determineGearboxType(car.features);
-            const gearboxMatch = selectedGearboxTypes.length === 0 || (gearboxType && selectedGearboxTypes.includes(gearboxType));
-            console.log(`Car: ${car.brand} ${car.model}, Gearbox Match: ${gearboxMatch}`);
-
-            const motorisationMatch = selectedMotorisations.length === 0 || car.features.some(feature => selectedMotorisations.includes(feature.name.toLowerCase()));
-            console.log(`Car: ${car.brand} ${car.model}, Motorisation Match: ${motorisationMatch}`);
-
-            const kilometrage = determineKilometrage(car.features);
-            const kilometrageMatch = selectedKilometrages.length === 0 || selectedKilometrages.includes(kilometrage);
-            console.log(`Car: ${car.brand} ${car.model}, Kilometrage Match: ${kilometrageMatch}`);
-
-            const places = determinePlaces(car.features);
-            const placesMatch = selectedPlaces.length === 0 || selectedPlaces.includes(places);
-            console.log(`Car: ${car.brand} ${car.model}, Places Match: ${placesMatch}`);
-
-            const priceMatch = car.price && car.price.middlePrice <= priceRange;
-            console.log(`Car: ${car.brand} ${car.model}, Price Match: ${priceMatch}`);
+            console.log(`Car: ${car.brand} ${car.model}, Category Match: ${categoryMatch}, Gearbox Match: ${gearboxMatch}, Motorisation Match: ${motorisationMatch}, Kilometrage Match: ${kilometrageMatch}, Places Match: ${placesMatch}, Price Match: ${priceMatch}`);
 
             return categoryMatch && gearboxMatch && motorisationMatch && kilometrageMatch && placesMatch && priceMatch;
         });
 
         console.log("Filtered cars:", filteredCars);
 
-        // Sort cars based on currentSort value
         filteredCars = sortCars(filteredCars, currentSort);
 
         displayCars(filteredCars);
     }
 
-    // Function to sort cars
+    function matchCategory(selectedCategories, car) {
+        return selectedCategories.length === 0 || (car.categoryName && selectedCategories.includes(car.categoryName));
+    }
+
+    function matchGearbox(selectedGearboxTypes, car) {
+        const gearboxType = determineGearboxType(car.features);
+        console.log(`Gearbox type for car ${car.brand} ${car.model}:`, gearboxType);
+        return selectedGearboxTypes.length === 0 || (gearboxType && selectedGearboxTypes.includes(gearboxType));
+    }
+
+    function matchMotorisation(selectedMotorisations, car) {
+        const motorisationType = determineMotorisation(car.features);
+        console.log(`Motorisation type for car ${car.brand} ${car.model}:`, motorisationType);
+        return selectedMotorisations.length === 0 || (motorisationType && selectedMotorisations.includes(motorisationType));
+    }
+
+    function matchKilometrage(selectedKilometrages, car) {
+        const kilometrage = determineKilometrage(car.features);
+        console.log(`Kilometrage for car ${car.brand} ${car.model}:`, kilometrage);
+        return selectedKilometrages.length === 0 || selectedKilometrages.includes(kilometrage);
+    }
+
+    function matchPlaces(selectedPlaces, car) {
+        const places = determinePlaces(car.features);
+        console.log(`Places for car ${car.brand} ${car.model}:`, places);
+        return selectedPlaces.length === 0 || selectedPlaces.includes(places);
+    }
+
+     function matchPrice(priceRange, car) {
+             const priceMatch = car.price && car.price.middlePrice <= priceRange;
+             console.log(`Price for car ${car.brand} ${car.model}:`, car.price ? car.price.middlePrice : 'No price', `, Price Match: ${priceMatch}`);
+             return priceMatch;
+     }
+
+    function determineGearboxType(features) {
+        if (!features) return null;
+        for (const feature of features) {
+            if (feature.name.toLowerCase() === 'boite') {
+                return feature.description;
+            }
+        }
+        return null;
+    }
+
+    function determineKilometrage(features) {
+        if (!features) return 'N/A';
+        for (const feature of features) {
+            if (feature.name.toLowerCase() === 'compteur') {
+                return feature.description;
+            }
+        }
+        return 'N/A';
+    }
+
+    function determinePlaces(features) {
+        if (!features) return 'N/A';
+        for (const feature of features) {
+            if (feature.name.toLowerCase() === 'places') {
+                return feature.description;
+            }
+        }
+        return 'N/A';
+    }
+
+    function determineMotorisation(features) {
+        if (!features) return null;
+        for (const feature of features) {
+            if (feature.name.toLowerCase() === 'moteur') {
+                return feature.description;
+            }
+        }
+        return null;
+    }
+
+  // Function to sort cars
     function sortCars(cars, criteria) {
         switch(criteria) {
             case 'acceptance':
@@ -333,40 +305,156 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Ajout des écouteurs d'événements pour les filtres
-    document.querySelectorAll('.category-filter, .gearbox-filter, .fuel-filter, .motorisation-filter, .kilometrage-filter, .places-filter, #priceRange').forEach(filterElement => {
-        filterElement.addEventListener('change', filterCars);
-    });
+    // Fetch and populate filters
+    function fetchFilters() {
+        // Fetch categories and populate the category filter
+        fetch('/api/categories')
+            .then(response => response.json())
+            .then(data => {
+                const categoryFilter = document.getElementById('category-filter');
+                if (categoryFilter) {
+                    data.forEach(category => {
+                        const div = document.createElement('div');
+                        div.classList.add('form-check');
+                        div.innerHTML = `
+                            <input class="form-check-input category-filter" type="checkbox" value="${category.category}" id="${category.id}">
+                            <label class="form-check-label" for="${category.id}">${category.category}</label>
+                        `;
+                        categoryFilter.appendChild(div);
+                    });
+                    // Attachez l'événement change après avoir ajouté les filtres
+                    document.querySelectorAll('.category-filter').forEach(filterElement => {
+                        filterElement.addEventListener('change', filterCars);
+                    });
+                } else {
+                    console.error('Element with id "category-filter" not found in the DOM.');
+                }
+            })
+            .catch(error => console.error('Error fetching categories:', error));
 
-    // Réinitialisation des filtres
-    document.getElementById('resetButton').addEventListener('click', () => {
-        // Désélectionner tous les filtres
-        document.querySelectorAll('.category-filter, .gearbox-filter, .fuel-filter, .motorisation-filter, .kilometrage-filter, .places-filter').forEach(filterElement => {
-            filterElement.checked = false;
-        });
+        // Fetch gearbox types and populate the gearbox filter
+        fetch('/api/gearbox')
+            .then(response => response.json())
+            .then(data => {
+                const gearboxFilter = document.getElementById('gearbox-filter');
+                if (gearboxFilter) {
+                    data.forEach(gearbox => {
+                        const div = document.createElement('div');
+                        div.classList.add('form-check');
+                        div.innerHTML = `
+                            <input class="form-check-input gearbox-filter" type="checkbox" value="${gearbox}">
+                            <label class="form-check-label">${gearbox}</label>
+                        `;
+                        gearboxFilter.appendChild(div);
+                    });
+                    // Attachez l'événement change après avoir ajouté les filtres
+                    document.querySelectorAll('.gearbox-filter').forEach(filterElement => {
+                        filterElement.addEventListener('change', filterCars);
+                    });
+                } else {
+                    console.error('Element with id "gearbox-filter" not found in the DOM.');
+                }
+            })
+            .catch(error => console.error('Error fetching gearbox types:', error));
 
-        // Réinitialiser le range de prix
-        const priceRangeElement = document.getElementById('priceRange');
-        priceRangeElement.value = priceRangeElement.max;
+        // Fetch motorisation types and populate the motorisation filter
+        fetch('/api/motorisation')
+            .then(response => response.json())
+            .then(data => {
+                const motorisationFilter = document.getElementById('motorisation-filter');
+                if (motorisationFilter) {
+                    data.forEach(motorisation => {
+                        const div = document.createElement('div');
+                        div.classList.add('form-check');
+                        div.innerHTML = `
+                            <input class="form-check-input motorisation-filter" type="checkbox" value="${motorisation}">
+                            <label class="form-check-label">${motorisation}</label>
+                        `;
+                        motorisationFilter.appendChild(div);
+                    });
+                    // Attachez l'événement change après avoir ajouté les filtres
+                    document.querySelectorAll('.motorisation-filter').forEach(filterElement => {
+                        filterElement.addEventListener('change', filterCars);
+                    });
+                } else {
+                    console.error('Element with id "motorisation-filter" not found in the DOM.');
+                }
+            })
+            .catch(error => console.error('Error fetching motorisation types:', error));
 
-        // Mettre à jour la valeur affichée pour le prix
-        document.getElementById('priceValue').textContent = `${priceRangeElement.max} €`;
+        // Fetch kilometrage options and populate the kilometrage filter
+        fetch('/api/kilometrage')
+            .then(response => response.json())
+            .then(data => {
+                const kilometrageFilter = document.getElementById('kilometrage-filter');
+                if (kilometrageFilter) {
+                    data.forEach(kilometrage => {
+                        const div = document.createElement('div');
+                        div.classList.add('form-check');
+                        div.innerHTML = `
+                            <input class="form-check-input kilometrage-filter" type="checkbox" value="${kilometrage}">
+                            <label class="form-check-label">${kilometrage}</label>
+                        `;
+                        kilometrageFilter.appendChild(div);
+                    });
+                    // Attachez l'événement change après avoir ajouté les filtres
+                    document.querySelectorAll('.kilometrage-filter').forEach(filterElement => {
+                        filterElement.addEventListener('change', filterCars);
+                    });
+                } else {
+                    console.error('Element with id "kilometrage-filter" not found in the DOM.');
+                }
+            })
+            .catch(error => console.error('Error fetching kilometrage options:', error));
 
-        // Réappliquer le filtre pour montrer toutes les voitures
-        filterCars();
-    });
+        // Fetch number of places options and populate the places filter
+        fetch('/api/places')
+            .then(response => response.json())
+            .then(data => {
+                const placesFilter = document.getElementById('places-filter');
+                if (placesFilter) {
+                    data.forEach(places => {
+                        const div = document.createElement('div');
+                        div.classList.add('form-check');
+                        div.innerHTML = `
+                            <input class="form-check-input places-filter" type="checkbox" value="${places}">
+                            <label class="form-check-label">${places}</label>
+                        `;
+                        placesFilter.appendChild(div);
+                    });
+                    // Attachez l'événement change après avoir ajouté les filtres
+                    document.querySelectorAll('.places-filter').forEach(filterElement => {
+                        filterElement.addEventListener('change', filterCars);
+                    });
+                } else {
+                    console.error('Element with id "places-filter" not found in the DOM.');
+                }
+            })
+            .catch(error => console.error('Error fetching places options:', error));
+    }
 
-    // Ajout des écouteurs d'événements pour les liens de tri
-    document.querySelectorAll('.sort-link').forEach(link => {
-        link.addEventListener('click', (event) => {
-            event.preventDefault();
-            document.querySelectorAll('.sort-link').forEach(link => link.classList.remove('active'));
-            link.classList.add('active');
-            currentSort = link.getAttribute('data-sort');
-            filterCars();
-        });
-    });
+    // Call fetchFilters to initialize filters
+    fetchFilters();
 
     // Initialiser les données de la liste de voitures et mettre à jour les filtres
     filterCars();
+
+    // Charger toutes les voitures depuis l'API et appliquer les filtres et le tri
+        if (window.location.pathname === '/cars') {
+            loadAllCars();
+        }
+
+     const priceRangeInput = document.getElementById('priceRange');
+        const priceValueDisplay = document.getElementById('priceValue');
+
+        priceRangeInput.addEventListener('input', () => {
+            priceValueDisplay.textContent = `${priceRangeInput.value} €`;
+            filterCars(); // Appliquer le filtrage à chaque modification de la valeur
+        });
+
+    // Ajouter un écouteur d'événement pour l'onglet "Nos Locations"
+    const nosLocationsTab = document.getElementById('nosLocationsTab');
+    if (nosLocationsTab) {
+        nosLocationsTab.addEventListener('click', loadAllCars);
+    }
 });

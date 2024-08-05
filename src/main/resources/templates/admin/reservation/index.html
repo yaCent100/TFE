@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>Reservations</title>
+  <style>
+    .status-container {
+        display: flex;
+        flex-wrap: wrap;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        justify-content: space-around;
+    }
+
+    .status-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 10px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 8px;
+        min-width: 120px;
+        position: relative;
+    }
+
+    .status-item span {
+        display: block;
+        text-align: center;
+    }
+
+    .arrow-up,
+    .arrow-down {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .arrow-up {
+        color: green;
+    }
+
+    .arrow-down {
+        color: red;
+    }
+
+    .status-section {
+        margin-bottom: 20px;
+    }
+
+    .dataTables_wrapper {
+        margin: 20px 0;
+    }
+</style>
+
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container">
+    <h2 class="my-4">Réservations</h2>
+    <div id="percentage-container"></div>
+    <div id="reservation-container"></div>
+
+  </div>
+</div>
+
+
+
+
+</body>
+</html>

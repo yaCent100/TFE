@@ -2,56 +2,56 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Initializing script...");
 
     // Fonction de recherche de voitures
-    async function searchCars(event) {
-        event.preventDefault();
+async function searchCars(event) {
+    event.preventDefault();
 
-        const address = document.getElementById('manualAddress').value;
-        const dateDebut = document.getElementById('dateDebut').value;
-        const dateFin = document.getElementById('dateFin').value;
+    const address = document.getElementById('manualAddress').value;
+    const dateDebut = document.getElementById('dateDebut').value;
+    const dateFin = document.getElementById('dateFin').value;
 
-        if (!address || !dateDebut || !dateFin) {
-            alert('Veuillez remplir tous les champs.');
-            return false;
-        }
-
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({ 'address': address }, async function(results, status) {
-            if (status === 'OK') {
-                const location = results[0].geometry.location;
-                const userLat = location.lat();
-                const userLng = location.lng();
-
-                try {
-                    const response = await fetch(`/api/cars/search?address=${encodeURIComponent(address)}&lat=${userLat}&lng=${userLng}&dateDebut=${dateDebut}&dateFin=${dateFin}`);
-
-                    if (!response.ok) {
-                        throw new Error('Erreur lors de la récupération des voitures');
-                    }
-
-                    const cars = await response.json();
-                    console.log('Voitures reçues:', cars);
-
-                    // Stocker les résultats dans localStorage
-                    localStorage.setItem('searchResults', JSON.stringify(cars));
-
-                    // Redirection vers la page /cars avec les paramètres de recherche
-                    window.location.href = `/cars?address=${encodeURIComponent(address)}&dateDebut=${dateDebut}&dateFin=${dateFin}`;
-
-                } catch (error) {
-                    console.error('Erreur lors de la recherche des voitures :', error);
-                    alert('Une erreur est survenue lors de la recherche des voitures. Veuillez réessayer.');
-                }
-            } else {
-                console.error('Geocode was not successful for the following reason:', status);
-                alert('Une erreur est survenue lors du géocodage de l\'adresse. Veuillez vérifier l\'adresse et réessayer.');
-            }
-        });
-
+    if (!address || !dateDebut || !dateFin) {
+        alert('Veuillez remplir tous les champs.');
         return false;
     }
 
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ 'address': address }, async function(results, status) {
+        if (status === 'OK') {
+            const location = results[0].geometry.location;
+            const userLat = location.lat();
+            const userLng = location.lng();
+
+            try {
+                const response = await fetch(`/api/cars/search?address=${encodeURIComponent(address)}&lat=${userLat}&lng=${userLng}&dateDebut=${dateDebut}&dateFin=${dateFin}`);
+
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la récupération des voitures');
+                }
+
+                const cars = await response.json();
+                console.log('Voitures reçues:', cars);
+
+                // Stocker les résultats dans localStorage
+                localStorage.setItem('searchResults', JSON.stringify(cars));
+
+                // Redirection vers la page /cars avec les paramètres de recherche
+                window.location.href = `/cars?address=${encodeURIComponent(address)}&dateDebut=${dateDebut}&dateFin=${dateFin}`;
+
+            } catch (error) {
+                console.error('Erreur lors de la recherche des voitures :', error);
+                alert('Une erreur est survenue lors de la recherche des voitures. Veuillez réessayer.');
+            }
+        } else {
+            console.error('Geocode was not successful for the following reason:', status);
+            alert('Une erreur est survenue lors du géocodage de l\'adresse. Veuillez vérifier l\'adresse et réessayer.');
+        }
+    });
+
+    return false;
+}
+
     // Ajout de l'écouteur d'événement pour le formulaire
-    const searchForm = document.getElementById('rechercheForm');
+    const searchForm = document.getElementById('searchForm');
     if (searchForm) {
         searchForm.addEventListener('submit', searchCars);
     } else {

@@ -2,12 +2,29 @@
 <html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <title>Voitures En Ligne</title>
+
   <script>
-  $(document).ready(function() {
-    $('#onlineCarsTable').DataTable();
-  });
-</script>
+    $(document).ready(function() {
+      const table = $('#onlineCarsTable').DataTable();
+      fetchOnlineCars();
+
+      function fetchOnlineCars() {
+        fetch('/api/admin/cars/online')
+          .then(response => response.json())
+          .then(data => {
+            data.forEach(car => {
+              table.row.add([
+                car.brand,
+                car.model,
+                `<a href="/cars/details/${car.id}" class="btn btn-info">Détails</a>`
+              ]).draw(false);
+            });
+          })
+          .catch(error => console.error('Erreur lors du chargement des voitures en ligne:', error));
+      }
+    });
+  </script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -26,30 +43,18 @@
     </div>
   </nav>
   <main class="content px-3 py-4">
-    <h1>Voitures en Attente</h1>
+    <h1>Voitures En Ligne</h1>
     <table class="table table-striped" id="onlineCarsTable">
       <thead>
       <tr>
-        <td>ID</td>
         <th>Marque</th>
         <th>Modèle</th>
-        <th>Année</th>
         <th>Détails</th>
       </tr>
       </thead>
-      <tbody>
-      <tr th:each="car : ${approvedCars}">
-        <td th:text="${car.id}"></td>
-        <td th:text="${car.brand}">Marque</td>
-        <td th:text="${car.model}">Modèle</td>
-        <td th:text="${car.online ? 'Oui' : 'Non'}">En Ligne</td>
-        <td><a th:href="@{/cars/details/{id}(id=${car.id})}" class="btn btn-info">Détails</a></td>
-      </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
-</main>
+  </main>
 </div>
-
-
 </body>
 </html>

@@ -45,6 +45,7 @@ public class CarDTO {
 
     // Nouveaux attributs pour les identifiants des features
     private List<FeatureDTO> features;
+    private List<EquipmentDTO> equipments;
 
     private Long boiteId;
     private String boite;
@@ -54,6 +55,8 @@ public class CarDTO {
 
     private List<Long> equipmentIds;
     private List<String> conditions;
+    private List<ConditionDTO> conditionsDTOs;
+
 
     // Ajout de l'identifiant de la catégorie
     private Long categoryId;
@@ -80,7 +83,7 @@ public class CarDTO {
     private double distance;
 
 
-
+    private Boolean online;
 
     public CarDTO(Long id, String brand, String model, String s, double distance, String url, String adresse, int codePostal, String locality, List<FeatureDTO> featureDTOs) {
     }

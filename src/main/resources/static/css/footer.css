@@ -1,0 +1,44 @@
+        #footer{
+            margin-bottom: 60px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 90%;
+        }
+
+        #footer .footer-list a {
+            color: #909b9b;
+            margin-top: 5px;
+        }
+        .separator{
+            margin: auto;
+            margin-top: 80px;
+            height: 2px;
+            width:80%;
+            background-color: #d5dddd;
+        }
+        .separator2{
+            margin-bottom:20px;
+            height:2px;
+            width:100%;
+            background-color: #d5dddd;
+
+        }
+        .contenu {
+            margin-top: 80px;
+        }
+        .footer-list a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+        .footer-list a:hover {
+            color: #343a40;
+        }
+        .list-title {
+            font-weight: bold;
+        }
+
+        .driveshare-logo {
+            height: 50px;
+            margin-top: 20px;
+            margin-bottom:20px;
+        }

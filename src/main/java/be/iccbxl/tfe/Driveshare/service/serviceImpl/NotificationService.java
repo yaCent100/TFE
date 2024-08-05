@@ -32,6 +32,28 @@ public class NotificationService implements NotificationServiceI {
         return notificationRepository.findByToUserId(userId);
     }
 
+    @Override
+    public List<Notification> getAllNotifications(User user) {
+        // Vous pouvez ajuster cette méthode selon vos besoins spécifiques
+        return notificationRepository.findByToUserOrFromUser(user, user);
+    }
+
+    @Override
+    public List<Notification> getReceivedNotifications(User user) {
+        return notificationRepository.findByToUser(user);
+    }
+
+    @Override
+    public List<Notification> getSentNotifications(User user) {
+        return notificationRepository.findByFromUser(user);
+    }
+
+    @Override
+    public List<Notification> getNotifications(User user) {
+        // Cette méthode peut être personnalisée pour des notifications spécifiques
+        return notificationRepository.findByToUser(user);
+    }
+
 
     public Notification getNotificationById(Long notificationId) {
         return notificationRepository.findNotificationById(notificationId);
@@ -64,6 +86,55 @@ public class NotificationService implements NotificationServiceI {
     }
 
 
+    public String renderNotificationsHtml(List<Notification> notifications, User currentUser) {
+        StringBuilder html = new StringBuilder();
+
+        for (Notification notification : notifications) {
+            boolean isReceived = notification.getToUser().equals(currentUser);
+
+            html.append("<div class='card ")
+                    .append(notification.isLu() ? "read" : "unread")
+                    .append(" mb-3'>")
+                    .append("<div class='card-body'>");
+
+            if (isReceived) {
+                // Pour les messages reçus
+                html.append("<div class='d-flex align-items-center mb-3'>")
+                        .append("<img src='/uploads/profil/")
+                        .append(notification.getFromUser().getPhotoUrl())
+                        .append("' alt='Profile' class='rounded-circle me-2' style='width: 40px; height: 40px;'>")
+                        .append("<div>")
+                        .append("<h5 class='card-title mb-0'>")
+                        .append(notification.getFromUser().getPrenom()).append(" ").append(notification.getFromUser().getNom())
+                        .append("</h5>")
+                        .append("<small class='text-muted'>").append(notification.getDateEnvoi()).append("</small>")
+                        .append("</div>")
+                        .append("</div>")
+                        .append("<p class='card-text'>").append(notification.getMessage()).append("</p>")
+                        .append("<button class='btn btn-primary mt-2' data-bs-toggle='modal' data-bs-target='#replyModal")
+                        .append(notification.getId()).append("'>Répondre</button>");
+            } else {
+                // Pour les messages envoyés
+                html.append("<div class='d-flex align-items-center mb-3'>")
+                        .append("<img src='/uploads/profil/")
+                        .append(notification.getToUser().getPhotoUrl())
+                        .append("' alt='Profile' class='rounded-circle me-2' style='width: 40px; height: 40px;'>")
+                        .append("<div>")
+                        .append("<h5 class='card-title mb-0'>")
+                        .append(notification.getToUser().getPrenom()).append(" ").append(notification.getToUser().getNom())
+                        .append("</h5>")
+                        .append("<small class='text-muted'>").append(notification.getDateEnvoi()).append("</small>")
+                        .append("</div>")
+                        .append("</div>")
+                        .append("<p class='card-text'>").append(notification.getMessage()).append("</p>");
+            }
+
+            html.append("</div>") // card-body
+                    .append("</div>"); // card
+        }
+
+        return html.toString();
+    }
 
 
 

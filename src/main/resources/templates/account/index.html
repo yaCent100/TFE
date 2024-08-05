@@ -10,6 +10,7 @@
 
     <div th:insert="account/fragments/account-header"></div>
     <div id="tab-mon-compte" class="tab-content active">
+        <div id="alert-message"></div>
         <!-- Contenu de Mon compte -->
         <div id="user-show" class="user-section">
             <div class="user-details bg-f6f8f9">
@@ -234,6 +235,21 @@
                     console.error('Erreur:', error);
                     alert('Erreur lors de la mise à jour de la photo de profil.');
                 });
+            }
+        });
+
+         document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const alertMessage = urlParams.get('alertMessage');
+
+            if (alertMessage) {
+                const alertMessageContainer = document.getElementById('alert-message');
+                alertMessageContainer.textContent = alertMessage;
+                alertMessageContainer.style.display = 'block';
+
+                setTimeout(() => {
+                    alertMessageContainer.style.display = 'none';
+                }, 4000);
             }
         });
     </script>

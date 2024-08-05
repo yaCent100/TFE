@@ -1,14 +1,11 @@
 package be.iccbxl.tfe.Driveshare.restController.admin;
 
-import be.iccbxl.tfe.Driveshare.service.serviceImpl.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin")
-public class AdminStatsController {
+public class AdminStatsRestController {
 
  /*   @Autowired
     private UserService userService

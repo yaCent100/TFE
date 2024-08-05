@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails de la Voiture</title>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const carId = urlParams.get('id');
+            const spinner = document.getElementById("spinner");
+
+            spinner.style.display = "block";
+
+            fetch(`/api/admin/cars/${carId}`)
+                .then(response => response.json())
+                .then(data => {
+                    spinner.style.display = "none";
+                    document.getElementById("car-id").textContent = data.id;
+                    document.getElementById("car-brand").textContent = data.brand;
+                    document.getElementById("car-model").textContent = data.model;
+                    document.getElementById("car-online").textContent = data.online ? 'Oui' : 'Non';
+                    document.getElementById("car-first-circulation").textContent = data.firstImmatriculation;
+                    document.getElementById("car-plate").textContent = data.plaqueImmatriculation;
+                    document.getElementById("car-mode-reservation").textContent = data.modeReservation;
+                    document.getElementById("car-insurance").textContent = data.insurance;
+                    document.getElementById("car-price").textContent = data.price.middlePrice;
+
+                    const photoContainer = document.getElementById("car-photos");
+                    data.photoUrl.forEach(photoUrl => {
+                        const img = document.createElement('img');
+                        img.src = `/uploads/${photoUrl}`;
+                        img.alt = "Photo de voiture";
+                        img.classList.add('car-photo');
+                        photoContainer.appendChild(img);
+                    });
+
+                    const carteGriseLink = document.getElementById("car-carte-grise");
+                    carteGriseLink.href = `/uploads/${data.carteGrisePath}`;
+                    carteGriseLink.textContent = "Télécharger la carte grise";
+
+                    const identityCardLink = document.getElementById("identity-card");
+                    identityCardLink.href = `/uploads/${data.identityRecto}`;
+                    identityCardLink.textContent = "Télécharger la carte d'identité";
+
+                    const featuresContainer = document.getElementById("car-features");
+                    data.features.forEach(feature => {
+                        const li = document.createElement('li');
+                        li.textContent = `${feature.name}: ${feature.description}`;
+                        featuresContainer.appendChild(li);
+                    });
+
+                    const equipmentsContainer = document.getElementById("car-equipments");
+                    data.equipments.forEach(equipment => {
+                        const li = document.createElement('li');
+                        li.textContent = `${equipment.name}: ${equipment.description}`;
+                        equipmentsContainer.appendChild(li);
+                    });
+
+                    const conditionsContainer = document.getElementById("car-conditions");
+                    data.conditions.forEach(condition => {
+                        const li = document.createElement('li');
+                        li.textContent = condition;
+                        conditionsContainer.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    spinner.style.display = "none";
+                    console.error('Erreur:', error);
+                });
+        });
+    </script>
+    <style>
+        .car-photo {
+            width: 100px;
+            height: 100px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        #spinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <nav class="navbar navbar-expand px-4 py-3">
+        <div class="navbar-collapse collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
+                        <img src="/account.png" class="avatar img-fluid" alt="">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end rounded">
+                        <!-- Dropdown items here -->
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <main class="content px-3 py-4">
+        <h1>Détails de la Voiture</h1>
+        <div id="spinner"></div>
+        <div class="card">
+            <div class="card-header">
+                <h2>Informations sur la voiture</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>ID:</strong> <span id="car-id"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Marque:</strong> <span id="car-brand"></span></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Modèle:</strong> <span id="car-model"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>En Ligne:</strong> <span id="car-online"></span></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Première Circulation:</strong> <span id="car-first-circulation"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Plaque:</strong> <span id="car-plate"></span></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Mode de Réservation:</strong> <span id="car-mode-reservation"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Assurance:</strong> <span id="car-insurance"></span></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Prix:</strong> <span id="car-price"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Photos:</strong></p>
+                        <div id="car-photos" class="d-flex flex-wrap"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Carte Grise:</strong> <a id="car-carte-grise" href="#" download>Télécharger la carte grise</a></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Carte d'Identité:</strong> <a id="identity-card" href="#" download>Télécharger la carte d'identité</a></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Caractéristiques:</strong></p>
+                        <ul id="car-features"></ul>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Équipements:</strong></p>
+                        <ul id="car-equipments"></ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p><strong>Conditions du Propriétaire:</strong></p>
+                        <ul id="car-conditions"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -10,6 +10,9 @@ import java.util.List;
 public interface ReservationServiceI {
 
     List<Reservation> getAllReservations();
+
+    List<ReservationDTO> getAllReservationsDTOs();
+
     Reservation getReservationById(Long id);
     Reservation addReservation(Reservation reservation);
 
@@ -24,4 +27,6 @@ public interface ReservationServiceI {
 
     List<Reservation> getReservationsByStatusesAndUser(List<String> statuses, User user);
     List<Reservation> getReservationsByCarIds(List<Long> carIds);
+
+    List<ReservationDTO> getReservationsByUser(User user);
 }

@@ -6,80 +6,159 @@
 
 </head>
 <body>
-<div layout:fragment="content">
-  <nav class="navbar navbar-expand px-4 py-3">
-    <div class="navbar-collapse collapse">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item dropdown">
-          <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
-            <img src="/account.png" class="avatar img-fluid" alt="">
-          </a>
-          <div class="dropdown-menu dropdown-menu-end rounded">
-            <!-- Dropdown items here -->
-          </div>
-        </li>
-      </ul>
-    </div>
-  </nav>
-  <main class="content px-3 py-4">
-    <h2>Gestion des Véhicules</h2>
-    <div class="row justify-content-start">
-      <div class="col-lg-4">
-        <h3>Ajouter une Catégorie</h3>
-        <form action="/admin/cars/gestion/category" method="post">
-          <label for="category">Nom de la catégorie:</label>
-          <input type="text" id="category" name="category" required>
-
-          <button type="submit">Ajouter Catégorie</button>
-        </form>
-        <h3>Catégories Existantes</h3>
-        <ul>
-          <th:block th:each="category : ${categories}">
-            <li th:text="${category.category}"></li>
-          </th:block>
+  <div layout:fragment="content">
+    <nav class="navbar navbar-expand px-4 py-3">
+      <div class="navbar-collapse collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
+              <img src="/account.png" class="avatar img-fluid" alt="">
+            </a>
+            <div class="dropdown-menu dropdown-menu-end rounded">
+              <!-- Dropdown items here -->
+            </div>
+          </li>
         </ul>
       </div>
+    </nav>
+    <main class="content px-3 py-4">
+      <h2>Gestion des Véhicules</h2>
+      <div class="row">
+        <div class="col-lg-4">
+          <h3>Ajouter une Catégorie</h3>
+          <form id="addCategoryForm">
+            <label for="category">Nom de la catégorie:</label>
+            <input type="text" id="categoryName" name="category" required>
+            <button type="submit">Ajouter Catégorie</button>
+          </form>
+          <h3>Catégories Existantes</h3>
+          <ul id="categoriesList">
+            <!-- Les catégories seront chargées ici -->
+          </ul>
+        </div>
+
+        <div class="col-lg-4">
+          <h3>Ajouter un Équipement</h3>
+          <form id="addEquipmentForm">
+            <input type="text" id="equipmentName" required placeholder="Nom de l'Équipement">
+            <input type="file" id="equipmentIcon" required>
+            <button type="submit">Ajouter</button>
+          </form>
+          <h3>Équipements Existants</h3>
+          <ul id="equipmentsList">
+            <!-- Les équipements seront chargés ici -->
+          </ul>
+        </div>
+
+        <div class="col-lg-4">
+          <h3>Ajouter une Caractéristique</h3>
+          <form id="addFeatureForm">
+            <input type="text" id="featureName" required placeholder="Nom de la Caractéristique">
+            <textarea id="featureDescription" required placeholder="Description"></textarea>
+            <button type="submit">Ajouter</button>
+          </form>
+          <h3>Caractéristiques Existantes</h3>
+          <ul id="featuresList">
+            <!-- Les caractéristiques seront chargées ici -->
+          </ul>
+        </div>
       </div>
+    </main>
+  </div>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        loadCategories();
+        loadEquipments();
+        loadFeatures();
+    });
 
-    <div class="row justify-content-center">
-      <div class="col-lg-4">
-        <h3>Ajouter un Équipement</h3>
-        <form action="/admin/cars/gestion/equipment" method="post" enctype="multipart/form-data">
-          <input type="text" name="equipmentName" required placeholder="Nom de l'Équipement">
-          <input type="file" name="equipmentIcon" required>
-          <button type="submit">Ajouter</button>
-        </form>
-        <h3>Équipements Existants</h3>
-        <ul>
-          <th:block th:each="equipment : ${equipments}">
-            <li><img th:src="@{${equipment.icone}}" width="50"></li>
-            <li th:text="${equipment.equipment}"></li>
-          </th:block>
-        </ul>
-      </div>
-    </div>
+    document.getElementById('addCategoryForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const categoryName = document.getElementById('categoryName').value;
 
-    <div class="row justify-content-end">
-      <div class="col-lg-4">
-        <h3>Ajouter une Caractéristique</h3>
-        <form action="/admin/cars/gestion/feature" method="post">
-          <input type="text" name="featureName" required placeholder="Nom de la Caractéristique">
-          <textarea name="featureDescription" required placeholder="Description"></textarea>
-          <button type="submit">Ajouter</button>
-        </form>
-        <h3>Caractéristiques Existantes</h3>
-        <ul>
-          <th:block th:each="feature : ${features}">
-            <li th:text="${feature.name + ' - ' + feature.description}"></li>
-          </th:block>
-        </ul>
-      </div>
+        const response = await fetch('/api/admin/categories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category: categoryName })
+        });
 
-    </div>
-  </main>
-</div>
+        if (response.ok) {
+            loadCategories();
+        }
+    });
 
+    document.getElementById('addEquipmentForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const equipmentName = document.getElementById('equipmentName').value;
+        const equipmentIcon = document.getElementById('equipmentIcon').files[0];
+
+        const formData = new FormData();
+        formData.append('equipment', new Blob([JSON.stringify({ equipment: equipmentName })], { type: 'application/json' }));
+        formData.append('icon', equipmentIcon);
+
+        const response = await fetch('/api/admin/equipments', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            loadEquipments();
+        }
+    });
+
+    document.getElementById('addFeatureForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const featureName = document.getElementById('featureName').value;
+        const featureDescription = document.getElementById('featureDescription').value;
+
+        const response = await fetch('/api/admin/features', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: featureName, description: featureDescription })
+        });
+
+        if (response.ok) {
+            loadFeatures();
+        }
+    });
+
+    async function loadCategories() {
+        const response = await fetch('/api/admin/categories');
+        const categories = await response.json();
+        const categoriesList = document.getElementById('categoriesList');
+        categoriesList.innerHTML = '';
+        categories.forEach(category => {
+            const li = document.createElement('li');
+            li.textContent = category.category;
+            categoriesList.appendChild(li);
+        });
+    }
+
+    async function loadEquipments() {
+        const response = await fetch('/api/admin/equipments');
+        const equipments = await response.json();
+        const equipmentsList = document.getElementById('equipmentsList');
+        equipmentsList.innerHTML = '';
+        equipments.forEach(equipment => {
+            const li = document.createElement('li');
+            li.innerHTML = `<img src="${equipment.icon}" width="50"> ${equipment.equipment}`;
+            equipmentsList.appendChild(li);
+        });
+    }
+
+    async function loadFeatures() {
+        const response = await fetch('/api/admin/features');
+        const features = await response.json();
+        const featuresList = document.getElementById('featuresList');
+        featuresList.innerHTML = '';
+        features.forEach(feature => {
+            const li = document.createElement('li');
+            li.textContent = `${feature.name} - ${feature.description}`;
+            featuresList.appendChild(li);
+        });
+    }
+</script>
 
 </body>
 </html>

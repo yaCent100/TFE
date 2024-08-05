@@ -16,7 +16,7 @@
                     <h1>Louez une voiture à <span>Bruxelles</span></h1>
                     <h6>Location de voitures entre particuliers</h6>
                   </div>
-                  <form class="form-inline searchForm" id="rechercheForm" onsubmit="return searchCars(event)" method="GET" action="/cars">
+                  <form class="form-inline searchForm" id="searchForm" onsubmit="return searchCars(event)" method="GET" action="/cars">
                     <div class="form-group mb-3">
                       <input type="text" class="form-control w-100" id="manualAddress" name="manualAddress" placeholder="Entrez votre adresse">
                     </div>
@@ -72,77 +72,76 @@
   <section class="middle-home">
 <div class="d-flex justify-content-center">
   <div>
-    <h2 class="fs32 medium text-center">🚗 Louez une voiture <span class="c-main">où que vous soyez</span></h2>  </div>
+    <h2 class="fs32 medium text-center">🚗 Louez une voiture <span class="c-main">où que vous soyez à Bruxelles</span></h2>  </div>
 </div>
-    <div class="d-flex flex-lg-row flex-column justify-content-center align-items-center mgb-50">
-      <div class="home-page-link text-center">
-        <a class="medium fs14 d-flex flex-column align-items-center category-link" href="#" data-category="Citadine">
+    <div class="d-flex flex-lg-row flex-column justify-content-center align-items-center mb-5">
+      <div class="home-page-link">
+        <a class="category-link d-flex flex-column align-items-center" href="#" data-category="Citadine">
           <img src="/icons/home-citadine.png" alt="Citadine Icon" class="category-icon">
-          Citadine
+          <span class="category-link-text">Citadine</span>
         </a>
       </div>
-      <div class="home-page-link text-center">
-        <a class="medium fs14 d-flex flex-column align-items-center category-link" href="#" data-category="Berline">
+      <div class="home-page-link">
+        <a class="category-link d-flex flex-column align-items-center" href="#" data-category="Berline">
           <img src="/icons/home-berline.png" alt="Berline Icon" class="category-icon">
-          Berline
+          <span class="category-link-text">Berline</span>
         </a>
       </div>
-      <div class="home-page-link text-center">
-        <a class="medium fs14 d-flex flex-column align-items-center category-link" href="#" data-category="Familial">
+      <div class="home-page-link">
+        <a class="category-link d-flex flex-column align-items-center" href="#" data-category="Familial">
           <img src="/icons/home-break.png" alt="Familial Icon" class="category-icon">
-          Familial
+          <span class="category-link-text">Familial</span>
         </a>
       </div>
-      <div class="home-page-link text-center">
-        <a class="medium fs14 d-flex flex-column align-items-center category-link" href="#" data-category="MonoSpace">
+      <div class="home-page-link">
+        <a class="category-link d-flex flex-column align-items-center" href="#" data-category="MonoSpace">
           <img src="/icons/home-monospace.png" alt="Monospace Icon" class="category-icon">
-          MonoSpace
+          <span class="category-link-text">MonoSpace</span>
         </a>
       </div>
-      <div class="home-page-link text-center">
-        <a class="medium fs14 d-flex flex-column align-items-center category-link" href="#" data-category="4X4">
+      <div class="home-page-link">
+        <a class="category-link d-flex flex-column align-items-center" href="#" data-category="4X4">
           <img src="/icons/home-4x4.png" alt="4X4 Icon" class="category-icon">
-          4X4
+          <span class="category-link-text">4X4</span>
         </a>
       </div>
     </div>
 
 
-
+    <div id="topRatedCars" class="d-flex flex-row justify-content-center align-items-center">
+      <!-- Les voitures avec une note de 5 étoiles seront affichées ici -->
+    </div>
   </section>
-    <h1 class="text-center m-2 fw-bold fst-italic">
-      Un Large Choix
-    </h1>
-    <br>
-    <div class="row">
-      <div class="col-md-6 d-flex flex-column align-items-center">
-        <a class="text-center text-decoration-none zoom-img">
-          <img th:src="@{/images/citadine.png}" alt="map" class="img-fluid">
-          <h3 class="mt-3 fw-bold fst-italic text-dark">Citadine</h3>
-        </a>
+<section class="insurance-home mt-5">
+  <div class="d-flex flex-lg-row flex-column justify-content-around">
+    <div class="left-panel d-flex flex-column justify-content-center flex-grow-1">
+      <div class="d-flex flex-row justify-content-end"></div>
+      <div class="d-flex flex-row justify-content-start">
+        <div class="insurance-card d-flex flex-row insurance">
+          <img src="/images/carte-banque-prix.png" height="56" width="56">
+          <div>
+            <p>Paiement sécurisé</p>
+            <p>Réglez en ligne et nous nous chargerons du reste</p>
+          </div>
+        </div>
       </div>
-      <div class="col-md-6 d-flex flex-column align-items-center">
-        <a class="text-center text-decoration-none zoom-img">
-          <img th:src="@{/images/berline.png}" alt="map" class="img-fluid">
-          <h3 class="mt-3 fw-bold fst-italic text-dark">Berline</h3>
-        </a>
-      </div>
+      <div class="d-flex flex-row justify-content-center"></div>
+      <div class="d-flex flex-row justify-content-end"></div>
     </div>
-    <br>
-    <div class="row">
-      <div class="col-md-6 d-flex flex-column align-items-center">
-        <a class="text-center text-decoration-none zoom-img">
-          <img th:src="@{/images/suv.png}" alt="map" class="img-fluid">
-          <h3 class="mt-3 fw-bold fst-italic text-dark">SUV</h3>
-        </a>
-      </div>
-      <div class="col-md-6 d-flex flex-column align-items-center">
-        <a class="text-center text-decoration-none zoom-img">
-          <img th:src="@{/images/monospace.png}" alt="map" class="img-fluid">
-          <h3 class="mt-3 fw-bold fst-italic text-dark">MonoSpace</h3>
-        </a>
-      </div>
+
+    <div class="right-panel d-flex flex-column justify-content-center flex-grow-1">
+      <h2>Nouveau sur le marché de la location entre particuliers à Bruxelles 🚗</h2>
+      <p class="small text-muted">DriveShare est en pleine expansion dans la capitale belge,
+        offrant une alternative unique et pratique pour la location de voitures entre particuliers.
+        Bien que tout juste lancé, DriveShare se distingue déjà par son engagement à fournir
+        un service de qualité et sécurisé. Rejoignez-nous et découvrez une nouvelle façon
+        de louer un véhicule à Bruxelles, où les options de location entre particuliers étaient
+        jusque-là limitées. Faites partie des premiers à profiter de cette nouvelle expérience de mobilité urbaine.</p>
+      <div></div>
     </div>
+  </div>
+</section>
+
   </div>
 
 

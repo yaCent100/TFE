@@ -2,12 +2,40 @@
 <html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - Voitures en Attente</title>
-    <script>
-  $(document).ready(function() {
-    $('#pendingCarsTable').DataTable();
-  });
-</script>
+    <title>Voitures en Attente</title>
+  <script>
+    $(document).ready(function() {
+      const table = $('#pendingCarsTable').DataTable();
+      fetchPendingCars();
+
+      function fetchPendingCars() {
+        fetch('/api/admin/cars/pending')
+          .then(response => response.json())
+          .then(data => {
+            data.forEach(car => {
+              table.row.add([
+                car.id,
+                car.brand,
+                car.model,
+                `<button class="btn btn-success" onclick="approveCar(${car.id})">Accepter</button>`,
+                `<a href="/admin/cars/details?id=${car.id}" class="btn btn-info">Détails</a>`
+              ]).draw(false);
+            });
+          })
+          .catch(error => console.error('Erreur lors du chargement des voitures en attente:', error));
+      }
+
+      window.approveCar = function(id) {
+        fetch(`/api/admin/cars/approve/${id}`, { method: 'POST' })
+          .then(response => response.json())
+          .then(data => {
+            table.clear().draw();
+            fetchPendingCars();
+          })
+          .catch(error => console.error('Erreur lors de l\'approbation de la voiture:', error));
+      }
+    });
+  </script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -30,30 +58,16 @@
         <table class="table table-striped" id="pendingCarsTable">
             <thead>
             <tr>
-                <th>id</th>
+                <th>ID</th>
                 <th>Marque</th>
                 <th>Modèle</th>
-                <th>Année</th>
                 <th>Accepter</th>
                 <th>Détails</th>
             </tr>
             </thead>
-            <tbody>
-            <tr th:each="car : ${pendingCars}">
-                <td th:text="${car.id}"></td>
-                <td th:text="${car.brand}">Marque</td>
-                <td th:text="${car.model}">Modèle</td>
-                <td th:text="${car.online ? 'Oui' : 'Non'}">En Ligne</td>
-                <td>
-                    <button class="btn btn-success" onclick="approveCar(${car.id})">Accepter</button>
-                </td>
-                <td><a th:href="@{/cars/details/{id}(id=${car.id})}" class="btn btn-info">Détails</a></td>
-            </tr>
-            </tbody>
+            <tbody></tbody>
         </table>
     </main>
 </div>
-
-
 </body>
 </html>

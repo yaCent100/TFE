@@ -64,6 +64,8 @@ public class CarService implements CarServiceI {
         return cars;
     }
 
+
+
     @Override
     public Car getCarById(Long id) {
         Optional<Car> optionalCar = carRepository.findById(id);
@@ -100,6 +102,11 @@ public class CarService implements CarServiceI {
         if (car != null) {
             carRepository.delete(car);
         }
+    }
+
+    public List<CarDTO> searchCarsByCategory(String category) {
+        List<Car> cars = carRepository.findByCategory_Category(category);
+        return cars.stream().map(CarMapper::toCarDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -469,22 +476,46 @@ public class CarService implements CarServiceI {
         }
     }
 
-    public List<Car> getPendingCars() {
+   /* public List<Car> getPendingCars() {
         return carRepository.findByOnline(false);
+    }*/
+
+    public List<CarDTO> getOnlineCars() {
+        List<Car> onlineCars = carRepository.findByOnline(true);
+        return onlineCars.stream().map(CarMapper::toCarDTO).collect(Collectors.toList());
     }
 
-    public List<Car> getOnlineCars() {
-        return carRepository.findByOnline(true);
+    public List<CarDTO> getPendingCars() {
+        List<Car> pendingCars = carRepository.findByOnline(false);
+        return pendingCars.stream().map(CarMapper::toCarDTO).collect(Collectors.toList());
     }
 
-    public boolean approveCar(Long id) {
-        return carRepository.findById(id)
-                .map(car -> {
-                    car.setOnline(true);
-                    carRepository.save(car);
-                    return true;
-                })
-                .orElse(false);
+    public CarDTO approveCar(Long id) {
+        Car car = carRepository.findById(id).orElse(null);
+        if (car != null) {
+            car.setOnline(true);
+            Car updatedCar = carRepository.save(car);
+            return CarMapper.toCarDTO(updatedCar);
+        }
+        return null;
+    }
+
+
+    public List<Car> getTopRatedCars(int limit) {
+        List<Car> allCars = (List<Car>) carRepository.findAll();
+        List<Car> topRatedCars = new ArrayList<>();
+
+        for (Car car : allCars) {
+            double averageRating = getAverageRatingsForCars().get(car.getId());
+            if (averageRating == 5.0) {
+                topRatedCars.add(car);
+            }
+            if (topRatedCars.size() >= limit) {
+                break;
+            }
+        }
+
+        return topRatedCars;
     }
 
 }

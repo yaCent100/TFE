@@ -41,6 +41,13 @@ public class ReservationService implements ReservationServiceI {
         reservationRepository.findAll().forEach(reservations::add);
         return reservations;
     }
+
+    @Override
+    public List<ReservationDTO> getAllReservationsDTOs() {
+        List<Reservation> reservations = reservationRepository.findAll();
+        return CarMapper.toDTOs(reservations);
+    }
+
     @Override
     public Reservation getReservationById(Long id) {
         return reservationRepository.findById(id).orElse(null);
@@ -209,5 +216,10 @@ public class ReservationService implements ReservationServiceI {
 
         return totalReservations == 0 ? 0 : (double) acceptedReservations / totalReservations * 100;
     }*/
+
+    @Override
+    public List<ReservationDTO> getReservationsByUser(User user) {
+        return reservationRepository.findByUser(user);
+    }
 
 }

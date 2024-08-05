@@ -1,7 +1,6 @@
 package be.iccbxl.tfe.Driveshare.DTO;
 
 import be.iccbxl.tfe.Driveshare.model.*;
-import jakarta.persistence.EntityNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,32 +10,64 @@ import java.util.stream.Collectors;
 public class CarMapper {
 
     // Méthode de transformation Entité -> DTO
-        public static CarDTO toCarDTO(Car car) {
-            CarDTO carDTO = new CarDTO();
-            carDTO.setId(car.getId());
-            carDTO.setBrand(car.getBrand());
-            carDTO.setCodePostal(car.getCodePostal());
-            carDTO.setLocality(car.getLocality());
-            carDTO.setCategoryId(car.getCategory().getId());
-            carDTO.setCategoryName(car.getCategory().getCategory());
-            carDTO.setModel(car.getModel());
-            carDTO.setAdresse(car.getAdresse());
-            carDTO.setLatitude(car.getLatitude());
-            carDTO.setLongitude(car.getLongitude());
-            carDTO.setPhotoUrl(car.getPhotos().stream().map(Photo::getUrl).collect(Collectors.toList())); // Convertir les photos en URL
-            carDTO.setPrice(CarMapper.toPriceDTO(car.getPrice())); // Convertir Price en PriceDTO
-            carDTO.setReservationDTOS(car.getReservations().stream().map(CarMapper::toReservationDTO).collect(Collectors.toList()));
-            carDTO.setUnavailables(car.getUnavailable().stream().map(CarMapper::toIndisponibleDTO).collect(Collectors.toList()));
+    public static CarDTO toCarDTO(Car car) {
+        CarDTO carDTO = new CarDTO();
 
+        carDTO.setId(car.getId());
+        carDTO.setBrand(car.getBrand());
+        carDTO.setCodePostal(car.getCodePostal());
+        carDTO.setLocality(car.getLocality());
+        carDTO.setCategoryId(car.getCategory().getId());
+        carDTO.setCategoryName(car.getCategory().getCategory());
+        carDTO.setModel(car.getModel());
+        carDTO.setAdresse(car.getAdresse());
+        carDTO.setOnline(car.getOnline());
 
-            // Conversion de la liste des features
-            List<FeatureDTO> featureDTOs = car.getFeatures().stream()
-                    .map(feature -> new FeatureDTO(feature.getId(), feature.getDescription()))
-                    .collect(Collectors.toList());
-            carDTO.setFeatures(featureDTOs);
+        // Gérer les valeurs nulles pour latitude et longitude
+        carDTO.setLatitude(car.getLatitude() != null ? car.getLatitude() : 0.0);
+        carDTO.setLongitude(car.getLongitude() != null ? car.getLongitude() : 0.0);
 
-            return carDTO;
-        }
+        carDTO.setPhotoUrl(car.getPhotos().stream().map(Photo::getUrl).collect(Collectors.toList()));
+        carDTO.setPrice(toPriceDTO(car.getPrice()));
+        carDTO.setReservationDTOS(car.getReservations().stream().map(CarMapper::toReservationDTO).collect(Collectors.toList()));
+        carDTO.setUnavailables(car.getUnavailable().stream().map(CarMapper::toIndisponibleDTO).collect(Collectors.toList()));
+
+        // Conversion de la liste des features
+        List<FeatureDTO> featureDTOs = car.getFeatures().stream()
+                .map(feature -> new FeatureDTO(feature.getId(), feature.getName(), feature.getDescription()))
+                .collect(Collectors.toList());
+        carDTO.setFeatures(featureDTOs);
+
+        // Conversion de la liste des equipment
+        List<EquipmentDTO> equipmentDTOs = car.getEquipments().stream()
+                .map(equipment -> new EquipmentDTO(equipment.getId(), equipment.getIcone(), equipment.getEquipment()))
+                .toList();
+        carDTO.setEquipments(equipmentDTOs);
+
+        // Conversion de la liste des conditions
+        List<ConditionDTO> conditionDTOs = car.getConditions().stream()
+                .map(condition -> new ConditionDTO(condition.getId(), condition.getCondition()))
+                .collect(Collectors.toList());
+        carDTO.setConditionsDTOs(conditionDTOs);
+
+        // Ajouter les champs manquants
+        carDTO.setFuelType(car.getFuelType());
+        carDTO.setPlaqueImmatriculation(car.getPlaqueImmatriculation());
+        carDTO.setFirstImmatriculation(car.getFirstImmatriculation());
+        carDTO.setCarteGrisePath(car.getCarteGrisePath());
+        carDTO.setModeReservation(car.getModeReservation());
+        carDTO.setDay(car.getFirstImmatriculation() != null ? car.getFirstImmatriculation().getDayOfMonth() : null);
+        carDTO.setMonth(car.getFirstImmatriculation() != null ? car.getFirstImmatriculation().getMonthValue() : null);
+        carDTO.setYear(car.getFirstImmatriculation() != null ? car.getFirstImmatriculation().getYear() : null);
+        carDTO.setBoiteId(car.getFeatures().stream().filter(f -> f.getName().equals("boite")).findFirst().map(Feature::getId).orElse(null));
+        carDTO.setCompteurId(car.getFeatures().stream().filter(f -> f.getName().equals("compteur")).findFirst().map(Feature::getId).orElse(null));
+        carDTO.setPlacesId(car.getFeatures().stream().filter(f -> f.getName().equals("places")).findFirst().map(Feature::getId).orElse(null));
+        carDTO.setPortesId(car.getFeatures().stream().filter(f -> f.getName().equals("portes")).findFirst().map(Feature::getId).orElse(null));
+        carDTO.setEquipmentIds(car.getEquipments().stream().map(Equipment::getId).collect(Collectors.toList()));
+
+        return carDTO;
+    }
+
 
     public static Car toEntity(CarDTO carDTO) {
         if (carDTO == null) {
@@ -62,36 +93,58 @@ public class CarMapper {
         return car;
     }
 
-        public static ReservationDTO toReservationDTO(Reservation reservation) {
-            ReservationDTO reservationDTO = new ReservationDTO();
-            reservationDTO.setId(reservation.getId());
-            reservationDTO.setCarId(reservation.getCar().getId());
-            reservationDTO.setDebutLocation(reservation.getDebutLocation().toString());
-            reservationDTO.setFinLocation(reservation.getFinLocation().toString());
-            reservationDTO.setStatut(reservation.getStatut());
-            reservationDTO.setCarBrand(reservation.getCar().getBrand());
-            reservationDTO.setCarModel(reservation.getCar().getModel());
-            reservationDTO.setUserName(reservation.getUser().getPrenom() + " " + reservation.getUser().getNom());
-            reservationDTO.setCarPostal(reservation.getCar().getCodePostal());
-            reservationDTO.setCarLocality(reservation.getCar().getLocality());
-            reservationDTO.setModeReservation(reservation.getCar().getModeReservation());
+    public static ReservationDTO toReservationDTO(Reservation reservation) {
+        ReservationDTO reservationDTO = new ReservationDTO();
+        reservationDTO.setId(reservation.getId());
+        reservationDTO.setCarId(reservation.getCar().getId());
+        reservationDTO.setDebutLocation(reservation.getDebutLocation().toString());
+        reservationDTO.setFinLocation(reservation.getFinLocation().toString());
+        reservationDTO.setStatut(reservation.getStatut());
+        reservationDTO.setCarBrand(reservation.getCar().getBrand());
+        reservationDTO.setCarModel(reservation.getCar().getModel());
+        reservationDTO.setUserName(reservation.getUser().getPrenom() + " " + reservation.getUser().getNom());
+        reservationDTO.setCarPostal(reservation.getCar().getCodePostal());
+        reservationDTO.setCarLocality(reservation.getCar().getLocality());
+        reservationDTO.setModeReservation(reservation.getCar().getModeReservation());
 
-
-            String photoUrl = reservation.getUser().getPhotoUrl();
-            if (photoUrl != null && !photoUrl.isEmpty()) {
-                reservationDTO.setUserProfileImage("/uploads/profil/" + photoUrl);
-            } else {
-                reservationDTO.setUserProfileImage("/uploads/profil/defaultPhoto.png");
-            }
-
-            // Obtenez l'URL de la première photo de la liste des photos de la voiture
-            if (!reservation.getCar().getPhotos().isEmpty()) {
-                reservationDTO.setCarImage("/uploads/"+reservation.getCar().getPhotos().get(0).getUrl());
-            } else {
-                reservationDTO.setCarImage("images/carDefault.png"); // URL par défaut si aucune photo n'est disponible
-            }
-            return reservationDTO;
+        String photoUrl = reservation.getUser().getPhotoUrl();
+        if (photoUrl != null && !photoUrl.isEmpty()) {
+            reservationDTO.setUserProfileImage("/uploads/profil/" + photoUrl);
+        } else {
+            reservationDTO.setUserProfileImage("/uploads/profil/defaultPhoto.png");
         }
+
+        if (!reservation.getCar().getPhotos().isEmpty()) {
+            reservationDTO.setCarImage("/uploads/"+reservation.getCar().getPhotos().get(0).getUrl());
+        } else {
+            reservationDTO.setCarImage("images/carDefault.png");
+        }
+        return reservationDTO;
+    }
+
+    // Méthode pour convertir une entité Condition en ConditionDTO
+    public static ConditionDTO toConditionDTO(Condition condition) {
+        if (condition == null) {
+            return null;
+        }
+
+        ConditionDTO conditionDTO = new ConditionDTO();
+        conditionDTO.setId(condition.getId());
+        conditionDTO.setCondition(condition.getCondition());
+        return conditionDTO;
+    }
+
+    // Méthode pour convertir un ConditionDTO en entité Condition
+    public static Condition toConditionEntity(ConditionDTO conditionDTO) {
+        if (conditionDTO == null) {
+            return null;
+        }
+
+        Condition condition = new Condition();
+        condition.setId(conditionDTO.getId());
+        condition.setCondition(conditionDTO.getCondition());
+        return condition;
+    }
 
     public static Reservation toReservationEntity(ReservationDTO reservationDTO) {
         if (reservationDTO == null) {
@@ -100,13 +153,14 @@ public class CarMapper {
         Reservation reservation = new Reservation();
         reservation.setId(reservationDTO.getId());
         reservation.setCar(reservationDTO.getCar());
-        // Créez une instance de CarRental si nécessaire et définissez-la sur la réservation
-
         reservation.setDebutLocation(LocalDate.parse(reservationDTO.getDebutLocation()));
         reservation.setFinLocation(LocalDate.parse(reservationDTO.getFinLocation()));
         reservation.setStatut(reservationDTO.getStatut());
-
         return reservation;
+    }
+
+    public static List<ReservationDTO> toDTOs(List<Reservation> reservations) {
+        return reservations.stream().map(CarMapper::toReservationDTO).collect(Collectors.toList());
     }
 
 
@@ -132,7 +186,7 @@ public class CarMapper {
 
     private static CarDTO convertToCarDTO(Car car) {
         List<FeatureDTO> featureDTOs = car.getFeatures().stream()
-                .map(feature -> new FeatureDTO(feature.getId(), feature.getName()))
+                .map(feature -> new FeatureDTO(feature.getId(), feature.getName(), feature.getDescription()))
                 .collect(Collectors.toList());
 
         return new CarDTO(
@@ -222,6 +276,33 @@ public class CarMapper {
             return carDTO;
         }).collect(Collectors.toList()));
         return userDTO;
+    }
+
+    // Ajout des méthodes de conversion pour Evaluation
+    public static EvaluationDTO toEvaluationDTO(Evaluation evaluation) {
+        if (evaluation == null) {
+            return null;
+        }
+        EvaluationDTO evaluationDTO = new EvaluationDTO();
+        evaluationDTO.setId(evaluation.getId());
+        evaluationDTO.setNote(evaluation.getNote());
+        evaluationDTO.setAvis(evaluation.getAvis());
+        evaluationDTO.setReservationId(evaluation.getReservation().getId());
+        return evaluationDTO;
+    }
+
+    public static Evaluation toEvaluationEntity(EvaluationDTO evaluationDTO) {
+        if (evaluationDTO == null) {
+            return null;
+        }
+        Evaluation evaluation = new Evaluation();
+        evaluation.setId(evaluationDTO.getId());
+        evaluation.setNote(evaluationDTO.getNote());
+        evaluation.setAvis(evaluationDTO.getAvis());
+        Reservation reservation = new Reservation();
+        reservation.setId(evaluationDTO.getReservationId());
+        evaluation.setReservation(reservation);
+        return evaluation;
     }
 
 

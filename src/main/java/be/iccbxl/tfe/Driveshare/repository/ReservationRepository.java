@@ -38,10 +38,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     long countByCarId(Long carId);
 
-
-
-
-
     @Query("SELECT c.locality, COUNT(r) " +
             "FROM Reservation r JOIN r.car c " +
             "WHERE YEAR(r.createdAt) = :year AND MONTH(r.createdAt) = :month " +
@@ -53,4 +49,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "WHERE YEAR(r.createdAt) = :year " +
             "GROUP BY c.locality")
     List<Object[]> countReservationsByLocalityAndYear(int year);
+
+    List<ReservationDTO> findByUser(User user);
 }

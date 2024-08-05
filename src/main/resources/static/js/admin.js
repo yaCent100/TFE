@@ -175,3 +175,191 @@ function approveCar(carId) {
     });
 }
 
+
+
+//------------------------------- ONGLET RESERVATION -----------------------------
+document.addEventListener("DOMContentLoaded", function() {
+    loadAllReservations();
+});
+
+async function loadAllReservations() {
+    try {
+        console.log("Chargement des réservations...");
+
+        const response = await fetch('/api/admin/reservations');
+        console.log("Réponse reçue:", response);
+
+        const data = await response.json();
+        console.log("Données reçues:", data);
+
+        const reservationsByStatus = {
+            RESPONSE_PENDING: [],
+            PAYMENT_PENDING: [],
+            CONFIRMED: [],
+            REJECTED: [],
+            CANCELLED: [],
+            NOW: [],
+            PENDING: [],
+            FINISHED: []
+        };
+
+        data.forEach(reservation => {
+            const status = reservation.statut;
+            if (!reservationsByStatus[status]) {
+                reservationsByStatus[status] = [];
+            }
+            reservationsByStatus[status].push(reservation);
+        });
+
+        console.log("Réservations par statut:", reservationsByStatus);
+
+        // Affichage des réservations par statut
+        displayReservationsByStatus(reservationsByStatus);
+
+        // Calcul des pourcentages de statut
+        const totalReservations = data.length;
+        const statusPercentages = {
+            RESPONSE_PENDING: (reservationsByStatus.RESPONSE_PENDING.length / totalReservations * 100).toFixed(2),
+            PAYMENT_PENDING: (reservationsByStatus.PAYMENT_PENDING.length / totalReservations * 100).toFixed(2),
+            CONFIRMED: (reservationsByStatus.CONFIRMED.length / totalReservations * 100).toFixed(2),
+            REJECTED: (reservationsByStatus.REJECTED.length / totalReservations * 100).toFixed(2),
+            CANCELLED: (reservationsByStatus.CANCELLED.length / totalReservations * 100).toFixed(2),
+            NOW: (reservationsByStatus.NOW.length / totalReservations * 100).toFixed(2),
+            PENDING: (reservationsByStatus.PENDING.length / totalReservations * 100).toFixed(2),
+            FINISHED: (reservationsByStatus.FINISHED.length / totalReservations * 100).toFixed(2)
+        };
+
+        console.log("Pourcentages de statut:", statusPercentages);
+
+        // Affichage des pourcentages de statut
+        displayStatusPercentages(statusPercentages, totalReservations);
+
+    } catch (error) {
+        console.error("Erreur lors du chargement des réservations:", error);
+    }
+}
+
+function getStatusTranslation(status) {
+    const translations = {
+        RESPONSE_PENDING: "En attente de réponse",
+        PAYMENT_PENDING: "En attente de paiement",
+        CONFIRMED: "Confirmé",
+        REJECTED: "Rejeté",
+        CANCELLED: "Annulé",
+        NOW: "En cours",
+        PENDING: "En attente",
+        FINISHED: "Terminé"
+    };
+    return translations[status] || status;
+}
+
+function displayReservationsByStatus(reservationsByStatus) {
+    const reservationContainer = document.getElementById('reservation-container');
+    reservationContainer.innerHTML = '';
+
+    const statuses = Object.keys(reservationsByStatus);
+
+    for (let i = 0; i < statuses.length; i += 2) {
+        const row = document.createElement('div');
+        row.classList.add('row');
+
+        for (let j = 0; j < 2; j++) {
+            if (i + j < statuses.length) {
+                const status = statuses[i + j];
+                const col = document.createElement('div');
+                col.classList.add('col-md-6');
+                col.innerHTML = `
+                    <div class="status-section">
+                        <h3>${getStatusTranslation(status)}</h3>
+                        <table class="display" id="${status}-table">
+                            <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>Nom</th>
+                                    <th>Voiture</th>
+                                    <th>Date de début</th>
+                                    <th>Date de fin</th>
+                                </tr>
+                            </thead>
+                            <tbody id="${status}-list"></tbody>
+                        </table>
+                    </div>
+                `;
+                row.appendChild(col);
+
+                reservationContainer.appendChild(row);
+
+                const reservationList = document.getElementById(`${status}-list`);
+                reservationsByStatus[status].forEach(reservation => {
+                    const reservationItem = document.createElement('tr');
+                    reservationItem.innerHTML = `
+                        <td><img src="${reservation.userProfileImage}" alt="Photo de profil" width="50" height="50" onerror="this.src='/uploads/profil/defaultPhoto.png';"></td>
+                        <td>${reservation.userName}</td>
+                        <td>${reservation.carBrand} ${reservation.carModel}</td>
+                        <td>${reservation.debutLocation}</td>
+                        <td>${reservation.finLocation}</td>
+                    `;
+                    reservationList.appendChild(reservationItem);
+                });
+
+                $(`#${status}-table`).DataTable({
+                    scrollY: '200px',
+                    scrollCollapse: true,
+                    paging: false
+                });
+            }
+        }
+    }
+}
+
+function displayStatusPercentages(statusPercentages, totalReservations) {
+    const percentageContainer = document.getElementById('percentage-container');
+    percentageContainer.innerHTML = '';
+
+    const previousPercentages = {
+        RESPONSE_PENDING: 20,
+        PAYMENT_PENDING: 15,
+        CONFIRMED: 30,
+        REJECTED: 10,
+        CANCELLED: 5,
+        NOW: 8,
+        PENDING: 12,
+        FINISHED: 0
+    };
+
+    const container = document.createElement('div');
+    container.classList.add('status-container');
+
+    Object.keys(statusPercentages).forEach(status => {
+        const currentPercentage = parseFloat(statusPercentages[status]);
+        const previousPercentage = previousPercentages[status];
+        let arrow = '';
+
+        if (currentPercentage > previousPercentage) {
+            arrow = '<span class="arrow-up">↑</span>';
+        } else if (currentPercentage < previousPercentage) {
+            arrow = '<span class="arrow-down">↓</span>';
+        }
+
+        const statusItem = document.createElement('div');
+        statusItem.classList.add('status-item');
+        statusItem.innerHTML = `
+            <span>${getStatusTranslation(status)}</span><br>
+            <span>${currentPercentage}%</span>
+            ${arrow}
+        `;
+        container.appendChild(statusItem);
+    });
+
+    percentageContainer.appendChild(container);
+}
+
+
+
+
+
+
+
+
+
+

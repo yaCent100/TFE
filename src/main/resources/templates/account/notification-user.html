@@ -29,11 +29,12 @@
     }
 
     function applyFilters() {
-        const nouveauxMessages = document.getElementById('nouveauxMessages').checked;
         const tousMessages = document.getElementById('tousMessages').checked;
+        const recuMessages = document.getElementById('recuMessages').checked;
+        const envoyeMessages = document.getElementById('envoyeMessages').checked;
         const notifications = document.getElementById('notifications').checked;
 
-        fetch(`/notifications/filter?nouveauxMessages=${nouveauxMessages}&tousMessages=${tousMessages}&notifications=${notifications}`)
+        fetch(`/api/notifications/filter?tousMessages=${tousMessages}&recuMessages=${recuMessages}&envoyeMessages=${envoyeMessages}&notifications=${notifications}`)
             .then(response => response.text())
             .then(html => {
                 document.getElementById('notificationsTabContent').innerHTML = html;
@@ -46,7 +47,7 @@
 
   <div th:replace="account/fragments/account-header"></div>
 
-  <div class="container">
+  <div class="container " style="padding-top:5rem; padding-bottom:5rem;">
     <div>
       <a href="/account">Précédent</a>
     </div>
@@ -54,30 +55,40 @@
     <div class="row">
       <!-- Sidebar -->
       <div class="col-md-3 sidebar">
-        <h5>Filtres</h5>
-        <form>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="nouveauxMessages">
-            <label class="form-check-label" for="nouveauxMessages">
-              Nouveaux messages
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="tousMessages">
-            <label class="form-check-label" for="tousMessages">
-              Tous les messages
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="notifications">
-            <label class="form-check-label" for="notifications">
-              Notifications
-            </label>
-          </div>
-        </form>
+        <div class="notification-filters">
+          <h5 class="text-center">Mes notifications</h5>
+          <hr>
+          <form>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="tousMessages" onclick="applyFilters()">
+              <label class="form-check-label" for="tousMessages">
+                Tous les messages
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="recuMessages" onclick="applyFilters()">
+              <label class="form-check-label" for="recuMessages">
+                Messages reçus
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="envoyeMessages" onclick="applyFilters()">
+              <label class="form-check-label" for="envoyeMessages">
+                Messages envoyés
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="notifications" onclick="applyFilters()">
+              <label class="form-check-label" for="notifications">
+                Notifications
+              </label>
+            </div>
+          </form>
+
+        </div>
       </div>
 
-      <!-- Main Content -->
+      <!-- Contenu principal -->
       <div class="col-md-9">
         <div>
           <h3>Mes notifications</h3>

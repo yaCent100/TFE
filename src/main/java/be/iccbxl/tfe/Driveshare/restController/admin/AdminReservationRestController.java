@@ -1,13 +1,13 @@
 package be.iccbxl.tfe.Driveshare.restController.admin;
 
+import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
+import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.ReservationService;
+import be.iccbxl.tfe.Driveshare.service.serviceImpl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,13 +15,15 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/reservations")
-public class AdminReservationController {
+public class AdminReservationRestController {
 
     @Autowired
     private ReservationService reservationService;
 
-    @GetMapping("/count-by-locality")
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("/api/reservations/count-by-locality")
     public ResponseEntity<List<Map<String, Object>>> getReservationCountByLocality(
             @RequestParam int year,
             @RequestParam(required = false) Integer month) {
@@ -63,6 +65,20 @@ public class AdminReservationController {
 
         return response;
     }*/
+
+
+
+    @GetMapping("/api/admin/reservations")
+    public List<ReservationDTO> getAllReservations() {
+        return reservationService.getAllReservationsDTOs();
+    }
+
+    @GetMapping("/api/admin/reservations/user/{userId}")
+    @ResponseBody
+    public List<ReservationDTO> getReservationsByUser(@PathVariable Long userId) {
+        User user = userService.getUserById(userId);
+        return reservationService.getReservationsByUser(user);
+    }
 
 
 }

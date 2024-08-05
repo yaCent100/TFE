@@ -39,12 +39,7 @@
           <div class="search-filter-item mb-3">
             <h6 class="search-title"><img src="icones/voiture-electrique.png" class="img-fluid" width="25" alt="voiture"> Catégorie de véhicule</h6>
             <hr>
-            <div th:each="categorie : ${categories}">
-              <div class="form-check">
-                <input class="form-check-input category-filter" type="checkbox" th:value="${categorie.category}" th:id="${categorie.id}">
-                <label class="form-check-label" th:for="${categorie.id}" th:text="${categorie.category}"></label>
-              </div>
-            </div>
+            <div id="category-filter"></div>
           </div>
           <br>
           <div class="form-group">
@@ -58,85 +53,28 @@
           <div class="search-filter-item mb-3">
             <h6 class="search-title"><img src="icones/boite-de-vitesses.png" class="img-fluid" width="25" alt="voiture"> Boite de vitesse</h6>
             <hr>
-            <div class="form-check">
-              <input class="form-check-input gearbox-filter" type="checkbox" value="manuelle">
-              <label class="form-check-label">Manuelle</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input gearbox-filter" type="checkbox" value="automatique">
-              <label class="form-check-label">Automatique</label>
-            </div>
+            <div id="gearbox-filter"></div>
           </div>
           <br>
 
           <div class="search-filter-item mb-3">
             <h6 class="search-title"><img src="icones/pompe-a-essence.png" class="img-fluid" width="25" alt="voiture"> Motorisation</h6>
             <hr>
-            <div class="form-check">
-              <input class="form-check-input motorisation-filter" type="checkbox" value="essence">
-              <label class="form-check-label">Essence</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input motorisation-filter" type="checkbox" value="diesel">
-              <label class="form-check-label">Diesel</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input motorisation-filter" type="checkbox" value="hybride">
-              <label class="form-check-label">Hybride</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input motorisation-filter" type="checkbox" value="electrique">
-              <label class="form-check-label">Electrique</label>
-            </div>
+            <div id="motorisation-filter"></div>
           </div>
           <br>
           <div class="search-filter-item mb-3">
             <h6 class="search-title"><img src="icones/compteur-de-vitesse.png" class="img-fluid" width="25" alt="voiture"> Kilométrage du véhicule</h6>
             <hr>
-            <div class="form-check">
-              <input class="form-check-input kilometrage-filter" type="checkbox" value="0 - 15 000 km">
-              <label class="form-check-label">0 - 15 000 km</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input kilometrage-filter" type="checkbox" value="15 000 - 50 000 km">
-              <label class="form-check-label">15 000 - 50 000 km</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input kilometrage-filter" type="checkbox" value="50 000 - 100 000 km">
-              <label class="form-check-label">50 000 - 100 000 km</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input kilometrage-filter" type="checkbox" value="100 000 - 150 000 km">
-              <label class="form-check-label">100 000 - 150 000 km</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input kilometrage-filter" type="checkbox" value="Plus de 150 000 km">
-              <label class="form-check-label">Plus de 150 000 km</label>
-            </div>
-
+            <div id="kilometrage-filter"></div>
           </div>
-
           <br>
           <div class="search-filter-item mb-3">
             <h6 class="search-title"><img src="icones/siege.png" class="img-fluid" width="25" alt="voiture"> Nombre de places</h6>
             <hr>
-            <div class="form-check">
-              <input class="form-check-input places-filter" type="checkbox" value="3 places">
-              <label class="form-check-label">3 places</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input places-filter" type="checkbox" value="4 places">
-              <label class="form-check-label">4 places</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input places-filter" type="checkbox" value="5 places">
-              <label class="form-check-label">5 places</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input places-filter" type="checkbox" value="7 places">
-              <label class="form-check-label">7 places</label>
-            </div>
+            <div id="places-filter"></div>
           </div>
+
 
           <div class="text-center">
             <button class="btn btn-primary ps-3 pe-3 " id="resetButton">Réinitialiser</button>
@@ -173,19 +111,14 @@
         <!--<div class="row g-3 p-3" id="carList"></div>-->
 
         <div class="row g-3 p-3" id="carList" >
-          <div class="col-lg-12">
-          <!-- Boucle sur chaque voiture pour créer une carte -->
+         <!-- <div class="col-lg-12">
           <div class="mb-3" th:each="car : ${cars}">
             <div class="card p-3 rounded">
               <a th:href="@{'/cars/' + ${car.id}}" class="card-link">
                 <div class="row g-0">
-                  <!-- Colonne pour l'image -->
                   <div class="col-md-3">
-                    <!-- Afficher uniquement la première image de la voiture -->
                     <img class="card-img-top" style="max-height: 150px;" th:src="${car.photos != null and car.photos.size() > 0 ? '/uploads/' + car.photos[0].url : '/images/carDefault.png'}" alt="Photo de voiture">
                   </div>
-                  <!-- Colonne pour le contenu de la carte -->
-
 
 
                   <div class="col-md-9">
@@ -205,7 +138,6 @@
                                     </span>
                                 </span>
                               </div>
-                              <!-- Affichez entre parenthèses le nombre d'avis -->
                               <div>(<span th:text="${reviewCounts[car.id]}"></span> avis)</div>
                             </div>
                             <div class="col-lg-1 col-md-2">
@@ -243,9 +175,9 @@
 
       </div>
 
-  </div>
+  </div>-->
 </div>
-</div>
+
 
 </body>
 </html>

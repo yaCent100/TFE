@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>Comment ça marche - DriveShare</title>
+  <style>
+        .timeline {
+            position: relative;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #d4d9df;
+            left: 50%;
+            margin-left: -2px;
+        }
+        .timeline-block {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .timeline-block .timeline-icon {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            margin-left: -25px;
+            width: 50px;
+            height: 50px;
+            background: #f5f5f6;
+            border-radius: 50%;
+            border: 2px solid #d4d9df;
+            z-index: 1;
+        }
+        .timeline-block .timeline-content {
+            position: relative;
+            width: 45%;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .timeline-block.tenant .timeline-content {
+            left: 55%;
+        }
+        .timeline-block.owner .timeline-content {
+            right: 55%;
+        }
+        .timeline-block.both .timeline-content {
+            left: 55%;
+        }
+        .timeline-block.both .timeline-content.is-hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+
+<header class="bg-light py-3 mb-4">
+  <div class="container">
+    <h1 class="text-center">Comment ça marche</h1>
+  </div>
+</header>
+<main class="container">
+  <div id="how-it-works" class="timeline">
+    <div class="timeline-block fs0 not-mobile">
+      <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+          <h1>Je cherche une voiture, <span class="underline bold c-warning">je suis locataire</span></h1>
+        </div>
+        <div class="col-lg-6 text-center">
+          <h1 class="standard">Je loue <span class="c-main underline bold">ma propre voiture</span>, je suis propriétaire</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-block owner">
+      <div class="timeline-icon">
+        <img src="/images/picto/htem-picto-01.svg?v=7.21.8" alt="voiture">
+      </div>
+      <div class="timeline-content bradius">
+        <h5 class="fs14 bold mgb-10 standard">J'inscris ma voiture</h5>
+        <p class="standard">Je renseigne les caractéristiques de ma voiture, j'ajoute quelques photos intérieur et extérieur et j'envoie ma carte grise. Ma voiture est assurée tous risques (pas de malus).</p>
+      </div>
+    </div>
+
+    <div class="timeline-block tenant">
+      <div class="timeline-icon">
+        <img src="/images/picto/search-picto.svg?v=7.21.8" alt="search">
+      </div>
+      <div class="timeline-content bradius">
+        <h5 class="fs14 bold mgb-10">Je choisis une voiture</h5>
+        <p>J'effectue une recherche en fonction de mes critères (dates, lieu, type de voiture). J'envoie une demande de location pour les voitures qui me conviennent. Je multiplie les demandes pour avoir le choix.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block owner">
+      <div class="timeline-icon">
+        <img src="/images/picto/picto-notification.svg?v=7.21.8" alt="avis">
+      </div>
+      <div class="timeline-content">
+        <h5 class="fs14 bold mgb-10 standard">J'accepte ou je refuse les demandes</h5>
+        <p class="standard">Sans engagement, je choisis quelles locations j'accepte. En toute transparence, je sais combien je vais gagner.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block tenant">
+      <div class="timeline-icon">
+        <img src="/images/picto/credit-card.svg?v=7.21.8" alt="paiment">
+      </div>
+      <div class="timeline-content">
+        <h5 class="fs14 bold mgb-10">Ma demande a été acceptée, je procède au paiement</h5>
+        <p>Je conviens d'un point précis de rendez-vous pour l'échange des clés. Le paiement est complètement sécurisé. Pas d'arnaque possible, le propriétaire ne sera payé qu'à la fin de la location. La franchise n'est pas encaissée, elle ne s'appliquera qu'en cas de sinistre.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block both">
+      <div class="timeline-icon">
+        <img src="/images/picto/hands.svg?v=7.21.8" alt="plan">
+      </div>
+      <div class="timeline-content">
+        <h5 class="fs14 bold mgb-10">Au début de la location</h5>
+        <p>Nous procédons à un état des lieux du véhicule, nous signons le contrat de location et nous procédons à l'échange de clés.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block tenant">
+      <div class="timeline-icon">
+        <img src="/images/picto/phone.svg?v=7.21.8" alt="contact">
+      </div>
+      <div class="timeline-content">
+        <h5 class="fs14 bold mgb-10">Pendant la location, je ne perds jamais le contact</h5>
+        <p>Je bénéficie d'une assistance 0km 24h/24 et 7j/7, je bénéficie aussi du service "véhicule de remplacement". Je peux joindre DriveShare à tout moment en cas de besoin.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block both">
+      <div class="timeline-icon">
+        <img src="/images/picto/rating.svg?v=7.21.8" alt="avis">
+      </div>
+      <div class="timeline-content">
+        <h5 class="fs14 bold mgb-10">La location est terminée</h5>
+        <p class="standard">Nous procédons à un état des lieux de fin de location. J'évalue le locataire/propriétaire sur DriveShare. Propriétaire, je suis payé 3 jours ouvrés après la fin de la location !</p>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+</body>
+</html>
