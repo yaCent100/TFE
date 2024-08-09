@@ -1,5 +1,7 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
+import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
+import be.iccbxl.tfe.Driveshare.DTO.PaymentDTO;
 import be.iccbxl.tfe.Driveshare.config.StripeConfig;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Payment;
@@ -26,6 +28,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -44,6 +47,10 @@ public class PaymentService {
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentService.class);
 
+    public List<PaymentDTO> getAllPayments() {
+        List<Payment> payments = paymentRepository.findAll();
+        return payments.stream().map(MapperDTO::toPaymentDTO).collect(Collectors.toList());
+    }
     public List<Payment> getPaymentsForUser(User user, LocalDate startDate, LocalDate endDate) {
         System.out.println("Recherche de paiements pour l'utilisateur : " + user.getEmail());
         System.out.println("Date de début : " + startDate);
@@ -101,6 +108,15 @@ public class PaymentService {
     }
 
 
+    public void deletePayment(Long id) {
+        paymentRepository.deleteById(id);
+    }
+
+    public void updatePaymentStatus(Long id, PaymentDTO paymentDTO) {
+        Payment payment = paymentRepository.findById(id).orElseThrow(() -> new RuntimeException("Payment not found"));
+        payment.setStatut(paymentDTO.getStatut());
+        paymentRepository.save(payment);
+    }
 }
 
 

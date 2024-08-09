@@ -1,7 +1,6 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
-import be.iccbxl.tfe.Driveshare.DTO.NotificationDTO;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
@@ -13,7 +12,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,6 +45,8 @@ public class AccountController {
     private final ReservationService reservationService;
     private final NotificationService notificationService;
 
+    private final EvaluationService evaluationService;
+
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
 
@@ -59,7 +56,7 @@ public class AccountController {
     @Autowired
     public AccountController(UserService userService, PhotoService photoService, CarService carService, FileStorageService fileStorageService, DocumentService documentService,
                              BCryptPasswordEncoder passwordEncoder, PaymentService paymentService, DateService dateService, CategoryService categoryService,
-                             FeatureService featureService, EquipmentService equipmentService, ReservationService reservationService, NotificationService notificationService) {
+                             FeatureService featureService, EquipmentService equipmentService, ReservationService reservationService, NotificationService notificationService, EvaluationService evaluationService) {
         this.userService = userService;
         this.photoService = photoService;
         this.carService = carService;
@@ -73,6 +70,7 @@ public class AccountController {
         this.equipmentService = equipmentService;
         this.reservationService = reservationService;
         this.notificationService = notificationService;
+        this.evaluationService = evaluationService;
     }
 
 
@@ -590,6 +588,9 @@ public class AccountController {
 
         String formattedStartDate = dateService.formatAndCapitalizeDate(debutLocation);
         String formattedEndDate = dateService.formatAndCapitalizeDate(finLocation);
+
+        boolean evaluationExists = evaluationService.evaluationExists(reservationId);
+        model.addAttribute("evaluationExists", evaluationExists);
 
         // Calculer les détails de la location
         long duration = ChronoUnit.DAYS.between(debutLocation, finLocation);

@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -135,10 +138,26 @@ public class PaymentRestController {
                     reservationService.saveReservation(reservation);
 
                     Payment payment = new Payment();
-                    payment.setPrixTotal(paymentIntent.getAmountReceived());
+                    BigDecimal amountReceived = BigDecimal.valueOf(paymentIntent.getAmountReceived());
+                    BigDecimal driveShareAmount = amountReceived.multiply(BigDecimal.valueOf(0.3)).setScale(2, RoundingMode.HALF_UP);
+                    BigDecimal userAmount = amountReceived.multiply(BigDecimal.valueOf(0.7)).setScale(2, RoundingMode.HALF_UP);
+
+                    payment.setPrixTotal(amountReceived.doubleValue());
                     payment.setStatut(paymentIntent.getStatus());
-                    payment.setPaiementMode(paymentIntent.getPaymentMethodTypes().get(0));
-                    payment.setCreatedAt(LocalDate.now());
+
+                    // Déterminer le mode de paiement
+                    String paymentMethodDetails = paymentIntent.getCharges().getData().get(0).getPaymentMethodDetails().getType();
+
+                    if ("card".equals(paymentMethodDetails)) {
+                        String cardBrand = paymentIntent.getCharges().getData().get(0).getPaymentMethodDetails().getCard().getBrand();
+                        payment.setPaiementMode(cardBrand + " " + paymentMethodDetails);
+                    } else {
+                        payment.setPaiementMode(paymentMethodDetails);
+                    }
+
+                    payment.setPrixPourDriveShare(driveShareAmount.doubleValue());
+                    payment.setPrixPourUser(userAmount.doubleValue());
+                    payment.setCreatedAt(LocalDateTime.now());
                     payment.setReservation(reservation);
 
                     paymentService.save(payment);
@@ -156,6 +175,8 @@ public class PaymentRestController {
             return ResponseEntity.status(500).body("General exception: " + e.getMessage());
         }
     }
+
+
 
 
 

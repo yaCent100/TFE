@@ -20,4 +20,6 @@ public class PriceDTO {
 
     private Double promo2;
 
+    private Long carId;
+
 }

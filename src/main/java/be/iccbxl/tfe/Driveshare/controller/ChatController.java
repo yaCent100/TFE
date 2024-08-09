@@ -1,7 +1,7 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
-import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
 import be.iccbxl.tfe.Driveshare.DTO.ChatMessageDTO;
+import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.model.ChatMessage;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
@@ -78,7 +78,7 @@ public class ChatController {
         ChatMessage savedMessage = chatMessageService.save(chatMessage);
 
         // Conversion de l'entité en DTO pour la réponse
-        return CarMapper.toChatMessageDTO(savedMessage);
+        return MapperDTO.toChatMessageDTO(savedMessage);
     }
 
 

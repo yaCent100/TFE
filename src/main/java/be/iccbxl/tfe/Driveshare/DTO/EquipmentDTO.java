@@ -11,4 +11,8 @@ public class EquipmentDTO {
 
     public EquipmentDTO(Long id, String icone, String equipment) {
     }
+
+    public EquipmentDTO() {
+
+    }
 }

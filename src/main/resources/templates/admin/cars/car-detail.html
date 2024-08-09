@@ -4,80 +4,16 @@
     <meta charset="UTF-8">
     <title>Détails de la Voiture</title>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const carId = urlParams.get('id');
-            const spinner = document.getElementById("spinner");
-
-            spinner.style.display = "block";
-
-            fetch(`/api/admin/cars/${carId}`)
-                .then(response => response.json())
-                .then(data => {
-                    spinner.style.display = "none";
-                    document.getElementById("car-id").textContent = data.id;
-                    document.getElementById("car-brand").textContent = data.brand;
-                    document.getElementById("car-model").textContent = data.model;
-                    document.getElementById("car-online").textContent = data.online ? 'Oui' : 'Non';
-                    document.getElementById("car-first-circulation").textContent = data.firstImmatriculation;
-                    document.getElementById("car-plate").textContent = data.plaqueImmatriculation;
-                    document.getElementById("car-mode-reservation").textContent = data.modeReservation;
-                    document.getElementById("car-insurance").textContent = data.insurance;
-                    document.getElementById("car-price").textContent = data.price.middlePrice;
-
-                    const photoContainer = document.getElementById("car-photos");
-                    data.photoUrl.forEach(photoUrl => {
-                        const img = document.createElement('img');
-                        img.src = `/uploads/${photoUrl}`;
-                        img.alt = "Photo de voiture";
-                        img.classList.add('car-photo');
-                        photoContainer.appendChild(img);
-                    });
-
-                    const carteGriseLink = document.getElementById("car-carte-grise");
-                    carteGriseLink.href = `/uploads/${data.carteGrisePath}`;
-                    carteGriseLink.textContent = "Télécharger la carte grise";
-
-                    const identityCardLink = document.getElementById("identity-card");
-                    identityCardLink.href = `/uploads/${data.identityRecto}`;
-                    identityCardLink.textContent = "Télécharger la carte d'identité";
-
-                    const featuresContainer = document.getElementById("car-features");
-                    data.features.forEach(feature => {
-                        const li = document.createElement('li');
-                        li.textContent = `${feature.name}: ${feature.description}`;
-                        featuresContainer.appendChild(li);
-                    });
-
-                    const equipmentsContainer = document.getElementById("car-equipments");
-                    data.equipments.forEach(equipment => {
-                        const li = document.createElement('li');
-                        li.textContent = `${equipment.name}: ${equipment.description}`;
-                        equipmentsContainer.appendChild(li);
-                    });
-
-                    const conditionsContainer = document.getElementById("car-conditions");
-                    data.conditions.forEach(condition => {
-                        const li = document.createElement('li');
-                        li.textContent = condition;
-                        conditionsContainer.appendChild(li);
-                    });
-                })
-                .catch(error => {
-                    spinner.style.display = "none";
-                    console.error('Erreur:', error);
-                });
-        });
-    </script>
     <style>
         .car-photo {
-            width: 100px;
-            height: 100px;
-            margin: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 5px;
+            width: 150px;
+            height: 150px;
+            margin: 10px;
+            object-fit: cover;
+        }
+        .equipment-icon {
+            width: 30px;
+            height: 30px;
         }
         #spinner {
             display: none;
@@ -93,26 +29,36 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 <div layout:fragment="content">
-    <nav class="navbar navbar-expand px-4 py-3">
-        <div class="navbar-collapse collapse">
-            <ul class="navbar-nav ms-auto">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Admin Panel</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
-                    <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
-                        <img src="/account.png" class="avatar img-fluid" alt="">
+                    <a href="#" class="nav-link dropdown-toggle" id="accountDropdown" role="button" data-toggle="dropdown">
+                        <img src="/account.png" class="avatar img-fluid" alt="Account">
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end rounded">
-                        <!-- Dropdown items here -->
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="#">Profile</a>
+                        <a class="dropdown-item" href="#">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Logout</a>
                     </div>
                 </li>
             </ul>
         </div>
     </nav>
     <main class="content px-3 py-4">
-        <h1>Détails de la Voiture</h1>
         <div id="spinner"></div>
         <div class="card">
             <div class="card-header">
@@ -121,23 +67,21 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>ID:</strong> <span id="car-id"></span></p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Marque:</strong> <span id="car-brand"></span></p>
+                        <p><span id="car-brand"></span></p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Modèle:</strong> <span id="car-model"></span></p>
+                        <p><span id="car-model"></span></p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>En Ligne:</strong> <span id="car-online"></span></p>
+                        <p><strong>En Ligne:</strong><br><span id="car-online"></span></p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Première Circulation:</strong> <span id="car-first-circulation"></span></p>
+                        <p><strong>Première Circulation</strong><br>
+                            <span id="car-first-circulation"></span></p>
                     </div>
                     <div class="col-md-6">
                         <p><strong>Plaque:</strong> <span id="car-plate"></span></p>
@@ -145,27 +89,24 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Mode de Réservation:</strong> <span id="car-mode-reservation"></span></p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Assurance:</strong> <span id="car-insurance"></span></p>
+                        <p><strong>Mode de Réservation</strong><br>
+                            <span id="car-mode-reservation"></span></p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Prix:</strong> <span id="car-price"></span></p>
+                        <p><strong>Prix</strong> <br>
+                            <span id="car-price"></span></p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Photos:</strong></p>
+                        <p><strong>Photos</strong></p>
                         <div id="car-photos" class="d-flex flex-wrap"></div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Carte Grise:</strong> <a id="car-carte-grise" href="#" download>Télécharger la carte grise</a></p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Carte d'Identité:</strong> <a id="identity-card" href="#" download>Télécharger la carte d'identité</a></p>
+                        <p><a id="car-carte-grise">Télécharger la carte grise</a>
+                        </p>
                     </div>
                 </div>
                 <div class="row">

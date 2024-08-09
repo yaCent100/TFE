@@ -1,7 +1,7 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
+import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
-import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService implements ReservationServiceI {
@@ -45,7 +45,12 @@ public class ReservationService implements ReservationServiceI {
     @Override
     public List<ReservationDTO> getAllReservationsDTOs() {
         List<Reservation> reservations = reservationRepository.findAll();
-        return CarMapper.toDTOs(reservations);
+        if (reservations == null) {
+            return new ArrayList<>();
+        }
+        return reservations.stream()
+                .map(MapperDTO::toReservationDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -104,7 +109,7 @@ public class ReservationService implements ReservationServiceI {
 
             // Transformer chaque réservation en DTO
             for (Reservation reservation : reservations) {
-                ReservationDTO reservationDTO = CarMapper.toReservationDTO(reservation);
+                ReservationDTO reservationDTO = MapperDTO.toReservationDTO(reservation);
                 allReservations.add(reservationDTO);
             }
         }

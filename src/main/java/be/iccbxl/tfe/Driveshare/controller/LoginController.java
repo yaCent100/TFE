@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+
 
 @Controller
 public class LoginController {
@@ -35,9 +37,6 @@ public class LoginController {
 
     @PostMapping("/register")
     public String processRegistrationForm(@ModelAttribute @Valid User user,
-                                          @RequestParam("photo") MultipartFile profilePhoto,
-                                          @RequestParam("permis") MultipartFile drivingLicense,
-                                          @RequestParam("identity") MultipartFile idCard,
                                           BindingResult result,
                                           RedirectAttributes redirectAttributes) {
 
@@ -46,8 +45,6 @@ public class LoginController {
             return "redirect:/login";
         }
 
-
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
         userService.addUser(user);
         redirectAttributes.addFlashAttribute("successMessage", "Inscription réussie. Veuillez vous connecter.");

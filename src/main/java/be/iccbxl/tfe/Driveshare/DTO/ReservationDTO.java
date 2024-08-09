@@ -3,7 +3,6 @@ package be.iccbxl.tfe.Driveshare.DTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -28,6 +27,8 @@ public class ReservationDTO {
     private String insurance;
     private String modeReservation;
 
+    // Ajouter le champ PaymentDTO
+    private PaymentDTO payment;
 
 
 
@@ -50,6 +51,7 @@ public class ReservationDTO {
                 return "white"; // blanc par défaut pour tous les autres cas
         }
     }
+
 
 
 }

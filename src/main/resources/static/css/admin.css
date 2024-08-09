@@ -15,9 +15,15 @@ li {
     list-style: none;
 }
 
-body {
-    font-family: 'Poppins', sans-serif;
-}
+h1, h3, h4, h5, h6 {
+ font-family: 'Roboto', sans-serif !important;
+
+ }
+ h2{
+  font-family: 'Roboto', sans-serif !important;
+ font-weight: 900 !important;
+ line-height: 2rem !important;
+ }
 
 .wrapper {
     display: flex;
@@ -30,7 +36,8 @@ body {
     width: 100%;
     overflow: hidden;
     transition: all 0.35s ease-in-out;
-    background-color: #fff;
+    font-family: 'Nunito', sans-serif !important;
+    background-color:#CBD2D9;
     min-width: 0;
 }
 
@@ -168,7 +175,5 @@ a.sidebar-link:hover {
     height: 40px;
     width: 40px;
 }
-
-
 
 @media (min-width: 768px) {}

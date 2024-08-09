@@ -12,5 +12,8 @@ public interface DocumentServiceI {
 
     List<Document> getByUserId(Long id);
 
+    List<Document> findAll();
+
+
     void save(Document versoDoc);
 }

@@ -78,8 +78,9 @@ public class SecurityConfig {
 		http
 				.csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(auth -> {
-					auth.requestMatchers("/login", "/css/**", "/js/**", "/images/**","/api/cars/top-rated","/api/cars","/api/gearbox","/api/cars/search", "api/categories", "/cars/**","/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/index.html").permitAll();
+					auth.requestMatchers("/register", "/login","/api/admin/payments","/api/admin/evaluations","/api/review","/api/admin/users-by-role**","/api/cancelReservation/**", "/css/**", "/images/**", "/js/**","/reset-password**", "/images/**","/api/password/**","/api/files/**","/api/cars/top-rated","/api/cars","/api/gearbox","/api/cars/search", "api/categories", "/cars/**","/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/index.html").permitAll();
 					auth.requestMatchers("/account/**", "/api/**").authenticated();
+					auth.requestMatchers("/api/admin/users/**").hasRole("ADMIN");
 					auth.anyRequest().authenticated();
 				})
 				.formLogin(form -> {

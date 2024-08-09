@@ -27,4 +27,8 @@ public class EmailService {
             logger.error("Failed to send email to {}: {}", to, e.getMessage());
         }
     }
+
+    public void sendSimpleMessage(String email, String passwordResetRequest, String s) {
+
+    }
 }

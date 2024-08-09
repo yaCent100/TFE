@@ -24,8 +24,6 @@ public class AdminUserController {
 
     @GetMapping("/all")
     public String getAllUsers(Model model) {
-        List<User> users = userService.getAllUsers();
-        model.addAttribute("users", users);
         return "admin/users/all";
     }
 

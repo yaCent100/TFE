@@ -1,8 +1,8 @@
 package be.iccbxl.tfe.Driveshare.restController;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
-import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
 import be.iccbxl.tfe.Driveshare.DTO.CategoryDTO;
+import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Category;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
@@ -41,7 +41,7 @@ public class CarRestController {
             Map<Long, Integer> reviewCounts = carService.getReviewCountsForCars();
 
             List<CarDTO> carDTOs = cars.stream().map(car -> {
-                CarDTO carDTO = CarMapper.toCarDTO(car);
+                CarDTO carDTO = MapperDTO.toCarDTO(car);
                 return carDTO;
             }).collect(Collectors.toList());
 

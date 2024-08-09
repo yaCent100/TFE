@@ -24,4 +24,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<Notification> findByToUser(User user);
     List<Notification> findByFromUser(User user);
     List<Notification> findByToUserOrFromUser(User toUser, User fromUser);
+
 }

@@ -24,7 +24,7 @@
                                 <p class="medium mgb-10">Prix basse saison</p>
                                 <div class="row">
                                     <div class="col-lg-2">
-                                        <input type="number" th:field="*{lowPrice}" class="form-control bradius-bis w100p text-center price-input" name="low_season_price" min="10" max="200" required="">
+                                        <input type="number" th:field="*{price.lowPrice}" class="form-control bradius-bis w100p text-center price-input" name="low_season_price" min="10" max="200" required="">
                                     </div>
                                     <div class="col-lg-9">
                                         <p class="fs16 mgl-40">Prix de votre voiture pour une journée de location  en basse saison.</p>
@@ -38,7 +38,7 @@
                                     <p class="medium mgb-10">Prix Moyenne saison</p>
                                     <div class="row">
                                         <div class="col-lg-2">
-                                            <input type="number" th:field="*{middlePrice}" class="form-control bradius-bis w100p text-center price-input" name="medium_season_price" min="10" max="200" required="">
+                                            <input type="number" th:field="*{price.middlePrice}" class="form-control bradius-bis w100p text-center price-input" name="medium_season_price" min="10" max="200" required="">
                                         </div>
                                         <div class="col-lg-9">
                                             <p class="fs16 mgl-40">Prix de votre voiture pour une journée de location en moyenne saison.</p>
@@ -53,7 +53,7 @@
                                     <p class="medium mgb-10">Prix Haute saison</p>
                                     <div class="row">
                                         <div class="col-lg-2">
-                                            <input type="number" th:field="*{highPrice}" class="form-control bradius-bis w100p text-center price-input" name="high_season_price" min="10" max="200" required="">
+                                            <input type="number" th:field="*{price.highPrice}" class="form-control bradius-bis w100p text-center price-input" name="high_season_price" min="10" max="200" required="">
                                         </div>
                                         <div class="col-lg-9">
                                             <p class="fs16 mgl-40">Prix de votre voiture pour une journée de location en haute saison.</p>
@@ -79,7 +79,7 @@
                                             </div>
                                             <div class="row mgt-20">
                                                 <div class="col-lg-2">
-                                                    <select class="form-control text-center bradius-bis " name="long_term_rate" th:field="*{promo1}">
+                                                    <select class="form-control text-center bradius-bis " name="long_term_rate" th:field="*{price.promo1}">
                                                         <option value="0">0%</option>
                                                         <option value="10">10%</option>
                                                         <option value="20">20%</option>
@@ -103,7 +103,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-lg-2">
-                                                    <select class="form-control text-center bradius-bis" name="lld_rate" th:field="*{promo2}">
+                                                    <select class="form-control text-center bradius-bis" name="lld_rate" th:field="*{price.promo2}">
                                                         <option value="0">0%</option>
                                                         <option value="10">10%</option>
                                                         <option value="20">20%</option>

@@ -3,23 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <title>Réservation</title>
+  <style>
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+    }
+
+    .star-rating input {
+        display: none;
+    }
+
+    .star-rating label {
+        font-size: 2rem;
+        color: #ddd;
+        cursor: pointer;
+    }
+
+    .star-rating input:checked ~ label {
+        color: #ffc107; /* Couleur dorée pour les étoiles sélectionnées */
+    }
+
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+        color: #ffc107; /* Couleur dorée pour les étoiles survolées */
+    }
+  </style>
   <script th:inline="javascript">
       document.addEventListener('DOMContentLoaded', function() {
-        var reservationId = /*[[${reservationId}]]*/ '0';
-        var carId = /*[[${carId}]]*/ '0';
-        var toUserId = /*[[${toUserId}]]*/ '0';
-        var fromUserId = /*[[${fromUserId}]]*/ '0';
-
-          var reservationId = document.getElementById("reservationId").value;
           var reservationStartDate = document.getElementById("reservationStartDate").value;
           var reservationEndDate = document.getElementById("reservationEndDate").value;
 
           console.log("Initialized variables:");
-          console.log("reservationId: ", reservationId);
           console.log("reservationStartDate: ", reservationStartDate);
           console.log("reservationEndDate: ", reservationEndDate);
 
-           function parseDateString(dateStr) {
+          function parseDateString(dateStr) {
               const months = {
                   'Jan.': '01', 'Fév.': '02', 'Mar.': '03', 'Avr.': '04', 'Mai': '05', 'Juin': '06',
                   'Juil.': '07', 'Aoû.': '08', 'Sep.': '09', 'Oct.': '10', 'Nov.': '11', 'Déc.': '12'
@@ -43,7 +62,7 @@
               console.error('Les dates de début et de fin sont nécessaires.');
           }
 
-           console.log("reservationStartDate: ", reservationStartDate);
+          console.log("reservationStartDate: ", reservationStartDate);
           console.log("reservationEndDate: ", reservationEndDate);
 
           window.redirectToPayment = function() {
@@ -71,6 +90,7 @@
           <div class="text-center statut-box">
             <h3 th:text="'Le statut de la réservation est : ' + ${reservationStatus}"></h3>
           </div>
+          <!-- Zone de discussion -->
           <div class="discussion">
             <div class="row mt-3">
               <div class="col-lg-12 d-flex align-items-center">
@@ -114,14 +134,8 @@
               <hr class="bg-light fw-bold">
             </div>
           </div>
-          <div class="mt-4">
-            <p th:text="${isOwner} ? 'Locataire' : 'Propriétaire'"></p>
-            <div class="d-flex align-items-center mt-2 car-reservation-user">
-              <img th:src="'/uploads/' + ${profileUser.photoUrl}" class="img-fluid rounded-circle" alt="Photo de profil" width="75">
-              <p class="mb-0 ms-2" th:text="${#strings.capitalize(profileUser.prenom.substring(0,1)) + profileUser.prenom.substring(1).toLowerCase() + ' ' + profileUser.nom.toUpperCase()}"></p>
-            </div>
-          </div>
 
+          <!-- Bouton d'annulation -->
           <div class="mt-4" th:if="${reservationStatus == 'CONFIRMED'}">
             <p>Détails de la location</p>
             <div>
@@ -142,9 +156,10 @@
                 </tbody>
               </table>
             </div>
-            <button id="cancel-button" class="btn btn-danger w-100" onclick="cancelReservation(event, reservationId)">Annuler la réservation</button>
+            <button id="cancel-button" class="btn btn-danger w-100" th:onclick="'cancelReservation(event, ' + ${reservationId} + ')'">Annuler la réservation</button>
           </div>
 
+          <!-- Bouton de paiement -->
           <div class="mt-4" th:if="${reservationStatus == 'PAYMENT_PENDING'}">
             <p>Détails de la location</p>
             <div>
@@ -168,11 +183,141 @@
             <a href="javascript:void(0);" class="btn btn-success w-100" onclick="redirectToPayment()">Payer</a>
           </div>
 
+          <!-- Bouton pour laisser une évaluation -->
+          <div class="mt-4" th:if="${reservationStatus == 'FINISHED' and !evaluationExists}">
+            <button id="leave-review-button" class="btn btn-info w-100" onclick="openReviewModal()">Laisser une évaluation</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Modal pour laisser une évaluation -->
+  <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reviewModalLabel">Laisser une évaluation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="review-form">
+            <div class="mb-3">
+              <label for="rating" class="form-label">Note</label>
+              <div class="star-rating">
+                <input type="radio" id="star5" name="rating" value="5" />
+                <label for="star5" title="5 étoiles">&#9733;</label>
+                <input type="radio" id="star4" name="rating" value="4" />
+                <label for="star4" title="4 étoiles">&#9733;</label>
+                <input type="radio" id="star3" name="rating" value="3" />
+                <label for="star3" title="3 étoiles">&#9733;</label>
+                <input type="radio" id="star2" name="rating" value="2" />
+                <label for="star2" title="2 étoiles">&#9733;</label>
+                <input type="radio" id="star1" name="rating" value="1" />
+                <label for="star1" title="1 étoile">&#9733;</label>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="comment" class="form-label">Commentaire</label>
+              <textarea id="comment" class="form-control" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openReviewModal() {
+        var reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+        reviewModal.show();
+    }
+
+   document.getElementById('review-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    var rating = document.querySelector('input[name="rating"]:checked')?.value;
+    var comment = document.getElementById('comment').value;
+    var reservationId = document.getElementById('reservationId').value;
+
+    if (!rating || !comment) {
+        alert("Veuillez remplir tous les champs.");
+        return;
+    }
+
+    var review = {
+        note: rating,
+        avis: comment,
+        reservationId: reservationId
+    };
+
+    fetch('/api/review', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(review)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message || 'Something went wrong');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data && data.id) {
+            alert('Votre évaluation a été envoyée avec succès.');
+            var reviewModal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
+            reviewModal.hide();
+            document.getElementById('leave-review-button').style.display = 'none';
+        } else {
+            throw new Error('Erreur lors de l\'enregistrement de l\'évaluation.');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Une erreur s\'est produite lors de l\'envoi de votre évaluation : ' + error.message);
+    });
+});
+
+    function cancelReservation(event, reservationId) {
+        event.preventDefault();
+
+        var confirmation = confirm("Êtes-vous sûr de vouloir annuler cette réservation ?");
+        if (confirmation) {
+            fetch(`/api/cancelReservation/${reservationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("La réservation a été annulée avec succès.");
+                    // Mettre à jour le statut de la réservation dans l'interface utilisateur
+                    document.querySelector('.statut-box h3').innerText = "Le statut de la réservation est : ANNULÉ";
+                    // Masquer le bouton d'annulation
+                    document.getElementById('cancel-button').style.display = 'none';
+                    // Mettre à jour la card pour afficher que la location est annulée
+                    document.querySelector('.car-reservation-body p').innerText = "Location annulée";
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Une erreur s\'est produite lors de l\'annulation de la réservation.');
+            });
+        }
+    }
+  </script>
 </div>
+
+
 
 </body>
 </html>

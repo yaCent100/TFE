@@ -27,10 +27,19 @@ public class Payment {
     private String paiementMode;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
+
+    @Column(name = "prix_pour_driveshare", nullable = false)
+    private double prixPourDriveShare;
+
+    @Column(name = "prix_pour_user", nullable = false)
+    private double prixPourUser;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
+
+    @OneToOne(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Refund refund;
 
 }

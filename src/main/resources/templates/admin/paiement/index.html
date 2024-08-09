@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Paiements</title>
+  <style>
+        .dataTables_wrapper {
+            width: 100%;
+            margin: 0 auto;
+        }
+    </style>
+
+
+</head>
+<body>
+<div layout:fragment="content">
+  <h1>Gestion des Paiements</h1>
+  <div>
+    <canvas id="dailyPaymentStatsChart" width="400" height="200"></canvas>
+    <canvas id="monthlyPaymentStatsChart" width="400" height="200"></canvas>
+  </div>
+  <table id="paymentsTable" class="display nowrap" style="width:100%">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Prix Total</th>
+      <th>Statut</th>
+      <th>Mode de Paiement</th>
+      <th>Date de Création</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <button onclick="generateReport()">Générer un rapport</button>
+</div>
+
+
+
+</body>
+</html>

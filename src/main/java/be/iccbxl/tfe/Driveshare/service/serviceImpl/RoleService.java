@@ -2,7 +2,9 @@ package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.model.Photo;
 import be.iccbxl.tfe.Driveshare.model.Role;
+import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.repository.RoleRepository;
+import be.iccbxl.tfe.Driveshare.repository.UserRepository;
 import be.iccbxl.tfe.Driveshare.service.RoleServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,12 +12,18 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class RoleService implements RoleServiceI {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     @Override
     public List<Role> getAllRoles() {
@@ -49,4 +57,7 @@ public class RoleService implements RoleServiceI {
     public void deleteRole(Long id) {
         roleRepository.deleteById(id);
     }
+
+
+
 }

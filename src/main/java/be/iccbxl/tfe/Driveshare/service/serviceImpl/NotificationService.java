@@ -1,5 +1,7 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
+import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
+import be.iccbxl.tfe.Driveshare.DTO.NotificationDTO;
 import be.iccbxl.tfe.Driveshare.model.Notification;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.repository.NotificationRepository;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class NotificationService implements NotificationServiceI {
@@ -32,12 +35,23 @@ public class NotificationService implements NotificationServiceI {
         return notificationRepository.findByToUserId(userId);
     }
 
+
+    public List<NotificationDTO> getNotificationsByUser(Long userId) {
+        return notificationRepository.findByToUserId(userId)
+                .stream()
+                .map(MapperDTO::toNotificationDTO)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public List<Notification> getAllNotifications(User user) {
         // Vous pouvez ajuster cette méthode selon vos besoins spécifiques
         return notificationRepository.findByToUserOrFromUser(user, user);
     }
-
+    public List<NotificationDTO> getAllNotifications() {
+        List<Notification> notifications = notificationRepository.findAll();
+        return notifications.stream().map(MapperDTO::toNotificationDTO).collect(Collectors.toList());
+    }
     @Override
     public List<Notification> getReceivedNotifications(User user) {
         return notificationRepository.findByToUser(user);

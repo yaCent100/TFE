@@ -1,14 +1,14 @@
 package be.iccbxl.tfe.Driveshare.restController;
 
-import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
+import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
 
+import be.iccbxl.tfe.Driveshare.model.Payment;
+import be.iccbxl.tfe.Driveshare.model.Refund;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
-import be.iccbxl.tfe.Driveshare.service.serviceImpl.DateService;
-import be.iccbxl.tfe.Driveshare.service.serviceImpl.EmailService;
-import be.iccbxl.tfe.Driveshare.service.serviceImpl.ReservationService;
+import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,15 +35,22 @@ public class ReservationRestController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private PaymentService paymentService;
+
     @Autowired
     private DateService dateService;
+
+    @Autowired
+    private RefundService refundService;
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationRestController.class);
 
     @GetMapping("/api/getOwnerReservations")
     public List<ReservationDTO> getOwnerReservations(@RequestParam List<Long> carIds) {
         List<Reservation> reservations = reservationService.getReservationsByCarIds(carIds);
-        return reservations.stream().map(CarMapper::toReservationDTO).collect(Collectors.toList());
+        return reservations.stream().map(MapperDTO::toReservationDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/api/getRenterReservations")
@@ -65,7 +74,7 @@ public class ReservationRestController {
         }
 
         List<ReservationDTO> reservationDTOs = reservations.stream()
-                .map(CarMapper::toReservationDTO)
+                .map(MapperDTO::toReservationDTO)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(reservationDTOs);
@@ -77,7 +86,7 @@ public class ReservationRestController {
         if (reservation == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
         }
-        return CarMapper.toReservationDTO(reservation);
+        return MapperDTO.toReservationDTO(reservation);
     }
 
     @GetMapping("/api/format-date")
@@ -114,7 +123,41 @@ public class ReservationRestController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
 
-        reservationService.cancelReservation(id);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startDate = reservation.getDebutLocation().atStartOfDay();
+
+        long hoursBetween = Duration.between(now, startDate).toHours();
+
+        double refundPercentage = 0;
+        if (hoursBetween >= 48) {
+            refundPercentage = 0.90; // 10% de frais
+        } else if (hoursBetween >= 24) {
+            refundPercentage = 0.50; // 50% de frais
+        } else if (hoursBetween < 24) {
+            refundPercentage = 0.0; // Aucun remboursement
+        }
+
+        Payment payment = reservation.getPayment();
+        if (payment != null) {
+            double refundAmount = payment.getPrixTotal() * refundPercentage;
+
+            Refund refund = new Refund();
+            refund.setAmount(refundAmount);
+            refund.setRefundDate(now);
+            refund.setRefundPercentage(refundPercentage * 100);
+            refund.setPayment(payment);
+
+            refundService.saveRefund(refund);
+
+            payment.setRefund(refund);
+            paymentService.save(payment);
+
+            response.put("refundAmount", refundAmount);
+        }
+
+        reservation.setStatut("CANCELLED");
+        reservationService.saveReservation(reservation);
+
         response.put("success", true);
         response.put("message", "La réservation a été annulée avec succès.");
         return ResponseEntity.ok(response);

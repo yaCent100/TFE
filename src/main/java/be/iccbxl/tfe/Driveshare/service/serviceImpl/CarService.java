@@ -1,7 +1,7 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
-import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
+import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.repository.*;
 import be.iccbxl.tfe.Driveshare.service.CarServiceI;
@@ -106,7 +106,7 @@ public class CarService implements CarServiceI {
 
     public List<CarDTO> searchCarsByCategory(String category) {
         List<Car> cars = carRepository.findByCategory_Category(category);
-        return cars.stream().map(CarMapper::toCarDTO).collect(Collectors.toList());
+        return cars.stream().map(MapperDTO::toCarDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -197,7 +197,7 @@ public class CarService implements CarServiceI {
                 .collect(Collectors.toList());
 
         logger.info("Nearby available cars: {}", availableCars.size());
-        return availableCars.stream().map(CarMapper::toCarDTO).collect(Collectors.toList());
+        return availableCars.stream().map(MapperDTO::toCarDTO).collect(Collectors.toList());
     }
 
     private boolean isCarAvailableForDates(Car car, LocalDate dateDebut, LocalDate dateFin) {
@@ -288,7 +288,7 @@ public class CarService implements CarServiceI {
             List<Condition> conditions = getConditions(carDTO, car);
             car.setConditions(conditions);
 
-            Price price = CarMapper.toPrice(carDTO.getPrice()); // Conversion du DTO en entité Price
+            Price price = MapperDTO.toPrice(carDTO.getPrice()); // Conversion du DTO en entité Price
             car.setPrice(price);
 
             // Sauvegarder la voiture sans les photos et documents
@@ -311,12 +311,12 @@ public class CarService implements CarServiceI {
 
             // Gestion des documents avant de sauvegarder la voiture
             if (carDTO.getRegistrationCard() != null && !carDTO.getRegistrationCard().isEmpty()) {
-                String registrationCardPath = fileStorageService.storeFile(carDTO.getRegistrationCard(), "registration");
+                String registrationCardPath = fileStorageService.storeFile(carDTO.getRegistrationCard(), "registrationCard");
                 car.setCarteGrisePath(registrationCardPath);
             }
 
             if (carDTO.getIdentityRecto() != null && !carDTO.getIdentityRecto().isEmpty()) {
-                String identityRectoPath = fileStorageService.storeFile(carDTO.getIdentityRecto(), "identity");
+                String identityRectoPath = fileStorageService.storeFile(carDTO.getIdentityRecto(), "identityCard");
                 Document identityRectoDocument = new Document();
                 identityRectoDocument.setUrl(identityRectoPath);
                 identityRectoDocument.setDocumentType("identity_recto");
@@ -325,7 +325,7 @@ public class CarService implements CarServiceI {
             }
 
             if (carDTO.getIdentityVerso() != null && !carDTO.getIdentityVerso().isEmpty()) {
-                String identityVersoPath = fileStorageService.storeFile(carDTO.getIdentityVerso(), "identity");
+                String identityVersoPath = fileStorageService.storeFile(carDTO.getIdentityVerso(), "identityCard");
                 Document identityVersoDocument = new Document();
                 identityVersoDocument.setUrl(identityVersoPath);
                 identityVersoDocument.setDocumentType("identity_verso");
@@ -482,12 +482,12 @@ public class CarService implements CarServiceI {
 
     public List<CarDTO> getOnlineCars() {
         List<Car> onlineCars = carRepository.findByOnline(true);
-        return onlineCars.stream().map(CarMapper::toCarDTO).collect(Collectors.toList());
+        return onlineCars.stream().map(MapperDTO::toCarDTO).collect(Collectors.toList());
     }
 
     public List<CarDTO> getPendingCars() {
         List<Car> pendingCars = carRepository.findByOnline(false);
-        return pendingCars.stream().map(CarMapper::toCarDTO).collect(Collectors.toList());
+        return pendingCars.stream().map(MapperDTO::toCarDTO).collect(Collectors.toList());
     }
 
     public CarDTO approveCar(Long id) {
@@ -495,7 +495,7 @@ public class CarService implements CarServiceI {
         if (car != null) {
             car.setOnline(true);
             Car updatedCar = carRepository.save(car);
-            return CarMapper.toCarDTO(updatedCar);
+            return MapperDTO.toCarDTO(updatedCar);
         }
         return null;
     }

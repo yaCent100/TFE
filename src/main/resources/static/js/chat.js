@@ -17,28 +17,35 @@ function onError(error) {
 }
 
 function sendMessage(event) {
+    event.preventDefault(); // Empêche le rechargement de la page
+
     var messageContent = document.querySelector('#message').value.trim();
     var fromUserId = document.querySelector('#fromUserId').value;
     var toUserId = document.querySelector('#toUserId').value;
     var reservationId = document.getElementById("reservationId").value;
 
-
-    console.log("Sending message. fromUserId: ", fromUserId);
-    console.log("Sending message. toUserId: ", toUserId);
-
     if (messageContent && stompClient) {
         var chatMessage = {
             content: messageContent,
-            fromUserId: fromUserId,  // Assurez-vous d'utiliser fromUserId et toUserId
+            fromUserId: fromUserId,
             toUserId: toUserId,
             reservationId: reservationId
         };
 
         stompClient.send("/app/chat/" + reservationId, {}, JSON.stringify(chatMessage));
         console.log("Message sent: ", chatMessage);
-        document.querySelector('#message').value = '';
+
+        // Afficher immédiatement le message dans l'UI
+        displayMessage({
+            fromUserNom: 'Vous',
+            content: messageContent,
+            sentAt: new Date().toISOString()
+        });
+
+        document.querySelector('#message').value = ''; // Efface le champ de saisie du message
+    } else {
+        console.log('Message content is empty or WebSocket connection not established.');
     }
-    event.preventDefault();
 }
 
 async function fetchMessages() {
@@ -170,35 +177,5 @@ stompClient.connect({}, function (frame) {
 
 
 
-function cancelReservation(event, reservationId) {
-    event.preventDefault();
 
-    var confirmation = confirm("Êtes-vous sûr de vouloir annuler cette réservation ?");
-    if (confirmation) {
-        fetch(`/api/cancelReservation/${reservationId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert("La réservation a été annulée avec succès.");
-                // Mettre à jour le statut de la réservation dans l'interface utilisateur
-                document.querySelector('.statut-box h3').innerText = "Le statut de la réservation est : ANNULÉ";
-                // Masquer le bouton d'annulation
-                document.getElementById('cancel-button').style.display = 'none';
-                // Mettre à jour la card pour afficher que la location est annulée
-                document.querySelector('.car-reservation-body p').innerText = "Location annulée";
-            } else {
-                alert(data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Une erreur s\'est produite lors de l\'annulation de la réservation.');
-        });
-    }
-}
 

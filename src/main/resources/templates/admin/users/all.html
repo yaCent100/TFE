@@ -2,92 +2,136 @@
 <html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Utilisateurs</title>
+    <style>
+        .dataTables_wrapper {
+            width: auto;
+            margin: 0 auto;
+        }
+
+        .add-user-btn {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+    </style>
 </head>
 <body>
-<div layout:fragment="content">
-    <nav class="navbar navbar-expand px-4 py-3">
-        <div class="navbar-collapse collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item dropdown">
-                    <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
-                        <img src="/account.png" class="avatar img-fluid" alt="">
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end rounded">
-                        <!-- Dropdown items here -->
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <main class="content px-3 py-4">
+<div layout:fragment="content" class="container mt-5">
+
+    <div class="add-user-btn">
+        <button class="btn btn-success" data-toggle="modal" data-target="#addUserModal">Add a New User</button>
+    </div>
+    <div id="users" class="m-2 text-center">
+        <h4 class="text-center">Gestion des Utilisateurs</h4>
+        <table id="usersTable" class="display nowrap">
+            <thead>
+            <tr>
+                <th>Photo</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Adresse</th>
+                <th>Tel</th>
+                <th>Date de Création</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container">
         <div class="row">
-            <div class="col-lg-6">
-                <h1>All Users</h1>
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Email</th>
-                        <th>Adresse</th>
-                        <th>Locality</th>
-                        <th>Code Postal</th>
-                        <th>Téléphone</th>
-                        <th>Photo</th>
-                        <th>IBAN</th>
-                        <th>BIC</th>
-                        <th>Créé le</th>
-                        <th>Rôles</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="user : ${users}">
-                        <td th:text="${user.id}"></td>
-                        <td th:text="${user.nom}"></td>
-                        <td th:text="${user.prenom}"></td>
-                        <td th:text="${user.email}"></td>
-                        <td th:text="${user.adresse}"></td>
-                        <td th:text="${user.locality}"></td>
-                        <td th:text="${user.codePostal}"></td>
-                        <td th:text="${user.telephoneNumber}"></td>
-                        <td>
-                            <img th:src="@{${user.photoUrl}}" alt="Photo" style="width: 50px; height: 50px;">
-                        </td>
-                        <td th:text="${user.iban}"></td>
-                        <td th:text="${user.bic}"></td>
-                        <td th:text="${user.createdAt}"></td>
-                        <td>
-                            <ul>
-                                <li th:each="role : ${user.roles}" th:text="${role.role}"></li>
-                            </ul>
-                        </td>
-                        <td>
-                            <a th:href="@{/admin/users/edit/{id}(id=${user.id})}" class="btn btn-primary">Edit</a>
-                            <a th:href="@{/admin/users/delete/{id}(id=${user.id})}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="col-lg-7">
+                <div id="documents" class="table-container m-2 mt-4 text-center">
+                    <h4 class="text-center">Gestion des Documents</h4>
+                    <table id="documentsTable" class="display nowrap">
+                        <thead>
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th>Identity Recto</th>
+                            <th>Identity Verso</th>
+                            <th>License Recto</th>
+                            <th>License Verso</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div id="permissions" class="table-container m-2 mt-4 text-center">
+                    <h4 class="text-center">Gestion des Permissions</h4>
+                    <table id="permissionsTable" class="display nowrap">
+                        <thead>
+                        <tr>
+                            <th>Photo</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Rôles</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-    </main>
+    </div>
+
+    <!-- Modal for Adding User -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Add a New User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <!-- Form fields for new user -->
+                        <button type="submit" class="btn btn-primary">Add User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Updating Permissions -->
+    <div class="modal fade" id="editPermissionsModal" tabindex="-1" role="dialog" aria-labelledby="editPermissionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPermissionsModalLabel">Update Permissions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editPermissionsForm">
+                        <input type="hidden" id="editUserId" name="userId">
+                        <div class="form-group">
+                            <label for="permissions">Rôles</label>
+                            <div id="permissionsCheckboxes">
+                                <!-- Checkboxes will be populated dynamically -->
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Permissions</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-
-<script>
-        $(document).ready(function() {
-            $('#usersTable').DataTable(
-            crollY: '200px',
-            scrollCollapse: true,
-            paging: false
-            );
-
-        });
-    </script>
-
+<!-- JavaScript includes (same as current) -->
 </body>
 </html>

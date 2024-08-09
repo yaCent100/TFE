@@ -1,7 +1,7 @@
 package be.iccbxl.tfe.Driveshare.restController;
 
-import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
 import be.iccbxl.tfe.Driveshare.DTO.ChatMessageDTO;
+import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.model.ChatMessage;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.ChatMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class ChatMessageRestController {
     public List<ChatMessageDTO> getMessagesByReservation(@PathVariable Long reservationId) {
         List<ChatMessage> messages = chatMessageService.getMessagesByReservationId(reservationId);
         return messages.stream()
-                .map(CarMapper::toChatMessageDTO)
+                .map(MapperDTO::toChatMessageDTO)
                 .collect(Collectors.toList());
     }
 }

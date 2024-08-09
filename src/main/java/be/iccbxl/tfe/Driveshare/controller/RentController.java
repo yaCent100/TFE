@@ -1,6 +1,7 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
+import be.iccbxl.tfe.Driveshare.DTO.PriceDTO;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
@@ -80,8 +81,6 @@ public class RentController {
         model.addAttribute("portesFeatures", portesFeatures);
         model.addAttribute("equipments", equipments);
 
-
-
         return "car/rent";
     }
 
@@ -96,9 +95,13 @@ public class RentController {
         }
 
         try {
+
             carService.createCar(carDTO);
+
             redirectAttributes.addFlashAttribute("successMessage", "Car saved successfully!");
+
             return "redirect:/account/cars";
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error saving car: " + e.getMessage());
             return "redirect:/rent";

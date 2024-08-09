@@ -1,9 +1,11 @@
 package be.iccbxl.tfe.Driveshare.restController.admin;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
-import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
+import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import java.util.List;
 public class AdminCarsRestController {
     @Autowired
     private CarService carService;
+
+    private static final Logger logger = LoggerFactory.getLogger(AdminCarsRestController.class);
 
 
     @GetMapping("/online")
@@ -31,8 +35,12 @@ public class AdminCarsRestController {
     @GetMapping("/{id}")
     public ResponseEntity<CarDTO> getCarById(@PathVariable Long id) {
         Car car = carService.getCarById(id);
+
+
         if (car != null) {
-            CarDTO carDTO = CarMapper.toCarDTO(car);
+            CarDTO carDTO = MapperDTO.toCarDTO(car);
+            carDTO.setCarteGrisePath("/api/files/download?directory=registration&fileName=" + car.getCarteGrisePath());
+            logger.info("Car DTO: {}", carDTO);
             return ResponseEntity.ok(carDTO);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

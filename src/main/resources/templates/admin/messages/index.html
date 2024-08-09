@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Messages</title>
+
+  <style>
+    #user-list, #admin-list {
+      max-height: 700px; /* Adjust height as needed */
+      overflow-y: auto;
+    }
+    #chat-messages, #user-notifications {
+      max-height: 500px; /* Adjust height as needed */
+      overflow-y: auto;
+      display: none; /* Initially hidden */
+    }
+    .tab-content {
+      padding-top: 20px;
+    }
+    .list-group-item {
+      cursor: pointer; /* Change cursor to pointer (hand) */
+    }
+    .list-group-item:hover {
+      background-color: #f0f0f0; /* Change background color on hover */
+    }
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: auto; /* Adjust height as needed */
+      margin: 0 auto;
+    }
+    .spinner {
+      display: none; /* Initially hidden */
+    }
+    .selected-item {
+      background-color: #d3d3d3; /* Change this color to what you prefer for the selected item */
+    }
+    .no-data {
+      text-align: center;
+      color: #888;
+      margin-top: 50px;
+    }
+    .no-data i {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container mt-5">
+    <h1>Messages et Notifications des Utilisateurs</h1>
+    <div class="row">
+      <div class="col-md-4">
+        <ul class="nav nav-tabs" id="userAdminTab" role="tablist">
+          <li class="nav-item col-6" role="presentation">
+            <a class="nav-link active text-center" id="users-tab" data-bs-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="true">Users</a>
+          </li>
+          <li class="nav-item col-6" role="presentation">
+            <a class="nav-link text-center" id="admins-tab" data-bs-toggle="tab" href="#admins" role="tab" aria-controls="admins" aria-selected="false">Admins</a>
+          </li>
+        </ul>
+        <div class="spinner-container">
+          <div class="spinner-border text-primary spinner" role="status">
+            <span class="sr-only">Chargement...</span>
+          </div>
+        </div>
+        <div class="tab-content">
+          <ul id="user-list" class="list-group tab-pane fade show active" role="tabpanel" aria-labelledby="users-tab">
+            <!-- La liste des utilisateurs sera insérée ici dynamiquement -->
+          </ul>
+          <ul id="admin-list" class="list-group tab-pane fade" role="tabpanel" aria-labelledby="admins-tab">
+            <!-- La liste des administrateurs sera insérée ici dynamiquement -->
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item col-6" role="presentation">
+            <a class="nav-link active text-center" id="messages-tab" data-bs-toggle="tab" href="#messages" role="tab" aria-controls="messages" aria-selected="true">Messages</a>
+          </li>
+          <li class="nav-item col-6" role="presentation">
+            <a class="nav-link text-center" id="notifications-tab" data-bs-toggle="tab" href="#notifications" role="tab" aria-controls="notifications" aria-selected="false">Notifications</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div id="messages" class="tab-pane fade show active" role="tabpanel" aria-labelledby="messages-tab">
+            <div id="chat-messages" class="row">
+              <!-- Les messages seront insérés ici dynamiquement -->
+            </div>
+          </div>
+          <div id="notifications" class="tab-pane fade" role="tabpanel" aria-labelledby="notifications-tab">
+            <div id="user-notifications" class="row">
+              <!-- Les notifications seront insérées ici dynamiquement -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+        // Affiche le spinner au début
+        $('.spinner').show();
+
+        // Récupère la liste des utilisateurs depuis l'API
+        $.get('/api/admin/users-by-role?role=User', function (users) {
+            window.usersMap = new Map();
+            $('#user-list').empty(); // S'assurer que la liste est vide
+            users.forEach(user => {
+                console.log(`User: ${user.prenom} ${user.nom} (ID: ${user.id})`);
+                window.usersMap.set(user.id, user);
+                $('#user-list').append(`<li class="list-group-item" data-user-id="${user.id}"><img class="rounded-circle me-1" src="${'/uploads/profil/' + user.photoUrl}" height="50"> ${user.prenom} ${user.nom}</li>`);
+            });
+            // Masque le spinner après le chargement des utilisateurs
+            $('.spinner').hide();
+        });
+
+        // Récupère la liste des administrateurs depuis l'API
+        $.get('/api/admin/users-by-role?role=Admin', function (admins) {
+            window.adminsMap = new Map();
+            $('#admin-list').empty(); // S'assurer que la liste est vide
+            admins.forEach(admin => {
+                console.log(`Admin: ${admin.prenom} ${admin.nom} (ID: ${admin.id})`);
+                window.adminsMap.set(admin.id, admin);
+                $('#admin-list').append(`<li class="list-group-item" data-user-id="${admin.id}"><img class="rounded-circle me-1" src="${'/uploads/profil/' + admin.photoUrl}" height="50"> ${admin.prenom} ${admin.nom}</li>`);
+            });
+        });
+
+        // Gestion des clics sur un utilisateur ou un administrateur
+        $('#user-list, #admin-list').on('click', 'li', function () {
+            // Supprime la classe 'selected-item' de tous les éléments
+            $('#user-list .list-group-item, #admin-list .list-group-item').removeClass('selected-item');
+
+            // Ajoute la classe 'selected-item' à l'élément cliqué
+            $(this).addClass('selected-item');
+
+            const userId = $(this).data('user-id');
+            fetchMessages(userId);
+            fetchNotifications(userId);
+        });
+
+        // Show/hide messages and notifications based on the selected tab
+        $('#myTab a').on('click', function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+
+        // Show/hide user and admin list based on the selected tab
+        $('#userAdminTab a').on('click', function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+
+            if ($(this).attr('id') === 'users-tab') {
+                $('#user-list').show();
+                $('#admin-list').hide();
+            } else if ($(this).attr('id') === 'admins-tab') {
+                $('#user-list').hide();
+                $('#admin-list').show().addClass('show active');
+            }
+        });
+
+        // Initial load: show user list, hide admin list
+        $('#user-list').show();
+        $('#admin-list').hide();
+    });
+
+    function fetchMessages(userId) {
+        $.get(`/api/admin/messages/chats?userId=${userId}`, function (data) {
+            $('#chat-messages').empty();
+            if (data.length === 0) {
+                $('#chat-messages').html(`
+                  <div class="no-data">
+                    <i class="fas fa-inbox"></i>
+                    <p>Pas de messages</p>
+                  </div>
+                `);
+            } else {
+                data.forEach(message => {
+                    const fromUser = window.usersMap.get(message.fromUserId) || window.adminsMap.get(message.fromUserId);
+                    const toUser = window.usersMap.get(message.toUserId) || window.adminsMap.get(message.toUserId);
+                    const chatCard = `
+                    <div class="col-md-12 mb-3">
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title">Discussion entre ${fromUser.prenom} ${fromUser.nom} et ${toUser.prenom} ${toUser.nom}</h5>
+                          <h6 class="card-subtitle mb-2 text-muted">Voiture: ${message.carBrand} ${message.carModel}</h6>
+                          <img src="${message.carImage}" class="card-img-top" alt="Image de la voiture">
+                          <p class="card-text">${message.content}</p>
+                          <p class="card-text"><small class="text-muted">Envoyé le ${message.sentAt}</small></p>
+                        </div>
+                      </div>
+                    </div>`;
+                    $('#chat-messages').append(chatCard);
+                });
+            }
+            $('#chat-messages').show();
+            $('#user-notifications').hide();
+        });
+    }
+
+    function fetchNotifications(userId) {
+        $.get(`/api/admin/messages/notifications?userId=${userId}`, function (data) {
+            $('#user-notifications').empty();
+            if (data.length === 0) {
+                $('#user-notifications').html(`
+                  <div class="no-data">
+                    <i class="fas fa-bell"></i>
+                    <p>Pas de notifications</p>
+                  </div>
+                `);
+            } else {
+                data.forEach(notification => {
+                    $('#user-notifications').append(`
+                      <div class="col-md-12 mb-3">
+                        <div class="card">
+                          <div class="card-body">
+                            <p class="card-text">${notification.message}</p>
+                          </div>
+                        </div>
+                      </div>
+                    `);
+                });
+            }
+            $('#user-notifications').show();
+            $('#chat-messages').hide();
+        });
+    }
+  </script>
+
+  <!-- Font Awesome for icons (optional, you can use any icon library) -->
+</div>
+</body>
+</html>

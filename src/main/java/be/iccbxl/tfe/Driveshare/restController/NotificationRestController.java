@@ -1,6 +1,6 @@
 package be.iccbxl.tfe.Driveshare.restController;
 
-import be.iccbxl.tfe.Driveshare.DTO.CarMapper;
+import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.DTO.NotificationDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Notification;
@@ -10,7 +10,6 @@ import be.iccbxl.tfe.Driveshare.service.serviceImpl.EmailService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.NotificationService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -20,7 +19,6 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class NotificationRestController {
@@ -68,7 +66,7 @@ public class NotificationRestController {
 
 
         // Convertir la notification en DTO pour l'envoyer au client
-        return CarMapper.toDTO(savedNotification);
+        return MapperDTO.toNotificationDTO(savedNotification);
     }
 
 

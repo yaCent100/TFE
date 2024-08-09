@@ -36,7 +36,8 @@ public class CarDTO {
     private User user;
     private String offre  = "standard";
 
-    private PriceDTO price; // Inclure le prix
+    private PriceDTO price = new PriceDTO(); //// Inclure le prix
+
 
     // Nouveaux champs pour le jour, mois et année de la première immatriculation
     private Integer day;
@@ -85,6 +86,8 @@ public class CarDTO {
 
     private Boolean online;
 
+
+
     public CarDTO(Long id, String brand, String model, String s, double distance, String url, String adresse, int codePostal, String locality, List<FeatureDTO> featureDTOs) {
     }
 
@@ -96,7 +99,7 @@ public class CarDTO {
         return null;
     }
 
-    public CarDTO(Long id, String marque, String modele, String modeReservation, Double middlePrice, String url, String adresse, int codePostal, String locality, String fuelType) {
+    public CarDTO(Long id, String marque, String modele, String modeReservation, String url, String adresse, int codePostal, String locality, String fuelType) {
         this.id = id;
         this.brand = marque;
         this.model = modele;
@@ -106,6 +109,8 @@ public class CarDTO {
         this.codePostal = codePostal;
         this.locality = locality;
         this.fuelType = fuelType;
+        this.price = new PriceDTO(); // Initialisation par défaut
+
     }
 
     public CarDTO() {}

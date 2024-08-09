@@ -14,4 +14,9 @@ public interface EvaluationRepository extends CrudRepository<Evaluation, Long> {
 
     @Query(value = "SELECT e.reservation.car FROM Evaluation e WHERE e.note = 5")
     List<Car> findTop4CarsWithFiveStarRating();
+
+    boolean existsByReservationId(Long reservationId);
+
+    @Query("SELECT e FROM Evaluation e JOIN e.reservation r JOIN r.car c ORDER BY c.id, e.createdAt DESC")
+    List<Evaluation> findAllGroupedByCar();
 }
