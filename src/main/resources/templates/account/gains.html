@@ -2,138 +2,85 @@
 <html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
 <head>
   <meta charset="UTF-8">
-  <title>Mon Compte</title>
+  <title>Mon Compte - Mes Gains</title>
   <style>
-    .container {
-      margin-top: 20px;
-    }
-
-    .search-form {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 40px;
-    }
-
-    .input-container {
-      margin: 0 10px;
-    }
-
-    .btn-success {
-      background-color: #28a745;
-      border-color: #28a745;
-    }
-
-    .btn-success:hover {
-      background-color: #218838;
-      border-color: #1e7e34;
-    }
-
-    .w100p {
-      width: 100%;
-    }
-
-    .mgb-30 {
-      margin-bottom: 30px;
-    }
-
-    .mgb-40 {
-      margin-bottom: 40px;
-    }
-
-    .mgr-10 {
-      margin-right: 10px;
-    }
-
-    .pd-10 {
-      padding: 10px;
-    }
-
-    .h45 {
-      height: 45px;
-    }
-
-    .bold {
-      font-weight: bold;
-    }
-
-    .no-margin {
-      margin: 0;
-    }
-
-    .no-padding {
-      padding: 0;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .alert {
-      margin-top: 20px;
-    }
+    .container { margin-top: 20px; }
+    .car-image { width: 100px; height: auto; }
+    .search-form { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; }
+    .input-container { margin: 0 10px; }
+    .btn-success { background-color: #28a745; border-color: #28a745; }
+    .btn-success:hover { background-color: #218838; border-color: #1e7e34; }
+    .w100p { width: 100%; }
+    .mgb-30 { margin-bottom: 30px; }
+    .mgb-40 { margin-bottom: 40px; }
+    .mgr-10 { margin-right: 10px; }
+    .pd-10 { padding: 10px; }
+    .h45 { height: 45px; }
+    .bold { font-weight: bold; }
+    .no-margin { margin: 0; }
+    .no-padding { padding: 0; }
+    .hidden { display: none; }
+    .alert { margin-top: 20px; }
   </style>
 </head>
 <body>
 
 <div layout:fragment="content">
-
   <div th:replace="account/fragments/account-header"></div>
 
   <div class="container">
-    <div>
-      <a href="/account">Précédent</a>
-    </div>
+    <div><a href="/account">Précédent</a></div>
     <div class="container pdb-20">
       <h1 class="text-main text-center mgb-30">Récapitulatif de mes gains</h1>
       <div class="header-search">
         <!-- search-box -->
         <form id="date-form" class="search-form" th:action="@{/account/gains}" method="post">
           <p class="mgr-10 pd-10">Du</p>
-          <div class="input-container">
-            <input type="date" class="form-control" placeholder="Date de début" name="start_date">
-          </div>
+          <div class="input-container"><input type="date" class="form-control" placeholder="Date de début" name="start_date"></div>
           <p class="mgr-10 pd-10">Au</p>
-          <div class="input-container">
-            <input type="date" class="form-control" placeholder="Date de fin" name="end_date">
-          </div>
-          <div class="input-container">
-            <button type="submit" class="btn btn-success bold h45">Rechercher</button>
-          </div>
-        </form>      </div>
-
-      <div th:if="${#lists.isEmpty(payments)}">
-        <h3 class="text-main text-center">Vous n'avez pas de location pour la période sélectionnée</h3>
+          <div class="input-container"><input type="date" class="form-control" placeholder="Date de fin" name="end_date"></div>
+          <div class="input-container"><button type="submit" class="btn btn-success bold h45">Rechercher</button></div>
+        </form>
       </div>
 
-      <div th:if="${!#lists.isEmpty(payments)}">
-        <table class="table table-striped">
+      <div th:if="${#lists.isEmpty(gains)}">
+        <h3 class="text-main text-center">Vous n'avez pas de gains pour la période sélectionnée</h3>
+      </div>
+
+      <div th:if="${!#lists.isEmpty(gains)}">
+        <table id="gains-table" class="display table table-striped text-center">
           <thead>
           <tr>
-            <th>Status</th>
-            <th>Mode de paiement</th>
-            <th>Prix Total</th>
-            <th>Date de création</th>
+            <th>Voiture</th>
+            <th>Dates de réservation</th>
+            <th>Votre gain</th>
+            <th>Statut du versement</th>
           </tr>
           </thead>
           <tbody>
-          <tr th:each="payment : ${payments}">
-            <td th:text="${payment.statut}">Payé</td>
-            <td th:text="${payment.paiementMode}">Carte bancaire</td>
-            <td th:text="${payment.prixTotal}">350</td>
-            <td th:text="${payment.createdAt}">2024-06-18</td>
+          <tr th:each="gain : ${gains}">
+            <td>
+              <div th:if="${gain.carImage != null}">
+                <img th:src="@{'/uploads' + ${gain.carImage}}" alt="Car Image" class="car-image">
+              </div>
+              <p th:text="${gain.carBrand} + ' ' + ${gain.carModel}"></p>
+            </td>
+            <td th:text="${gain.debutLocation} + ' au ' + ${gain.finLocation}"></td>
+            <td th:text="${gain.montantGain} + ' €'"></td>
+            <td th:text="${gain.statut}"></td>
           </tr>
           </tbody>
         </table>
       </div>
-
     </div>
-
   </div>
-
 </div>
 
-
+<script>
+  $(document).ready(function() {
+    $('#gains-table').DataTable();
+  });
+</script>
 
 </body>
 </html>

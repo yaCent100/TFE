@@ -25,9 +25,10 @@
                                 <div class="row">
                                     <div class="col-lg-12 mt-2">
                                         <div class="owner-picture text-center">
-                                            <img alt="profil" class="userPicture" th:src="${user.photoUrl != null} ? ${user.photoUrl} : '/uploads/profil/defaultPhoto.png'" />
+                                            <img alt="profil" class="userPicture" th:src="${user.photoUrl != null} ? '/uploads/profil/' + ${user.photoUrl} : '/uploads/profil/defaultPhoto.png'" />
                                         </div>
                                     </div>
+                                    <input type="hidden" id="userId" th:value="${user.id}" />
                                     <input type="file" name="picture" id="pictureInput" accept="image/jpeg,image/jpg,image/png" hidden>
                                     <div class="text-center mt-2">
                                         <a class="changePicture" href="#" id="editPictureLink">
@@ -252,6 +253,23 @@
                 }, 4000);
             }
         });
+
+
+
+         document.getElementById('editPictureLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('pictureInput').click();
+    });
+
+
+
+ document.getElementById('editPictureLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('pictureInput').click();
+    });
+
+
+
     </script>
 
 </body>

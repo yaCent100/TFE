@@ -1,5 +1,6 @@
 package be.iccbxl.tfe.Driveshare.repository;
 
+import be.iccbxl.tfe.Driveshare.DTO.PaymentDTO;
 import be.iccbxl.tfe.Driveshare.model.Payment;
 import be.iccbxl.tfe.Driveshare.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +16,7 @@ import java.util.List;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT p FROM Payment p JOIN p.reservation r JOIN r.car c WHERE c.user = :user AND p.createdAt BETWEEN :startDate AND :endDate")
-    List<Payment> findByUserAndCreatedAtBetween(@Param("user") User user, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    List<Payment> findByUserAndCreatedAtBetween(@Param("user") User user, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
 
 
@@ -30,6 +31,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     // Obtenir les revenus par mois
     @Query("SELECT MONTH(p.createdAt), YEAR(p.createdAt), SUM(p.prixTotal) FROM Payment p GROUP BY MONTH(p.createdAt), YEAR(p.createdAt) ORDER BY YEAR(p.createdAt), MONTH(p.createdAt)")
     List<Object[]> getRevenuePerMonth();
+
+
+
 
 }
 

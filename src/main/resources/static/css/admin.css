@@ -177,3 +177,30 @@ a.sidebar-link:hover {
 }
 
 @media (min-width: 768px) {}
+
+
+
+//----------------------USERS--------------------
+
+.user-table{
+    padding: 30px;
+    border: 1px solid white;
+    background-color: white;
+    border-radius: 10px;
+}
+.document-table{
+    padding: 30px;
+    border: 1px solid white;
+    background-color: white;
+    border-radius: 10px;
+}
+.permission-table{
+    padding: 30px;
+    border: 1px solid white;
+    background-color: white;
+    border-radius: 10px;
+}
+.titre-table{
+    font-weight: bold;
+}
+

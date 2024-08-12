@@ -458,3 +458,8 @@ document.addEventListener("DOMContentLoaded", () => {
         nosLocationsTab.addEventListener('click', loadAllCars);
     }
 });
+
+
+
+
+

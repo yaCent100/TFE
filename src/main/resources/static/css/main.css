@@ -127,16 +127,57 @@ nav {
      height: 100px;
      margin-right: 8px; /* Espace entre l'icône et le texte */
      vertical-align: middle; /* Alignement vertical de l'icône */
-         margin-bottom: 5px;
+     margin-bottom: 5px;
+     background-color: #DFE7EC;
+     padding: 10px;
+     border-radius: 50%;
+     border: 1px solid black;
  }
  .category-link {
      text-align: center;
  }
- .category-link-text{
-    font-size: 20px;
-    text-decoration: none;
+ .category-link-text {
+     display: inline-block;
+     font-size: 20px;
+     font-weight: bold;
+     position: relative;
+     color: #000;
+     animation: wavy 1s infinite ease-in-out;
+       font-size: 20px;
+         text-decoration: none;
+              font-size: 24px;
+              fill: #000; /* Color of the text */
+ }
+ .category-link-text {
 
  }
+
+ .curved-text-container {
+     text-align: center; /* Centering the SVG container */
+ }
+
+.car-link{
+    border-radius: 8px;
+    box-shadow: 0 8px 16px 0 rgba(144, 155, 155, 0.04);
+    border: solid 0.5px rgba(151, 162, 162, 0.2);
+    padding: 10px;
+    margin-right: 25px;
+        text-decoration: none;
+        color:black;
+}
+.car-item{
+    text-decoration: none;
+
+}
+
+.car-link img{
+    border-radius: 8px;
+    width: 220px;
+    height: 130px;
+}
+
+
+
  .home-page-link {
      margin: 10px;
  }
@@ -146,29 +187,63 @@ nav {
  }
 
 .insurance-home{
-   margin-top: 80px;
+   margin-top: 80px !important;
    background-color: #DFE7EC;
+   min-height:700px;
+   border-top-right-radius: 130px;
+ }
+ .insurance-card{
+     border-radius: 8px;
+     box-shadow: 0 8px 16px 0 rgba(144, 155, 155, 0.04);
+     border: solid 1px rgba(151, 162, 162, 0.2);
+     background-color: #ffffff;
+     max-width: 450px;
+     margin-bottom: 30px;
+     padding: 15px;
+     width: 70%;
  }
 
+ .insurance-card-title{
+    font-weight: bold;
+ }
+
+.insurance-card-details {
+    font-size: 14px;
+    font-style: italic;
+}
+
+.btn-home-1{
+    background-color: #00BFFF !important;
+    color: white !important;
+    border-radius: 10px !important;
+}
+
+.btn-home-2{
+    border-radius: 10px !important;
+    background-color: #9eabb3 !important;
+    color: white !important;
+}
+
 .custom-search-button {
-  background-color: #354C6F; /* Couleur de fond */
-  color: #ffffff; /* Couleur du texte */
-  border: 2px solid #354C6F; /* Bordure */
-  border-radius: 10px; /* Bordure arrondie */
+  background-color: #00BFFF !important; /* Couleur de fond */
+  color: #ffffff !important; /* Couleur du texte */
+  border-radius: 10px !important; /* Bordure arrondie */
   padding-inline: 25px;
-  font-size: 16px; /* Taille de la police */
-}
-
-.custom-search-button:hover {
-  background-color: #2E425C; /* Couleur de fond au survol */
-  border-color: #2E425C; /* Bordure au survol */
+  font-size: 16px !important; /* Taille de la police */
 }
 
 
-.zoom-img:hover {
-    transform: scale(1.1); /* Zoom effect on image hover */
+.left-panel{
+    width: 40%;
+    margin-left: 150px;
+    padding:30px;
 }
 
+.right-panel{
+  width: 30%;
+    margin-right: 150px;
+    padding:30px;
+}
 /* CARS */
 
 .spinner-border {
@@ -190,16 +265,8 @@ nav {
     margin-bottom: 20px;
 }
 
-.card-img-top {
-      height: 250px; /* Taille fixe pour les images */
-      width:250px
-      object-fit: cover; /* Assurez-vous que les images couvrent toute la carte */
-    }
 
-.card-link {
-    text-decoration: none;
-    color:black;
-}
+
 
 .card:hover {
     border: 2px solid #354C6F; /* Couleur bleue par exemple */

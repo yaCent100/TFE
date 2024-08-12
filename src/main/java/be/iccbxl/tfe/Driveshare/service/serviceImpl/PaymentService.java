@@ -3,29 +3,21 @@ package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.DTO.PaymentDTO;
 import be.iccbxl.tfe.Driveshare.config.StripeConfig;
-import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Payment;
-import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.repository.PaymentRepository;
 import be.iccbxl.tfe.Driveshare.repository.ReservationRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
-import com.stripe.net.RequestOptions;
-import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.PaymentIntentCreateParams;
-import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,7 +43,8 @@ public class PaymentService {
         List<Payment> payments = paymentRepository.findAll();
         return payments.stream().map(MapperDTO::toPaymentDTO).collect(Collectors.toList());
     }
-    public List<Payment> getPaymentsForUser(User user, LocalDate startDate, LocalDate endDate) {
+    public List<Payment> getPaymentsForUser(User user, LocalDateTime startDate, LocalDateTime endDate) {
+
         System.out.println("Recherche de paiements pour l'utilisateur : " + user.getEmail());
         System.out.println("Date de début : " + startDate);
         System.out.println("Date de fin : " + endDate);
@@ -116,6 +109,12 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(id).orElseThrow(() -> new RuntimeException("Payment not found"));
         payment.setStatut(paymentDTO.getStatut());
         paymentRepository.save(payment);
+    }
+
+
+    public Payment getPaymentById(Long paymentId) {
+        return paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new EntityNotFoundException("Payment not found with id " + paymentId));
     }
 }
 

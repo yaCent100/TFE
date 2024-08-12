@@ -12,16 +12,20 @@
         <div class="container-fluid">
             <div class="d-flex align-items-center">
                 <a class="navbar-brand p-0 m-0" th:href="@{/home}">
-                    <img th:src="@{/images/DriveShareLogo.png}" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+                    <img th:src="@{/images/DriveShareLogoBlanc.png}" alt="Logo" width="200" class="d-inline-block align-text-top">
                 </a>
+                <div class="vr mx-3 fs-bold" style="height: 30px; background-color: white;"></div> <!-- Barre verticale -->
+                <a class="text-white" th:href="@{/faq}" style="text-decoration: none;width: 2px;
+                margin-top: auto;">FAQ</a>
             </div>
+
             <div class="d-flex align-items-center">
                 <a class="navbar-brand text-light p-0 m-0 me-3" href="/cars" id="nosLocationsTab">Nos Locations</a>
 
-                <div th:if="${#authorization.expression('isAnonymous()')}">
-                    <a th:href="@{/login}">Se connceter</a>
+                <div th:if="${#authorization.expression('isAnonymous()')}" class="me-2">
+                    <a th:href="@{/login}">Se connecter</a>
                 </div>
-                <div th:if="${#authorization.expression('isAuthenticated()')}">
+                <div th:if="${#authorization.expression('isAuthenticated()')}" class="me-2">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <div>
@@ -36,9 +40,15 @@
                     </div>
                 </div>
 
-                <a class="navbar-brand-custom" th:href="@{/whyRent}">
-                    Louez votre voiture
-                </a>
+                <div class="navbar-nav ml-auto d-flex align-items-center">
+                    <a th:href="@{|?lang=fr|}" class="nav-link p-0" style="text-decoration: none; color: white;">
+                        <img th:src="@{/images/fr.png}" alt="Français" width="30" class="rounded-circle" style="display: inline-block; vertical-align: middle;">
+                    </a>
+                    <a th:href="@{|?lang=en|}" class="nav-link p-0 ml-2" style="text-decoration: none; color: white;">
+                        <img th:src="@{/images/en.png}" alt="English" width="30" class="rounded-circle" style="display: inline-block; vertical-align: middle;">
+                    </a>
+                </div>
+
             </div>
         </div>
     </nav>

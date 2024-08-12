@@ -14,6 +14,7 @@
             margin-bottom: 20px;
             text-align: right;
         }
+
     </style>
 </head>
 <body>
@@ -22,7 +23,7 @@
     <div class="add-user-btn">
         <button class="btn btn-success" data-toggle="modal" data-target="#addUserModal">Add a New User</button>
     </div>
-    <div id="users" class="m-2 text-center">
+    <div id="users" class="m-2 text-center user-table">
         <h4 class="text-center">Gestion des Utilisateurs</h4>
         <table id="usersTable" class="display nowrap">
             <thead>
@@ -33,7 +34,6 @@
                 <th>Email</th>
                 <th>Adresse</th>
                 <th>Tel</th>
-                <th>Date de Création</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -45,7 +45,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-7">
-                <div id="documents" class="table-container m-2 mt-4 text-center">
+                <div id="documents" class="m-2 mt-4 text-center document-table">
                     <h4 class="text-center">Gestion des Documents</h4>
                     <table id="documentsTable" class="display nowrap">
                         <thead>
@@ -64,7 +64,7 @@
                 </div>
             </div>
             <div class="col-lg-5">
-                <div id="permissions" class="table-container m-2 mt-4 text-center">
+                <div id="permissions" class="m-2 mt-4 text-center permission-table">
                     <h4 class="text-center">Gestion des Permissions</h4>
                     <table id="permissionsTable" class="display nowrap">
                         <thead>

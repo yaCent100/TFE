@@ -30,6 +30,8 @@ public class FileStorageService implements FileStorageServiceI {
     @Value("${file.upload-dir.icons}")
     private String iconsDir;
 
+    @Value("${file.upload-dir.profil}")
+    private String profilDir;
     @Value("${file.upload-dir}")
     private String uploadDir;
 
@@ -53,6 +55,9 @@ public class FileStorageService implements FileStorageServiceI {
                 break;
             case "icons":
                 uploadDir = iconsDir;
+                break;
+            case "profil":
+                uploadDir = profilDir;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid directory: " + directory);

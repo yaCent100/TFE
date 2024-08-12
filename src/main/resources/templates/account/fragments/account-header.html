@@ -1,13 +1,13 @@
 <div layout:fragment="account-header">
     <div class="first-menu" style="background-color: #8EAAB3;">
         <p class="nav-profil text-center">
-            <a th:href="@{/account}" th:classappend="${requestURI.contains('/account') && !requestURI.contains('/account/cars') ? 'active' : ''}">
+            <a th:href="@{/account}" th:classappend="${requestURI != null && requestURI.contains('/account') && !requestURI.contains('/account/cars') ? 'active' : ''}">
                 <i class="fa-regular fa-file-lines nbsp-large"></i>Mon compte
             </a>
-            <a th:href="@{/account/cars}" th:classappend="${requestURI.contains('/account/cars') ? 'active' : ''}">
+            <a th:href="@{/account/cars}" th:classappend="${requestURI != null && requestURI.contains('/account/cars') ? 'active' : ''}">
                 <i class="fa fa-car nbsp-large"></i>Mes véhicules
             </a>
-            <a th:href="@{/account/reservations}" th:classappend="${requestURI.contains('/account/reservations') ? 'active' : ''}">
+            <a th:href="@{/account/reservations}" th:classappend="${requestURI != null && requestURI.contains('/account/reservations') ? 'active' : ''}">
                 <i class="fa-regular fa-calendar-check nbsp-large"></i>Mes réservations
             </a>
         </p>

@@ -65,14 +65,28 @@
           console.log("reservationStartDate: ", reservationStartDate);
           console.log("reservationEndDate: ", reservationEndDate);
 
-          window.redirectToPayment = function() {
-              if (!reservationStartDate || !reservationEndDate) {
-                  alert('Les dates de début et de fin sont incorrectes.');
-                  return;
-              }
-              const url = `/reservation/payment/${reservationId}?dateDebut=${reservationStartDate}&dateFin=${reservationEndDate}`;
-              window.location.href = url;
-          }
+      function formatDateString(dateStr) {
+          const dateObj = new Date(dateStr);
+          return dateObj.toISOString().split('T')[0]; // Formate en yyyy-MM-dd
+      }
+
+    window.redirectToPayment = function() {
+        const reservationId = document.getElementById('reservationId').value;
+        let reservationStartDate = document.getElementById('reservationStartDate').value;
+        let reservationEndDate = document.getElementById('reservationEndDate').value;
+
+        if (!reservationStartDate || !reservationEndDate) {
+            alert('Les dates de début et de fin sont incorrectes.');
+            return;
+        }
+
+        // Formate les dates
+        reservationStartDate = formatDateString(reservationStartDate);
+        reservationEndDate = formatDateString(reservationEndDate);
+
+        const url = `/reservation/payment/${reservationId}?dateDebut=${encodeURIComponent(reservationStartDate)}&dateFin=${encodeURIComponent(reservationEndDate)}`;
+        window.location.href = url;
+    }
       });
   </script>
 </head>
@@ -115,6 +129,11 @@
               </div>
             </div>
           </div>
+
+          <!-- Bouton de réclamation -->
+          <div class="mt-4">
+            <button id="claim-button" class="btn btn-warning w-100" onclick="openClaimModal()">Faire une réclamation</button>
+          </div>
         </div>
         <div class="col-lg-4 col-sm-12">
           <div class="car-reservation-card">
@@ -134,8 +153,7 @@
               <hr class="bg-light fw-bold">
             </div>
           </div>
-
-          <!-- Bouton d'annulation -->
+          <!-- Bouton pour télécharger le contrat de location -->
           <div class="mt-4" th:if="${reservationStatus == 'CONFIRMED'}">
             <p>Détails de la location</p>
             <div>
@@ -151,12 +169,16 @@
                 </tr>
                 <tr>
                   <td>Reste à payer</td>
-                  <td th:text="' 0 €'"></td>
+                  <td th:text="'0 €'"></td>
                 </tr>
                 </tbody>
               </table>
             </div>
+            <!-- Existing button for cancelling the reservation -->
             <button id="cancel-button" class="btn btn-danger w-100" th:onclick="'cancelReservation(event, ' + ${reservationId} + ')'">Annuler la réservation</button>
+
+            <!-- New button for downloading the contract -->
+            <a href="#" class="btn btn-primary w-100 mt-2" th:href="'/api/download-contract/' + ${reservationId}">Télécharger le contrat de location</a>
           </div>
 
           <!-- Bouton de paiement -->
@@ -183,9 +205,10 @@
             <a href="javascript:void(0);" class="btn btn-success w-100" onclick="redirectToPayment()">Payer</a>
           </div>
 
-          <!-- Bouton pour laisser une évaluation -->
-          <div class="mt-4" th:if="${reservationStatus == 'FINISHED' and !evaluationExists}">
-            <button id="leave-review-button" class="btn btn-info w-100" onclick="openReviewModal()">Laisser une évaluation</button>
+          <div class="mt-4" th:if="${reservationStatus == 'CONFIRMED'} and ${isOwner}">
+            <a href="#" class="btn btn-primary w-100 mt-2" th:href="'/api/download-contract/' + ${reservationId}">
+              Télécharger le contrat de location
+            </a>
           </div>
         </div>
       </div>
@@ -228,60 +251,81 @@
     </div>
   </div>
 
+  <!-- Modal pour faire une réclamation -->
+  <div class="modal fade" id="claimModal" tabindex="-1" aria-labelledby="claimModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="claimModalLabel">Faire une réclamation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="claim-form">
+            <div class="mb-3">
+              <label for="claimMessage" class="form-label">Description de la réclamation</label>
+              <textarea id="claimMessage" class="form-control" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     function openReviewModal() {
         var reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
         reviewModal.show();
     }
 
-   document.getElementById('review-form').addEventListener('submit', function(event) {
-    event.preventDefault();
+    document.getElementById('review-form').addEventListener('submit', function(event) {
+        event.preventDefault();
 
-    var rating = document.querySelector('input[name="rating"]:checked')?.value;
-    var comment = document.getElementById('comment').value;
-    var reservationId = document.getElementById('reservationId').value;
+        var rating = document.querySelector('input[name="rating"]:checked')?.value;
+        var comment = document.getElementById('comment').value;
+        var reservationId = document.getElementById('reservationId').value;
 
-    if (!rating || !comment) {
-        alert("Veuillez remplir tous les champs.");
-        return;
-    }
-
-    var review = {
-        note: rating,
-        avis: comment,
-        reservationId: reservationId
-    };
-
-    fetch('/api/review', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(review)
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message || 'Something went wrong');
-            });
+        if (!rating || !comment) {
+            alert("Veuillez remplir tous les champs.");
+            return;
         }
-        return response.json();
-    })
-    .then(data => {
-        if (data && data.id) {
-            alert('Votre évaluation a été envoyée avec succès.');
-            var reviewModal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
-            reviewModal.hide();
-            document.getElementById('leave-review-button').style.display = 'none';
-        } else {
-            throw new Error('Erreur lors de l\'enregistrement de l\'évaluation.');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        alert('Une erreur s\'est produite lors de l\'envoi de votre évaluation : ' + error.message);
+
+        var review = {
+            note: rating,
+            avis: comment,
+            reservationId: reservationId
+        };
+
+        fetch('/api/review', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(review)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(error => {
+                    throw new Error(error.message || 'Something went wrong');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.id) {
+                alert('Votre évaluation a été envoyée avec succès.');
+                var reviewModal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
+                reviewModal.hide();
+                document.getElementById('leave-review-button').style.display = 'none';
+            } else {
+                throw new Error('Erreur lors de l\'enregistrement de l\'évaluation.');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Une erreur s\'est produite lors de l\'envoi de votre évaluation : ' + error.message);
+        });
     });
-});
 
     function cancelReservation(event, reservationId) {
         event.preventDefault();
@@ -314,10 +358,59 @@
             });
         }
     }
+
+    function openClaimModal() {
+        var claimModal = new bootstrap.Modal(document.getElementById('claimModal'));
+        claimModal.show();
+    }
+
+    document.getElementById('claim-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var message = document.getElementById('claimMessage').value;
+        var reservationId = document.getElementById('reservationId').value;
+
+        if (!message) {
+            alert("Veuillez remplir tous les champs.");
+            return;
+        }
+
+        var claim = {
+            message: message,
+            reservationId: reservationId,
+            fromUserId: document.getElementById('fromUserId').value // ID de l'utilisateur qui fait la réclamation
+        };
+
+        fetch('/api/notifications/complaint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(claim)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(error => {
+                    throw new Error(error.message || 'Une erreur s\'est produite');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.length > 0) {
+                alert('Votre réclamation a été envoyée avec succès.');
+                var claimModal = bootstrap.Modal.getInstance(document.getElementById('claimModal'));
+                claimModal.hide();
+            } else {
+                throw new Error('Erreur lors de l\'envoi de la réclamation.');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Une erreur s\'est produite lors de l\'envoi de votre réclamation : ' + error.message);
+        });
+    });
   </script>
 </div>
-
-
-
 </body>
 </html>

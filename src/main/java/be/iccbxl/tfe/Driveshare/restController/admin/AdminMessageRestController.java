@@ -4,14 +4,12 @@ import be.iccbxl.tfe.Driveshare.DTO.ChatMessageDTO;
 import be.iccbxl.tfe.Driveshare.DTO.ConversationDTO;
 import be.iccbxl.tfe.Driveshare.DTO.NotificationDTO;
 import be.iccbxl.tfe.Driveshare.model.ChatMessage;
+import be.iccbxl.tfe.Driveshare.model.Notification;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.ChatMessageService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 

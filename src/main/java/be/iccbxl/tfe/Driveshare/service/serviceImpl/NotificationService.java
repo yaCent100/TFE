@@ -2,15 +2,18 @@ package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.DTO.NotificationDTO;
+import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
+import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Notification;
+import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.repository.NotificationRepository;
 import be.iccbxl.tfe.Driveshare.service.NotificationServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +21,14 @@ public class NotificationService implements NotificationServiceI {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private CarService carService;
+
+    @Autowired
+    private ReservationService reservationService;
 
     public Notification save(Notification notification) {
         return notificationRepository.save(notification);
@@ -149,6 +160,69 @@ public class NotificationService implements NotificationServiceI {
 
         return html.toString();
     }
+
+
+    public List<NotificationDTO> createComplaintNotification(NotificationDTO notificationDTO) {
+        List<User> admins = userService.findByRole("ADMIN");
+
+        if (admins.isEmpty()) {
+            throw new RuntimeException("Aucun administrateur trouvé");
+        }
+
+        Reservation reservation = reservationService.getReservationById(notificationDTO.getReservationId());
+        if (reservation == null) {
+            throw new RuntimeException("Réservation non trouvée pour l'ID : " + notificationDTO.getReservationId());
+        }
+
+        Car car = reservation.getCar();
+        if (car == null) {
+            throw new RuntimeException("Aucune voiture associée à cette réservation");
+        }
+
+        Set<Long> processedAdmins = new HashSet<>(); // Utiliser un Set pour stocker les IDs d'administrateurs déjà traités
+
+        List<NotificationDTO> notifications = new ArrayList<>();
+        for (User admin : admins) {
+            if (!processedAdmins.contains(admin.getId())) { // Vérifiez si cet administrateur a déjà reçu la notification
+                Notification notification = new Notification();
+                notification.setFromUser(userService.getUserById(notificationDTO.getFromUserId()));
+                notification.setToUser(admin);
+                notification.setCar(car);
+                notification.setType("Réclamation");
+                notification.setMessage(notificationDTO.getMessage());
+                notification.setDateEnvoi(LocalDateTime.now());
+                notification.setLu(false);
+
+                // Convertir l'entité Notification en DTO
+                Notification savedNotification = notificationRepository.save(notification);
+                NotificationDTO notificationDTOResult = convertToDTO(savedNotification, reservation.getId());
+
+                notifications.add(notificationDTOResult);
+
+                processedAdmins.add(admin.getId()); // Ajoutez l'administrateur à l'ensemble des admins traités
+            }
+        }
+
+        return notifications;
+    }
+
+
+
+    private NotificationDTO convertToDTO(Notification notification, Long reservationId) {
+        NotificationDTO dto = new NotificationDTO();
+        dto.setMessage(notification.getMessage());
+        dto.setFromUserId(notification.getFromUser().getId());
+        dto.setToUserId(notification.getToUser().getId());
+        dto.setCarId(notification.getCar().getId());
+        dto.setType(notification.getType());
+        dto.setLu(notification.isLu());
+        dto.setReservationId(reservationId); // Ajoutez l'ID de la réservation au DTO
+        return dto;
+    }
+
+
+
+
 
 
 

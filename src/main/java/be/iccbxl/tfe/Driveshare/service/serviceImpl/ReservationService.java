@@ -9,6 +9,7 @@ import be.iccbxl.tfe.Driveshare.repository.CarRepository;
 import be.iccbxl.tfe.Driveshare.repository.ReservationRepository;
 import be.iccbxl.tfe.Driveshare.repository.UserRepository;
 import be.iccbxl.tfe.Driveshare.service.ReservationServiceI;
+import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
@@ -227,4 +228,17 @@ public class ReservationService implements ReservationServiceI {
         return reservationRepository.findByUser(user);
     }
 
+    public List<ReservationDTO> getUserGains(User user) {
+        List<ReservationDTO> reservations = reservationRepository.findByUser(user);
+
+        return reservations.stream()
+                .filter(reservation -> reservation.getPayment() != null && reservation.getPayment().getPrixPourUser() > 0)
+                .collect(Collectors.toList());
+    }
+
+    public ReservationDTO getReservationDetails(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new OpenApiResourceNotFoundException("Reservation not found"));
+        return MapperDTO.toReservationDTO(reservation);
+    }
 }

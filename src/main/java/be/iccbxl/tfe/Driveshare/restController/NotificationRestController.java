@@ -10,6 +10,7 @@ import be.iccbxl.tfe.Driveshare.service.serviceImpl.EmailService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.NotificationService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -96,6 +97,17 @@ public class NotificationRestController {
 
         return notificationService.renderNotificationsHtml(filteredNotifications, currentUser);
     }
+
+    @PostMapping("/api/notifications/complaint")
+    public ResponseEntity<List<NotificationDTO>> sendComplaintNotification(@RequestBody NotificationDTO notificationDTO) {
+        List<NotificationDTO> notifications = notificationService.createComplaintNotification(notificationDTO);
+        return ResponseEntity.ok(notifications);
+    }
+
+
+
+
+
 
 
 }

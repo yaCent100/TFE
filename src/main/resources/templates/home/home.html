@@ -43,7 +43,8 @@
       </div>
 
     </div>
-    <div class="row besoins text-center justify-content-center">
+    <div class="row besoins text-center justify-content-center" style=" padding-right: 100px;
+    padding-left: 100px;">
       <div class="besoins-container d-flex flex-row w-100 justify-content-between">
         <div class="besoins-content">
           <div class="besoins-item">
@@ -70,74 +71,137 @@
     </div>
 
   <section class="middle-home">
-<div class="d-flex justify-content-center">
-  <div>
-    <h2 class="fs32 medium text-center">🚗 Louez une voiture <span class="c-main">où que vous soyez à Bruxelles</span></h2>  </div>
-</div>
+
     <div class="d-flex flex-lg-row flex-column justify-content-center align-items-center mb-5">
       <div class="home-page-link">
         <a class="category-link d-flex flex-column align-items-center" href="#" data-category="Citadine">
           <img src="/icons/home-citadine.png" alt="Citadine Icon" class="category-icon">
-          <span class="category-link-text">Citadine</span>
+          <svg width="200" height="60" viewBox="10 50 200 60">
+            <path id="textPathCitadine" d="M 40 50 A 90 90 1 0 0 180 40" fill="transparent"/>
+            <text fill="#000" font-size="20" font-weight="bold" letter-spacing="5">
+              <textPath href="#textPathCitadine" startOffset="50%" text-anchor="middle">
+                Citadine
+              </textPath>
+            </text>
+          </svg>
         </a>
       </div>
       <div class="home-page-link">
         <a class="category-link d-flex flex-column align-items-center" href="#" data-category="Berline">
           <img src="/icons/home-berline.png" alt="Berline Icon" class="category-icon">
-          <span class="category-link-text">Berline</span>
+          <svg width="200" height="60" viewBox="10 50 200 60">
+            <path id="textPathBerline" d="M 40 50 A 90 90 1 0 0 180 40" fill="transparent"/>
+            <text fill="#000" font-size="20" font-weight="bold" letter-spacing="5">
+              <textPath href="#textPathBerline" startOffset="50%" text-anchor="middle">
+                Berline
+              </textPath>
+            </text>
+          </svg>
         </a>
       </div>
       <div class="home-page-link">
         <a class="category-link d-flex flex-column align-items-center" href="#" data-category="Familial">
           <img src="/icons/home-break.png" alt="Familial Icon" class="category-icon">
-          <span class="category-link-text">Familial</span>
+          <svg width="200" height="60" viewBox="10 50 200 60">
+            <path id="textPathFamilial" d="M 40 50 A 90 90 1 0 0 180 40" fill="transparent"/>
+            <text fill="#000" font-size="20" font-weight="bold" letter-spacing="5">
+              <textPath href="#textPathFamilial" startOffset="50%" text-anchor="middle">
+                Familial
+              </textPath>
+            </text>
+          </svg>
         </a>
       </div>
       <div class="home-page-link">
         <a class="category-link d-flex flex-column align-items-center" href="#" data-category="MonoSpace">
           <img src="/icons/home-monospace.png" alt="Monospace Icon" class="category-icon">
-          <span class="category-link-text">MonoSpace</span>
+          <svg width="200" height="60" viewBox="10 50 200 60">
+            <path id="textPathMonoSpace" d="M 40 50 A 90 90 1 0 0 180 40" fill="transparent"/>
+            <text fill="#000" font-size="17" font-weight="bold" letter-spacing="5">
+              <textPath href="#textPathMonoSpace" startOffset="50%" text-anchor="middle">
+                MonoSpace
+              </textPath>
+            </text>
+          </svg>
         </a>
       </div>
       <div class="home-page-link">
         <a class="category-link d-flex flex-column align-items-center" href="#" data-category="4X4">
           <img src="/icons/home-4x4.png" alt="4X4 Icon" class="category-icon">
-          <span class="category-link-text">4X4</span>
+          <svg width="200" height="60" viewBox="10 50 200 60">
+            <path id="textPath4X4" d="M 40 50 A 90 90 1 0 0 180 40" fill="transparent"/>
+            <text fill="#000" font-size="20" font-weight="bold" letter-spacing="5">
+              <textPath href="#textPath4X4" startOffset="50%" text-anchor="middle">
+                4X4
+              </textPath>
+            </text>
+          </svg>
         </a>
       </div>
     </div>
 
-
+    <div class="d-flex justify-content-center">
+      <div class="m-5">
+        <h2 class="fs32 medium text-center">🚗 Louez une voiture <span class="c-main">où que vous soyez à Bruxelles</span></h2>
+      </div>
+    </div>
     <div id="topRatedCars" class="d-flex flex-row justify-content-center align-items-center">
       <!-- Les voitures avec une note de 5 étoiles seront affichées ici -->
     </div>
   </section>
-<section class="insurance-home mt-5">
+<section class="insurance-home d-flex justify-content-center">
   <div class="d-flex flex-lg-row flex-column justify-content-around">
     <div class="left-panel d-flex flex-column justify-content-center flex-grow-1">
-      <div class="d-flex flex-row justify-content-end"></div>
-      <div class="d-flex flex-row justify-content-start">
+      <div class="d-flex flex-row justify-content-end">
         <div class="insurance-card d-flex flex-row insurance">
-          <img src="/images/carte-banque-prix.png" height="56" width="56">
+          <img src="/images/insurance-home.png" height="56" width="56" class="me-2">
           <div>
-            <p>Paiement sécurisé</p>
-            <p>Réglez en ligne et nous nous chargerons du reste</p>
+            <p class="insurance-card-title ">Assurance + Assistance</p>
+            <p class="insurance-card-details text-muted">Optez pour omnium et roulez l'esprit tranquille</p>
           </div>
         </div>
       </div>
-      <div class="d-flex flex-row justify-content-center"></div>
-      <div class="d-flex flex-row justify-content-end"></div>
+      <div class="d-flex flex-row justify-content-start">
+        <div class="insurance-card d-flex flex-row insurance">
+          <img src="/images/carte-bancaire.png" height="56" width="56" class="me-2">
+          <div>
+            <p class="insurance-card-title">Paiement sécurisé</p>
+            <p class="insurance-card-details text-muted">Réglez en ligne et nous nous chargerons du reste</p>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex flex-row justify-content-center">
+        <div class="insurance-card d-flex flex-row insurance">
+          <img src="/images/service-client.png" height="56" width="56" class="me-2">
+          <div>
+            <p class="insurance-card-title">Service client 24/7</p>
+            <p class="insurance-card-details text-muted">Disponible à tout moment pour répondre à vos questions et résoudre vos problèmes.</p>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex flex-row justify-content-start">
+        <div class="insurance-card d-flex flex-row insurance">
+          <img src="/images/aucun-frais.png" height="56" width="56" class="me-2">
+          <div>
+            <p class="insurance-card-title">Aucun frais caché</p>
+            <p class="insurance-card-details text-muted">Tout est clair, pas de surprises à la fin de la location.</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="right-panel d-flex flex-column justify-content-center flex-grow-1">
-      <h2>Nouveau sur le marché de la location entre particuliers à Bruxelles 🚗</h2>
-      <p class="small text-muted">DriveShare est en pleine expansion dans la capitale belge,
+      <h2 class="mb-5">N°1 de la location entre particuliers sur Bruxelles 🚗</h2>
+      <p class="small text-muted mb-5">DriveShare est en pleine expansion dans la capitale belge,
         offrant une alternative unique et pratique pour la location de voitures entre particuliers.
         Bien que tout juste lancé, DriveShare se distingue déjà par son engagement à fournir
         un service de qualité et sécurisé. Rejoignez-nous et découvrez une nouvelle façon
         de louer un véhicule à Bruxelles, où les options de location entre particuliers étaient
         jusque-là limitées. Faites partie des premiers à profiter de cette nouvelle expérience de mobilité urbaine.</p>
-      <div></div>
+      <div class="d-flex flex-row justify-content-center">
+        <a class="btn p-2 me-3 btn-home-1" href="/comment-ça-marche">Comment ça marche</a>
+        <a class="btn p-2 btn-home-2">Conditions d'utilisations</a>
+      </div>
     </div>
   </div>
 </section>

@@ -28,12 +28,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 /* MODIFIER LA PHOTO DE PROFIL*/
-$(document).ready(function() {
-    $('#editPictureLink').click(function(e) {
-        e.preventDefault();  // Empêche le navigateur de suivre le lien
-        $('#pictureInput').click();  // Déclenche le clic sur l'input
-    });
-});
+
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -268,3 +263,47 @@ document.addEventListener('DOMContentLoaded', function() {
         bookingModeInput.value = 'manuelle';
     });
 });
+
+
+
+document.getElementById('editPictureLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('pictureInput').click();
+});
+
+document.getElementById('pictureInput').addEventListener('change', function() {
+    const fileInput = document.getElementById('pictureInput');
+    const file = fileInput.files[0];
+    const userId = document.getElementById('userId').value;
+
+    console.log(userId);
+
+    if (file && userId) { // Assurez-vous que l'ID de l'utilisateur est bien récupéré
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch(`/api/account/${userId}/update-profile-picture`, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(result => {
+            // Rafraîchit la page pour afficher la nouvelle photo de profil
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la mise à jour de la photo de profil');
+        });
+    } else {
+        alert('Fichier ou ID utilisateur manquant');
+    }
+});
+
+
+

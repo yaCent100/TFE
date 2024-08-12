@@ -1,6 +1,6 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
-import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
+import be.iccbxl.tfe.Driveshare.DTO.*;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
@@ -21,9 +21,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -32,6 +33,7 @@ public class AccountController {
 
     private final UserService userService;
     private final PhotoService photoService;
+    private final GainService gainService;
     private final CarService carService;
     private final FileStorageService fileStorageService;
     private final DocumentService documentService;
@@ -54,11 +56,12 @@ public class AccountController {
 
 
     @Autowired
-    public AccountController(UserService userService, PhotoService photoService, CarService carService, FileStorageService fileStorageService, DocumentService documentService,
+    public AccountController(UserService userService, PhotoService photoService, GainService gainService, CarService carService, FileStorageService fileStorageService, DocumentService documentService,
                              BCryptPasswordEncoder passwordEncoder, PaymentService paymentService, DateService dateService, CategoryService categoryService,
                              FeatureService featureService, EquipmentService equipmentService, ReservationService reservationService, NotificationService notificationService, EvaluationService evaluationService) {
         this.userService = userService;
         this.photoService = photoService;
+        this.gainService = gainService;
         this.carService = carService;
         this.fileStorageService = fileStorageService;
         this.documentService = documentService;
@@ -274,42 +277,74 @@ public class AccountController {
         return "redirect:/account/bank-account";
     }
 
-    @GetMapping("/account/gains")
-    public String recapGains(@AuthenticationPrincipal CustomUserDetail userDetails, Model model) {
-        User user = userDetails.getUser();
 
-        model.addAttribute("user", user);
+  /*  @GetMapping("/account/gains")
+    public String getUserGains(Model model, HttpServletRequest request) {
+        User currentUser = userService.getAuthenticatedUser(); // Récupérer l'utilisateur connecté
+        List<Payment> payments = paymentService.getPaymentsForUser(currentUser, LocalDateTime.MIN, LocalDateTime.MAX);
+
+        List<Map<String, Object>> paymentDetails = new ArrayList<>();
+        for (Payment payment : payments) {
+            Map<String, Object> details = new HashMap<>();
+            PaymentDTO paymentDTO = MapperDTO.toPaymentDTO(payment);
+            details.put("payment", paymentDTO);
+
+            // Récupérer la réservation en utilisant l'ID de réservation
+            Reservation reservation = reservationService.getReservationById(paymentDTO.getReservationId());
+            if (reservation != null) {
+                details.put("carImage", !reservation.getCar().getPhotos().isEmpty() ? "/uploads/" + reservation.getCar().getPhotos().get(0).getUrl() : "images/carDefault.png");
+                details.put("carBrand", reservation.getCar().getBrand());
+                details.put("carModel", reservation.getCar().getModel());
+                details.put("debutLocation", reservation.getDebutLocation().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+                details.put("finLocation", reservation.getFinLocation().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+                details.put("reservationStatus", reservation.getStatut());
+            } else {
+                System.out.println("Reservation not found for Payment ID: " + paymentDTO.getId());
+            }
+            paymentDetails.add(details);
+        }
+
+        System.out.println("Payment Details: " + paymentDetails); // Debug
+        model.addAttribute("paymentDetails", paymentDetails);
+        model.addAttribute("requestURI", request.getRequestURI());
+
+        return "account/gains";
+    }*/
+
+    @GetMapping("/account/gains")
+    public String getUserGains(Model model, HttpServletRequest request) {
+        User currentUser = userService.getAuthenticatedUser();  // Récupérer l'utilisateur connecté
+        List<Gain> gains = gainService.getGainsForUserByDateRange(currentUser.getId(), LocalDateTime.MIN, LocalDateTime.MAX);
+        List<GainDTO> gainDTOs = gains.stream()
+                .map(MapperDTO::toGainDTO)
+                .collect(Collectors.toList());
+        model.addAttribute("gains", gainDTOs);
+        model.addAttribute("requestURI", request.getRequestURI());
+
         return "account/gains";
     }
 
     @PostMapping("/account/gains")
-    public String getSummary(@AuthenticationPrincipal CustomUserDetail userDetails,
-                             @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                             @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                             Model model) {
-        User user = userDetails.getUser();
+    public String getGainsByDate(
+            @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            Model model) {
+        User currentUser = userService.getAuthenticatedUser(); // Récupérer l'utilisateur connecté
 
-        // Ajout de logs pour vérifier les dates reçues
-        System.out.println("Date de début: " + startDate);
-        System.out.println("Date de fin: " + endDate);
+        // Convertir les LocalDate en LocalDateTime pour les bornes de début et de fin
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
-        List<Payment> payments = paymentService.getPaymentsForUser(user, startDate, endDate);
-        model.addAttribute("payments", payments);
-        model.addAttribute("user", user);
+        // Récupérer les gains pour l'utilisateur courant dans la plage de dates spécifiée
+        List<Gain> gains = gainService.getGainsForUserByDateRange(currentUser.getId(), startDateTime, endDateTime);
+        List<GainDTO> gainDTOs = gains.stream()
+                .map(MapperDTO::toGainDTO)
+                .collect(Collectors.toList());
 
-
-        if (payments.isEmpty()) {
-            System.out.println("Aucun paiement trouvé pour les dates sélectionnées.");
-        } else {
-            System.out.println("Paiements trouvés : " + payments.size());
-            for (Payment payment : payments) {
-                System.out.println(payment.toString());
-            }
-        }
-
+        // Ajouter les gains au modèle pour les afficher dans la vue
+        model.addAttribute("gains", gainDTOs);
         return "account/gains";
     }
-
 
 
 

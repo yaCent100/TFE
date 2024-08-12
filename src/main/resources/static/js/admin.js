@@ -400,7 +400,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     { data: 'email' },
                     { data: null, render: data => `${data.adresse}, ${data.locality}, ${data.codePostal}` },
                     { data: 'telephoneNumber' },
-                    { data: 'createdAt' },
                     { data: null, render: data => `<div class="action-buttons"><button class="btn btn-primary" onclick="viewUser(${data.id})"><i class="fas fa-eye"></i></button><button class="btn btn-secondary" onclick="editUser(${data.id})"><i class="fas fa-edit"></i></button><button class="btn btn-danger" onclick="deleteUser(${data.id})"><i class="fas fa-trash-alt"></i></button></div>` }
                 ]
             });

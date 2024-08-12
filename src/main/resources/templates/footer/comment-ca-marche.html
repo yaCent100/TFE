@@ -12,14 +12,15 @@
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 4px;
+            width: 2px;
             background: #d4d9df;
             left: 50%;
             margin-left: -2px;
         }
         .timeline-block {
             position: relative;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            top:80px;
         }
         .timeline-block .timeline-icon {
             position: absolute;
@@ -41,44 +42,52 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .timeline-block.tenant .timeline-content {
-            left: 55%;
-        }
+
         .timeline-block.owner .timeline-content {
-            right: 55%;
-        }
-        .timeline-block.both .timeline-content {
             left: 55%;
+        }
+
+        .timeline-block.both .timeline-content{
+            margin: auto;
+            top: 80px;
         }
         .timeline-block.both .timeline-content.is-hidden {
             display: none;
         }
+        .locataire{
+        color:	#00BFFF;
+        text-decoration: underline;
+        font-weight: bold;
+        font-size: 28px;
+        }
+        .proprietaire{
+        color:	#00788d;
+        text-decoration: underline;
+        font-weight: bold;
+        font-size: 28px;
+        }
+
     </style>
 </head>
 <body>
 <div layout:fragment="content">
 
-<header class="bg-light py-3 mb-4">
-  <div class="container">
-    <h1 class="text-center">Comment ça marche</h1>
-  </div>
-</header>
-<main class="container">
+<main class="container mt-5" style="padding-top:50px; padding-bottom:150px;">
   <div id="how-it-works" class="timeline">
     <div class="timeline-block fs0 not-mobile">
       <div class="row justify-content-center">
         <div class="col-lg-6 text-center">
-          <h1>Je cherche une voiture, <span class="underline bold c-warning">je suis locataire</span></h1>
+          <h4>Je cherche une voiture, <span class="locataire">je suis locataire</span></h4>
         </div>
         <div class="col-lg-6 text-center">
-          <h1 class="standard">Je loue <span class="c-main underline bold">ma propre voiture</span>, je suis propriétaire</h1>
+          <h4 class="standard">Je loue <span class="proprietaire">ma propre voiture</span>, je suis propriétaire</h4>
         </div>
       </div>
     </div>
 
     <div class="timeline-block owner">
       <div class="timeline-icon">
-        <img src="/images/picto/htem-picto-01.svg?v=7.21.8" alt="voiture">
+        <img src="/images/car-comment-ca-marche.png" alt="voiture" height="50">
       </div>
       <div class="timeline-content bradius">
         <h5 class="fs14 bold mgb-10 standard">J'inscris ma voiture</h5>
@@ -88,7 +97,7 @@
 
     <div class="timeline-block tenant">
       <div class="timeline-icon">
-        <img src="/images/picto/search-picto.svg?v=7.21.8" alt="search">
+        <img src="/images/loupe-comment-ca-marche.png" alt="search" height="50">
       </div>
       <div class="timeline-content bradius">
         <h5 class="fs14 bold mgb-10">Je choisis une voiture</h5>
@@ -98,7 +107,7 @@
 
     <div class="timeline-block owner">
       <div class="timeline-icon">
-        <img src="/images/picto/picto-notification.svg?v=7.21.8" alt="avis">
+        <img src="/images/cloche-comment-ca-marche.png" alt="avis" height="50">
       </div>
       <div class="timeline-content">
         <h5 class="fs14 bold mgb-10 standard">J'accepte ou je refuse les demandes</h5>
@@ -108,7 +117,7 @@
 
     <div class="timeline-block tenant">
       <div class="timeline-icon">
-        <img src="/images/picto/credit-card.svg?v=7.21.8" alt="paiment">
+        <img src="/images/carte-bancaire.png" alt="paiment" height="50">
       </div>
       <div class="timeline-content">
         <h5 class="fs14 bold mgb-10">Ma demande a été acceptée, je procède au paiement</h5>
@@ -118,7 +127,7 @@
 
     <div class="timeline-block both">
       <div class="timeline-icon">
-        <img src="/images/picto/hands.svg?v=7.21.8" alt="plan">
+        <img src="/images/main-comment-ca-marche.png" alt="plan" height="50">
       </div>
       <div class="timeline-content">
         <h5 class="fs14 bold mgb-10">Au début de la location</h5>
@@ -126,9 +135,9 @@
       </div>
     </div>
 
-    <div class="timeline-block tenant">
-      <div class="timeline-icon">
-        <img src="/images/picto/phone.svg?v=7.21.8" alt="contact">
+    <div class="timeline-block tenant" style="padding-top: 80px;">
+      <div class="timeline-icon" style="margin-top:80px;">
+        <img src="/images/tel-comment-ca-marche.png" alt="contact" height="50">
       </div>
       <div class="timeline-content">
         <h5 class="fs14 bold mgb-10">Pendant la location, je ne perds jamais le contact</h5>
@@ -138,7 +147,7 @@
 
     <div class="timeline-block both">
       <div class="timeline-icon">
-        <img src="/images/picto/rating.svg?v=7.21.8" alt="avis">
+        <img src="/images/evaluer-comment-ca-marche.png" alt="avis" height="50">
       </div>
       <div class="timeline-content">
         <h5 class="fs14 bold mgb-10">La location est terminée</h5>

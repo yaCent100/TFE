@@ -156,7 +156,6 @@ public class PaymentRestController {
                     }
 
                     payment.setPrixPourDriveShare(driveShareAmount.doubleValue());
-                    payment.setPrixPourUser(userAmount.doubleValue());
                     payment.setCreatedAt(LocalDateTime.now());
                     payment.setReservation(reservation);
 

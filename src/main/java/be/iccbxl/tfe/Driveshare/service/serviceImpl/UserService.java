@@ -233,5 +233,7 @@ public class UserService implements UserServiceI {
     }
 
 
-
+    public List<User> findByRole(String role) {
+        return userRepository.findByRole(role);
+    }
 }

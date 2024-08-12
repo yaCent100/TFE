@@ -1,13 +1,18 @@
 package be.iccbxl.tfe.Driveshare.DTO;
 
-import be.iccbxl.tfe.Driveshare.DTO.*;
 import be.iccbxl.tfe.Driveshare.model.*;
+import be.iccbxl.tfe.Driveshare.service.serviceImpl.PaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MapperDTO {
+
+    @Autowired
+    private static PaymentService paymentService;
 
     // Méthode de transformation Entité -> DTO
     public static CarDTO toCarDTO(Car car) {
@@ -417,8 +422,8 @@ public class MapperDTO {
         paymentDTO.setStatut(payment.getStatut());
         paymentDTO.setPaiementMode(payment.getPaiementMode());
         paymentDTO.setPrixPourDriveShare(payment.getPrixPourDriveShare());
-        paymentDTO.setPrixPourUser(payment.getPrixPourUser());
         paymentDTO.setCreatedAt(payment.getCreatedAt());
+        paymentDTO.setDateFinLocation(payment.getReservation().getFinLocation());
 
         // Mapping Refund to RefundDTO
         if (payment.getRefund() != null) {
@@ -442,7 +447,6 @@ public class MapperDTO {
         payment.setStatut(paymentDTO.getStatut());
         payment.setPaiementMode(paymentDTO.getPaiementMode());
         payment.setPrixPourDriveShare(paymentDTO.getPrixPourDriveShare());
-        payment.setPrixPourUser(paymentDTO.getPrixPourUser());
         payment.setCreatedAt(paymentDTO.getCreatedAt());
 
         if (paymentDTO.getRefundDTO() != null) {
@@ -490,6 +494,35 @@ public class MapperDTO {
         refund.setPayment(payment);
 
         return refund;
+    }
+
+
+    public static GainDTO toGainDTO(Gain gain) {
+        GainDTO gainDTO = new GainDTO();
+        gainDTO.setId(gain.getId());
+        gainDTO.setPaymentId(gain.getPayment().getId());
+        gainDTO.setMontantGain(gain.getMontantGain());
+        gainDTO.setDateGain(gain.getDateGain());
+        gainDTO.setStatut(gain.getStatut());
+        gainDTO.setDescription(gain.getDescription());
+        gainDTO.setCarBrand(gain.getPayment().getReservation().getCar().getBrand());
+        gainDTO.setCarModel(gain.getPayment().getReservation().getCar().getModel());
+        gainDTO.setCarImage(gain.getPayment().getReservation().getCar().getPhotos().get(0).getUrl());
+        gainDTO.setDebutLocation(String.valueOf(gain.getPayment().getReservation().getDebutLocation()));
+        gainDTO.setFinLocation(String.valueOf(gain.getPayment().getReservation().getFinLocation()));
+        return gainDTO;
+    }
+
+    public static Gain toGainEntity(GainDTO gainDTO, Payment payment) {
+        Gain gain = new Gain();
+        gain.setId(gainDTO.getId());
+        // Pour Payment, vous devez probablement charger l'entité Payment depuis le service ou le repository.
+        gain.setPayment(paymentService.getPaymentById(gainDTO.getPaymentId()));
+        gain.setMontantGain(gainDTO.getMontantGain());
+        gain.setDateGain(gainDTO.getDateGain());
+        gain.setStatut(gainDTO.getStatut());
+        gain.setDescription(gainDTO.getDescription());
+        return gain;
     }
 
 
