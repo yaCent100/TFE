@@ -19,13 +19,13 @@ public class Gain {
     @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment;  // Relation OneToOne avec Payment
 
-    @Column(name = "montant_gain", nullable = false)
+    @Column(name = "amount_earned", nullable = false)
     private double montantGain;
 
-    @Column(name = "date_gain", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime dateGain;
 
-    @Column(name = "statut", nullable = false)
+    @Column(name = "status", nullable = false)
     private String statut;
 
     @Column(name = "description")

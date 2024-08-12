@@ -23,7 +23,7 @@ public class CarDTO {
 
     private  String url;
 
-    private int codePostal;
+    private String codePostal;
 
     private String locality;
 
@@ -88,7 +88,7 @@ public class CarDTO {
 
 
 
-    public CarDTO(Long id, String brand, String model, String s, double distance, String url, String adresse, int codePostal, String locality, List<FeatureDTO> featureDTOs) {
+    public CarDTO(Long id, String brand, String model, String s, double distance, String url, String adresse, String codePostal, String locality, List<FeatureDTO> featureDTOs) {
     }
 
 
@@ -99,7 +99,7 @@ public class CarDTO {
         return null;
     }
 
-    public CarDTO(Long id, String marque, String modele, String modeReservation, String url, String adresse, int codePostal, String locality, String fuelType) {
+    public CarDTO(Long id, String marque, String modele, String modeReservation, String url, String adresse, String codePostal, String locality, String fuelType) {
         this.id = id;
         this.brand = marque;
         this.model = modele;

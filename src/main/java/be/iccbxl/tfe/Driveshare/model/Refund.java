@@ -17,7 +17,7 @@ public class Refund {
     @Column(name = "amount", nullable = false)
     private double amount;
 
-    @Column(name = "refund_date", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime refundDate;
 
     @Column(name = "refund_percentage", nullable = false)

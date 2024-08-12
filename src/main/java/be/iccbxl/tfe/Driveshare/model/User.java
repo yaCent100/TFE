@@ -43,7 +43,7 @@ public class User {
     @Column(name="password")
     private String password;
 
-    @Column(name="photo_profil", nullable = true)
+    @Column(name="profil_picture", nullable = true)
     private String photoUrl;
 
     @Column(name="iban", nullable = true)

@@ -41,7 +41,7 @@ public class Car {
     private String adresse;
 
     @Column(name="postal_code")
-    private int codePostal;
+    private String codePostal;
 
     @Column(name="locality")
     private String locality;

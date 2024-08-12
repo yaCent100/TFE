@@ -22,7 +22,7 @@ public class ReservationDTO {
     private String carModel;
     private String userProfileImage;
     private String carImage;
-    private Integer carPostal;
+    private String carPostal;
     private String carLocality;
     private String insurance;
     private String modeReservation;

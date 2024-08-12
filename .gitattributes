@@ -1,0 +1,14 @@
+# Convertir tous les fichiers texte en LF lors de la validation
+* text=auto
+
+# Assurer que certains fichiers spécifiques sont toujours traités en tant que texte
+*.js    text
+*.css   text
+*.html  text
+*.md    text
+*.json  text
+
+# Fichiers binaires
+*.png   binary
+*.jpg   binary
+*.gif   binary
