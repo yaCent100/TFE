@@ -1,30 +1,22 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
+<html lang="fr" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
 <head>
   <meta charset="UTF-8">
-  <title>Voitures En Ligne</title>
+  <title>Gestion des Voitures</title>
+  <link href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" rel="stylesheet">
+  <style>
+    .car-photo { width: 80px; }
+    .datatable-container { display: flex; gap: 20px;justify-content: space-around; }
+    .spinner-container { text-align: center; margin-top: 20px; }
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
 
-  <script>
-    $(document).ready(function() {
-      const table = $('#onlineCarsTable').DataTable();
-      fetchOnlineCars();
-
-      function fetchOnlineCars() {
-        fetch('/api/admin/cars/online')
-          .then(response => response.json())
-          .then(data => {
-            data.forEach(car => {
-              table.row.add([
-                car.brand,
-                car.model,
-                `<a href="/cars/details/${car.id}" class="btn btn-info">Détails</a>`
-              ]).draw(false);
-            });
-          })
-          .catch(error => console.error('Erreur lors du chargement des voitures en ligne:', error));
-      }
-    });
-  </script>
+    }
+    table.dataTable {
+  width: 100% !important;
+}
+  </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -43,18 +35,141 @@
     </div>
   </nav>
   <main class="content px-3 py-4">
-    <h1>Voitures En Ligne</h1>
-    <table class="table table-striped" id="onlineCarsTable">
-      <thead>
-      <tr>
-        <th>Marque</th>
-        <th>Modèle</th>
-        <th>Détails</th>
-      </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="row">
+      <div class="col-lg-3">
+        <div class="kpi-card bg-light p-3 text-center">
+          <h5>Nombre Total de Voitures</h5>
+          <h2 id="totalCars">0</h2>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="kpi-card bg-light p-3 text-center">
+          <h5>Pourcentage de Voitures En Ligne</h5>
+          <h2 id="percentageOnline">0%</h2>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="kpi-card bg-light p-3 text-center">
+          <h5>Nombre de Voitures Louées Actuellement</h5>
+          <h2 id="rentedCars">0</h2>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="kpi-card bg-light p-3 text-center">
+          <h5>Pourcentage de Voitures En Attente</h5>
+          <h2 id="percentagePending">0%</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+        <canvas id="reservationsChart" width="400" height="150"></canvas>
+      </div>
+    </div>
+    <h1>Gestion des Voitures</h1>
+    <div class="datatable-container">
+      <!-- Voitures en ligne -->
+      <div class="online-cars">
+        <h2>Voitures En Ligne</h2>
+
+        <table class="table table-striped" id="onlineCarsTable" style="display: none;">
+          <thead>
+          <tr>
+            <th>Photo</th>
+            <th>Marque</th>
+            <th>Modèle</th>
+            <th>Plaque</th>    <!-- Nouvelle colonne -->
+            <th>Détails</th>
+          </tr>
+          </thead>
+          <tbody>
+          <div id="onlineSpinner" class="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Voitures en attente d'approbation -->
+      <div class="pending-cars">
+        <h2>Voitures En Attente</h2>
+
+        <table class="table table-striped" id="pendingCarsTable" style="display: none;">
+          <thead>
+          <tr>
+            <th>Photo</th>
+            <th>Marque</th>
+            <th>Modèle</th>
+            <th>Plaque</th>    <!-- Nouvelle colonne -->
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <div id="pendingSpinner" class="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <h1>Gestion des Attributs</h1>
+    <div class="datatable-container">
+      <!-- Tableau des Catégories -->
+      <div class="datatable">
+        <h2>Catégories</h2>
+        <table class="table table-striped" id="categoriesTable">
+          <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button id="addCategoryBtn">Ajouter Catégorie</button>
+      </div>
+
+      <!-- Tableau des Équipements -->
+      <div class="datatable">
+        <h2>Équipements</h2>
+        <table class="table table-striped" id="equipmentsTable">
+          <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Icone</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button id="addEquipmentBtn">Ajouter Équipement</button>
+      </div>
+
+      <!-- Tableau des Caractéristiques -->
+      <div class="datatable">
+        <h2>Caractéristiques</h2>
+        <table class="table table-striped" id="featuresTable">
+          <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button id="addFeatureBtn">Ajouter Caractéristique</button>
+      </div>
+    </div>
   </main>
 </div>
+
+
+
 </body>
 </html>

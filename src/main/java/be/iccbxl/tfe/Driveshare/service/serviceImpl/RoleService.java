@@ -1,18 +1,15 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
-import be.iccbxl.tfe.Driveshare.model.Photo;
+import be.iccbxl.tfe.Driveshare.DTO.RoleDTO;
 import be.iccbxl.tfe.Driveshare.model.Role;
-import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.repository.RoleRepository;
 import be.iccbxl.tfe.Driveshare.repository.UserRepository;
 import be.iccbxl.tfe.Driveshare.service.RoleServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,11 +22,7 @@ public class RoleService implements RoleServiceI {
     private UserRepository userRepository;
 
 
-    @Override
-    public List<Role> getAllRoles() {
-        List<Role> roles = new ArrayList<>();
-        roleRepository.findAll().forEach(roles::add);
-        return roles;         }
+
 
     @Override
     public Role getRoleById(Long id) {
@@ -58,6 +51,11 @@ public class RoleService implements RoleServiceI {
         roleRepository.deleteById(id);
     }
 
-
+    public List<RoleDTO> getAllRoles() {
+        List<Role> roles = (List<Role>) roleRepository.findAll(); // Assurez-vous que ce retour est correct
+        return roles.stream()
+                .map(role -> new RoleDTO(role.getId(), role.getRole())) // Vérifiez bien que role.getId() et role.getName() ne sont pas null
+                .collect(Collectors.toList());
+    }
 
 }

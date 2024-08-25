@@ -2,6 +2,8 @@ package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.service.FileStorageServiceI;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,11 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 
 @Service
 public class FileStorageService implements FileStorageServiceI {
+
     @Value("${file.upload-dir.photoCar}")
     private String photoCarDir;
 
@@ -24,6 +25,7 @@ public class FileStorageService implements FileStorageServiceI {
 
     @Value("${file.upload-dir.identityCard}")
     private String identityDir;
+
     @Value("${file.upload-dir.registrationCard}")
     private String registrationCardDir;
 
@@ -32,10 +34,9 @@ public class FileStorageService implements FileStorageServiceI {
 
     @Value("${file.upload-dir.profil}")
     private String profilDir;
+
     @Value("${file.upload-dir}")
-    private String uploadDir;
-
-
+    private String baseUploadDir;
 
     @Override
     public String storeFile(MultipartFile file, String directory) {
@@ -68,9 +69,15 @@ public class FileStorageService implements FileStorageServiceI {
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
+
             String fileName = file.getOriginalFilename();
-            Path filePath = uploadPath.resolve(fileName);
+            if (fileName == null) {
+                throw new RuntimeException("File name is invalid");
+            }
+
+            Path filePath = uploadPath.resolve(fileName).normalize();
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
             return fileName;
         } catch (IOException ex) {
             throw new RuntimeException("Failed to store file " + file.getOriginalFilename(), ex);
@@ -78,21 +85,46 @@ public class FileStorageService implements FileStorageServiceI {
     }
 
 
+
     @Override
-    public void deleteFile(String fileName) {
+    public void deleteFile(String directory, String fileName) {
+        String dirPath;
+        switch (directory) {
+            case "photo-car":
+                dirPath = photoCarDir;
+                break;
+            case "licence":
+                dirPath = licenceDir;
+                break;
+            case "identityCard":
+                dirPath = identityDir;
+                break;
+            case "registrationCard":
+                dirPath = registrationCardDir;
+                break;
+            case "icons":
+                dirPath = iconsDir;
+                break;
+            case "profil":
+                dirPath = profilDir;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid directory: " + directory);
+        }
+
         try {
-            Path filePath = Paths.get("src/main/resources/static").resolve(fileName).normalize();
+            Path filePath = Paths.get(dirPath).resolve(fileName).normalize();
             Files.deleteIfExists(filePath);
         } catch (IOException ex) {
             throw new RuntimeException("Could not delete file: " + fileName, ex);
         }
     }
 
-
     public Resource loadFileAsResource(String filePath) {
         try {
-            Path fullPath = Paths.get(uploadDir).resolve(filePath).normalize();
-            Resource resource = new UrlResource(fullPath.toUri());
+            // Résoudre le chemin à partir du répertoire de base des fichiers
+            Path fileStorageLocation = Paths.get("src/main/resources/static").resolve(filePath).normalize();
+            Resource resource = new UrlResource(fileStorageLocation.toUri());
             if (resource.exists() && resource.isReadable()) {
                 return resource;
             } else {
@@ -102,5 +134,4 @@ public class FileStorageService implements FileStorageServiceI {
             throw new RuntimeException("File not found: " + filePath, e);
         }
     }
-
 }

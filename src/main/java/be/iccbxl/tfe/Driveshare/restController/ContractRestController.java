@@ -3,6 +3,9 @@ package be.iccbxl.tfe.Driveshare.restController;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.ContractService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.ReservationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Contract Management", description = "Gestion des contrats de réservation")
 public class ContractRestController {
 
     @Autowired
@@ -25,9 +29,10 @@ public class ContractRestController {
     @Autowired
     private ReservationService reservationService;
 
+    @Operation(summary = "Télécharger le contrat de réservation", description = "Permet au propriétaire de la voiture de télécharger le contrat de location.")
     @GetMapping("/download-contract/{reservationId}")
-    public ResponseEntity<byte[]> downloadContract(@PathVariable Long reservationId, Principal principal) {
-        // Ensure that only the owner of the reservation can download the contract
+    public ResponseEntity<byte[]> downloadContract(
+            @Parameter(description = "L'ID de la réservation", required = true) @PathVariable Long reservationId, Principal principal) {
         Reservation reservation = reservationService.getReservationById(reservationId);
         if (reservation == null || !reservation.getCar().getUser().getEmail().equals(principal.getName())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -40,3 +45,4 @@ public class ContractRestController {
                 .body(pdfBytes);
     }
 }
+

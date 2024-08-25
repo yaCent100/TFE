@@ -1,66 +1,49 @@
 package be.iccbxl.tfe.Driveshare.security;
 
-import org.apache.catalina.filters.CorsFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.firewall.HttpFirewall;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
-import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-	@Autowired
-	private CustomUserDetailService customUserDetailService;
-
-	/*private static final String[] SECURED = {
-			"/user/**", "/stripe/**", "/create-payment-intent",
-			"/forgot-password", "/reset-password",
-			"/change-lang/**", "/admin/**", "/exportCSV", "rss/shows"
-			, "/access-denied", "/confirmationReservation","/account/**"
-	};*/
-
-	/*private static final String[] UNSECURED = {  "/login", "/css/**", "/js/**", "/images/**",
-			"/shows/**", "/home", "/register"
-
+	private static final String[] PUBLIC_ENDPOINTS = {
+			"/css/**", "/images/**", "/icons/**","/icones/**", "/js/**", "/uploads/**",
+			"/home", "/register", "/login", "/cars/**", "/api/cars/top-rated",
+			"/reset-password**", "/swagger-ui/**", "/v3/api-docs/**",
+			"/swagger-ui.html", "/swagger-ui/index.html", "/api/claims/**",
+			"/api/notifications/complaint", "/api/stats/**", "/api/cars",
+			"/api/gearbox", "/api/cars/search", "/api/categories", "/api/files/**",
+			"/api/password/**","/faq", "/comment-ca-marche", "/condition-utilisation",
+			"/api/messages/reservation/**"
 	};
-*/
-	@Autowired
-	private JwtRequestFilter jwtRequestFilter;
+
+	private static final String[] ADMIN_ENDPOINTS = {
+			"/api/admin/**", "/admin/**", "/api/dashboard/**", "/api/review",
+			"/api/admin/users/**", "/api/admin/payments", "/api/admin/evaluations"
+	};
+
+	private static final String[] USER_ENDPOINTS = {
+			"/account/**", "/reservation", "/checkout",
+			"/api/format-date"
+	};
 
 	@Bean
 	BCryptPasswordEncoder bCryptPasswordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(auth.getDefaultUserDetailsService()).passwordEncoder(bCryptPasswordEncoder());
-	}
-
 	@Bean
-	public DaoAuthenticationProvider daoAuthenticationProvider() {
+	public DaoAuthenticationProvider daoAuthenticationProvider(CustomUserDetailService customUserDetailService) {
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 		authenticationProvider.setUserDetailsService(customUserDetailService);
 		authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
@@ -72,35 +55,40 @@ public class SecurityConfig {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 
-
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.csrf(AbstractHttpConfigurer::disable)
+				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> {
-					auth.requestMatchers("/register", "/login","/api/account/**","/api/notifications/complaint","/api/admin/payments","/api/admin/evaluations","/api/review","/api/admin/users-by-role**","/api/cancelReservation/**", "/css/**", "/images/**", "/js/**","/reset-password**", "/images/**","/api/password/**","/api/files/**","/api/cars/top-rated","/api/cars","/api/gearbox","/api/cars/search", "api/categories", "/cars/**","/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/index.html").permitAll();
-					auth.requestMatchers("/account/**", "/api/**").authenticated();
-					auth.requestMatchers("/api/admin/users/**").hasRole("ADMIN");
+					// Public access
+					auth.requestMatchers(PUBLIC_ENDPOINTS).permitAll();
+					// Admin access
+					auth.requestMatchers(ADMIN_ENDPOINTS).hasRole("Admin");
+					// Authenticated user access
+					auth.requestMatchers(USER_ENDPOINTS).authenticated();
+					// All other requests
 					auth.anyRequest().authenticated();
 				})
-				.formLogin(form -> {
-					form.loginPage("/login").permitAll();
-					form.defaultSuccessUrl("/home", true);
-				})
-				//.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-				.logout(logout -> logout.logoutUrl("/logout")
-						.logoutSuccessUrl("/login?logout").permitAll());
+				.formLogin(form -> form
+						.loginPage("/login").permitAll()
+						.defaultSuccessUrl("/home", true)
+				)
+				.exceptionHandling(handling -> handling
+						.accessDeniedHandler(accessDeniedHandler())  // Custom handler for Access Denied
+				)
+				.logout(logout -> logout
+						.logoutUrl("/logout").permitAll()
+						.logoutSuccessUrl("/login?logout")
+				);
 
 		return http.build();
 	}
+
+	// Custom AccessDeniedHandler to manage 403 errors
+	@Bean
+	public AccessDeniedHandler accessDeniedHandler() {
+		return (request, response, accessDeniedException) -> {
+			response.sendRedirect("/error/403"); // Redirect to custom 403 error page
+		};
+	}
 }
-
-	
-
-	
-
-	
-
-
-

@@ -5,6 +5,8 @@ import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.ReservationService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,18 +25,19 @@ public class AdminReservationRestController {
     @Autowired
     private UserService userService;
 
+
+    @Operation(summary = "Obtenir le nombre de réservations par localité", description = "Récupérer le nombre de réservations effectuées, groupées par localité.")
     @GetMapping("/api/reservations/count-by-locality")
     public ResponseEntity<List<Map<String, Object>>> getReservationCountByLocality(
+            @Parameter(description = "L'année des réservations", required = true)
             @RequestParam int year,
-            @RequestParam(required = false) Integer month) {
+            @Parameter(description = "Le mois des réservations (optionnel)") @RequestParam(required = false) Integer month) {
 
         List<Object[]> results;
         if (month != null) {
             results = reservationService.getReservationCountByLocality(year, month);
-            System.out.println("Fetching reservations for year " + year + " and month " + month);
         } else {
             results = reservationService.getReservationCountByLocality(year);
-            System.out.println("Fetching reservations for year " + year);
         }
 
         List<Map<String, Object>> response = new ArrayList<>();
@@ -45,37 +48,24 @@ public class AdminReservationRestController {
             response.add(map);
         }
 
-        System.out.println("Results: " + response);
         return ResponseEntity.ok(response);
     }
 
-   /* @GetMapping("/status")
-    public Map<String, Object> getReservationsByStatus() {
-        Map<String, Object> response = new HashMap<>();
-        List<Reservation> accepted = reservationService.findByStatus("accepted");
-        List<Reservation> pending = reservationService.findByStatus("pending");
-        List<Reservation> rejected = reservationService.findByStatus("rejected");
-
-        //double acceptanceRate = reservationService.calculateAcceptanceRate();
-
-        response.put("accepted", accepted);
-        response.put("pending", pending);
-        response.put("rejected", rejected);
-        //response.put("acceptanceRate", acceptanceRate);
-
-        return response;
-    }*/
 
 
 
+    @Operation(summary = "Obtenir toutes les réservations", description = "Récupérer toutes les réservations effectuées sur la plateforme.")
     @GetMapping("/api/admin/reservations")
     public List<ReservationDTO> getAllReservations() {
         return reservationService.getAllReservationsDTOs();
     }
 
+    @Operation(summary = "Obtenir les réservations d'un utilisateur", description = "Récupérer toutes les réservations effectuées par un utilisateur spécifique.")
     @GetMapping("/api/admin/reservations/user/{userId}")
     @ResponseBody
-    public List<ReservationDTO> getReservationsByUser(@PathVariable Long userId) {
+    public List<ReservationDTO> getReservationsByUser(
+            @Parameter(description = "L'ID de l'utilisateur", required = true)
+            @PathVariable Long userId) {
         User user = userService.getUserById(userId);
         return reservationService.getReservationsByUser(user);
     }

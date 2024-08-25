@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<head>
+  <meta charset="UTF-8">
+  <title>Comment ça marche - DriveShare</title>
+  <style>
+  .document-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: #007bff;
+    font-size: 18px;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .document-link i {
+    margin-right: 10px;
+    font-size: 24px;
+    color: #ff6b6b;
+  }
+
+  .document-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<div layout:fragment="content">
+  <section class="container">
+    <div class="row">
+      <div class="col-lg-12" style="padding-top:30px;">
+        <h1 class="text-center" style="padding-bottom:60px;">Assurance &amp; Sécurité</h1>
+
+      </div>
+      <div class="col-lg-12 text-center" style="margin-bottom:30px;">
+        <p class="" style="">Roulez en toute sécurité avec notre assurance Tous Risques,<br>
+          qui pendant chaque location, remplace celle du Propriétaire.</p>
+      </div>
+      <div class="col-12 text-center">
+        <p class="">EN PARTENARIAT AVEC</p>
+      </div>
+      <div class="col-12 mgb-40">
+        <div class="d-flex justify-content-center">
+          <div class="">
+            <img width="250" src="/images/belfius-assurance.png" alt="BelfiusDirect">
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="">
+    <div style="border-radius: 130px 0 0 0;background-color:#DFE7EC">
+      <div class="container">
+        <div class="row" style="padding-top:60px;padding-bottom:60px;">
+          <div class="col-lg-6">
+            <h2 class="">Pour les Locataires</h2>
+            <p class="">Le locataire ainsi que tous les conducteurs doivent être agés de 23 ans et avoir 3&nbsp;ans de permis </p>
+            <a class="btn medium bg-white border" href="/">Louer une voiture </a>
+          </div>
+          <div class="col-lg-6">
+            <div class="" style="width:80%; margin-left:auto; margin-right:auto;">
+              <img class="img-fluid" src="/images/assurance-image.png" alt="car">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="" style="background-color:#DFE7EC;">
+    <div class="" style="border-radius: 0 130px 0 0;background-color:#8EAAB3;">
+      <div class="container">
+        <div class="row" style="padding-top:60px;padding-bottom:60px;">
+          <div class="col-lg-6">
+            <div class="" style="width:80%; margin-left:auto; margin-right:auto;">
+              <img class="img-fluid" src="/images/assurance-image-bis.png" alt="car" style="border-radius:70px;">
+            </div>
+          </div>
+          <div class="col-lg-6 ">
+            <h2 class="">Pour les Propriétaires </h2>
+            <p class="">Votre véhicule est couvert par notre assurance Tous risques pendant toute la période de location, dès la
+              signature du contrat de location.</p>
+            <p class="">En cas d’incident, vous n’avez pas de malus, même si le locataire est responsable. </p>
+            <a class="btn medium bg-white border" href="/louer-ma-voiture/simuler-mes-revenus">Inscrire ma voiture </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+  <section>
+    <div style="background-color:#8EAAB3;">
+      <div style="background-color:#F3F5F8 !important; border-radius:130px 0 0 0">
+      <div class="container">
+          <div class="row" style="padding-top: 60px; padding-bottom: 60px;">
+            <div class="col-lg-12">
+              <div class="text-center">
+                <h3>Nos documents</h3>
+              </div>
+            </div>
+          </div>
+
+        <div class="row mt-4">
+          <div class="col-lg-6">
+            <a href="/documents/assurance-driveshare.pdf" download="assurance.pdf" class="document-link">
+              <i class="fa fa-file-pdf"></i> Assurances et sécurité
+            </a>
+          </div>
+          <div class="col-lg-6">
+            <a href="/documents/politique-confidentialite.pdf" download="Confidentialité.pdf" class="document-link">
+              <i class="fa fa-file-pdf"></i> Conditions générales de locations
+            </a>
+          </div>
+          <div class="col-lg-6 mt-3">
+            <a href="/documents/conditions-utilisation.pdf" download="Conditions.pdf" class="document-link">
+              <i class="fa fa-file-pdf"></i> Politique de confidentialité
+            </a>
+          </div>
+          <div class="col-lg-6 mt-3">
+            <a href="/documents/guide-utilisation.pdf" download="Guide.pdf" class="document-link">
+              <i class="fa fa-file-pdf"></i> GCU et Mentions légales
+            </a>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+</div>
+</body>
+</html>
+

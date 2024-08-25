@@ -17,6 +17,7 @@ public interface CarRepository extends JpaRepository<Car, Long> {
 
     List<Car> findByCategory_Category(String category);
 
+    long countByOnline(boolean b);
 }
 
 

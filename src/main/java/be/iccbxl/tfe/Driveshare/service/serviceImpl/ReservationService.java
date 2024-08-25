@@ -1,7 +1,6 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
-import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
-import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
+import be.iccbxl.tfe.Driveshare.DTO.*;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
@@ -11,17 +10,22 @@ import be.iccbxl.tfe.Driveshare.repository.UserRepository;
 import be.iccbxl.tfe.Driveshare.service.ReservationServiceI;
 import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -142,8 +146,8 @@ public class ReservationService implements ReservationServiceI {
         System.out.println("Found " + reservations.size() + " reservations to update.");
 
         for (Reservation reservation : reservations) {
-            LocalDate debutLocationDate = reservation.getDebutLocation();
-            LocalDate finLocationDate = reservation.getFinLocation();
+            LocalDate debutLocationDate = reservation.getStartLocation();
+            LocalDate finLocationDate = reservation.getEndLocation();
 
             LocalDateTime debutLocation = debutLocationDate.atStartOfDay();
             LocalDateTime finLocation = finLocationDate.atTime(LocalTime.MAX);
@@ -241,4 +245,73 @@ public class ReservationService implements ReservationServiceI {
                 .orElseThrow(() -> new OpenApiResourceNotFoundException("Reservation not found"));
         return MapperDTO.toReservationDTO(reservation);
     }
+
+    public long getTotalConfirmedReservations() {
+        return reservationRepository.countConfirmedReservations();
+    }
+
+    public List<CarReservationKpiDTO> getTop10MostReservedCarsThisMonth() {
+        // Récupérer toutes les voitures
+        List<Car> cars = reservationRepository.findTop10MostReservedCarsThisMonth();
+
+        // Calculer les KPI pour chaque voiture, trier par nombre de réservations et limiter à 10
+        return cars.stream()
+                .map(car -> {
+                    long reservationCount = car.getReservations().size(); // Nombre de réservations
+                    BigDecimal totalRevenue = car.getReservations().stream()
+                            .filter(r -> r.getPayment() != null)
+                            .map(r -> BigDecimal.valueOf(r.getPayment().getPrixTotal())) // Conversion du double en BigDecimal
+                            .reduce(BigDecimal.ZERO, BigDecimal::add); // Additionne toutes les valeurs BigDecimal
+
+                    // Calculer la tendance (positif, négatif)
+                    int trend = calculateTrend(car);
+
+                    // Mapper à DTO
+                    return CarReservationKpiDTO.toCarReservationKpiDTO(car, reservationCount, totalRevenue, trend);
+                })
+                .sorted(Comparator.comparingLong(CarReservationKpiDTO::getReservationCount).reversed()) // Trier par nombre de réservations décroissant
+                .limit(10) // Limiter aux 10 voitures les plus réservées
+                .collect(Collectors.toList());
+    }
+
+
+    private int calculateTrend(Car car) {
+        // Logique pour calculer la tendance
+        // Exemple simplifié : comparer les réservations du mois actuel et du mois précédent
+        long currentMonthReservations = car.getReservations().stream()
+                .filter(r -> r.getStartLocation().getMonthValue() == LocalDate.now().getMonthValue())
+                .count();
+        long previousMonthReservations = car.getReservations().stream()
+                .filter(r -> r.getEndLocation().getMonthValue() == LocalDate.now().minusMonths(1).getMonthValue())
+                .count();
+
+        return Long.compare(currentMonthReservations, previousMonthReservations); // 1 = up, -1 = down
+    }
+
+    public List<UserReservationKpiDTO> getTop10UsersByReservationsForCurrentMonth() {
+        // Récupérer toutes les réservations du mois en cours
+        List<Reservation> currentMonthReservations = reservationRepository.findReservationsForCurrentMonth();
+
+        // Grouper les réservations par utilisateur et compter le nombre de réservations
+        Map<User, Long> userReservationCountMap = currentMonthReservations.stream()
+                .collect(Collectors.groupingBy(Reservation::getUser, Collectors.counting()));
+
+        // Transformer la map en liste de DTOs
+        List<UserReservationKpiDTO> userReservationKpiDTOs = userReservationCountMap.entrySet().stream()
+                .map(entry -> new UserReservationKpiDTO(
+                        entry.getKey().getId(),
+                        entry.getKey().getFirstName(),
+                        entry.getKey().getLastName(),
+                        entry.getValue()))
+                .collect(Collectors.toList());
+
+        // Trier par nombre de réservations décroissant et retourner les 10 premiers
+        return userReservationKpiDTOs.stream()
+                .sorted((u1, u2) -> Long.compare(u2.getReservationCount(), u1.getReservationCount()))
+                .limit(10)
+                .collect(Collectors.toList());
+    }
+
+
+
 }

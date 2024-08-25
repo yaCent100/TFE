@@ -10,4 +10,18 @@ public class FooterController {
     public String showHowItWorks() {
         return "footer/comment-ca-marche";
     }
+
+    @GetMapping("/condition-utilisation")
+    public String showConditionsUtilisations() {
+        return "footer/conditions-utilisations"; // Le nom de votre template Thymeleaf pour la page FAQ
+    }
+
+    @GetMapping("/louer-ma-voiture")
+    public String showLouerMaVoiture() {
+        return "footer/louer-ma-voiture"; // Le nom de votre template Thymeleaf pour la page FAQ
+    }
+
+
+
+
 }

@@ -47,20 +47,20 @@ public class ContractService {
             }
 
             // Get tenant and owner details
-            String tenantName = reservation.getUser().getNom()+ " " +reservation.getUser().getPrenom();
-            String tenantAddress = reservation.getUser().getAdresse() + ", " + reservation.getUser().getCodePostal() +' '+reservation.getUser().getLocality();
-            String tenantPhone = reservation.getUser().getTelephoneNumber();
+            String tenantName = reservation.getUser().getLastName()+ " " +reservation.getUser().getFirstName();
+            String tenantAddress = reservation.getUser().getAdresse() + ", " + reservation.getUser().getPostalCode() +' '+reservation.getUser().getLocality();
+            String tenantPhone = reservation.getUser().getPhone();
             String tenantEmail = reservation.getUser().getEmail();
 
-            String ownerName = reservation.getCar().getUser().getNom()+ " " +reservation.getCar().getUser().getPrenom();
-            String ownerAddress = reservation.getCar().getUser().getAdresse() + ", " + reservation.getCar().getUser().getCodePostal() +' '+reservation.getUser().getLocality();
-            String ownerPhone = reservation.getCar().getUser().getTelephoneNumber();
+            String ownerName = reservation.getCar().getUser().getLastName()+ " " +reservation.getCar().getUser().getFirstName();
+            String ownerAddress = reservation.getCar().getUser().getAdresse() + ", " + reservation.getCar().getUser().getPostalCode() +' '+reservation.getUser().getLocality();
+            String ownerPhone = reservation.getCar().getUser().getPhone();
             String ownerEmail = reservation.getCar().getUser().getEmail();
 
             String carDetails = reservation.getCar().getBrand() + " " + reservation.getCar().getModel();
             String carPlate = reservation.getCar().getPlaqueImmatriculation();
-            String startDate = reservation.getDebutLocation().toString();
-            String endDate = reservation.getFinLocation().toString();
+            String startDate = reservation.getStartLocation().toString();
+            String endDate = reservation.getEndLocation().toString();
             String totalAmount = String.valueOf(reservation.getPayment().getPrixTotal());
 
             InputStream logoStream = getClass().getResourceAsStream("/static/images/DriveShareLogo.png");

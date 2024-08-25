@@ -4,37 +4,7 @@
     <meta charset="UTF-8">
     <title>Voitures en Attente</title>
   <script>
-    $(document).ready(function() {
-      const table = $('#pendingCarsTable').DataTable();
-      fetchPendingCars();
 
-      function fetchPendingCars() {
-        fetch('/api/admin/cars/pending')
-          .then(response => response.json())
-          .then(data => {
-            data.forEach(car => {
-              table.row.add([
-                car.id,
-                car.brand,
-                car.model,
-                `<button class="btn btn-success" onclick="approveCar(${car.id})">Accepter</button>`,
-                `<a href="/admin/cars/details?id=${car.id}" class="btn btn-info">Détails</a>`
-              ]).draw(false);
-            });
-          })
-          .catch(error => console.error('Erreur lors du chargement des voitures en attente:', error));
-      }
-
-      window.approveCar = function(id) {
-        fetch(`/api/admin/cars/approve/${id}`, { method: 'POST' })
-          .then(response => response.json())
-          .then(data => {
-            table.clear().draw();
-            fetchPendingCars();
-          })
-          .catch(error => console.error('Erreur lors de l\'approbation de la voiture:', error));
-      }
-    });
   </script>
 </head>
 <body>

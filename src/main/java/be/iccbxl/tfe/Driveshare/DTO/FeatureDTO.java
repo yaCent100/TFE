@@ -14,4 +14,7 @@ public class FeatureDTO {
         this.description= description;
     }
 
+    public FeatureDTO() {
+
+    }
 }

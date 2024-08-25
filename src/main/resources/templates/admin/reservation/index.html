@@ -2,73 +2,130 @@
 <html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{admin/layouts/main}">
 <head>
   <meta charset="UTF-8">
-  <title>Reservations</title>
+  <title>Tableau de Bord des Réservations</title>
   <style>
-    .status-container {
-        display: flex;
-        flex-wrap: wrap;
-        border: 1px solid #ccc;
-        padding: 10px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-        justify-content: space-around;
+    .kpi-card {
+      border-radius: 10px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .status-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin: 10px;
-        border: 1px solid #ddd;
-        padding: 10px;
-        border-radius: 8px;
-        min-width: 120px;
-        position: relative;
+    .kpi-title {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #333;
     }
 
-    .status-item span {
-        display: block;
-        text-align: center;
+    .kpi-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
     }
 
-    .arrow-up,
-    .arrow-down {
-        position: absolute;
-        right: 5px;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-
-    .arrow-up {
-        color: green;
-    }
-
-    .arrow-down {
-        color: red;
-    }
-
-    .status-section {
-        margin-bottom: 20px;
+    .chart-container {
+      margin: 40px 0;
     }
 
     .dataTables_wrapper {
-        margin: 20px 0;
+      margin: 20px 0;
     }
-</style>
-
+  </style>
 </head>
 <body>
 <div layout:fragment="content">
   <div class="container">
-    <h2 class="my-4">Réservations</h2>
-    <div id="percentage-container"></div>
-    <div id="reservation-container"></div>
+    <h2 class="my-4">Tableau de Bord des Réservations</h2>
 
+    <!-- Section des KPI -->
+    <div class="row">
+      <div class="col-md-2">
+        <div class="kpi-card">
+          <div class="kpi-title">Total des Réservations</div>
+          <div class="kpi-value" id="kpi-total-reservations">0</div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="kpi-card">
+          <div class="kpi-title">Réservations Confirmées</div>
+          <div class="kpi-value" id="kpi-confirmed-reservations">0</div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="kpi-card">
+          <div class="kpi-title">Réservations Annulées</div>
+          <div class="kpi-value" id="kpi-cancelled-reservations">0</div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="kpi-card">
+          <div class="kpi-title">Réservations En Attente</div>
+          <div class="kpi-value" id="kpi-pending-reservations">0</div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="kpi-card">
+          <div class="kpi-title">Réservations En Cours</div>
+          <div class="kpi-value" id="kpi-now-reservations">0</div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="kpi-card">
+          <div class="kpi-title">Réservations Terminées</div>
+          <div class="kpi-value" id="kpi-finished-reservations">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="row chart-container">
+      <div class="col-md-6">
+        <canvas id="reservationsStatusChart"></canvas>
+      </div>
+      <div class="col-md-6">
+        <canvas id="reservationsPieChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Dropdown pour filtrer par statut -->
+    <div class="row">
+      <div class="col-md-3">
+        <label for="filter-status">Filtrer par Statut : </label>
+        <select id="filter-status" class="form-control">
+          <option value="">Tous</option>
+          <option value="CONFIRMED">Confirmé</option>
+          <option value="CANCELLED">Annulé</option>
+          <option value="PENDING">En Attente</option>
+          <option value="NOW">En Cours</option>
+          <option value="FINISHED">Terminé</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Table unique pour toutes les réservations -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <button class="btn btn-danger mb-3" id="delete-selected">Supprimer Sélectionnées</button>
+        <table class="display" id="all-reservations-table">
+          <thead>
+          <tr>
+            <th><input type="checkbox" id="select-all"></th>
+            <th>Nom</th>
+            <th>Voiture</th>
+            <th>Date de début</th>
+            <th>Date de fin</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
-
-
-
 
 </body>
 </html>

@@ -1,6 +1,7 @@
 package be.iccbxl.tfe.Driveshare;
 
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -16,4 +17,6 @@ public class DataInitializer {
     public void init() {
         carService.updateCarCoordinates();
     }
+
+
 }

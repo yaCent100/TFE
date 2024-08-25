@@ -1,7 +1,10 @@
 package be.iccbxl.tfe.Driveshare.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 
 @Data
@@ -15,6 +18,9 @@ public class Category {
 
     @Column(name="category")
     private String category;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Car> cars;
 
 
 }

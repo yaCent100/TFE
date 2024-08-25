@@ -116,6 +116,12 @@ public class PaymentService {
         return paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new EntityNotFoundException("Payment not found with id " + paymentId));
     }
+
+
+
+    public BigDecimal getTotalBenefit() {
+        return paymentRepository.sumTotalBenefit(); // Exemple : requête pour obtenir le total des bénéfices
+    }
 }
 
 

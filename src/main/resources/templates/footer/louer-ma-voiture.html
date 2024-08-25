@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout" layout:decorate="~{layouts/main}">
+<head>
+    <meta charset="UTF-8">
+    <title>Louer ma voiture - DriveShare</title>
+    <style>
+        .img-text-center {
+            background: url(/images/louer-ma-voiture-image.png) bottom center no-repeat;
+            padding: 10rem 0;
+            height: 65vh;
+            background-size: cover;
+            overflow: hidden;
+            margin-bottom: 0;
+            position: relative;
+        }
+        .img-bottom-radius{
+        border-radius: 300px;
+        position: absolute;
+        bottom: -80px;
+        width: 100%;
+        height: 150px;
+        background-color:#F3F5F8 ;
+        }
+        .c-main{
+        color:	#00BFFF;
+        }
+
+        .article-container {
+            position: relative;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(173, 191, 204, 0.3);
+            border-radius: 0.4rem;
+            height: 120px;
+        }
+        .article-response h3{
+            margin-bottom:20px;
+        }
+        .article-response p{
+            margin-bottom:10px;
+        }
+
+
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid p-0">
+        <div class="img-text-center">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="row justify-center fw-bold text-light">
+                        <div class="col-11 col-lg-9 mx-auto mobile-frame bradius">
+                            <p class="c-white fs32 mgb-40 medium">Louer sa voiture </p>
+                            <p class="c-white lh20 mgb-20">Vous avez une voiture “qui dort”, que vous n’utilisez qu’occasionnellement ? Chez Zotcar, vous
+                                avez la possibilité de la mettre en location toute l’année en toute confiance et sécurité !</p>
+
+                            <p class="c-white lh20 mgb-20">Vous gagnez de l’argent, et en plus, vous rendez service à des touristes et des locaux à
+                                qui vous permettez de louer une voiture à environ 30% moins cher qu’au prix du marché !</p>
+
+                            <div>
+                                <a href="/new-vehicle" class="bg-white bradius text-main medium fs20 btn pd-10 w70p">Inscrire ma voiture</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-none d-md-flex col-md-6"></div>
+            </div>
+            <div class="img-bottom-radius"></div>
+        </div>
+        <section class="article" style="margin-bottom:60px; margin-top:60px;">
+            <div class="container">
+                <h2 class="text-center medium mgb-20" style="margin-bottom:60px;">Louer <span class="c-main">votre</span> voiture, on vous dit tout !</h2>
+                <div class="row">
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <div class="article-container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <span class="fs18">🚗</span>
+                                </div>
+                                <div class="col-10">
+                                    <h5 class="article-title medium fs18">Pourquoi louer sa voiture ?</h5>
+                                    <p class="text-right">
+                                        <a href="#article1" class="c-main fs18 text-right more-link">En savoir plus <i class="nbsp-left fa fa-chevron-right fs10"></i></a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <div class="article-container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <span class="fs18">💰</span>
+                                </div>
+                                <div class="col-10">
+                                    <h5 class="article-title fs18 medium">Louer sa voiture, combien ça rapporte?</h5>
+                                    <p class="text-right">
+                                        <a href="#article2" class="c-main fs18 text-right more-link">En savoir plus <i class="nbsp-left fa fa-chevron-right fs10"></i></a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <div class="article-container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <span class="fs18">💪</span>
+                                </div>
+                                <div class="col-10">
+                                    <h5 class="article-title fs18 medium">Pourquoi choisir DriveShare ?</h5>
+                                    <p class="text-right">
+                                        <a href="#article3" class="c-main fs18 text-right more-link">En savoir plus <i class="nbsp-left fa fa-chevron-right fs10"></i></a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <div class="article-container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <span class="fs18">🙎🏽‍♂️</span>
+                                </div>
+                                <div class="col-10">
+                                    <h5 class="article-title fs18 medium">Parole de client : découvrez son expérience</h5>
+                                    <p class="text-right">
+                                        <a href="#article4" class="c-main fs18 text-right more-link">En savoir plus <i class="nbsp-left fa fa-chevron-right fs10"></i></a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <div class="article-container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <span class="fs18">🤭</span>
+                                </div>
+                                <div class="col-10">
+                                    <h5 class="article-title fs18 medium">Quelles sont les contraintes et risques ?</h5>
+                                    <p class="text-right">
+                                        <a href="#article5" class="c-main fs18 text-right more-link">En savoir plus <i class="nbsp-left fa fa-chevron-right fs10"></i></a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <div class="article-container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <span class="fs18">❓</span>
+                                </div>
+                                <div class="col-10">
+                                    <h5 class="article-title fs18 medium">FAQ</h5>
+                                    <p class="text-right">
+                                        <a href="#article6" class="c-main fs18 text-right more-link">En savoir plus <i class="nbsp-left fa fa-chevron-right fs10"></i></a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Réponses -->
+        <section id="article-reponse">
+
+            <div class="container">
+                <div class="row" style="margin-bottom:60px;">
+                    <div class="col-lg-3 mx-auto"></div>
+                    <div class="col-lg-9 mx-auto">
+                        <div style="border:1px solid rgba(173, 191, 204, 0.3); margin-bottom: 30px !important;border-radius: 10px;">
+                            <div style="padding:30px;">
+                                <div id="article1" class="article-response">
+                                    <h3>1. Pourquoi louer sa voiture ?</h3>
+                                    <p>Vous hésitez encore à louer votre voiture ? Nous comprenons que l'idée de prêter votre véhicule peut sembler risquée, mais saviez-vous que vous pouvez générer des revenus réguliers avec DriveShare ?</p>
+                                    <h5>A. Des revenus complémentaires sur une voiture qui "dort"</h5>
+                                    <p>Louer votre voiture peut devenir une source de revenus complémentaire. Avec un bon entretien et une gestion réactive, vous pouvez gagner jusqu'à 200 € par semaine !</p>
+                                    <ul>
+                                        <li>Proposez une voiture en bon état de marche.</li>
+                                        <li>Répondez rapidement aux demandes de location.</li>
+                                        <li>Activez la réservation instantanée.</li>
+                                        <li>Surveillez votre calendrier régulièrement.</li>
+                                    </ul>
+                                    <h5>B. Un investissement rentable !</h5>
+                                    <p>Si vous cherchez à amortir l'achat de votre voiture, la location est une solution. Par exemple, un Dacia Duster acheté à 9 500 € peut générer 6 048 € par an avec un taux de remplissage de 70%.</p>
+                                    <h5>C. Un moyen d'amortir l'achat d'une voiture neuve</h5>
+                                    <p>Louer une voiture neuve, telle qu'une Clio IV, peut générer jusqu'à 8 064 € par an et vous permet d'amortir son coût en un peu plus de deux ans.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="border:1px solid rgba(173, 191, 204, 0.3); margin-bottom: 30px !important;border-radius: 10px;">
+                            <div style="padding:30px;">
+                                <div id="article2" class="article-response">
+                                    <h3>2. Louer sa voiture, combien ça rapporte ?</h3>
+                                    <p>Vos revenus dépendent du modèle économique choisi et du type de véhicule loué. En choisissant le bon modèle, vous pouvez rentabiliser rapidement votre investissement.</p>
+                                    <h5>A. Business Model 1, location d’une petite citadine d’occasion</h5>
+                                    <p>Louer une Twingo peut rapporter 4 536 € par an, avec un faible investissement initial. Votre rentabilité est assurée en 14 mois.</p>
+                                    <h5>B. Business Model 2, location de plusieurs voitures d'occasion</h5>
+                                    <p>En diversifiant votre flotte, vous pouvez atteindre des revenus annuels de 23 387 €. Vous offrez une variété de véhicules pour répondre à tous les besoins.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="border:1px solid rgba(173, 191, 204, 0.3); margin-bottom: 30px !important;border-radius: 10px;">
+                            <div style="padding:30px;">
+                                <div id="article3" class="article-response">
+                                    <h3>3. Pourquoi choisir DriveShare ?</h3>
+                                    <h5>A. Sécurité avant tout !</h5>
+                                    <p>DriveShare sécurise vos transactions et vos locations grâce à des technologies avancées et une assurance tous risques.</p>
+                                    <h5>B. Visibilité dans les DOM</h5>
+                                    <p>DriveShare bénéficie d'une forte notoriété dans les DOM, avec plus de 20 000 visiteurs mensuels, garantissant une visibilité accrue pour vos locations.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="border:1px solid rgba(173, 191, 204, 0.3); margin-bottom: 30px !important;border-radius: 10px;">
+                            <div style="padding:30px;">
+                                <div id="article4" class="article-response">
+                                    <h3>4. Parole de client</h3>
+                                    <p>Christian partage son expérience positive avec DriveShare, où il a pu générer des revenus supplémentaires en toute sérénité.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="border:1px solid rgba(173, 191, 204, 0.3); margin-bottom: 30px !important;border-radius: 10px;">
+                            <div style="padding:30px;">
+                                <div id="article5" class="article-response">
+                                    <h3>5. Quelles sont les contraintes et risques ?</h3>
+                                    <p>Louer sa voiture comporte des responsabilités. Vous devez maintenir la voiture en bon état, respecter les obligations d'assurance, et réaliser les états des lieux de départ et de retour.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="border:1px solid rgba(173, 191, 204, 0.3); margin-bottom: 30px !important;border-radius: 10px;">
+                            <div style="padding:30px;">
+                                <div id="article6" class="article-response">
+                                    <h3>6. FAQ</h3>
+                                    <h5>A. Conditions pour mettre sa voiture en location</h5>
+                                    <p>Votre voiture doit avoir moins de 8 ans (ou 10 ans pour certaines régions), être en bon état et avoir une carte grise à jour.</p>
+                                    <h5>B. Assurance</h5>
+                                    <p>Votre voiture est assurée tous risques par DriveShare durant la période de location.</p>
+                                    <h5>C. Fiscalité</h5>
+                                    <p>Les revenus issus de la location doivent être déclarés, et ce, même pour des montants inférieurs à 1 000 € par an.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>
+

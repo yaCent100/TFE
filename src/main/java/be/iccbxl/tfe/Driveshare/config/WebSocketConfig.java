@@ -9,19 +9,21 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.server.HandshakeInterceptor;
-import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 import java.security.Principal;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    // ConcurrentMap to keep track of connected users
+    private final ConcurrentMap<String, Principal> connectedUsers = new ConcurrentHashMap<>();
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -42,13 +44,38 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+
+                // Handle CONNECT command
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    Principal user = (Principal) accessor.getSessionAttributes().get("user");
-                    accessor.setUser(user);
+                    Principal user = accessor.getUser();
+                    if (user != null) {
+                        connectedUsers.put(user.getName(), user);
+                        System.out.println("User connected: " + user.getName());
+                        System.out.println("Total connected users: " + connectedUsers.size());
+                    }
                 }
+
+                // Handle DISCONNECT command
+                if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+                    Principal user = accessor.getUser();
+                    if (user != null) {
+                        connectedUsers.remove(user.getName());
+                        System.out.println("User disconnected: " + user.getName());
+                        System.out.println("Total connected users: " + connectedUsers.size());
+                    }
+                }
+
                 return message;
             }
         });
     }
 
+    // Optional method to expose the number of connected users
+    public int getConnectedUsersCount() {
+        return connectedUsers.size();
+    }
+
+    public ConcurrentMap<String, Principal> getConnectedUsers() {
+        return connectedUsers;
+    }
 }

@@ -4,39 +4,111 @@
   <meta charset="UTF-8">
   <title>Gestion des Paiements</title>
   <style>
-        .dataTables_wrapper {
-            width: 100%;
-            margin: 0 auto;
-        }
-    </style>
+    .kpi-card {
+      border-radius: 10px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
+    .kpi-title {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .kpi-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .dataTables_wrapper {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .chart-container {
+      margin: 40px 0;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border-radius: 4px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
 
 </head>
 <body>
 <div layout:fragment="content">
   <h1>Gestion des Paiements</h1>
-  <div>
-    <canvas id="dailyPaymentStatsChart" width="400" height="200"></canvas>
-    <canvas id="monthlyPaymentStatsChart" width="400" height="200"></canvas>
+
+  <!-- Section des KPI -->
+  <div class="row">
+    <div class="col-md-3">
+      <div class="kpi-card">
+        <div class="kpi-title">Total des Paiements</div>
+        <div class="kpi-value" id="kpi-total-payments">0</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="kpi-card">
+        <div class="kpi-title">Paiements Réussis</div>
+        <div class="kpi-value" id="kpi-successful-payments">0</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="kpi-card">
+        <div class="kpi-title">Paiements en Attente</div>
+        <div class="kpi-value" id="kpi-pending-payments">0</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="kpi-card">
+        <div class="kpi-title">Paiements Échoués</div>
+        <div class="kpi-value" id="kpi-failed-payments">0</div>
+      </div>
+    </div>
   </div>
+
+  <!-- Graphiques -->
+  <div class="row chart-container">
+    <div class="col-lg-6">
+      <canvas id="dailyPaymentStatsChart" width="400" height="200"></canvas>
+    </div>
+    <div class="col-lg-6">
+      <canvas id="monthlyPaymentStatsChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- Tableau des paiements -->
   <table id="paymentsTable" class="display nowrap" style="width:100%">
     <thead>
     <tr>
-      <th>ID</th>
+      <th>User</th> <!-- Nouvelle colonne pour le nom complet de l'utilisateur -->
       <th>Prix Total</th>
       <th>Statut</th>
       <th>Mode de Paiement</th>
       <th>Date de Création</th>
+      <th>Prix pour DriveShare</th>
+      <th>Gain pour l'Utilisateur</th> <!-- Nouvelle colonne pour les gains -->
+      <th>Montant du Remboursement</th> <!-- Nouvelle colonne pour les remboursements -->
+      <th>Date de Fin de Location</th>
+      <th>Paiement Effectué</th>
       <th>Actions</th>
     </tr>
     </thead>
-    <tbody>
-    </tbody>
+    <tbody></tbody>
   </table>
-  <button onclick="generateReport()">Générer un rapport</button>
+  <button onclick="generateReport()" class="btn btn-secondary mt-3">Générer un rapport</button>
 </div>
-
-
 
 </body>
 </html>

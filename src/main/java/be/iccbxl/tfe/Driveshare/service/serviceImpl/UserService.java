@@ -1,19 +1,19 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
+import be.iccbxl.tfe.Driveshare.DTO.ReservationDataDTO;
 import be.iccbxl.tfe.Driveshare.DTO.UserDTO;
+import be.iccbxl.tfe.Driveshare.config.WebSocketConfig;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.repository.*;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.UserServiceI;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,33 +22,53 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserServiceI {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
+
+    private final JavaMailSender mailSender;
+
+    private final TokenService tokenService;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final ConcurrentMap<String, Principal> connectedUsers;
 
     @Autowired
-    private RoleRepository roleRepository;
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, JavaMailSender mailSender, TokenService tokenService, BCryptPasswordEncoder bCryptPasswordEncoder, WebSocketConfig webSocketConfig) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.mailSender = mailSender;
+        this.tokenService = tokenService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.connectedUsers = webSocketConfig.getConnectedUsers();
+    }
 
-    @Autowired
-    private JavaMailSender mailSender;
+    public void addUser(String username, Principal user) {
+        connectedUsers.put(username, user);
+    }
 
-    @Autowired
-    private TokenService tokenService;
+    public void removeUser(String username) {
+        connectedUsers.remove(username);
+    }
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    public int countConnectedUsers() {
+        return connectedUsers.size();
+    }
 
-
+    public ConcurrentMap<String, Principal> getConnectedUsers() {
+        return connectedUsers;
+    }
 
 
     @Override
@@ -160,6 +180,7 @@ public class UserService implements UserServiceI {
 
     public User getAuthenticatedUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("Authentication: " + principal);  // Log pour déboguer le principal
         if (principal instanceof CustomUserDetail) {
             return ((CustomUserDetail) principal).getUser();
         } else if (principal instanceof UserDetails) {
@@ -236,4 +257,52 @@ public class UserService implements UserServiceI {
     public List<User> findByRole(String role) {
         return userRepository.findByRole(role);
     }
+
+
+    public List<String> getUserRoles(Long userId) {
+        // Récupérer l'utilisateur avec ses rôles
+        return userRepository.findById(userId)
+                .map(user -> user.getRoles().stream()
+                        .map(Role::getRole)
+                        .collect(Collectors.toList()))
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+    }
+
+
+    public List<ReservationDataDTO> getRegistrationsByMonth() {
+        // Exemple: Regrouper les utilisateurs par mois et compter
+        List<ReservationDataDTO> registrationData = userRepository.findRegistrationsByMonth();
+        return registrationData;
+    }
+
+    public List<ReservationDataDTO> getUsersGroupedByLocality() {
+        // Supposons que findUsersGroupedByLocality retourne une liste de Map<String, Object>
+        List<Map<String, Object>> result = userRepository.findUsersGroupedByLocality();
+
+        // Mapper les résultats en DTOF
+        return ReservationDataDTO.toDTOList(result);
+    }
+
+    public int countNewRegistrations() {
+        // Obtenir la date actuelle et soustraire un mois
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+
+        // Appeler le dépôt avec la date ajustée
+        return userRepository.countNewRegistrationsSince(oneMonthAgo);
+    }
+
+
+
+    // Total des utilisateurs
+    public int countTotalUsers() {
+        return (int) userRepository.count();
+    }
+
+    // Utilisateurs ayant inscrit une voiture
+    public int countUsersWithRegisteredCars() {
+        return userRepository.countUsersWithRegisteredCars();
+    }
+
+
 }
+

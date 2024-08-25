@@ -3,12 +3,12 @@ package be.iccbxl.tfe.Driveshare.restController;
 import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.DTO.NotificationDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
+import be.iccbxl.tfe.Driveshare.model.Claim;
 import be.iccbxl.tfe.Driveshare.model.Notification;
 import be.iccbxl.tfe.Driveshare.model.User;
-import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
-import be.iccbxl.tfe.Driveshare.service.serviceImpl.EmailService;
-import be.iccbxl.tfe.Driveshare.service.serviceImpl.NotificationService;
-import be.iccbxl.tfe.Driveshare.service.serviceImpl.UserService;
+import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -22,67 +22,66 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
+@Tag(name = "Notification API", description = "Gestion des notifications")
 public class NotificationRestController {
 
     @Autowired
     private NotificationService notificationService;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private CarService carService;
 
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private ClaimService claimService;
+
+    @Operation(summary = "Envoyer une notification", description = "Permet d'envoyer une notification à l'utilisateur.")
     @MessageMapping("/notification/carId/{carId}")
     @SendTo("/topic/notifications/{carId}")
-    public NotificationDTO sendNotification(NotificationDTO notificationDTO, @DestinationVariable Long carId, Principal principal) {
-        if (notificationDTO.getToUserId() == null) {
-            throw new RuntimeException("toUserId is null");
-        }
-
-        // Obtenir l'utilisateur à partir du principal
-        String email = principal.getName(); // Suppose que l'email est utilisé comme nom principal
+    public NotificationDTO sendNotification(
+            @RequestBody NotificationDTO notificationDTO,
+            @DestinationVariable Long carId,
+            Principal principal) {
+        String email = principal.getName();
         User fromUser = userService.findByEmail(email);
         User toUser = userService.getUserById(notificationDTO.getToUserId());
         Car vehicle = carService.getCarById(carId);
 
-        // Créer une nouvelle notification
         Notification notification = new Notification();
         notification.setFromUser(fromUser);
         notification.setToUser(toUser);
         notification.setCar(vehicle);
         notification.setMessage(notificationDTO.getMessage());
         notification.setType(notificationDTO.getType());
-        notification.setLu(false);
-        notification.setDateEnvoi(LocalDateTime.now());
+        notification.setSentAt(LocalDateTime.now());
 
-        // Sauvegarder la notification
         Notification savedNotification = notificationService.save(notification);
 
-        // Send email notification
-        String subject = "Vous avez reçu une nouvelle notification";
-        String body = "Bonjour " + toUser.getPrenom() + ",\n\nVous avez reçu une nouvelle notification de " + fromUser.getPrenom() + " " + fromUser.getNom() + ".\n\nMessage: " + notificationDTO.getMessage() + "\n\nCordialement,\nL'équipe Driveshare";
-        emailService.sendNotificationEmail(toUser.getEmail(), subject, body);
+        emailService.sendNotificationEmail(toUser.getEmail(), "Nouvelle notification", notificationDTO.getMessage());
 
-
-        // Convertir la notification en DTO pour l'envoyer au client
         return MapperDTO.toNotificationDTO(savedNotification);
     }
 
-
+    @Operation(summary = "Filtrer les notifications", description = "Retourne les notifications en fonction des filtres appliqués.")
     @GetMapping("/api/notifications/filter")
     @ResponseBody
-    public String filterNotifications(@RequestParam boolean tousMessages,
-                                      @RequestParam boolean recuMessages,
-                                      @RequestParam boolean envoyeMessages,
-                                      @RequestParam boolean notifications,
-                                      Principal principal) {
+    public String filterNotifications(
+            @RequestParam boolean tousMessages,
+            @RequestParam boolean recuMessages,
+            @RequestParam boolean envoyeMessages,
+            @RequestParam boolean notifications,
+            Principal principal) {
+
         String email = principal.getName();
         User currentUser = userService.findByEmail(email);
-
         List<Notification> filteredNotifications;
 
+        // Filtrer les notifications en fonction des cases cochées
         if (tousMessages) {
             filteredNotifications = notificationService.getAllNotifications(currentUser);
         } else if (recuMessages) {
@@ -92,24 +91,23 @@ public class NotificationRestController {
         } else if (notifications) {
             filteredNotifications = notificationService.getNotifications(currentUser);
         } else {
-            filteredNotifications = Collections.emptyList(); // Cas par défaut si aucun filtre n'est sélectionné
+            filteredNotifications = Collections.emptyList();
         }
 
         return notificationService.renderNotificationsHtml(filteredNotifications, currentUser);
     }
 
+
+
+
+
+    @Operation(summary = "Envoyer une plainte", description = "Envoie une notification de plainte à l'utilisateur concerné.")
     @PostMapping("/api/notifications/complaint")
-    public ResponseEntity<List<NotificationDTO>> sendComplaintNotification(@RequestBody NotificationDTO notificationDTO) {
+    public ResponseEntity<List<NotificationDTO>> sendComplaintNotification(
+            @RequestBody NotificationDTO notificationDTO) {
         List<NotificationDTO> notifications = notificationService.createComplaintNotification(notificationDTO);
         return ResponseEntity.ok(notifications);
     }
-
-
-
-
-
-
-
 }
 
 

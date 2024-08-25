@@ -19,4 +19,7 @@ public interface EvaluationRepository extends CrudRepository<Evaluation, Long> {
 
     @Query("SELECT e FROM Evaluation e JOIN e.reservation r JOIN r.car c ORDER BY c.id, e.createdAt DESC")
     List<Evaluation> findAllGroupedByCar();
+
+    @Query("SELECT e FROM Evaluation e WHERE e.reservation.car.id = :carId")
+    List<Evaluation> findByCarId(@Param("carId") Long carId);
 }

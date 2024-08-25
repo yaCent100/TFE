@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-@ControllerAdvice
+@ControllerAdvice(basePackages = "be.iccbxl.tfe.Driveshare.controller")
 public class GlobalControllerAdvice {
 
     @ModelAttribute
@@ -17,12 +17,15 @@ public class GlobalControllerAdvice {
         if (customUserDetail != null) {
             model.addAttribute("authenticatedUser", customUserDetail.getUser());
         }
-
     }
+
     @ModelAttribute
     public void addGlobalAttributes(HttpServletRequest request, HttpSession session, ServletContext servletContext, Model model) {
-        model.addAttribute("request", request);
-        model.addAttribute("session", session);
-        model.addAttribute("servletContext", servletContext);
+        // Ajout d'une vérification pour éviter les objets null
+        if (request != null) model.addAttribute("request", request);
+        if (session != null) model.addAttribute("session", session);
+        if (servletContext != null) model.addAttribute("servletContext", servletContext);
     }
 }
+
+

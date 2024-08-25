@@ -1,5 +1,6 @@
 package be.iccbxl.tfe.Driveshare.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +27,7 @@ public class Car {
     private String model;
 
     @Column(name="offer")
-    private String offre;
+    private String offer;
 
     @Column(name = "immatriculation_plate", unique = true)
     private String plaqueImmatriculation;
@@ -41,7 +42,7 @@ public class Car {
     private String adresse;
 
     @Column(name="postal_code")
-    private String codePostal;
+    private String postalCode;
 
     @Column(name="locality")
     private String locality;
@@ -55,6 +56,13 @@ public class Car {
     @Column(name = "online")
     private Boolean online; // Utilisation de Boolean au lieu de boolean
 
+    private Double latitude;
+
+    private Double longitude;
+
+    @Transient
+    private Double distance;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -63,7 +71,9 @@ public class Car {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToOne(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // Relation OneToOne avec Price
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "price_id", referencedColumnName = "id")
     private Price price;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -98,12 +108,7 @@ public class Car {
     private List<Notification> notifications;
 
 
-    private Double latitude;
 
-    private Double longitude;
-
-    @Transient
-    private Double distance;
 
 
     public void addCondition(Condition condition) {

@@ -40,46 +40,59 @@ public class ChatController {
 
     @MessageMapping("/chat/{reservationId}")
     @SendTo("/topic/messages/{reservationId}")
-    public ChatMessageDTO sendMessage(
-            ChatMessageDTO chatMessageDTO,
-            @DestinationVariable Long reservationId,
-            Principal principal) {
-
+    public ChatMessageDTO sendMessage(ChatMessageDTO chatMessageDTO,
+                                      @DestinationVariable Long reservationId,
+                                      Principal principal) {
         // Vérification de l'authentification
         if (principal == null) {
             throw new RuntimeException("No authentication available");
         }
 
-        // Récupération de l'utilisateur courant
+        // Récupération de l'utilisateur courant à partir du Principal
         CustomUserDetail userDetails = (CustomUserDetail) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
-        User fromUser = userService.getUserById(chatMessageDTO.getFromUserId());
-        if (fromUser == null) {
-            throw new RuntimeException("FromUser not found");
-        }
+        Long currentUserId = userDetails.getUser().getId();
 
-        User toUser = userService.getUserById(chatMessageDTO.getToUserId());
-        if (toUser == null) {
-            throw new RuntimeException("ToUser not found");
-        }
-
-        // Récupération de la réservation
+        // Récupération de la réservation en fonction de l'ID de réservation
         Reservation reservation = reservationService.getReservationById(reservationId);
         if (reservation == null) {
             throw new RuntimeException("Reservation not found");
+        }
+
+        // Récupération des utilisateurs liés à la réservation
+        Long reservationUserId = reservation.getUser().getId();  // Le locataire
+        Long carOwnerId = reservation.getCar().getUser().getId();  // Le propriétaire de la voiture
+
+        // Déterminer l'expéditeur et le destinataire en fonction de l'utilisateur courant
+        if (currentUserId.equals(reservationUserId)) {
+            // Si l'utilisateur actuel est le locataire
+            chatMessageDTO.setFromUserId(reservationUserId);
+            chatMessageDTO.setToUserId(carOwnerId);
+        } else if (currentUserId.equals(carOwnerId)) {
+            // Si l'utilisateur actuel est le propriétaire de la voiture
+            chatMessageDTO.setFromUserId(carOwnerId);
+            chatMessageDTO.setToUserId(reservationUserId);
+        } else {
+            throw new RuntimeException("User not part of the reservation");
         }
 
         // Création du message de chat
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setContent(chatMessageDTO.getContent());
         chatMessage.setReservation(reservation);
+        chatMessage.setFromUserId(chatMessageDTO.getFromUserId());
+        chatMessage.setToUserId(chatMessageDTO.getToUserId());
         chatMessage.setSentAt(LocalDateTime.now());
 
         // Sauvegarde du message dans la base de données
         ChatMessage savedMessage = chatMessageService.save(chatMessage);
 
-        // Conversion de l'entité en DTO pour la réponse
-        return MapperDTO.toChatMessageDTO(savedMessage);
+        // Retourne le DTO du message sauvé pour la diffusion via WebSocket
+        return MapperDTO.toChatMessageDTO(savedMessage, currentUserId);
     }
+
+
+
+
 
 
 

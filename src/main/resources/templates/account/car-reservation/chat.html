@@ -28,6 +28,52 @@
     .star-rating label:hover ~ label {
         color: #ffc107; /* Couleur dorée pour les étoiles survolées */
     }
+.chat-message.self {
+    text-align: right;
+    background-color: #d1ffd1; /* Couleur de fond pour l'utilisateur actuel */
+    border-radius: 10px 10px 0 10px;
+    margin: 5px 0;
+    display: inline-block;
+    max-width: 80%;
+}
+
+.chat-message.other {
+    text-align: left;
+    background-color: #f1f1f1; /* Couleur de fond pour l'autre utilisateur */
+    border-radius: 10px 10px 10px 0;
+    margin: 5px 0;
+    display: inline-block;
+    max-width: 80%;
+}
+
+.message-profile {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 10px;
+}
+
+.message-content {
+    display: inline-block;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #ffffff;
+}
+
+.message-text {
+    margin-bottom: 5px;
+}
+
+.message-date {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 5px;
+    text-align: right;
+}
+
+
+
+
+
   </style>
   <script th:inline="javascript">
       document.addEventListener('DOMContentLoaded', function() {
@@ -122,9 +168,9 @@
                 <input type="hidden" id="reservationEndDate" th:value="${reservationEndDate}">
                 <input type="hidden" id="fromUserId" th:value="${fromUserId}">
                 <input type="hidden" id="toUserId" th:value="${toUserId}">
-                <textarea id="message" class="form-control full-width" rows="3" placeholder="Écrivez votre message ici..."></textarea>
               </div>
-              <div class="col-lg-2 d-flex align-items-center">
+              <div class="chat-input-container">
+                <textarea id="message" class="form-control full-width" rows="3" placeholder="Écrivez votre message ici..."></textarea>
                 <button id="send-button" class="btn btn-primary w-100" onclick="sendMessage(event)">Envoyer</button>
               </div>
             </div>
@@ -152,6 +198,13 @@
               <p th:text="${carAddress}"></p>
               <hr class="bg-light fw-bold">
             </div>
+          </div>
+          <div>
+            <!-- Vérifiez si c'est le propriétaire -->
+            <p th:if="${isOwner}" class="fw-bold">Propriétaire</p>
+
+            <!-- Sinon, affichez Locataire -->
+            <p th:unless="${isOwner}" class="fw-bold">Locataire</p>
           </div>
           <!-- Bouton pour télécharger le contrat de location -->
           <div class="mt-4" th:if="${reservationStatus == 'CONFIRMED'}">
@@ -251,8 +304,8 @@
     </div>
   </div>
 
-  <!-- Modal pour faire une réclamation -->
-  <div class="modal fade" id="claimModal" tabindex="-1" aria-labelledby="claimModalLabel" aria-hidden="true">
+  <!-- Modal Bootstrap pour soumettre une réclamation -->
+  <div class="modal" id="claimModal" tabindex="-1" aria-labelledby="claimModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -262,9 +315,11 @@
         <div class="modal-body">
           <form id="claim-form">
             <div class="mb-3">
-              <label for="claimMessage" class="form-label">Description de la réclamation</label>
-              <textarea id="claimMessage" class="form-control" rows="4" required></textarea>
+              <label for="claimMessage" class="form-label">Votre réclamation</label>
+              <textarea id="claimMessage" class="form-control" rows="4"></textarea>
             </div>
+            <input type="hidden" th:value="${reservationId}"> <!-- ID de la réservation -->
+            <input type="hidden" id="claimantRole"> <!-- Rôle de l'utilisateur sera défini dynamiquement -->
             <button type="submit" class="btn btn-primary">Envoyer</button>
           </form>
         </div>
@@ -359,7 +414,36 @@
         }
     }
 
-    function openClaimModal() {
+ function openClaimModal() {
+        // Obtenir l'ID de réservation à partir de l'URL
+        var pathArray = window.location.pathname.split('/');
+        var reservationId = pathArray[pathArray.length - 1]; // Supposons que l'ID de réservation est à la fin de l'URL
+
+        // Vérifiez que l'ID de réservation est valide
+        if (!reservationId || isNaN(reservationId)) {
+            alert("ID de réservation invalide.");
+            return;
+        }
+
+        // Récupérer le rôle de l'utilisateur pour cette réservation
+        fetch(`/api/claims/${reservationId}/role`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.role) {
+                    document.getElementById('claimantRole').value = data.role; // Remplir le champ caché avec le rôle
+                    document.getElementById('reservationId').value = reservationId; // Remplir l'ID de la réservation
+                } else {
+                    console.error('Impossible de déterminer le rôle pour cette réservation.');
+                    alert("Erreur lors de la récupération du rôle.");
+                    return;
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération du rôle de l\'utilisateur :', error);
+                alert("Erreur lors de la récupération du rôle.");
+            });
+
+        // Ouvrir la modal de réclamation
         var claimModal = new bootstrap.Modal(document.getElementById('claimModal'));
         claimModal.show();
     }
@@ -367,10 +451,11 @@
     document.getElementById('claim-form').addEventListener('submit', function(event) {
         event.preventDefault();
 
-        var message = document.getElementById('claimMessage').value;
         var reservationId = document.getElementById('reservationId').value;
+        var claimantRole = document.getElementById('claimantRole').value;
+        var message = document.getElementById('claimMessage').value;
 
-        if (!message) {
+        if (!message || !reservationId || !claimantRole) {
             alert("Veuillez remplir tous les champs.");
             return;
         }
@@ -378,10 +463,11 @@
         var claim = {
             message: message,
             reservationId: reservationId,
-            fromUserId: document.getElementById('fromUserId').value // ID de l'utilisateur qui fait la réclamation
+            claimantRole: claimantRole
         };
 
-        fetch('/api/notifications/complaint', {
+        // Envoyer la réclamation au serveur
+        fetch('/api/claims/submit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -397,19 +483,16 @@
             return response.json();
         })
         .then(data => {
-            if (data && data.length > 0) {
-                alert('Votre réclamation a été envoyée avec succès.');
-                var claimModal = bootstrap.Modal.getInstance(document.getElementById('claimModal'));
-                claimModal.hide();
-            } else {
-                throw new Error('Erreur lors de l\'envoi de la réclamation.');
-            }
+            alert('Votre réclamation a été envoyée avec succès.');
+            var claimModal = bootstrap.Modal.getInstance(document.getElementById('claimModal'));
+            claimModal.hide();
         })
         .catch(error => {
             console.error('Erreur:', error);
             alert('Une erreur s\'est produite lors de l\'envoi de votre réclamation : ' + error.message);
         });
     });
+
   </script>
 </div>
 </body>

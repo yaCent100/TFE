@@ -11,7 +11,7 @@ public class EvaluationDTO {
     private Integer note;
     private String avis;
     private Long reservationId; // pour stocker l'ID de la réservation associée
-
+    private Long carId; // pour stocker l'ID de la voiture associée
 
     private String carPhotoUrl;
     private String carBrand;

@@ -2,7 +2,7 @@
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main}">
 <head>
   <meta charset="UTF-8">
-  <title>Mes Notifications</title>
+  <title>Mes Notifications et Réclamations</title>
   <style>
         .tab-pane {
             margin-top: 20px;
@@ -28,26 +28,48 @@
         document.getElementById('replyButton' + notificationId).style.display = 'none';
     }
 
-    function applyFilters() {
-        const tousMessages = document.getElementById('tousMessages').checked;
-        const recuMessages = document.getElementById('recuMessages').checked;
-        const envoyeMessages = document.getElementById('envoyeMessages').checked;
-        const notifications = document.getElementById('notifications').checked;
+  function applyFilters() {
+    // Notifications Checkboxes
+    const tousMessages = document.getElementById('tousMessages').checked;
+    const recuMessages = document.getElementById('recuMessages').checked;
+    const envoyeMessages = document.getElementById('envoyeMessages').checked;
 
-        fetch(`/api/notifications/filter?tousMessages=${tousMessages}&recuMessages=${recuMessages}&envoyeMessages=${envoyeMessages}&notifications=${notifications}`)
+    // Réclamations Checkboxes
+    const reclamations = document.getElementById('reclamations').checked;
+    const enCours = document.getElementById('enCours').checked;
+    const termine = document.getElementById('termine').checked;
+    const enAttente = document.getElementById('enAttente').checked;
+
+    // Always include all parameters, set them to false if not checked
+    const notificationsChecked = tousMessages || recuMessages || envoyeMessages;
+
+    // Fetch notifications if any checkbox related to notifications is checked
+    if (notificationsChecked) {
+        fetch(`/api/notifications/filter?tousMessages=${tousMessages}&recuMessages=${recuMessages}&envoyeMessages=${envoyeMessages}&notifications=true`)
             .then(response => response.text())
             .then(html => {
                 document.getElementById('notificationsTabContent').innerHTML = html;
             });
     }
+
+    // Fetch réclamations if the checkbox for reclamations is checked
+    if (reclamations || enCours || termine || enAttente) {
+        fetch(`/api/claims/filter?enCours=${enCours}&termine=${termine}&enAttente=${enAttente}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('reclamationsTabContent').innerHTML = html;
+            });
+    }
+}
+
   </script>
 </head>
 <body>
 <div layout:fragment="content">
 
-  <div th:replace="account/fragments/account-header"></div>
+  <div  th:replace="~{account/fragments/account-header}"></div>
 
-  <div class="container " style="padding-top:5rem; padding-bottom:5rem;">
+  <div class="container" style="padding-top:5rem; padding-bottom:5rem;">
     <div>
       <a href="/account">Précédent</a>
     </div>
@@ -56,36 +78,43 @@
       <!-- Sidebar -->
       <div class="col-md-3 sidebar">
         <div class="notification-filters">
-          <h5 class="text-center">Mes notifications</h5>
-          <hr>
           <form>
+            <h5 class="text-center">Mes Notifications</h5>
+            <hr>
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="tousMessages" onclick="applyFilters()">
-              <label class="form-check-label" for="tousMessages">
-                Tous les messages
-              </label>
+              <label class="form-check-label" for="tousMessages">Tous les messages</label>
             </div>
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="recuMessages" onclick="applyFilters()">
-              <label class="form-check-label" for="recuMessages">
-                Messages reçus
-              </label>
+              <label class="form-check-label" for="recuMessages">Messages reçus</label>
             </div>
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="envoyeMessages" onclick="applyFilters()">
-              <label class="form-check-label" for="envoyeMessages">
-                Messages envoyés
-              </label>
+              <label class="form-check-label" for="envoyeMessages">Messages envoyés</label>
+            </div>
+
+            <h5 class="text-center">Mes Réclamations</h5>
+            <hr>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="reclamations" onclick="applyFilters()">
+              <label class="form-check-label" for="reclamations">Réclamations</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="notifications" onclick="applyFilters()">
-              <label class="form-check-label" for="notifications">
-                Notifications
-              </label>
+              <input class="form-check-input" type="checkbox" value="EN_COURS" id="enCours" onclick="applyFilters()">
+              <label class="form-check-label" for="enCours">En cours</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="TERMINE" id="termine" onclick="applyFilters()">
+              <label class="form-check-label" for="termine">Terminé</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="EN_ATTENTE" id="enAttente" onclick="applyFilters()">
+              <label class="form-check-label" for="enAttente">En attente</label>
             </div>
           </form>
-
         </div>
+
       </div>
 
       <!-- Contenu principal -->
@@ -103,75 +132,19 @@
           </li>
         </ul>
         <div class="tab-content" id="notificationsTabContent">
-          <div class="tab-pane fade show active" id="nouveaux" role="tabpanel" aria-labelledby="nouveaux-tab">
-            <div th:each="notification : ${notificationsNonLues}">
-              <div>
-                <img th:src="@{'/uploads/profil/' + notification.user.profilUrl}">
-              </div>
-              <div class="notification unread">
-                <p th:text="${notification.message}"></p>
-                <small th:text="${#temporals.format(notification.dateEnvoi, 'dd-MM-yyyy HH:mm')}"></small>
-                <button class="btn btn-primary mt-2" data-bs-toggle="modal" th:data-bs-target="'#replyModal' + ${notification.id}">Répondre</button>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="tous" role="tabpanel" aria-labelledby="tous-tab">
-            <div th:each="notification : ${notificationsLues}">
-              <div class="notification read">
-                <p th:text="${notification.message}"></p>
-                <small th:text="${#temporals.format(notification.dateEnvoi, 'dd-MM-yyyy HH:mm')}"></small>
-                <button class="btn btn-primary mt-2" data-bs-toggle="modal" th:data-bs-target="'#replyModal' + ${notification.id}">Répondre</button>
-              </div>
-            </div>
-          </div>
+          <!-- Notifications content will be rendered here via fetch -->
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Modals pour répondre aux notifications -->
-  <div th:each="notification : ${notificationsNonLues}">
-    <div th:id="'replyModal' + ${notification.id}" class="modal fade" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="replyModalLabelNonLue">Répondre à la notification</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form th:action="@{/notifications/reply}" method="post">
-              <div class="mb-3">
-                <label for="replyMessage" class="form-label">Message</label>
-                <textarea class="form-control" id="replyMessageNonlue" name="replyMessage" rows="3"></textarea>
-              </div>
-              <input type="hidden" name="notificationId" th:value="${notification.id}">
-              <button type="submit" class="btn btn-primary">Envoyer</button>
-            </form>
-          </div>
+        <div>
+          <h3>Mes réclamations</h3>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <div th:each="notification : ${notificationsLues}">
-    <div th:id="'replyModal' + ${notification.id}" class="modal fade" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="replyModalLabelLue">Répondre à la notification</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form th:action="@{/notifications/reply}" method="post">
-              <div class="mb-3">
-                <label for="replyMessage" class="form-label">Message</label>
-                <textarea class="form-control" id="replyMessageLue" name="replyMessage" rows="3"></textarea>
-              </div>
-              <input type="hidden" name="notificationId" th:value="${notification.id}">
-              <input type="hidden" name="carId" th:value="${notification.car.id}">
-              <button type="submit" class="btn btn-primary">Envoyer</button>
-            </form>
-          </div>
+        <ul class="nav nav-tabs" id="reclamationsTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="reclamations-tab" data-toggle="tab" href="#reclamations" role="tab" aria-controls="reclamations" aria-selected="true">Réclamations</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="reclamationsTabContent">
+          <!-- Réclamations content will be rendered here via fetch -->
         </div>
       </div>
     </div>

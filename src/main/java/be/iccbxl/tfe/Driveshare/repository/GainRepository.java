@@ -24,6 +24,7 @@ public interface GainRepository extends JpaRepository<Gain, Long> {
             "WHERE u.id = :userId AND g.dateGain BETWEEN :startDate AND :endDate")
     List<Gain> findByUserIdAndDateRange(@Param("userId") Long userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
+    List<Gain> findByStatutAndDateGainBefore(String enAttenteDeVersement, LocalDateTime localDateTime);
 }
 
 

@@ -13,12 +13,21 @@ h1, h3, h4, h5, h6 {
  line-height: 2rem !important;
  }
 
+/*----------------------FOOTER*------------------*/
+.footer-pdf{
+    color:#909b9b;
+    font-weight: bold;
+    margin-right:10px;
+    font-size:small;
+
+}
 
 /* nav */
 
 nav {
  background-color: #354C6F;
  }
+
 
 .navbar-brand-custom {
     display: inline-block;
@@ -37,6 +46,17 @@ nav {
     text-decoration: none;
     color: #FBFBFBFB;
 }
+
+.louez-une-voiture {
+    border: 1px solid white; /* Bord de 1px blanc */
+    border-radius: 10px;     /* Rayon de bordure de 10px pour arrondir les coins */
+    background-color: 	#00BFFF;  /* Fond bleu */
+    padding: 10px;           /* Optionnel : Ajoutez un peu de padding pour plus d'espacement à l'intérieur */
+    color: white;            /* Optionnel : Texte en blanc pour contraster avec le fond bleu */
+    text-align: center;      /* Optionnel : Centrer le texte à l'intérieur */
+    font-style:normal;
+}
+
 
 /*HOME*/
 

@@ -122,7 +122,7 @@ public class CarDTO {
         this.model = car.getModel();
         this.fuelType = car.getFuelType();
         this.adresse = car.getAdresse();
-        this.codePostal = car.getCodePostal();
+        this.codePostal = car.getPostalCode();
         this.locality = car.getLocality();
         this.plaqueImmatriculation = car.getPlaqueImmatriculation();
         this.firstImmatriculation = car.getFirstImmatriculation();
@@ -149,7 +149,7 @@ public class CarDTO {
         this.brand = car.getBrand();
         this.model = car.getModel();
         this.adresse = car.getAdresse();
-        this.codePostal = car.getCodePostal();
+        this.codePostal = car.getPostalCode();
         this.locality = car.getLocality();
         this.latitude = car.getLatitude();
         this.longitude = car.getLongitude();

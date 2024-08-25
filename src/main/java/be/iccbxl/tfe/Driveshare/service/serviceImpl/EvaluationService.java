@@ -2,6 +2,7 @@ package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
 import be.iccbxl.tfe.Driveshare.DTO.EvaluationDTO;
+import be.iccbxl.tfe.Driveshare.DTO.EvaluationDashboardDTO;
 import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Evaluation;
@@ -14,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -115,5 +114,55 @@ public class EvaluationService implements EvaluationServiceI {
         }
         evaluationRepository.deleteById(id);
     }
+
+
+    // Méthode pour obtenir les données du tableau de bord
+    public EvaluationDashboardDTO getEvaluationDashboardData() {
+        List<Evaluation> evaluations = (List<Evaluation>) evaluationRepository.findAll();
+
+        int totalEvaluations = evaluations.size();
+        double averageRating = evaluations.stream()
+                .mapToDouble(Evaluation::getNote)
+                .average()
+                .orElse(0.0);
+
+        // Utilisation d'un Set pour éviter les doublons d'utilisateurs
+        Set<Long> uniqueUsers = new HashSet<>();
+        Map<String, Long> evaluationsByDay = new HashMap<>();
+
+        // Traitement de chaque évaluation
+        for (Evaluation evaluation : evaluations) {
+            try {
+                // Vérifier si la réservation existe et est valide
+                if (evaluation.getReservation() != null && evaluation.getReservation().getUser() != null) {
+                    // Ajout de l'utilisateur unique
+                    uniqueUsers.add(evaluation.getReservation().getUser().getId());
+
+                    // Calcul des évaluations par jour
+                    String day = evaluation.getCreatedAt().toLocalDate().toString();
+                    evaluationsByDay.put(day, evaluationsByDay.getOrDefault(day, 0L) + 1);
+                } else {
+                    // Vous pouvez loguer ou ignorer cette évaluation si la réservation ou l'utilisateur est manquant
+                    System.out.println("Évaluation sans réservation valide ou utilisateur, ID: " + evaluation.getId());
+                }
+            } catch (Exception e) {
+                // Loguer l'exception en cas de problème inattendu
+                System.err.println("Erreur lors du traitement de l'évaluation ID: " + evaluation.getId() + " - " + e.getMessage());
+            }
+        }
+
+        // Calcul du nombre total d'utilisateurs uniques
+        int totalUsers = uniqueUsers.size();
+
+        // Retourner un DTO avec les données du tableau de bord
+        return new EvaluationDashboardDTO(totalEvaluations, averageRating, totalUsers, evaluationsByDay);
     }
+
+
+
+    public List<EvaluationDTO> getEvaluationsByCarId(Long carId) {
+        List<Evaluation> evaluations = evaluationRepository.findByCarId(carId);
+        return evaluations.stream().map(MapperDTO::toEvaluationDTO).collect(Collectors.toList());
+    }
+}
 

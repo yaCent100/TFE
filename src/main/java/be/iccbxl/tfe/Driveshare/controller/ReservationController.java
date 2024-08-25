@@ -54,8 +54,8 @@ public class ReservationController {
             Reservation reservation = new Reservation();
             reservation.setCar(car);
             reservation.setUser(user);
-            reservation.setDebutLocation(startDate);
-            reservation.setFinLocation(endDate);
+            reservation.setStartLocation(startDate);
+            reservation.setEndLocation(endDate);
             reservation.setStatut("PAYMENT_PENDING");
             reservation.setNbJours((int) duration);
             reservation.setCreatedAt(LocalDateTime.now());

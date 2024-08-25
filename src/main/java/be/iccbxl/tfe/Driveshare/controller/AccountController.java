@@ -22,7 +22,6 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,6 +47,7 @@ public class AccountController {
     private final NotificationService notificationService;
 
     private final EvaluationService evaluationService;
+    private final ClaimService claimService;
 
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
@@ -58,7 +58,7 @@ public class AccountController {
     @Autowired
     public AccountController(UserService userService, PhotoService photoService, GainService gainService, CarService carService, FileStorageService fileStorageService, DocumentService documentService,
                              BCryptPasswordEncoder passwordEncoder, PaymentService paymentService, DateService dateService, CategoryService categoryService,
-                             FeatureService featureService, EquipmentService equipmentService, ReservationService reservationService, NotificationService notificationService, EvaluationService evaluationService) {
+                             FeatureService featureService, EquipmentService equipmentService, ReservationService reservationService, NotificationService notificationService, EvaluationService evaluationService, ClaimService claimService) {
         this.userService = userService;
         this.photoService = photoService;
         this.gainService = gainService;
@@ -74,6 +74,7 @@ public class AccountController {
         this.reservationService = reservationService;
         this.notificationService = notificationService;
         this.evaluationService = evaluationService;
+        this.claimService = claimService;
     }
 
 
@@ -129,13 +130,13 @@ public class AccountController {
                              RedirectAttributes redirectAttributes) {
         // Mettre à jour les informations de l'utilisateur
         User user = userDetails.getUser();
-        user.setPrenom(prenom);
-        user.setNom(nom);
+        user.setFirstName(prenom);
+        user.setLastName(nom);
         user.setEmail(email);
         user.setAdresse(adresse);
         user.setLocality(locality);
-        user.setCodePostal(codePostal);
-        user.setTelephoneNumber(telephoneNumber);
+        user.setPostalCode(codePostal);
+        user.setPhone(telephoneNumber);
 
         // Sauvegarder les changements dans la base de données
         userService.updateUser(user);
@@ -202,17 +203,27 @@ public class AccountController {
     public String getNotifications(HttpServletRequest request, Model model, @AuthenticationPrincipal CustomUserDetail userDetails) {
         User user = userDetails.getUser();
         List<Notification> notifications = notificationService.getNotificationsForUser(user.getId());
+        List<Claim> claims = claimService.getClaimsForUser(user.getId());
 
-        List<Notification> notificationsNonLues = notifications.stream().filter(n -> !n.isLu()).collect(Collectors.toList());
-        List<Notification> notificationsLues = notifications.stream().filter(Notification::isLu).collect(Collectors.toList());
+
+        // Filtrer les notifications non lues et lues tout en gérant le cas où isRead est null
+        List<Notification> notificationsNonLues = notifications.stream()
+                .filter(n -> Boolean.FALSE.equals(n.getIsRead())) // Gère le cas où isRead est null
+                .collect(Collectors.toList());
+
+        List<Notification> notificationsLues = notifications.stream()
+                .filter(n -> Boolean.TRUE.equals(n.getIsRead())) // Gère le cas où isRead est null
+                .collect(Collectors.toList());
 
         model.addAttribute("user", user);
         model.addAttribute("notificationsNonLues", notificationsNonLues);
         model.addAttribute("notificationsLues", notificationsLues);
+        model.addAttribute("claims", claims);
         model.addAttribute("requestURI", request.getRequestURI());
 
         return "account/notification-user";
     }
+
 
 
 
@@ -606,7 +617,7 @@ public class AccountController {
         String carImageUrl = (car.getPhotos() != null && !car.getPhotos().isEmpty())
                 ? "/uploads/" + car.getPhotos().get(0).getUrl()
                 : "default-car.png";
-        String carAddress = car.getAdresse() + ", " + car.getCodePostal() + " " + car.getLocality();
+        String carAddress = car.getAdresse() + ", " + car.getPostalCode() + " " + car.getLocality();
 
         // Déterminer si l'utilisateur est le propriétaire ou le locataire
         boolean isOwner = user.getId().equals(car.getUser().getId());
@@ -618,8 +629,8 @@ public class AccountController {
         }
 
         // Conversion des dates en objets LocalDate si nécessaire
-        LocalDate debutLocation = reservation.getDebutLocation();
-        LocalDate finLocation = reservation.getFinLocation();
+        LocalDate debutLocation = reservation.getStartLocation();
+        LocalDate finLocation = reservation.getEndLocation();
 
         String formattedStartDate = dateService.formatAndCapitalizeDate(debutLocation);
         String formattedEndDate = dateService.formatAndCapitalizeDate(finLocation);
@@ -687,8 +698,7 @@ public class AccountController {
         replyNotification.setFromUser(fromUser);
         replyNotification.setToUser(originalNotification.getFromUser());
         replyNotification.setMessage(replyMessage);
-        replyNotification.setDateEnvoi(LocalDateTime.now());
-        replyNotification.setLu(false);
+        replyNotification.setSentAt(LocalDateTime.now());
         replyNotification.setType("reply"); // Assurez-vous de définir le type
         notificationService.save(replyNotification);
         logger.debug("Reply notification saved");

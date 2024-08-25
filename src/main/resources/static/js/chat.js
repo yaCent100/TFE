@@ -1,15 +1,40 @@
 var stompClient = null;
 
-
 async function connect() {
     var socket = new SockJS('/chat-websocket');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, onConnected, onError);
+
+    stompClient.connect({}, function(frame) {
+        console.log('Connected: ' + frame);
+
+        // Abonnement aux messages de chat
+        subscribeToChatMessages();
+
+        // Abonnement aux notifications
+        subscribeToNotifications();
+    }, onError);
 }
 
-function onConnected() {
-    stompClient.subscribe('/topic/messages/' + reservationId, onMessageReceived);
-    console.log("Connected to WebSocket server. Subscription to topic/messages/" + reservationId);
+function subscribeToChatMessages() {
+    var reservationId = document.getElementById("reservationId").value;
+
+    if (reservationId) {
+        stompClient.subscribe('/topic/messages/' + reservationId, onMessageReceived);
+        console.log("Subscribed to chat topic: /topic/messages/" + reservationId);
+    } else {
+        console.error('Reservation ID not found, cannot subscribe to chat messages.');
+    }
+}
+
+function subscribeToNotifications() {
+    var vehicleId = document.getElementById("vehicleId").value;
+
+    if (vehicleId) {
+        stompClient.subscribe('/topic/notifications/carId/' + vehicleId, onNotificationReceived);
+        console.log("Subscribed to notifications topic: /topic/notifications/carId/" + vehicleId);
+    } else {
+        console.error('Vehicle ID not found, cannot subscribe to notifications.');
+    }
 }
 
 function onError(error) {
@@ -35,62 +60,83 @@ function sendMessage(event) {
         stompClient.send("/app/chat/" + reservationId, {}, JSON.stringify(chatMessage));
         console.log("Message sent: ", chatMessage);
 
-        // Afficher immédiatement le message dans l'UI
-        displayMessage({
-            fromUserNom: 'Vous',
-            content: messageContent,
-            sentAt: new Date().toISOString()
-        });
-
-        document.querySelector('#message').value = ''; // Efface le champ de saisie du message
+        // Effacer le champ de saisie du message sans l'afficher immédiatement
+        document.querySelector('#message').value = '';
     } else {
         console.log('Message content is empty or WebSocket connection not established.');
     }
 }
 
 async function fetchMessages() {
+    var reservationId = document.getElementById("reservationId").value;
+    console.log("Fetching messages for reservation ID:", reservationId);
+
     try {
         const response = await fetch(`/api/messages/reservation/${reservationId}`);
+        console.log("Fetch response received:", response);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
         const messages = await response.json();
+        console.log("Messages fetched:", messages);
         messages.forEach(message => displayMessage(message));
     } catch (error) {
         console.error('Error fetching messages:', error);
     }
 }
+
 function displayMessage(message) {
-    // Vérifiez si le message contient les informations nécessaires
-    if (!message || !message.fromUserNom || !message.content || !message.sentAt) {
+    if (!message || !message.fromUserNom || !message.content || !message.sentAt || !message.fromUserId) {
         console.error('Message data is incomplete:', message);
         return;
     }
 
-    // Créez l'élément du message
+    // ID de l'utilisateur actuel (celui connecté)
+    var currentUserId = parseInt(document.querySelector('#fromUserId').value);
+
+    // Vérifier si l'utilisateur actuel est l'expéditeur du message
+    var isSelf = (message.fromUserId === currentUserId);
+
     var messageElement = document.createElement('div');
     messageElement.classList.add('chat-message');
 
-    // Créez et ajoutez l'image de profil
+    // Ajouter une classe pour styliser si le message provient de l'utilisateur actuel ou non
+    if (isSelf) {
+        messageElement.classList.add('self');
+    } else {
+        messageElement.classList.add('other');
+    }
+
+    // Créez l'élément de l'image de profil
     var profileElement = document.createElement('div');
     profileElement.classList.add('message-profile');
     var profileImage = document.createElement('img');
-    profileImage.src = message.profileImageUrl || 'uploads/profil/defaultPhoto.png'; // Utilisez une URL d'image par défaut si aucune image n'est fournie
+    profileImage.src = '/uploads/profil/' + (message.profileImageUrl || 'defaultProfil.png');
     profileElement.appendChild(profileImage);
 
-    // Créez et ajoutez le contenu du message
+    // Créez le conteneur de contenu du message
     var contentElement = document.createElement('div');
     contentElement.classList.add('message-content');
 
-    var userElement = document.createElement('div');
-    userElement.classList.add('message-user');
-    userElement.textContent = message.fromUserNom || 'Unknown'; // Affichez 'Unknown' si le nom de l'utilisateur est manquant
+    // Affichez le nom de l'utilisateur si le message vient de quelqu'un d'autre
+    if (!isSelf) {
+        var userElement = document.createElement('div');
+        userElement.classList.add('message-user');
+        userElement.textContent = message.fromUserNom;
+        contentElement.appendChild(userElement);
+    }
 
+    // Créez l'élément texte du message
     var textElement = document.createElement('div');
     textElement.classList.add('message-text');
-    textElement.textContent = message.content || 'No content'; // Affichez 'No content' si le contenu du message est manquant
+    textElement.textContent = message.content;
+    contentElement.appendChild(textElement);
 
+    // Créez l'élément date
     var dateElement = document.createElement('div');
     dateElement.classList.add('message-date');
-
-    // Formatez la date du message
     var messageDate = new Date(message.sentAt);
     if (isNaN(messageDate.getTime())) {
         console.error('Invalid Date:', message.sentAt);
@@ -102,60 +148,64 @@ function displayMessage(message) {
         dateElement.textContent = formattedDate;
     }
 
-    // Ajoutez les éléments au message
-    contentElement.appendChild(userElement);
-    contentElement.appendChild(textElement);
-
     messageElement.appendChild(profileElement);
     messageElement.appendChild(contentElement);
     messageElement.appendChild(dateElement);
 
-    // Ajoutez le message à la zone de chat
     var chatArea = document.querySelector('.chat-area');
     if (chatArea) {
         chatArea.appendChild(messageElement);
-        chatArea.scrollTop = chatArea.scrollHeight; // Faites défiler vers le bas
+        chatArea.scrollTop = chatArea.scrollHeight;
     } else {
         console.error('Element with class .chat-area not found');
     }
 }
 
 
-function onMessageReceived(payload) {
-    console.log("Message received: ", payload);
-    var message = JSON.parse(payload.body);
-    console.log("Parsed message: ", message);
 
-    if (!message.fromUserNom || !message.content || !message.sentAt) {
-        console.error("Missing required message fields:", message);
+let receivedMessageIds = new Set();
+
+function onMessageReceived(payload) {
+    var message = JSON.parse(payload.body);
+    console.log("Message reçu via WebSocket:", message); // Ajoutez ce log pour voir le message reçu.
+
+    // Vérifiez que les informations du message sont correctes
+    if (!message || !message.content || !message.fromUserId || !message.toUserId) {
+        console.error('Message data is incomplete or incorrect:', message);
         return;
     }
 
     displayMessage(message);
 }
 
-document.addEventListener('DOMContentLoaded', (event) => {
+
+function onNotificationReceived(payload) {
+    var notification = JSON.parse(payload.body);
+    console.log("Notification received: ", notification);
+    // Handle the notification here
+}
+
+document.addEventListener('DOMContentLoaded', () => {
     console.log("Document loaded. Connecting to WebSocket...");
-    connect();
-    document.querySelector('#chat-form').addEventListener('submit', sendMessage, true);
+
+    connect();  // Initialize WebSocket connection
+
+    var chatForm = document.querySelector('#chat-form');
+    if (chatForm) {
+        chatForm.addEventListener('submit', sendMessage, true);
+    }
+
     fetchMessages();  // Fetch messages when the document is loaded
 });
 
-
 /*--------------- NOTIFICATIONS ----------*/
-// Establish WebSocket connection
-var socket = new SockJS('/chat-websocket');
-var stompClient = Stomp.over(socket);
+document.getElementById('sendNotificationButton').addEventListener('click', function () {
+    var message = document.getElementById('notification-message').value;
+    var toUserId = document.getElementById('toUserId').value;
+    var fromUserId = document.getElementById('fromUserId').value;
+    var vehicleId = document.getElementById('vehicleId').value;
 
-stompClient.connect({}, function (frame) {
-    console.log('Connected: ' + frame);
-
-    document.getElementById('sendNotificationButton').addEventListener('click', function () {
-        var message = document.getElementById('notification-message').value;
-        var toUserId = document.getElementById('toUserId').value;
-        var fromUserId = document.getElementById('fromUserId').value;
-        var vehicleId = document.getElementById('vehicleId').value;
-
+    if (message && stompClient) {
         var notification = {
             toUserId: toUserId,
             fromUserId: fromUserId,
@@ -166,16 +216,9 @@ stompClient.connect({}, function (frame) {
 
         stompClient.send("/app/notification/carId/" + vehicleId, {}, JSON.stringify(notification));
 
-        // Fermer le modal après l'envoi en utilisant jQuery
         $('#messageModal').modal('hide');
-
-        // Réinitialiser le formulaire
         document.getElementById('notification-form').reset();
-    });
+    } else {
+        console.log('Notification content is empty or WebSocket connection not established.');
+    }
 });
-
-
-
-
-
-

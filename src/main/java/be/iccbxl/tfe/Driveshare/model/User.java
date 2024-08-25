@@ -19,26 +19,26 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="Nom")
-    private String nom;
+    @Column(name="last_name")
+    private String lastName;
 
-    @Column(name="Prenom")
-    private String prenom;
+    @Column(name="first_name")
+    private String firstName;
 
-    @Column(name="Email")
+    @Column(name="email")
     private String email;
 
-    @Column(name="Adresse")
+    @Column(name="adresse")
     private String adresse;
 
     @Column(name="locality")
     private String locality;
 
-    @Column(name="code_postal")
-    private String codePostal;
+    @Column(name="postal_code")
+    private String postalCode;
 
-    @Column(name = "telephone")
-    private String telephoneNumber;
+    @Column(name = "phone")
+    private String phone;
 
     @Column(name="password")
     private String password;
@@ -54,6 +54,9 @@ public class User {
 
     @Column(name="created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    private boolean isVerified;
+
 
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Car> ownedCars;
@@ -109,7 +112,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", username='" + nom + '\'' +
+                ", username='" + firstName + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }

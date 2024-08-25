@@ -31,9 +31,9 @@ public class Notification {
     @Column
     private String message;
 
-    @Column
-    private boolean lu;
+    @Column(nullable = false)
+    private Boolean isRead = false; // Par défaut, la notification n'est pas lue
 
     @Column(name = "created_at")
-    private LocalDateTime dateEnvoi;
+    private LocalDateTime sentAt;
 }

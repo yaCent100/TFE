@@ -10,4 +10,5 @@ public class FaqController {
     public String showFaq() {
         return "faq/index"; // Le nom de votre template Thymeleaf pour la page FAQ
     }
+
 }

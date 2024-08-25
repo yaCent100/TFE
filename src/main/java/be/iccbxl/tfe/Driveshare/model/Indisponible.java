@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "unavailability")
+@Table(name = "unavailabilities")
 public class Indisponible {
 
     @Id

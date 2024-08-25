@@ -13,24 +13,23 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "car_id")
+    @OneToOne(mappedBy = "price")
     private Car car;
 
     @Column(name = "high_price")
-    private Double highPrice;
+    private double highPrice;
 
     @Column(name = "middle_price")
-    private Double middlePrice;
+    private double middlePrice;
 
     @Column(name = "low_price")
-    private Double lowPrice;
+    private double lowPrice;
 
     @Column(name = "promo_1")
-    private Double promo1;  // Pourcentage de réduction si en promotion
+    private double promo1;  // Pourcentage de réduction si en promotion
 
     @Column(name = "promo_2")
-    private Double promo2;
+    private double promo2;
 
 
 }

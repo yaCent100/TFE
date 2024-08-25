@@ -29,8 +29,8 @@ public class Payment {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "montant_driveshare", nullable = false)
-    private double prixPourDriveShare;
+    @Column(name = "part_driveshare", nullable = false)
+    private double partDriveShare;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")

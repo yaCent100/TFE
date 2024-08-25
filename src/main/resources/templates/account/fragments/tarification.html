@@ -32,40 +32,82 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-4 text-center">
                                             <p class="medium mgb-10 tcenter">Prix basse saison <span class="normal italic">(€)</span></p>
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <input type="number" class="form-control bradius-bis w100p text-center price-input" name="low_season_price" min="10" max="200" value="45" data-parsley-id="6" th:value="${car.price.lowPrice}">
                                                 </div>
                                                 <div class="col-lg-12">
-                                                    <p class="fs16 mgl-40 tcenter">Prix de votre voiture pour une journée de location  en basse saison.</p>
+                                                    <p class="mgl-40 tcenter">Prix de votre voiture pour une journée de location  en basse saison.</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-4 text-center">
                                             <p class="medium mgb-10 tcenter">Prix Moyenne saison <span class="light italic">(€)</span></p>
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <input type="number" class="form-control bradius-bis w100p text-center price-input" name="medium_season_price" min="10" max="200" value="55" data-parsley-id="8" th:value="${car.price.middlePrice}">
                                                 </div>
                                                 <div class="col-lg-12">
-                                                    <p class="fs16 mgl-40 tcenter">Prix de votre voiture pour une journée de location , en moyenne saison.</p>
+                                                    <p class="mgl-40">Prix de votre voiture pour une journée de location , en moyenne saison.</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-4">
-                                            <p class="medium mgb-10 tcenter">Prix Haute saison <span class="light">(€)</span></p>
+                                        <div class="col-lg-4 text-center">
+                                            <p class="medium mgb-10">Prix Haute saison <span class="text-muted">(€)</span></p>
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <input type="number" class="form-control bradius-bis w100p text-center price-input" name="high_season_price" min="10" max="200" value="74" data-parsley-id="10" th:value="${car.price.highPrice}">
                                                 </div>
                                                 <div class="col-lg-12">
-                                                    <p class="fs16 mgl-40 tcenter">Prix de votre voiture pour une journée de location, en haute saison.</p>
+                                                    <p class="mgl-40 ">Prix de votre voiture pour une journée de location, en haute saison.</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <a id="toggle-link">Voir la tarification des véhicules</a>
+
+                                    <div id="pricing-container" class="pricing-container">
+                                        <table class="pricing-table">
+                                            <thead>
+                                            <tr>
+                                                <th>Catégorie</th>
+                                                <th>Basse Saison</th>
+                                                <th>Moyenne Saison</th>
+                                                <th>Haute Saison</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>Citadine</td>
+                                                <td>20€ / jour</td>
+                                                <td>30€ / jour</td>
+                                                <td>40€ / jour</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Berline</td>
+                                                <td>30€ / jour</td>
+                                                <td>40€ / jour</td>
+                                                <td>50€ / jour</td>
+                                            </tr>
+                                            <tr>
+                                                <td>SUV</td>
+                                                <td>50€ / jour</td>
+                                                <td>60€ / jour</td>
+                                                <td>70€ / jour</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4x4</td>
+                                                <td>60€ / jour</td>
+                                                <td>70€ / jour</td>
+                                                <td>80€ / jour</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
                                     <hr class="mgb-30 mgt-30">
                                     <div class="row">
                                         <div class="col-lg-12">
@@ -142,6 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentValue > parseInt(input.min, 10)) { // S'assurer que la valeur ne descend pas en dessous du minimum
             input.value = currentValue - 1;
         }
+
     });
 
     plusBtn.addEventListener('click', function() {
@@ -150,6 +193,29 @@ document.addEventListener('DOMContentLoaded', function() {
             input.value = currentValue + 1;
         }
     });
+
+});
+</script>
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+    const toggleLink = document.getElementById("toggle-link");
+    const pricingContainer = document.getElementById("pricing-container");
+
+    // Vérifiez que les éléments existent avant d'attacher des événements
+    if (toggleLink && pricingContainer) {
+        toggleLink.addEventListener("click", function() {
+            pricingContainer.classList.toggle("show");
+            // Change the link text based on the visibility of the pricing table
+            if (pricingContainer.classList.contains("show")) {
+                toggleLink.textContent = "Masquer la tarification des véhicules";
+            } else {
+                toggleLink.textContent = "Voir la tarification des véhicules";
+            }
+        });
+    } else {
+        console.error("L'un des éléments n'a pas été trouvé dans le DOM.");
+    }
 });
 </script>
 
@@ -167,4 +233,31 @@ document.addEventListener('DOMContentLoaded', function() {
         padding: 10px;
         width: 100px;
     }
+
+    .pricing-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    }
+
+    .pricing-container.show {
+        max-height: 500px; /* Ajustez cette valeur en fonction de la hauteur du tableau */
+        opacity: 1;
+    }
+
+    a {
+        cursor: pointer;
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
 </style>
+

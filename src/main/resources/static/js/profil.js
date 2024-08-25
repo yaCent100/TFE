@@ -66,12 +66,39 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+// ---------------------------SUPRESSION DU COMPTE --------------
+document.getElementById('deleteAccountButton').addEventListener('click', function() {
+    if (confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) {
+        const userId = document.getElementById('userId').value;
 
-    /*----------------- ALL CARS --------------*/
+        fetch(`/api/users/${userId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Votre compte a été supprimé avec succès.");
+                // Redirection après suppression
+                window.location.href = "/logout";
+            } else {
+                response.text().then(text => {
+                    alert("Erreur lors de la suppression : " + text);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Erreur :', error);
+            alert("Une erreur est survenue lors de la suppression de votre compte.");
+        });
+    }
+});
+    //----------------- ALL CARS --------------
 
 
-        /*----------------- ANNONCE ----------------*/
-document.addEventListener('DOMContentLoaded', function() {
+        //----------------- ANNONCE ----------------
+   document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.no-picture').forEach(function(img, index) {
         img.addEventListener('click', function() {
             const fileInput = document.querySelector('#photoInput_' + index);
@@ -266,6 +293,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+
+
+
+//  -----------------------INDEX----------------------------
+
 document.getElementById('editPictureLink').addEventListener('click', function(e) {
     e.preventDefault();
     document.getElementById('pictureInput').click();
@@ -304,6 +337,8 @@ document.getElementById('pictureInput').addEventListener('change', function() {
         alert('Fichier ou ID utilisateur manquant');
     }
 });
+
+
 
 
 

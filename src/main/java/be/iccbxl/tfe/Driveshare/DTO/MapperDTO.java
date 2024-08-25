@@ -20,7 +20,7 @@ public class MapperDTO {
 
         carDTO.setId(car.getId());
         carDTO.setBrand(car.getBrand());
-        carDTO.setCodePostal(car.getCodePostal());
+        carDTO.setCodePostal(car.getPostalCode());
         carDTO.setLocality(car.getLocality());
         carDTO.setCategoryId(car.getCategory().getId());
         carDTO.setCategoryName(car.getCategory().getCategory());
@@ -32,6 +32,7 @@ public class MapperDTO {
         carDTO.setLatitude(car.getLatitude() != null ? car.getLatitude() : 0.0);
         carDTO.setLongitude(car.getLongitude() != null ? car.getLongitude() : 0.0);
 
+        carDTO.setUrl(car.getPhotos().stream().map(Photo::getUrl).findFirst().orElse(null));
         carDTO.setPhotoUrl(car.getPhotos().stream().map(Photo::getUrl).collect(Collectors.toList()));
         carDTO.setPrice(toPriceDTO(car.getPrice()));
         carDTO.setReservationDTOS(car.getReservations().stream().map(MapperDTO::toReservationDTO).collect(Collectors.toList()));
@@ -70,7 +71,7 @@ public class MapperDTO {
         Car car = new Car();
         car.setId(carDTO.getId());
         car.setBrand(carDTO.getBrand());
-        car.setCodePostal(carDTO.getCodePostal());
+        car.setPostalCode(carDTO.getCodePostal());
         car.setLocality(carDTO.getLocality());
         car.setModel(carDTO.getModel());
         car.setAdresse(carDTO.getAdresse());
@@ -87,6 +88,20 @@ public class MapperDTO {
 
         return car;
     }
+
+    public static CategoryDTO toCategoryDTO(Category category) {
+        CategoryDTO dto = new CategoryDTO();
+        dto.setId(category.getId());
+        dto.setCategory(category.getCategory());
+
+        List<CarDTO> carDTOs = category.getCars().stream()
+                .map(MapperDTO::toCarDTO)
+                .collect(Collectors.toList());
+        dto.setCars(carDTOs);
+
+        return dto;
+    }
+
 
     // Méthode de transformation Entité -> DTO pour Equipment
     public static EquipmentDTO toEquipmentDTO(Equipment equipment) {
@@ -106,18 +121,28 @@ public class MapperDTO {
         return equipment;
     }
 
+    public static FeatureDTO toFeatureDTO(Feature feature) {
+        FeatureDTO featureDTO = new FeatureDTO();
+        featureDTO.setId(feature.getId());
+        featureDTO.setName(feature.getName());
+        featureDTO.setDescription(feature.getDescription());
+        return featureDTO;
+    }
+
+
+
     // Méthodes de transformation Entité -> DTO pour Reservation
     public static ReservationDTO toReservationDTO(Reservation reservation) {
         ReservationDTO reservationDTO = new ReservationDTO();
         reservationDTO.setId(reservation.getId());
         reservationDTO.setCarId(reservation.getCar().getId());
-        reservationDTO.setDebutLocation(reservation.getDebutLocation().toString());
-        reservationDTO.setFinLocation(reservation.getFinLocation().toString());
+        reservationDTO.setDebutLocation(reservation.getStartLocation().toString());
+        reservationDTO.setFinLocation(reservation.getEndLocation().toString());
         reservationDTO.setStatut(reservation.getStatut());
         reservationDTO.setCarBrand(reservation.getCar().getBrand());
         reservationDTO.setCarModel(reservation.getCar().getModel());
-        reservationDTO.setUserName(reservation.getUser().getPrenom() + " " + reservation.getUser().getNom());
-        reservationDTO.setCarPostal(reservation.getCar().getCodePostal());
+        reservationDTO.setUserName(reservation.getUser().getFirstName() + " " + reservation.getUser().getLastName());
+        reservationDTO.setCarPostal(reservation.getCar().getPostalCode());
         reservationDTO.setCarLocality(reservation.getCar().getLocality());
         reservationDTO.setModeReservation(reservation.getCar().getModeReservation());
         reservationDTO.setUserProfileImage(reservation.getUser().getPhotoUrl() != null && !reservation.getUser().getPhotoUrl().isEmpty() ? "/uploads/profil/" + reservation.getUser().getPhotoUrl() : "/uploads/profil/defaultPhoto.png");
@@ -138,8 +163,8 @@ public class MapperDTO {
         reservation.setId(reservationDTO.getId());
         reservation.setCar(new Car());
         reservation.getCar().setId(reservationDTO.getCarId());
-        reservation.setDebutLocation(LocalDate.parse(reservationDTO.getDebutLocation()));
-        reservation.setFinLocation(LocalDate.parse(reservationDTO.getFinLocation()));
+        reservation.setStartLocation(LocalDate.parse(reservationDTO.getDebutLocation()));
+        reservation.setEndLocation(LocalDate.parse(reservationDTO.getFinLocation()));
         reservation.setStatut(reservationDTO.getStatut());
 
         // Ajouter le mapping pour les paiements
@@ -205,7 +230,7 @@ public class MapperDTO {
                 car.getPrice().getMiddlePrice(),
                 car.getPhotos().stream().findFirst().map(Photo::getUrl).orElse(null),
                 car.getAdresse(),
-                car.getCodePostal(),
+                car.getPostalCode(),
                 car.getLocality(),
                 featureDTOs
         );
@@ -241,26 +266,42 @@ public class MapperDTO {
         chatMessage.setContent(chatMessageDTO.getContent());
         chatMessage.setReservation(reservation);
         chatMessage.setSentAt(LocalDateTime.now());
+        chatMessage.setToUserId(chatMessageDTO.getToUserId());
+        chatMessage.setFromUserId(chatMessageDTO.getFromUserId());
         return chatMessage;
     }
 
-    public static ChatMessageDTO toChatMessageDTO(ChatMessage message) {
+    public static ChatMessageDTO toChatMessageDTO(ChatMessage message, Long currentUserId) {
         ChatMessageDTO dto = new ChatMessageDTO();
         dto.setContent(message.getContent());
-        dto.setFromUserId(message.getReservation().getUser().getId());
-        dto.setToUserId(message.getReservation().getCar().getUser().getId());
         dto.setReservationId(message.getReservation().getId());
-        dto.setFromUserNom(message.getReservation().getUser().getNom());
-
-        Car car = message.getReservation().getCar();
-        dto.setCarBrand(car.getBrand());
-        dto.setCarModel(car.getModel());
-        if (car.getPhotos() != null && !car.getPhotos().isEmpty()) {
-            dto.setCarImage(car.getPhotos().get(0).getUrl());
-        }
         dto.setSentAt(message.getSentAt());
+
+        // Déterminez qui est l'expéditeur et qui est le destinataire
+        Long reservationUserId = message.getReservation().getUser().getId(); // Le locataire
+        Long carOwnerId = message.getReservation().getCar().getUser().getId(); // Le propriétaire
+
+        if (message.getFromUserId().equals(reservationUserId)) {
+            // L'expéditeur est le locataire
+            dto.setFromUserId(reservationUserId);
+            dto.setToUserId(carOwnerId);
+            dto.setFromUserNom(message.getReservation().getUser().getLastName());
+            dto.setProfileImageUrl(message.getReservation().getUser().getPhotoUrl());
+        } else if (message.getFromUserId().equals(carOwnerId)) {
+            // L'expéditeur est le propriétaire
+            dto.setFromUserId(carOwnerId);
+            dto.setToUserId(reservationUserId);
+            dto.setFromUserNom(message.getReservation().getCar().getUser().getLastName());
+            dto.setProfileImageUrl(message.getReservation().getCar().getUser().getPhotoUrl());
+        }
+
         return dto;
     }
+
+
+
+
+
 
     public static Notification toNotificationEntity(NotificationDTO dto, User fromUser, User toUser, Car car) {
         Notification notification = new Notification();
@@ -269,7 +310,7 @@ public class MapperDTO {
         notification.setToUser(toUser);
         notification.setCar(car);
         notification.setType(dto.getType()); // Assurez-vous que le type est défini correctement
-        notification.setDateEnvoi(LocalDateTime.now());
+        notification.setSentAt(LocalDateTime.now());
         return notification;
     }
 
@@ -290,27 +331,49 @@ public class MapperDTO {
 
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
-        userDTO.setNom(user.getNom());
-        userDTO.setPrenom(user.getPrenom());
+        userDTO.setNom(user.getLastName());
+        userDTO.setPrenom(user.getFirstName());
         userDTO.setEmail(user.getEmail());
         userDTO.setAdresse(user.getAdresse());
         userDTO.setLocality(user.getLocality());
-        userDTO.setCodePostal(user.getCodePostal());
-        userDTO.setTelephoneNumber(user.getTelephoneNumber());
+        userDTO.setCodePostal(user.getPostalCode());
+        userDTO.setPhone(user.getPhone());
         userDTO.setPassword(user.getPassword());
         userDTO.setPhotoUrl(user.getPhotoUrl());
         userDTO.setIban(user.getIban());
         userDTO.setBic(user.getBic());
         userDTO.setCreatedAt(user.getCreatedAt());
-        userDTO.setOwnedCars(user.getOwnedCars().stream().map(MapperDTO::toCarDTO).collect(Collectors.toList()));
-        userDTO.setRoles(user.getRoles().stream().map(MapperDTO::toRoleDTO).collect(Collectors.toList()));
-        userDTO.setReservations(user.getReservations().stream().map(MapperDTO::toReservationDTO).collect(Collectors.toList()));
-        userDTO.setDocuments(user.getDocuments().stream().map(MapperDTO::toDocumentDTO).collect(Collectors.toList()));
-        userDTO.setNotificationsSent(user.getNotificationsSent().stream().map(MapperDTO::toNotificationDTO).collect(Collectors.toList()));
-        userDTO.setNotificationsReceived(user.getNotificationsReceived().stream().map(MapperDTO::toNotificationDTO).collect(Collectors.toList()));
+
+        // Gestion des listes potentiellement nulles
+        if (user.getOwnedCars() != null) {
+            userDTO.setOwnedCars(user.getOwnedCars().stream().map(MapperDTO::toCarDTO).collect(Collectors.toList()));
+        }
+
+        if (user.getRoles() != null) {
+            userDTO.setRoles(user.getRoles().stream().map(MapperDTO::toRoleDTO).collect(Collectors.toList()));
+        }
+
+        if (user.getReservations() != null) {
+            userDTO.setReservations(user.getReservations().stream().map(MapperDTO::toReservationDTO).collect(Collectors.toList()));
+        }
+
+        if (user.getDocuments() != null) {
+            userDTO.setDocuments(user.getDocuments().stream().map(MapperDTO::toDocumentDTO).collect(Collectors.toList()));
+        }
+
+        if (user.getNotificationsSent() != null) {
+            userDTO.setNotificationsSent(user.getNotificationsSent().stream().map(MapperDTO::toNotificationDTO).collect(Collectors.toList()));
+        }
+
+        if (user.getNotificationsReceived() != null) {
+            userDTO.setNotificationsReceived(user.getNotificationsReceived().stream().map(MapperDTO::toNotificationDTO).collect(Collectors.toList()));
+        }
 
         return userDTO;
+
     }
+
+
 
     public static User toEntity(UserDTO userDTO) {
         if (userDTO == null) {
@@ -319,25 +382,46 @@ public class MapperDTO {
 
         User user = new User();
         user.setId(userDTO.getId());
-        user.setNom(userDTO.getNom());
-        user.setPrenom(userDTO.getPrenom());
+        user.setLastName(userDTO.getNom());
+        user.setFirstName(userDTO.getPrenom());
         user.setEmail(userDTO.getEmail());
         user.setAdresse(userDTO.getAdresse());
         user.setLocality(userDTO.getLocality());
-        user.setCodePostal(userDTO.getCodePostal());
-        user.setTelephoneNumber(userDTO.getTelephoneNumber());
+        user.setPostalCode(userDTO.getCodePostal());
+        user.setPhone(userDTO.getPhone());
         user.setPassword(userDTO.getPassword());
         user.setPhotoUrl(userDTO.getPhotoUrl());
         user.setIban(userDTO.getIban());
         user.setBic(userDTO.getBic());
         user.setCreatedAt(userDTO.getCreatedAt());
-        user.setOwnedCars(userDTO.getOwnedCars().stream().map(MapperDTO::toEntity).collect(Collectors.toList()));
-        user.setRoles(userDTO.getRoles().stream().map(MapperDTO::toRoleEntity).collect(Collectors.toList()));
-        user.setReservations(userDTO.getReservations().stream().map(MapperDTO::toReservationEntity).collect(Collectors.toList()));
-        user.setDocuments(userDTO.getDocuments().stream().map(MapperDTO::toDocumentEntity).collect(Collectors.toList()));
-        /*user.setNotificationsSent(userDTO.getNotificationsSent().stream().map(MapperDTO::toNotificationEntity).collect(Collectors.toList()));
-        user.setNotificationsReceived(userDTO.getNotificationsReceived().stream().map(MapperDTO::toNotificationEntity).collect(Collectors.toList()));*/
+        if (userDTO.getOwnedCars() != null) {
+            user.setOwnedCars(userDTO.getOwnedCars().stream().map(MapperDTO::toEntity).collect(Collectors.toList()));
+        }
 
+        if (userDTO.getRoles() != null) {
+            user.setRoles(userDTO.getRoles().stream().map(MapperDTO::toRoleEntity).collect(Collectors.toList()));
+        }
+
+        if (userDTO.getReservations() != null) {
+            user.setReservations(userDTO.getReservations().stream().map(MapperDTO::toReservationEntity).collect(Collectors.toList()));
+        }
+
+        if (userDTO.getDocuments() != null) {
+            user.setDocuments(userDTO.getDocuments().stream().map(MapperDTO::toDocumentEntity).collect(Collectors.toList()));
+        }
+
+        if (userDTO.getRoles() != null) {
+            user.setRoles(userDTO.getRoles().stream().map(MapperDTO::toRoleEntity).collect(Collectors.toList()));
+        }
+
+        // Gestion des notifications potentiellement nulles
+       /* if (userDTO.getNotificationsSent() != null) {
+            user.setNotificationsSent(userDTO.getNotificationsSent().stream().map(MapperDTO::toNotificationEntity).collect(Collectors.toList()));
+        }
+
+        if (userDTO.getNotificationsReceived() != null) {
+            user.setNotificationsReceived(userDTO.getNotificationsReceived().stream().map(MapperDTO::toNotificationEntity).collect(Collectors.toList()));
+        }*/
         return user;
     }
 
@@ -348,6 +432,22 @@ public class MapperDTO {
         documentDTO.setUserId(document.getUser().getId());
         documentDTO.setDocumentType(document.getDocumentType());
         documentDTO.setUrl(document.getUrl());
+        // Logique pour définir le répertoire en fonction du type de document
+        String directory;
+        switch (document.getDocumentType()) {
+            case "licence_recto":
+            case "licence_verso":
+                directory = "licence";
+                break;
+            case "identity_recto":
+            case "identity_verso":
+                directory = "identityCard";
+                break;
+            default:
+                directory = "unknown";
+                break;
+        }
+        documentDTO.setDirectory(directory);
         return documentDTO;
     }
 
@@ -364,16 +464,16 @@ public class MapperDTO {
 
     // Méthodes de transformation pour Role
     public static RoleDTO toRoleDTO(Role role) {
-        RoleDTO roleDTO = new RoleDTO();
+        RoleDTO roleDTO = new RoleDTO(role.getId(), role.getRole());
         roleDTO.setId(role.getId());
-        roleDTO.setRole(role.getRole());
+        roleDTO.setName(role.getRole());
         return roleDTO;
     }
 
     public static Role toRoleEntity(RoleDTO roleDTO) {
         Role role = new Role();
         role.setId(roleDTO.getId());
-        role.setRole(roleDTO.getRole());
+        role.setRole(roleDTO.getName());
         return role;
     }
 
@@ -388,12 +488,13 @@ public class MapperDTO {
         evaluationDTO.setAvis(evaluation.getAvis());
         evaluationDTO.setReservationId(evaluation.getReservation().getId());
         evaluationDTO.setCreatedAt(evaluation.getCreatedAt());
-        evaluationDTO.setUserNom(evaluation.getReservation().getUser().getNom());
+        evaluationDTO.setUserNom(evaluation.getReservation().getUser().getLastName());
         evaluationDTO.setCarBrand(evaluation.getReservation().getCar().getBrand());
         evaluationDTO.setCarModel(evaluation.getReservation().getCar().getModel());
         evaluationDTO.setCarPhotoUrl(evaluation.getReservation().getCar().getPhotos().get(0).getUrl());
         evaluationDTO.setUserProfilePhotoUrl(evaluation.getReservation().getUser().getPhotoUrl());
-        evaluationDTO.setUserPrenom(evaluation.getReservation().getUser().getPrenom());
+        evaluationDTO.setUserPrenom(evaluation.getReservation().getUser().getFirstName());
+        evaluationDTO.setCarId(evaluation.getReservation().getCar().getId());
         return evaluationDTO;
     }
 
@@ -421,9 +522,26 @@ public class MapperDTO {
         paymentDTO.setPrixTotal(payment.getPrixTotal());
         paymentDTO.setStatut(payment.getStatut());
         paymentDTO.setPaiementMode(payment.getPaiementMode());
-        paymentDTO.setPrixPourDriveShare(payment.getPrixPourDriveShare());
+        paymentDTO.setPrixPourDriveShare(payment.getPartDriveShare());
         paymentDTO.setCreatedAt(payment.getCreatedAt());
-        paymentDTO.setDateFinLocation(payment.getReservation().getFinLocation());
+        paymentDTO.setDateFinLocation(payment.getReservation().getEndLocation());
+
+        paymentDTO.setUserFirstName(payment.getReservation().getUser().getFirstName());
+        paymentDTO.setUserLastName(payment.getReservation().getUser().getLastName());
+        // Vérifiez si le gain n'est pas null
+        if (payment.getGain() != null) {
+            paymentDTO.setGainDTO(MapperDTO.toGainDTO(payment.getGain()));
+        } else {
+            paymentDTO.setGainDTO(null);
+        }
+
+        // Mappez le refund s'il existe
+        if (payment.getRefund() != null) {
+            paymentDTO.setRefundDTO(MapperDTO.toRefundDTO(payment.getRefund()));
+        } else {
+            paymentDTO.setRefundDTO(null);
+        }
+
 
         // Mapping Refund to RefundDTO
         if (payment.getRefund() != null) {
@@ -446,7 +564,7 @@ public class MapperDTO {
         payment.setPrixTotal(paymentDTO.getPrixTotal());
         payment.setStatut(paymentDTO.getStatut());
         payment.setPaiementMode(paymentDTO.getPaiementMode());
-        payment.setPrixPourDriveShare(paymentDTO.getPrixPourDriveShare());
+        payment.setPartDriveShare(paymentDTO.getPrixPourDriveShare());
         payment.setCreatedAt(paymentDTO.getCreatedAt());
 
         if (paymentDTO.getRefundDTO() != null) {
@@ -508,8 +626,8 @@ public class MapperDTO {
         gainDTO.setCarBrand(gain.getPayment().getReservation().getCar().getBrand());
         gainDTO.setCarModel(gain.getPayment().getReservation().getCar().getModel());
         gainDTO.setCarImage(gain.getPayment().getReservation().getCar().getPhotos().get(0).getUrl());
-        gainDTO.setDebutLocation(String.valueOf(gain.getPayment().getReservation().getDebutLocation()));
-        gainDTO.setFinLocation(String.valueOf(gain.getPayment().getReservation().getFinLocation()));
+        gainDTO.setDebutLocation(String.valueOf(gain.getPayment().getReservation().getStartLocation()));
+        gainDTO.setFinLocation(String.valueOf(gain.getPayment().getReservation().getEndLocation()));
         return gainDTO;
     }
 
@@ -523,6 +641,34 @@ public class MapperDTO {
         gain.setStatut(gainDTO.getStatut());
         gain.setDescription(gainDTO.getDescription());
         return gain;
+    }
+
+
+    public static ClaimDTO toClaimDto(Claim claim) {
+        ClaimDTO claimDto = new ClaimDTO();
+        claimDto.setId(claim.getId());
+        claimDto.setMessage(claim.getMessage());
+        claimDto.setReservationId(claim.getReservation().getId());
+        claimDto.setClaimantRole(claim.getClaimantRole());
+        claimDto.setStatus(claim.getStatus());
+        claimDto.setResponse(claim.getResponse());
+        claimDto.setCreatedAt(claim.getCreatedAt());
+        claimDto.setResponseAt(claim.getResponseAt());
+        return claimDto;
+    }
+
+    // Convertir de ClaimDto à Claim
+    public static Claim toClaimEntity(ClaimDTO claimDto, Reservation reservation) {
+        Claim claim = new Claim();
+        claim.setId(claimDto.getId());
+        claim.setMessage(claimDto.getMessage());
+        claim.setReservation(reservation);
+        claim.setClaimantRole(claimDto.getClaimantRole());
+        claim.setStatus(claimDto.getStatus());
+        claim.setResponse(claimDto.getResponse());
+        claim.setCreatedAt(claimDto.getCreatedAt());
+        claim.setResponseAt(claimDto.getResponseAt());
+        return claim;
     }
 
 

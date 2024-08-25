@@ -28,11 +28,11 @@ public class Reservation {
     @JoinColumn(name = "car_id", nullable = false)
     private Car car;
 
-    @Column(name = "debut_location")
-    private LocalDate debutLocation;
+    @Column(name = "start_location")
+    private LocalDate startLocation;
 
-    @Column(name = "fin_location")
-    private LocalDate finLocation;
+    @Column(name = "end_location")
+    private LocalDate endLocation;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -40,7 +40,7 @@ public class Reservation {
     @Column(name = "statut")
     private String statut;
 
-    @Column(name = "nb_jours")
+    @Column(name = "duration")
     private int nbJours;
 
     @Column(name="assurance")
@@ -54,4 +54,7 @@ public class Reservation {
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ChatMessage> chatMessages; // Liste des messages associés
+
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Claim> claims; // Liste des réclamations associées
 }

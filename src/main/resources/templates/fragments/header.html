@@ -8,30 +8,35 @@
 
 <body>
 <header th:fragment="header">
-    <nav class="navbar bg-body-tertiary p-0 fst-italic">
+    <nav class="navbar bg-body-tertiary p-3">
         <div class="container-fluid">
             <div class="d-flex align-items-center">
-                <a class="navbar-brand p-0 m-0" th:href="@{/home}">
+                <a class="p-0 m-0" th:href="@{/home}">
                     <img th:src="@{/images/DriveShareLogoBlanc.png}" alt="Logo" width="200" class="d-inline-block align-text-top">
                 </a>
-                <div class="vr mx-3 fs-bold" style="height: 30px; background-color: white;"></div> <!-- Barre verticale -->
-                <a class="text-white" th:href="@{/faq}" style="text-decoration: none;width: 2px;
-                margin-top: auto;">FAQ</a>
+                <div class="vr mx-3" style="height: 30px; background-color: white;"></div> <!-- Barre verticale -->
+                <a class="text-white d-flex align-items-center" th:href="@{/faq}" style="text-decoration: none;">
+                    <i class="fa fa-question-circle"></i>
+                    <span class="ms-2">Aide</span>
+                </a>
             </div>
 
-            <div class="d-flex align-items-center">
-                <a class="navbar-brand text-light p-0 m-0 me-3" href="/cars" id="nosLocationsTab">Nos Locations</a>
 
-                <div th:if="${#authorization.expression('isAnonymous()')}" class="me-2">
+            <div class="d-flex align-items-center">
+                <a class="text-light p-0 m-0 me-3 louez-une-voiture" href="/cars" id="nosLocationsTab">Louez une voiture</a>
+
+                <div th:if="${#authorization.expression('isAnonymous()')}" class="me-3">
                     <a th:href="@{/login}">Se connecter</a>
                 </div>
                 <div th:if="${#authorization.expression('isAuthenticated()')}" class="me-2">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <div>
-                                <img class="img-fluid rounded-circle" width="50" th:src="@{${authenticatedUser != null and authenticatedUser.photoUrl != null} ? '/uploads/' + authenticatedUser.photoUrl : '/uploads/profil/defaultPhoto.png'}" alt="Photo de profil">
-                                <div id="notification-badge" class="badge" style="display:none;">1</div>
+                            <div th:if="${authenticatedUser != null}">
+                                <img class="img-fluid rounded-circle" width="50"
+                                     th:src="@{${authenticatedUser.photoUrl != null} ? '/uploads/' + authenticatedUser.photoUrl : '/uploads/profil/defaultPhoto.png'}"
+                                     alt="Photo de profil">
                             </div>
+
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item" th:href="@{/account}">Profil</a>
@@ -40,11 +45,12 @@
                     </div>
                 </div>
 
-                <div class="navbar-nav ml-auto d-flex align-items-center">
-                    <a th:href="@{|?lang=fr|}" class="nav-link p-0" style="text-decoration: none; color: white;">
+                <div class="ml-auto d-flex align-items-center justify-content-center">
+                    <a th:href="@{|?lang=fr|}" class="p-0" style="text-decoration: none; color: white;">
                         <img th:src="@{/images/fr.png}" alt="Français" width="30" class="rounded-circle" style="display: inline-block; vertical-align: middle;">
                     </a>
-                    <a th:href="@{|?lang=en|}" class="nav-link p-0 ml-2" style="text-decoration: none; color: white;">
+                    <div class="vr mx-2" style="height: 30px; width: 1px; background-color: white;"></div> <!-- Barre verticale -->
+                    <a th:href="@{|?lang=en|}" class="p-0 ml-2" style="text-decoration: none; color: white;">
                         <img th:src="@{/images/en.png}" alt="English" width="30" class="rounded-circle" style="display: inline-block; vertical-align: middle;">
                     </a>
                 </div>

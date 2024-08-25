@@ -25,49 +25,170 @@
       <div class="mb-3">
         <h3 class="fw-bold fs-4 mb-3">Admin Dashboard</h3>
         <div class="row">
-          <div class="col-12 col-md-4">
-            <div class="card border-0">
-              <div class="card-body py-4">
-                <h5 class="mb-2 fw-bold">Total Revenue</h5>
-                <p id="total-revenue" class="mb-2 fw-bold">Loading...</p>
+          <!-- Total Revenue -->
+          <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body d-flex align-items-center justify-content-between">
+                <div>
+                  <h5 class="text-muted mb-2">Total Revenue</h5>
+                  <h2 id="total-revenue" class="mb-0 fw-bold">Loading...</h2>
+                </div>
+                <div class="icon-container">
+          <span id="total-revenue-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+                </div>
               </div>
             </div>
           </div>
-          <!-- Add more cards here if needed -->
-        </div>
-        <h3 class="fw-bold fs-4 my-3">Revenues by Month</h3>
-        <div class="row">
-          <div class="col-4">
-            <canvas id="revenueByMonthChart" width="400" height="400"></canvas>
-          </div>
-        </div>
-        <h3 class="fw-bold fs-4 my-3">Revenues by Commune</h3>
-        <div class="row">
-          <div class="col-4">
-            <label for="year-select">Année: </label>
-            <select id="year-select"></select>
 
-            <label for="month-select">Mois: </label>
-            <select id="month-select">
-              <option value="1">Janvier</option>
-              <option value="2">Février</option>
-              <option value="3">Mars</option>
-              <option value="4">Avril</option>
-              <option value="5">Mai</option>
-              <option value="6">Juin</option>
-              <option value="7">Juillet</option>
-              <option value="8">Août</option>
-              <option value="9">Septembre</option>
-              <option value="10">Octobre</option>
-              <option value="11">Novembre</option>
-              <option value="12">Décembre</option>
-            </select>
+          <!-- Total Benefit -->
+          <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body d-flex align-items-center justify-content-between">
+                <div>
+                  <h5 class="text-muted mb-2">Total Benefit</h5>
+                  <h2 id="total-benefit" class="mb-0 fw-bold">Loading...</h2>
+                </div>
+                <div class="icon-container">
+          <span id="total-benefit-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <canvas id="reservationByLocalityChart"></canvas>
+          <!-- Total Users -->
+          <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body d-flex align-items-center justify-content-between">
+                <div>
+                  <h5 class="text-muted mb-2">Total Users</h5>
+                  <h2 id="total-users" class="mb-0 fw-bold">Loading...</h2>
+                </div>
+                <div class="icon-container">
+          <span id="total-users-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Reservations -->
+          <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body d-flex align-items-center justify-content-between">
+                <div>
+                  <h5 class="text-muted mb-2">Total Reservations</h5>
+                  <h2 id="total-reservations" class="mb-0 fw-bold">Loading...</h2>
+                </div>
+                <div class="icon-container">
+          <span id="total-reservations-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <h3 class="fw-bold fs-4 my-3">Revenues by Month and Commune</h3>
+
+          <!-- Graphique des Revenues by Month -->
+          <div class="col-lg-6 col-md-12 mb-4">
+            <canvas id="revenueByMonthChart" width="400" height="200"></canvas>
+          </div>
+
+          <!-- Graphique des Revenues by Commune -->
+          <div class="col-lg-6 col-md-12">
+            <div class="row mb-3">
+              <div class="col-12 d-flex">
+                <div class="me-3">
+                  <label for="year-select">Année: </label>
+                  <select id="year-select"></select>
+                </div>
+                <div>
+                  <label for="month-select">Mois: </label>
+                  <select id="month-select">
+                    <option value="1">Janvier</option>
+                    <option value="2">Février</option>
+                    <option value="3">Mars</option>
+                    <option value="4">Avril</option>
+                    <option value="5">Mai</option>
+                    <option value="6">Juin</option>
+                    <option value="7">Juillet</option>
+                    <option value="8">Août</option>
+                    <option value="9">Septembre</option>
+                    <option value="10">Octobre</option>
+                    <option value="11">Novembre</option>
+                    <option value="12">Décembre</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <canvas id="reservationByLocalityChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+        </div>
+      <div class="row">
+        <div class="col-lg-6">
+          <h3 class="fw-bold fs-4 my-3">Top 10 Cars</h3>
+          <div class="table-responsive" style="height:400px;">
+            <table class="table">
+              <thead>
+              <tr class="text-center">
+                <th>Voiture</th>
+                <th>Nombre de Réservations</th>
+                <th>Montant Total Généré (€)</th>
+                <th>Tendance</th>
+              </tr>
+              </thead>
+              <tbody id="top10cars-table-body" class="text-center">
+              <!-- Spinner -->
+              <tr id="car-spinner">
+                <td colspan="4" class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <h3 class="fw-bold fs-4 my-3">Top 10 Users</h3>
+          <div class="table-responsive" style="height:400px;">
+            <table class="table">
+              <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>Reservations</th>
+                <th>Trend</th>
+              </tr>
+              </thead>
+              <tbody id="top10users-table-body">
+              <!-- Spinner -->
+              <tr id="user-spinner">
+                <td colspan="4" class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+
+    </div>
+
   </main>
 </div>
 

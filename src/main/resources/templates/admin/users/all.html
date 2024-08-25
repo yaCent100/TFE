@@ -6,7 +6,7 @@
     <title>Gestion des Utilisateurs</title>
     <style>
         .dataTables_wrapper {
-            width: auto;
+            width: 100%; /* Ajuster pour que le tableau prenne toute la largeur */
             margin: 0 auto;
         }
 
@@ -15,25 +15,93 @@
             text-align: right;
         }
 
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .group-action-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
     </style>
 </head>
 <body>
-<div layout:fragment="content" class="container mt-5">
-
-    <div class="add-user-btn">
-        <button class="btn btn-success" data-toggle="modal" data-target="#addUserModal">Add a New User</button>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="kpi-card bg-light p-3 text-center">
+                <h5>Total Users</h5>
+                <h2 id="totalUsers">0</h2>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="kpi-card bg-light p-3 text-center">
+                <h5>New Registrations (Last 30 days)</h5>
+                <h2 id="newRegistrations">0</h2>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="kpi-card bg-light p-3 text-center">
+                <h5>Users Online</h5>
+                <h2 id="usersOnline">0</h2>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="kpi-card bg-light p-3 text-center">
+                <h5>Users with Registered Cars</h5>
+                <h2 id="usersWithCars">0</h2>
+            </div>
+        </div>
     </div>
+
+
+    <div class="row">
+        <div class="col-lg-6">
+            <canvas id="userRegistrationChart" width="400" height="400"></canvas>
+        </div>
+        <div class="col-lg-6">
+            <canvas id="userLocationChart" width="400" height="400"></canvas>
+
+        </div>
+    </div>
+    <div class="group-action-container">
+        <div>
+            <!-- Dropdown pour les actions groupées -->
+            <select id="groupActionSelect" class="form-select">
+                <option value="">-- Sélectionner une action groupée --</option>
+                <option value="delete">Supprimer</option>
+                <option value="verify-documents">Vérifier Documents</option>
+                <option value="edit-permissions">Modifier Permissions</option>
+            </select>
+            <button class="btn btn-primary" id="groupActionBtn">Appliquer</button>
+        </div>
+        <div class="add-user-btn">
+            <button class="btn btn-success" data-toggle="modal" data-target="#addUserModal">Ajouter un nouvel utilisateur</button>
+        </div>
+    </div>
+
+    <!-- Tableau des utilisateurs -->
     <div id="users" class="m-2 text-center user-table">
         <h4 class="text-center">Gestion des Utilisateurs</h4>
-        <table id="usersTable" class="display nowrap">
+        <table id="usersTable" class="display nowrap table table-striped table-bordered" style="width:100%">
             <thead>
             <tr>
+                <th></th> <!-- Colonne pour les cases à cocher -->
                 <th>Photo</th>
                 <th>Nom</th>
                 <th>Prénom</th>
                 <th>Email</th>
                 <th>Adresse</th>
-                <th>Tel</th>
+                <th>Téléphone</th>
+                <th>IBAN</th>
+                <th>BIC</th>
+                <th>Date de création</th>
+                <th>Voitures possédées</th>
+                <th>Réservations</th>
+                <th>Documents vérifiés</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -42,75 +110,44 @@
         </table>
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-7">
-                <div id="documents" class="m-2 mt-4 text-center document-table">
-                    <h4 class="text-center">Gestion des Documents</h4>
-                    <table id="documentsTable" class="display nowrap">
-                        <thead>
-                        <tr>
-                            <th>Utilisateur</th>
-                            <th>Identity Recto</th>
-                            <th>Identity Verso</th>
-                            <th>License Recto</th>
-                            <th>License Verso</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-lg-5">
-                <div id="permissions" class="m-2 mt-4 text-center permission-table">
-                    <h4 class="text-center">Gestion des Permissions</h4>
-                    <table id="permissionsTable" class="display nowrap">
-                        <thead>
-                        <tr>
-                            <th>Photo</th>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Rôles</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Modal for Adding User -->
+    <!-- Modal pour ajouter un utilisateur -->
     <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addUserModalLabel">Add a New User</h5>
+                    <h5 class="modal-title" id="addUserModalLabel">Ajouter un nouvel utilisateur</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <form id="addUserForm">
-                        <!-- Form fields for new user -->
-                        <button type="submit" class="btn btn-primary">Add User</button>
+                        <!-- Champs de formulaire pour un nouvel utilisateur -->
+                        <div class="form-group">
+                            <label for="firstName">Prénom</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Nom</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ajouter l'utilisateur</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Updating Permissions -->
+    <!-- Modal pour la modification des permissions -->
     <div class="modal fade" id="editPermissionsModal" tabindex="-1" role="dialog" aria-labelledby="editPermissionsModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editPermissionsModalLabel">Update Permissions</h5>
+                    <h5 class="modal-title" id="editPermissionsModalLabel">Modifier les permissions</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -121,17 +158,65 @@
                         <div class="form-group">
                             <label for="permissions">Rôles</label>
                             <div id="permissionsCheckboxes">
-                                <!-- Checkboxes will be populated dynamically -->
+                                <!-- Les cases à cocher seront ajoutées ici dynamiquement -->
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Update Permissions</button>
+                        <button type="submit" class="btn btn-primary">Mettre à jour les permissions</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+
+
+    <!-- Modal pour la vérification des documents -->
+    <div class="modal fade" id="documentVerificationModal" tabindex="-1" aria-labelledby="documentVerificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="documentVerificationModalLabel">Vérification des documents</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group" id="documentList"></ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour modifier les permissions -->
+    <div class="modal fade" id="permissionsModal" tabindex="-1" aria-labelledby="permissionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="permissionsModalLabel">Modifier les permissions de <span id="userFullName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="permissionsForm">
+                        <div class="mb-3">
+                            <label for="rolesContainer" class="form-label">Rôles</label>
+                            <div id="rolesContainer" class="form-check">
+                                <!-- Les rôles seront injectés ici dynamiquement -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="savePermissions()">Sauvegarder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
 
-<!-- JavaScript includes (same as current) -->
+
 </body>
 </html>

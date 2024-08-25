@@ -6,6 +6,7 @@ import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.repository.*;
 import be.iccbxl.tfe.Driveshare.service.CarServiceI;
 import com.google.maps.model.GeocodingResult;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,11 @@ public class CarService implements CarServiceI {
 
     @Autowired
     private GeocodingService geocodingService;
+
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     private final Logger logger = LoggerFactory.getLogger(CarService.class);
 
@@ -204,8 +210,8 @@ public class CarService implements CarServiceI {
         List<Reservation> reservations = car.getReservations();
 
         for (Reservation reservation : reservations) {
-            LocalDate reservationStartDate = reservation.getDebutLocation();
-            LocalDate reservationEndDate = reservation.getFinLocation();
+            LocalDate reservationStartDate = reservation.getStartLocation();
+            LocalDate reservationEndDate = reservation.getEndLocation();
 
             if ((dateDebut.isEqual(reservationStartDate) || dateDebut.isAfter(reservationStartDate)) &&
                     (dateDebut.isEqual(reservationEndDate) || dateDebut.isBefore(reservationEndDate)) ||
@@ -427,7 +433,7 @@ public class CarService implements CarServiceI {
             car.setModel(carDTO.getModel());
             car.setFuelType(carDTO.getFuelType());
             car.setAdresse(carDTO.getAdresse());
-            car.setCodePostal(carDTO.getCodePostal());
+            car.setPostalCode(carDTO.getCodePostal());
             car.setLocality(carDTO.getLocality());
             car.setPlaqueImmatriculation(carDTO.getPlaqueImmatriculation());
             car.setFirstImmatriculation(carDTO.getFirstImmatriculation());
@@ -466,7 +472,7 @@ public class CarService implements CarServiceI {
     public void updateCarCoordinates() {
         List<Car> cars = carRepository.findAll();
         for (Car car : cars) {
-            String fullAddress = car.getAdresse() + ", " + car.getCodePostal() + " " + car.getLocality();
+            String fullAddress = car.getAdresse() + ", " + car.getPostalCode() + " " + car.getLocality();
             GeocodingResult result = geocodingService.geocode(fullAddress);
             if (result != null) {
                 car.setLatitude(result.geometry.location.lat);
@@ -493,12 +499,57 @@ public class CarService implements CarServiceI {
     public CarDTO approveCar(Long id) {
         Car car = carRepository.findById(id).orElse(null);
         if (car != null) {
-            car.setOnline(true);
+            car.setOnline(true); // Mise en ligne de la voiture
             Car updatedCar = carRepository.save(car);
+
+            // Envoi d'un email à l'utilisateur pour l'informer que la voiture est désormais en ligne
+            String userEmail = car.getUser().getEmail();
+            String subject = "Votre voiture a été approuvée et est en ligne";
+            String message = "Bonjour " + car.getUser().getFirstName() + ",\n\n" +
+                    "Nous sommes heureux de vous informer que votre voiture " + car.getBrand() + " " + car.getModel() +
+                    " a été approuvée et est maintenant disponible en ligne.\n\n" +
+                    "Merci de faire confiance à notre service !\n" +
+                    "Cordialement,\nL'équipe Driveshare";
+
+            // Appel du service d'envoi d'email
+            emailService.sendNotificationEmail(userEmail, subject, message);
+
+            // Retourner l'objet DTO de la voiture approuvée
             return MapperDTO.toCarDTO(updatedCar);
         }
-        return null;
+        return null; // Si la voiture n'existe pas
     }
+
+
+    public boolean rejectCar(Long id) {
+        Optional<Car> optionalCar = carRepository.findById(id);
+
+        if (optionalCar.isPresent()) {
+            try {
+                Car car = optionalCar.get();
+                carRepository.delete(car);
+
+                // Envoyer un email à l'utilisateur pour l'informer du rejet de la voiture
+                String userEmail = car.getUser().getEmail();
+                String subject = "Votre voiture n'a pas été acceptée";
+                String message = "Bonjour " + car.getUser().getFirstName() + ",\n\n" +
+                        "Nous sommes désolés de vous informer que votre voiture " + car.getBrand() + " " + car.getModel() +
+                        " n'a pas été acceptée. Pour plus de détails, veuillez nous contacter.\n\n" +
+                        "Cordialement,\nL'équipe Driveshare";
+
+                emailService.sendNotificationEmail(userEmail, subject, message);
+
+                return true;
+            } catch (Exception e) {
+                // Gérer l'exception, comme enregistrer un message d'erreur dans les logs
+                logger.error("Erreur lors de la suppression de la voiture avec ID " + id, e);
+                return false;
+            }
+        }
+
+        return false;
+    }
+
 
 
     public List<Car> getTopRatedCars(int limit) {
@@ -517,6 +568,28 @@ public class CarService implements CarServiceI {
 
         return topRatedCars;
     }
+
+
+    public long countTotalCars() {
+        return carRepository.count();
+    }
+
+    public long countOnlineCars() {
+        return carRepository.countByOnline(true);
+    }
+
+    public long countCarsRented() {
+        return reservationRepository.countByStatut("NOW"); // assuming "RENTED" indicates a car currently rented
+    }
+
+    public long countPendingCars() {
+        return carRepository.countByOnline(false);
+    }
+
+    public List<Object[]> getReservationsByMonth() {
+        return reservationRepository.countReservationsByMonth(); // This method needs to be created in the repo
+    }
+
 
 }
 

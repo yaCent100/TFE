@@ -5,6 +5,9 @@ import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
 import com.google.gson.Gson;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/payments")
+@Tag(name = "Payment Management", description = "Gestion des paiements et transactions")
 public class PaymentRestController {
 
     @Autowired
@@ -36,33 +40,11 @@ public class PaymentRestController {
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentRestController.class);
 
-
-
-    // Ajout d'un point de terminaison GET pour le débogage
-    @GetMapping("/create-payment-intent")
-    public ResponseEntity<?> debugCreatePaymentIntent(@RequestParam double amount, @RequestParam String currency) {
-        try {
-            System.out.println("Received amount: " + amount + ", currency: " + currency);
-
-            PaymentIntent paymentIntent = paymentService.createPaymentIntent(amount, currency);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("clientSecret", paymentIntent.getClientSecret());
-
-            return ResponseEntity.ok(response);
-        } catch (StripeException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Stripe exception: " + e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("General exception: " + e.getMessage());
-        }
-    }
+    @Operation(summary = "Créer une intention de paiement", description = "Crée une intention de paiement avec le montant spécifié.")
     @PostMapping("/create-payment-intent")
-    public ResponseEntity<?> createPaymentIntent(@RequestBody Map<String, Object> paymentRequest) {
+    public ResponseEntity<?> createPaymentIntent(
+            @Parameter(description = "Les détails du paiement", required = true) @RequestBody Map<String, Object> paymentRequest) {
         try {
-            System.out.println("Received paymentRequest: " + paymentRequest);
-
             if (paymentRequest.get("amount") == null || paymentRequest.get("currency") == null) {
                 return ResponseEntity.status(400).body("Invalid request: amount or currency is missing.");
             }
@@ -79,8 +61,6 @@ public class PaymentRestController {
             }
 
             PaymentIntent paymentIntent = paymentService.createPaymentIntent(amount, currency);
-
-            // Ajout des métadonnées
             paymentIntent.update(Map.of("metadata", Map.of("reservationId", reservationId.toString())));
 
             Map<String, Object> response = new HashMap<>();
@@ -97,11 +77,11 @@ public class PaymentRestController {
         }
     }
 
+    @Operation(summary = "Confirmer une réservation", description = "Confirme la réservation après la réussite du paiement.")
     @PostMapping("/confirm")
-    public ResponseEntity<?> confirmReservation(@RequestBody Map<String, Object> paymentConfirmation) {
+    public ResponseEntity<?> confirmReservation(
+            @Parameter(description = "Les informations de confirmation de la réservation", required = true) @RequestBody Map<String, Object> paymentConfirmation) {
         try {
-            System.out.println("Received paymentConfirmation: " + paymentConfirmation);
-
             Long reservationId = Long.parseLong(paymentConfirmation.get("reservationId").toString());
             String paymentIntentId = paymentConfirmation.get("paymentIntentId").toString();
             String insurance = paymentConfirmation.get("insurance").toString();
@@ -110,59 +90,28 @@ public class PaymentRestController {
 
             if ("succeeded".equals(paymentIntent.getStatus())) {
                 Reservation reservation = reservationService.getReservationById(reservationId);
-
                 if (reservation == null) {
                     return ResponseEntity.status(404).body("Reservation not found");
                 }
 
-                Car car = reservation.getCar();
+                reservation.setStatut("CONFIRMED");
+                reservation.setInsurance(insurance);
+                reservationService.saveReservation(reservation);
 
-                if ("manuelle".equalsIgnoreCase(car.getModeReservation())) {
-                    reservation.setStatut("RESPONSE_PENDING");
+                Payment payment = new Payment();
+                BigDecimal amountReceived = BigDecimal.valueOf(paymentIntent.getAmountReceived());
+                BigDecimal driveShareAmount = amountReceived.multiply(BigDecimal.valueOf(0.3)).setScale(2, RoundingMode.HALF_UP);
 
-                    // Envoyer un email au propriétaire
-                    String ownerEmail = car.getUser().getEmail();
-                    String subject = "Nouvelle demande de réservation";
-                    String text = "Vous avez une nouvelle demande de réservation pour votre voiture " + car.getBrand() + " " + car.getModel() +
-                            " du " + reservation.getDebutLocation() + " au " + reservation.getFinLocation() + ". Veuillez vous connecter pour confirmer ou refuser la demande.";
-                    emailService.sendNotificationEmail(ownerEmail, subject, text);
+                payment.setPrixTotal(amountReceived.doubleValue());
+                payment.setStatut(paymentIntent.getStatus());
+                payment.setPaiementMode(paymentIntent.getCharges().getData().get(0).getPaymentMethodDetails().getType());
+                payment.setPartDriveShare(driveShareAmount.doubleValue());
+                payment.setCreatedAt(LocalDateTime.now());
+                payment.setReservation(reservation);
 
-                    reservationService.saveReservation(reservation);
+                paymentService.save(payment);
 
-                    // Notify the user that the reservation is pending owner's response
-                    return ResponseEntity.ok("Reservation is pending owner's response. You will be notified once the owner responds, and you can proceed with the payment.");
-                } else {
-                    reservation.setStatut("CONFIRMED");
-
-                    reservation.setInsurance(insurance);
-                    reservationService.saveReservation(reservation);
-
-                    Payment payment = new Payment();
-                    BigDecimal amountReceived = BigDecimal.valueOf(paymentIntent.getAmountReceived());
-                    BigDecimal driveShareAmount = amountReceived.multiply(BigDecimal.valueOf(0.3)).setScale(2, RoundingMode.HALF_UP);
-                    BigDecimal userAmount = amountReceived.multiply(BigDecimal.valueOf(0.7)).setScale(2, RoundingMode.HALF_UP);
-
-                    payment.setPrixTotal(amountReceived.doubleValue());
-                    payment.setStatut(paymentIntent.getStatus());
-
-                    // Déterminer le mode de paiement
-                    String paymentMethodDetails = paymentIntent.getCharges().getData().get(0).getPaymentMethodDetails().getType();
-
-                    if ("card".equals(paymentMethodDetails)) {
-                        String cardBrand = paymentIntent.getCharges().getData().get(0).getPaymentMethodDetails().getCard().getBrand();
-                        payment.setPaiementMode(cardBrand + " " + paymentMethodDetails);
-                    } else {
-                        payment.setPaiementMode(paymentMethodDetails);
-                    }
-
-                    payment.setPrixPourDriveShare(driveShareAmount.doubleValue());
-                    payment.setCreatedAt(LocalDateTime.now());
-                    payment.setReservation(reservation);
-
-                    paymentService.save(payment);
-
-                    return ResponseEntity.ok("Reservation processed successfully!");
-                }
+                return ResponseEntity.ok("Reservation processed successfully!");
             } else {
                 return ResponseEntity.status(400).body("Payment failed, reservation not confirmed.");
             }
@@ -174,12 +123,8 @@ public class PaymentRestController {
             return ResponseEntity.status(500).body("General exception: " + e.getMessage());
         }
     }
-
-
-
-
-
 }
+
 
 
 

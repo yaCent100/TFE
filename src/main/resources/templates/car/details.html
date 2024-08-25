@@ -45,7 +45,7 @@
                             <img th:src="@{/images/iconMapDetail.png}" class="img-fluid" alt="iconMap" width="100px">
                             <h4>À proximité de</h4><br>
                             <span class="text-center" th:text="${car.adresse}"></span><br>
-                            <span class="text-center" th:text="${car.codePostal + ' ' + car.locality}"></span>
+                            <span class="text-center" th:text="${car.postalCode + ' ' + car.locality}"></span>
                         </div>
                         <div class="col-md-6">
                             <img th:src="@{/images/mapCar.png}" class="img-fluid" alt="iconMap" width="400px">
@@ -56,13 +56,13 @@
                 <div class="rounded-custom-border p-4 mt-3">
                     <h2 class="fw-bold">Propriétaire</h2>
                     <div class="row m-3">
-                        <div class="col-md-2">
-                            <img th:if="${car.user.photoUrl != null}" th:src="${'/uploads/profil/' + car.user.photoUrl}" class="img-fluid" alt="User Profile Picture" width="100px">
+                        <div class="col-md-2 align-item-center">
+                            <img th:if="${car.user.photoUrl != null}" th:src="${'/uploads/profil/' + car.user.photoUrl}" class="img-fluid rounded-circle" alt="User Profile Picture" width="100px">
                         </div>
                         <div class="col-md-10 ">
-                            <h2 class="fw-bold" th:text="${car.user.prenom + ' ' + car.user.nom}"></h2>
+                            <h2 class="fw-bold" th:text="${car.user.firstName + ' ' + car.user.lastName}"></h2>
                             <span th:text="${car.user.adresse}"></span><br>
-                            <span th:text="${car.user.codePostal + ' ' + car.user.locality}"></span>
+                            <span th:text="${car.user.postalCode + ' ' + car.user.locality}"></span>
                         </div>
                     </div>
                     <div class="row">
@@ -130,18 +130,18 @@
                     <div th:each="reservation : ${car.reservations}" th:if="${reservation.evaluation != null}">
                         <div class="col-md-12">
                             <div class="row m-3">
-                                <div class="col-md-2 m-1">
-                                    <img th:if="${reservation.user.photoUrl != null}" th:src="@{'/uploads/profil/' + ${reservation.user.photoUrl}}" alt="Profil" width="100px" height="100px">
+                                <div class="col-md-2 m-1 align-content-center">
+                                    <img th:if="${reservation.user.photoUrl != null}" th:src="@{'/uploads/profil/' + ${reservation.user.photoUrl}}" class="img-fluid rounded-circle" alt="Profil" width="100px" height="100px">
                                 </div>
                                 <div class="col-md-7">
-                                    <span class="fw-bold" th:text="${reservation.user.nom + ' ' + reservation.user.prenom.substring(0, 1) + '.'}"></span><br>
+                                    <span class="fw-bold" th:text="${reservation.user.lastName + ' ' + reservation.user.firstName.substring(0, 1) + '.'}"></span><br>
                                     <span th:text="${reservation.evaluation.avis}"></span><br>
                                     <span th:each="star : ${#numbers.sequence(1, 5)}">
                                         <span th:if="${reservation.evaluation.note >= star}" class="star-filled">&#9733;</span>
                                         <span th:unless="${reservation.evaluation.note >= star}" class="star-filled">&#9734;</span>
                                     </span>
                                 </div>
-                                <div class="col-md-2 text-end">
+                                <div class="col-md-2 text-end text-muted small">
                                     <span th:text="${#temporals.format(reservation.evaluation.createdAt, 'dd-MM-yyyy')}"></span>
                                 </div>
                             </div>
@@ -188,24 +188,32 @@
                 <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <img th:src="${'/uploads/' + car.user.photoUrl}" class="img-fluid" alt="User Profile Picture" width="100px">
+                            <img th:src="${'/uploads/profil/' + car.user.photoUrl}" class="img-fluid" alt="User Profile Picture" width="100px">
                         </div>
                         <div class="col-md-9">
-                            <h5 class="fw-bold" th:text="${car.user.prenom + ' ' + car.user.nom}"></h5>
+                            <h5 class="fw-bold" th:text="${car.user.firstName + ' ' + car.user.lastName}"></h5>
                             <p>Dates de location :</p>
                             <p>Du <span id="modalDateDebut"></span> au <span id="modalDateFin"></span></p>
                         </div>
                     </div>
-                    <form id="notification-form">
-                        <div class="mb-3">
-                            <label for="message-text" class="col-form-label">Message:</label>
-                            <textarea class="form-control" id="notification-message"></textarea>
-                        </div>
-                        <input type="hidden" id="toUserId" th:value="${car.user.id}">
-                        <input type="hidden" id="fromUserId" th:value="${authenticatedUser.id}">
-                        <input type="hidden" id="vehicleId" th:value="${car.id}">
-                        <button type="button" id="sendNotificationButton" class="btn btn-primary">Envoyer</button>
-                    </form>
+                    <!-- Vérification si l'utilisateur est authentifié -->
+                    <div th:if="${authenticatedUser != null}">
+                        <form id="notification-form">
+                            <div class="mb-3">
+                                <label for="message-text" class="col-form-label">Message:</label>
+                                <textarea class="form-control" id="notification-message"></textarea>
+                            </div>
+                            <input type="hidden" id="toUserId" th:value="${car.user.id}">
+                            <input type="hidden" id="fromUserId" th:value="${authenticatedUser.id}">
+                            <input type="hidden" id="vehicleId" th:value="${car.id}">
+                            <button type="button" id="sendNotificationButton" class="btn btn-primary">Envoyer</button>
+                        </form>
+                    </div>
+
+                    <!-- Si l'utilisateur n'est pas authentifié, afficher un lien de connexion -->
+                    <div th:if="${authenticatedUser == null}">
+                        <p>Veuillez vous <a th:href="@{/login}">connecter</a> pour envoyer un message.</p>
+                    </div>
                 </div>
             </div>
         </div>

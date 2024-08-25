@@ -21,6 +21,12 @@ public class ChatMessage {
     @Column(nullable = false)
     private String content;
 
+    @Column(name = "from_user_id", nullable = false)
+    private Long fromUserId;  // ID de l'utilisateur qui envoie le message
+
+    @Column(name = "to_user_id", nullable = false)
+    private Long toUserId;  // ID de l'utilisateur qui reçoit le message
+
 
     @Column(name = "sent_at", nullable = false)
     private LocalDateTime sentAt;

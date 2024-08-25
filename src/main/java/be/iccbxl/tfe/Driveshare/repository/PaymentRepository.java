@@ -33,6 +33,10 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Object[]> getRevenuePerMonth();
 
 
+    @Query("SELECT SUM(p.partDriveShare) FROM Payment p") // Cette méthode nécessite que votre entité Payment ait un champ 'benefit'
+    BigDecimal sumTotalBenefit();
+
+
 
 
 }

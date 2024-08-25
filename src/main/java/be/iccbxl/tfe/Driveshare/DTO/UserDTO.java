@@ -15,7 +15,7 @@ public class UserDTO {
     private String adresse;
     private String locality;
     private String codePostal;
-    private String telephoneNumber;
+    private String phone;
     private String password;
     private String photoUrl;
     private String iban;
@@ -27,4 +27,15 @@ public class UserDTO {
     private List<DocumentDTO> documents;
     private List<NotificationDTO> notificationsSent;
     private List<NotificationDTO> notificationsReceived;
+
+    public UserDTO(Long id, String firstName, String lastName, String photoUrl) {
+        this.id=id;
+        this.prenom=firstName;
+        this.nom=lastName;
+        this.photoUrl=photoUrl;
+    }
+
+    public UserDTO() {
+
+    }
 }

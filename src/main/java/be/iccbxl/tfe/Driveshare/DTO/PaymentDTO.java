@@ -20,9 +20,16 @@ public class PaymentDTO {
     private Long reservationId;
     private RefundDTO refundDTO;
 
-
+    // Ajouter ces champs pour l'utilisateur
+    private String userFirstName;
+    private String userLastName;
     // Ajoutez ce champ
     private LocalDate dateFinLocation;
+
+
+
+    // Ajouter les informations sur les gains pour l'utilisateur
+    private GainDTO gainDTO;  // Peut être null si aucun gain
 
     // Méthode pour vérifier si le paiement a été effectué
     public boolean isPaid() {

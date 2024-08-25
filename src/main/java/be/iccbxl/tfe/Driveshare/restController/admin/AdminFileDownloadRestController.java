@@ -1,6 +1,9 @@
 package be.iccbxl.tfe.Driveshare.restController.admin;
 
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.FileStorageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -13,17 +16,22 @@ import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/files")
+@Tag(name = "Admin File Management", description = "API pour la gestion et le téléchargement des fichiers")
 public class AdminFileDownloadRestController {
+
     @Autowired
     private FileStorageService fileStorageService;
 
-
-    @GetMapping("/{directory}/{filename:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String directory, @PathVariable String filename) {
-        String filePath = directory + "/" + filename;
-        Resource resource = fileStorageService.loadFileAsResource(filePath);
+    @GetMapping("/api/files/{directory}/{fileName}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String directory, @PathVariable String fileName) {
+        Resource resource = fileStorageService.loadFileAsResource(directory + "/" + fileName);
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                 .body(resource);
     }
+
+
+
 }
+

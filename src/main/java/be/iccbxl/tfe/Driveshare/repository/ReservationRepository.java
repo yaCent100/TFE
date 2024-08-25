@@ -1,14 +1,18 @@
 package be.iccbxl.tfe.Driveshare.repository;
 
+import be.iccbxl.tfe.Driveshare.DTO.CarReservationKpiDTO;
 import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
+import io.micrometer.common.KeyValues;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -51,4 +55,19 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Object[]> countReservationsByLocalityAndYear(int year);
 
     List<ReservationDTO> findByUser(User user);
+
+    @Query("SELECT COUNT(r) FROM Reservation r WHERE r.statut IN ('CONFIRMED', 'NOW', 'FINISHED')")
+    long countConfirmedReservations();
+
+    @Query("SELECT c FROM Car c JOIN c.reservations r JOIN r.payment pay WHERE r.statut = 'CONFIRMED' AND MONTH(r.startLocation) = MONTH(CURRENT_DATE()) GROUP BY c.id ORDER BY COUNT(r) DESC")
+    List<Car> findTop10MostReservedCarsThisMonth();
+
+    @Query("SELECT r FROM Reservation r WHERE MONTH(r.startLocation) = MONTH(CURRENT_DATE) AND YEAR(r.startLocation) = YEAR(CURRENT_DATE) AND r.statut = 'CONFIRMED'")
+    List<Reservation> findReservationsForCurrentMonth();
+
+
+    long countByStatut(String now);
+
+    @Query("SELECT MONTH(r.startLocation), COUNT(r) FROM Reservation r GROUP BY MONTH(r.startLocation)")
+    List<Object[]> countReservationsByMonth();
 }

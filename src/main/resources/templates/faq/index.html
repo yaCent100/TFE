@@ -3,18 +3,242 @@
 <head>
   <meta charset="UTF-8">
   <title>FAQ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .faq-container {
+      display: flex;
+      flex-direction: column;
+      margin: 40px 0;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .faq-section-wrapper {
+      display: flex;
+      width: 100%;
+      margin-bottom: 40px;
+      align-items: center;
+    }
+
+    .faq-title {
+      flex: 0 0 250px;
+      padding: 30px;
+      background-color: #DFE7EC;
+      border-radius: 10px;
+      margin-right: 20px;
+      text-align: center;
+      height: 100%;
+    }
+
+    .faq-title h2 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .faq-content {
+      flex: 1;
+      padding: 50px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+
+    .faq-question {
+      cursor: pointer;
+      padding: 15px;
+      background-color: #e9ecef;
+      border: 1px solid #007bff;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      position: relative;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f1f3f5;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .faq-question.active {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .faq-question span {
+      font-size: 20px;
+      color: #007bff;
+    }
+
+    .faq-question.active span {
+      color: white;
+    }
+
+    .faq-question.active span::before {
+      content: "-";
+    }
+
+    .faq-question span::before {
+      content: "+";
+    }
+
+    .link-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .link-box {
+      text-align: center;
+      padding: 20px;
+      margin: 10px;
+      width: 250px;
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .link-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .link-box a {
+      text-decoration: none;
+      color: #007bff;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+  </style>
 </head>
 <body>
 <div layout:fragment="content">
-  <div>
-    <img src="/images/faq-image.png">
-    <img src="">
+  <div class="d-flex justify-content-between align-items-center" style="background-color: #DFE7EC;">
+    <div class="left-section" style="flex: 1;">
+      <img class="img-fluid w-100" src="/images/faq-image.png" alt="FAQ Image" style="object-fit: cover; height: 100%;">
+    </div>
+    <div class="right-section" style="flex: 1;  align-item:center;">
+      <img src="/images/DriveShareLogo.png" alt="DriveShare Logo" class="mb-3 img-fluid w-50">
+      <h1>Un bon plan pour louer une voiture sur Bruxelles</h1>
+    </div>
   </div>
-  <div class="container fluid">
+
+
+
+
+  <div class="link-container">
+    <div class="link-box">
+      <a href="#frequent-questions">Questions Fréquentes</a>
+    </div>
+    <div class="link-box">
+      <a href="#proprietaire-section">Je suis Propriétaire<span>Vous avez une voiture où vous souhaitez la mettre  en location.</span> </a>
+    </div>
+    <div class="link-box">
+      <a href="#locataire-section">Je suis Locataire <span class="text-muted">Vous souhaitez louer une voiture et vous avez des questions ?
+
+        Nous avons les réponses :)</span></a>
+    </div>
+  </div>
+
+  <div class="faq-container m-5">
+
+    <!-- Section pour les Propriétaires -->
+    <div class="faq-section-wrapper">
+      <div class="faq-title">
+        <h2>Questions fréquentes</h2>
+      </div>
+      <div class="faq-content">
+        <div class="faq-question" onclick="toggleAnswer(this)">Les options aéroport (livraison et retour), comment ça marche ?<span></span></div>
+        <div class="faq-answer">Explication sur les options aéroport...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Que se passe-t-il en cas d’annulation ?<span></span></div>
+        <div class="faq-answer">Explication en cas d'annulation...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Que dois-je vérifier au début de la location ?<span></span></div>
+        <div class="faq-answer">Liste des vérifications à faire au début de la location...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Comment connaître la date de mon prochain contrôle technique ?<span></span></div>
+        <div class="faq-answer">Explication sur le contrôle technique...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Que se passe-t-il si le locataire ne me restitue pas mon véhicule ?<span></span></div>
+        <div class="faq-answer">Détails sur les démarches à suivre en cas de non-restitution du véhicule...</div>
+      </div>
+    </div>
+
+    <div class="faq-section-wrapper">
+      <div class="faq-title">
+        <h2>Je suis Propriétaire</h2>
+      </div>
+      <div class="faq-content">
+        <div class="faq-question" onclick="toggleAnswer(this)">Les options aéroport (livraison et retour), comment ça marche ?<span></span></div>
+        <div class="faq-answer">Explication sur les options aéroport...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Que se passe-t-il en cas d’annulation ?<span></span></div>
+        <div class="faq-answer">Explication en cas d'annulation...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Que dois-je vérifier au début de la location ?<span></span></div>
+        <div class="faq-answer">Liste des vérifications à faire au début de la location...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Comment connaître la date de mon prochain contrôle technique ?<span></span></div>
+        <div class="faq-answer">Explication sur le contrôle technique...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Que se passe-t-il si le locataire ne me restitue pas mon véhicule ?<span></span></div>
+        <div class="faq-answer">Détails sur les démarches à suivre en cas de non-restitution du véhicule...</div>
+      </div>
+    </div>
+
+    <!-- Section pour les Locataires -->
+    <div class="faq-section-wrapper">
+      <div class="faq-title">
+        <h2>Je suis Locataire</h2>
+      </div>
+      <div class="faq-content">
+        <div class="faq-question" onclick="toggleAnswer(this)">Est-ce que la livraison et le retour au port sont inclus dans le prix de réservation ?<span></span></div>
+        <div class="faq-answer">Explication sur la livraison et retour au port...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Que dois-je vérifier au début de la location ?<span></span></div>
+        <div class="faq-answer">Liste des vérifications à faire au début de la location...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Est-ce que la livraison et le retour aéroport sont compris dans le prix de location ?<span></span></div>
+        <div class="faq-answer">Explication sur la livraison et retour à l'aéroport...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Le propriétaire me demande d'annuler ma location, que faire ?<span></span></div>
+        <div class="faq-answer">Explication des démarches à suivre en cas d'annulation demandée par le propriétaire...</div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)">Que faire en cas de crevaison ou de panne ?<span></span></div>
+        <div class="faq-answer">Explication des démarches à suivre en cas de crevaison ou de panne...</div>
+      </div>
+    </div>
 
   </div>
 
-
+  <!-- Script pour afficher/masquer les réponses -->
+  <script>
+    function toggleAnswer(element) {
+      element.classList.toggle("active");
+      const answer = element.nextElementSibling;
+      if (answer.style.display === "block") {
+        answer.style.display = "none";
+      } else {
+        answer.style.display = "block";
+      }
+    }
+  </script>
 </div>
 
 </body>

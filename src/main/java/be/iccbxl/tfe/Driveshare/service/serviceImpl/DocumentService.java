@@ -78,7 +78,19 @@ public class DocumentService implements DocumentServiceI {
         }
     }
 
+
+    public List<DocumentDTO> getByUserIdDocumentDTO(Long userId) {
+        // Récupère les documents de l'utilisateur depuis le repository
+        List<Document> documents = documentRepository.findByUserId(userId);
+
+        // Mappe directement les entités vers des DTO
+        return documents.stream()
+                .map(MapperDTO::toDocumentDTO)  // Utilise le mapper pour chaque document
+                .collect(Collectors.toList());
+    }
 }
+
+
 
 
 

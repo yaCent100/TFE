@@ -10,6 +10,9 @@ import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
+@Tag(name = "Reservation Management", description = "Gestion des réservations et des annulations")
 public class ReservationRestController {
 
     @Autowired
@@ -47,66 +51,36 @@ public class ReservationRestController {
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationRestController.class);
 
+    @Operation(summary = "Obtenir les réservations du propriétaire", description = "Retourne toutes les réservations pour les voitures d'un propriétaire.")
     @GetMapping("/api/getOwnerReservations")
-    public List<ReservationDTO> getOwnerReservations(@RequestParam List<Long> carIds) {
+    public List<ReservationDTO> getOwnerReservations(
+            @Parameter(description = "Liste des IDs des voitures du propriétaire", required = true) @RequestParam List<Long> carIds) {
         List<Reservation> reservations = reservationService.getReservationsByCarIds(carIds);
         return reservations.stream().map(MapperDTO::toReservationDTO).collect(Collectors.toList());
     }
 
+    @Operation(summary = "Obtenir les réservations du locataire", description = "Retourne les réservations en fonction de l'état pour le locataire connecté.")
     @GetMapping("/api/getRenterReservations")
-    public ResponseEntity<List<ReservationDTO>> getRenterReservations(@RequestParam List<String> statuses, @AuthenticationPrincipal CustomUserDetail userDetails) {
-        Logger logger = LoggerFactory.getLogger(ReservationRestController.class);
-
-        if (userDetails == null) {
-            logger.warn("User details are null, unauthorized access attempt.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
+    public ResponseEntity<List<ReservationDTO>> getRenterReservations(
+            @Parameter(description = "Liste des statuts des réservations", required = true) @RequestParam List<String> statuses,
+            @AuthenticationPrincipal CustomUserDetail userDetails) {
         User user = userDetails.getUser();
-        logger.info("Fetching reservations for user: {}", user.getNom());
-        logger.info("Requested statuses: {}", statuses);
-
         List<Reservation> reservations = reservationService.getReservationsByStatusesAndUser(statuses, user);
-
         if (reservations.isEmpty()) {
-            logger.info("No reservations found for the given statuses and user.");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-
         List<ReservationDTO> reservationDTOs = reservations.stream()
                 .map(MapperDTO::toReservationDTO)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(reservationDTOs);
     }
 
-    @GetMapping("/api/getReservationDetails")
-    public ReservationDTO getReservationDetails(@RequestParam Long reservationId) {
-        Reservation reservation = reservationService.getReservationById(reservationId);
-        if (reservation == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
-        }
-        return MapperDTO.toReservationDTO(reservation);
-    }
-
-    @GetMapping("/api/format-date")
-    public ResponseEntity<Map<String, String>> formatDates(@RequestParam("debut") String debut, @RequestParam("fin") String fin) {
-        LocalDate debutDate = LocalDate.parse(debut);
-        LocalDate finDate = LocalDate.parse(fin);
-        String formattedDebutDate = dateService.formatAndCapitalizeDate(debutDate);
-        String formattedFinDate = dateService.formatAndCapitalizeDate(finDate);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("formattedDebutDate", formattedDebutDate);
-        response.put("formattedFinDate", formattedFinDate);
-
-        return ResponseEntity.ok(response);
-    }
-
+    @Operation(summary = "Annuler une réservation", description = "Permet d'annuler une réservation et de calculer les remboursements.")
     @PostMapping("/api/cancelReservation/{id}")
-    public ResponseEntity<Map<String, Object>> cancelReservation(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetail userDetails) {
+    public ResponseEntity<Map<String, Object>> cancelReservation(
+            @Parameter(description = "ID de la réservation à annuler", required = true) @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetail userDetails) {
         Map<String, Object> response = new HashMap<>();
-
         Reservation reservation = reservationService.getReservationById(id);
         if (reservation == null) {
             response.put("success", false);
@@ -115,8 +89,6 @@ public class ReservationRestController {
         }
 
         User currentUser = userDetails.getUser();
-
-        // Vérifiez si l'utilisateur est autorisé à annuler cette réservation
         if (!reservation.getUser().equals(currentUser) && !reservation.getCar().getUser().equals(currentUser)) {
             response.put("success", false);
             response.put("message", "Vous n'êtes pas autorisé à annuler cette réservation.");
@@ -124,29 +96,24 @@ public class ReservationRestController {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startDate = reservation.getDebutLocation().atStartOfDay();
-
+        LocalDateTime startDate = reservation.getStartLocation().atStartOfDay();
         long hoursBetween = Duration.between(now, startDate).toHours();
 
         double refundPercentage = 0;
         if (hoursBetween >= 48) {
-            refundPercentage = 0.90; // 10% de frais
+            refundPercentage = 0.90;
         } else if (hoursBetween >= 24) {
-            refundPercentage = 0.50; // 50% de frais
-        } else if (hoursBetween < 24) {
-            refundPercentage = 0.0; // Aucun remboursement
+            refundPercentage = 0.50;
         }
 
         Payment payment = reservation.getPayment();
         if (payment != null) {
             double refundAmount = payment.getPrixTotal() * refundPercentage;
-
             Refund refund = new Refund();
             refund.setAmount(refundAmount);
             refund.setRefundDate(now);
             refund.setRefundPercentage(refundPercentage * 100);
             refund.setPayment(payment);
-
             refundService.saveRefund(refund);
 
             payment.setRefund(refund);
@@ -162,74 +129,4 @@ public class ReservationRestController {
         response.put("message", "La réservation a été annulée avec succès.");
         return ResponseEntity.ok(response);
     }
-
-
-    @PostMapping("/reservation/{id}/accept")
-    public ResponseEntity<Map<String, String>> acceptReservation(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetail userDetails) {
-        Map<String, String> response = new HashMap<>();
-        Reservation reservation = reservationService.getReservationById(id);
-        if (reservation == null) {
-            response.put("status", "error");
-            response.put("message", "Reservation not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-
-        User user = userDetails.getUser();
-        if (!reservation.getCar().getUser().getId().equals(user.getId())) {
-            response.put("status", "error");
-            response.put("message", "You are not allowed to accept this reservation");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }
-
-        reservation.setStatut("CONFIRMED");
-        reservationService.saveReservation(reservation);
-
-        // Envoyer une notification à l'utilisateur
-        String userEmail = reservation.getUser().getEmail();
-        String subject = "Votre réservation a été acceptée";
-        String text = "Votre réservation pour la voiture " + reservation.getCar().getBrand() + " " + reservation.getCar().getModel() +
-                " du " + reservation.getDebutLocation() + " au " + reservation.getFinLocation() + " a été acceptée.";
-        emailService.sendNotificationEmail(userEmail, subject, text);
-
-        response.put("status", "ok");
-        response.put("message", "Reservation accepted");
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/reservation/{id}/reject")
-    public ResponseEntity<Map<String, String>> rejectReservation(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetail userDetails) {
-        Map<String, String> response = new HashMap<>();
-        Reservation reservation = reservationService.getReservationById(id);
-        if (reservation == null) {
-            response.put("status", "error");
-            response.put("message", "Reservation not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-
-        User user = userDetails.getUser();
-        if (!reservation.getCar().getUser().getId().equals(user.getId())) {
-            response.put("status", "error");
-            response.put("message", "You are not allowed to reject this reservation");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }
-
-        reservation.setStatut("REJECTED");
-        reservationService.saveReservation(reservation);
-
-        // Envoyer une notification à l'utilisateur
-        String userEmail = reservation.getUser().getEmail();
-        String subject = "Votre réservation a été refusée";
-        String text = "Votre réservation pour la voiture " + reservation.getCar().getBrand() + " " + reservation.getCar().getModel() +
-                " du " + reservation.getDebutLocation() + " au " + reservation.getFinLocation() + " a été refusée.";
-        emailService.sendNotificationEmail(userEmail, subject, text);
-
-        response.put("status", "ok");
-        response.put("message", "Reservation rejected");
-        return ResponseEntity.ok(response);
-    }
-
-
-
-
-
 }

@@ -11,4 +11,6 @@ public class DocumentDTO {
     private String userPhotoUrl;
     private String userNom;
     private String userPrenom;
+
+    private String directory;  // Ajoutez ce champ pour le répertoire
 }

@@ -16,5 +16,7 @@ public class ChatMessageDTO {
     private String carModel; // Modèle de la voiture
     private String carImage; // Première photo de la voiture
     private LocalDateTime sentAt;
+    private String profileImageUrl;
+
 
 }
