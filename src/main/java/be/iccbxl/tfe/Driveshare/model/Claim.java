@@ -28,7 +28,7 @@ public class Claim {
     private LocalDateTime createdAt;
 
     @Column(name = "status", nullable = false)
-    private String status = "EN_ATTENTE";  // Par défaut, la réclamation commence avec le statut "En attente"
+    private String status = "PENDING";  // Par défaut, la réclamation commence avec le statut "En attente"
 
     @Column
     private String response;  // Champ pour stocker la réponse de l'administrateur
@@ -39,13 +39,13 @@ public class Claim {
 
     // Fonction pour marquer la réclamation comme clôturée
     public void closeClaim() {
-        this.status = "TERMINE";
+        this.status = "FINISHED";
     }
 
     // Fonction pour relancer la réclamation (si l'utilisateur répond)
     public void reopenClaim(String newMessage) {
         this.message = newMessage;
-        this.status = "EN_COURS";
+        this.status = "IN_PROGRESS";
         this.response = null;
         this.responseAt = null;
     }

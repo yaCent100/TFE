@@ -3,8 +3,10 @@ package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 import be.iccbxl.tfe.Driveshare.DTO.IndisponibleDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Indisponible;
+import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.repository.CarRepository;
 import be.iccbxl.tfe.Driveshare.repository.IndisponibleRepository;
+import be.iccbxl.tfe.Driveshare.repository.ReservationRepository;
 import be.iccbxl.tfe.Driveshare.service.IndisponibleServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,12 +24,30 @@ public class IndisponibleService implements IndisponibleServiceI {
     @Autowired
     private CarRepository carRepository;
 
-    @Override
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+
+
     public List<IndisponibleDTO> findByCarId(Long carId) {
         List<Indisponible> indisponibles = indisponibleRepository.findByCarId(carId);
-        return indisponibles.stream()
+        List<Reservation> reservations = reservationRepository.findByCarIdAndStatus(carId);
+
+        // Filtrer les indisponibilités qui chevauchent une réservation avec statut "confirmed", "finished" ou "now"
+        List<Indisponible> filteredIndisponibles = indisponibles.stream()
+                .filter(indispo -> reservations.stream()
+                        .noneMatch(reservation -> datesOverlap(
+                                reservation.getStartLocation(), reservation.getEndLocation(),
+                                indispo.getStartDate(), indispo.getEndDate())))
+                .toList();
+
+        return filteredIndisponibles.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    private boolean datesOverlap(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
+        return (start1.isBefore(end2) && end1.isAfter(start2));
     }
 
     @Override

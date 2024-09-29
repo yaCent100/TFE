@@ -15,4 +15,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByUserId(Long userId);
 
     @Query("SELECT d FROM Document d WHERE d.user.id = :userId AND d.documentType = :documentType")
-    List<Document> findByUserIdAndDocumentType(@Param("userId") Long userId, @Param("documentType") String documentType);}
+    List<Document> findByUserIdAndDocumentType(@Param("userId") Long userId, @Param("documentType") String documentType);
+
+    boolean existsByUserIdAndDocumentType(Long userId, String identityRecto);
+}

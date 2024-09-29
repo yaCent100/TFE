@@ -44,7 +44,6 @@
           <div class="step">
             <div class="circle"></div>
             <p class="p">6. Finalisation</p>
-            <div class="line"></div>
           </div>
         </div>
       </div>
@@ -76,9 +75,17 @@
 
       </div>
 
+
+
 </div>
 
-
+<script>
+        // Activer les tooltips en Bootstrap 5
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
 
 
 </body>

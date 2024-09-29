@@ -5,125 +5,269 @@
     <title>Détails de la Voiture</title>
 
     <style>
-        .car-photo {
-            width: 150px;
-            height: 150px;
-            margin: 10px;
-            object-fit: cover;
-        }
-        .equipment-icon {
-            width: 30px;
-            height: 30px;
-        }
-        #spinner {
-            display: none;
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .card-header {
-            background-color: #007bff;
-            color: white;
-        }
-        .card {
-            margin-bottom: 20px;
-        }
-    </style>
+    .car-photo {
+        width: 150px;
+        height: 150px;
+        margin: 10px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    #spinner {
+        display: none;
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .card-header {
+        background-color: #354C6F;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .card-header h2 {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
+    .card {
+        margin-bottom: 20px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    .card-body {
+        padding: 20px;
+        padding-bottom:40px;
+    }
+
+    .car-brand-model {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .car-brand-model h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .car-plate {
+        text-align: center;
+        font-size: 1.5rem;
+        color: #333;
+        font-weight: 500;
+        margin-bottom: 30px;
+    }
+
+    .car-details-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .car-details-row p {
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .car-details-row strong {
+        color: #555;
+    }
+
+    .car-section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #007bff;
+        text-align:center;
+        margin-top:20px;
+    }
+
+    .card-body-content {
+        display: none;
+
+    }
+
+    .card-body-loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 300px;
+    }
+
+    #car-photos img {
+        margin-right: 10px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .download-links a {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+        color: #007bff;
+    }
+
+    .download-links a:hover {
+        text-decoration: underline;
+    }
+
+    .car-feature,
+    .car-equipment,
+    .car-condition {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .car-feature h4,
+    .car-equipment h4,
+    .car-condition h4 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: #007bff;
+    }
+
+    .car-feature p,
+    .car-equipment p,
+    .car-condition p {
+        font-size: 1rem;
+        color: #333;
+    }
+
+    .separator{
+        width:50%;
+        text-align:center;
+        margin-top:30px;
+        margin-bottom:30px;
+
+    }
+</style>
+
+
 </head>
 <body>
 <div layout:fragment="content">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Admin Panel</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" id="accountDropdown" role="button" data-toggle="dropdown">
-                        <img src="/account.png" class="avatar img-fluid" alt="Account">
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="#">Profile</a>
-                        <a class="dropdown-item" href="#">Settings</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Logout</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <main class="content px-3 py-4">
-        <div id="spinner"></div>
+    <div th:insert="~{admin/fragment-header :: admin-header-cars-détail}"></div>
+
+    <main class="content px-5 py-4 d-flex justify-content-around">
         <div class="card">
             <div class="card-header">
-                <h2>Informations sur la voiture</h2>
+                <h2>Détails de la voiture</h2>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><span id="car-brand"></span></p>
-                    </div>
+                <div class="card-body-loading">
+                    <div id="spinner"></div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><span id="car-model"></span></p>
+
+                <div class="card-body-content">
+                    <!-- Marque et modèle en grand au centre -->
+                    <div class="car-brand-model">
+                        <h1 id="car-brand">Marque</h1>
+                        <h1 id="car-model">Modèle</h1>
                     </div>
-                    <div class="col-md-6">
-                        <p><strong>En Ligne:</strong><br><span id="car-online"></span></p>
+
+                    <!-- Plaque d'immatriculation centrée sous le modèle -->
+                    <div class="car-plate">
+                        <span id="car-plate">Plaque d'immatriculation</span>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Première Circulation</strong><br>
-                            <span id="car-first-circulation"></span></p>
+
+                    <!-- Détails de la voiture -->
+                    <div class="car-details-row">
+                        <div class="col-md-4 d-flex flex-column justify-content-center">
+                            <span>Première mise en Circulation</span>
+                            <span id="car-first-circulation"></span>
+                        </div>
+                        <div class="col-md-4 d-flex flex-column justify-content-center">
+                            <p><strong>En Ligne</strong> <span id="car-online"></span></p>
+                        </div>
+                        <div class="col-md-4 d-flex flex-column justify-content-center">
+                            <p><strong>Mode de Réservation</strong> <span id="car-mode-reservation"></span></p>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <p><strong>Plaque:</strong> <span id="car-plate"></span></p>
+
+                    <hr class="separator mx-auto">
+
+                    <!-- Photos de la voiture -->
+                    <div class="car-section">
+                        <h3 class="car-section-title">Photos</h3>
+                        <div id="car-photos" class="d-flex justify-content-around"></div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Mode de Réservation</strong><br>
-                            <span id="car-mode-reservation"></span></p>
+
+                    <hr class="separator mx-auto">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="car-section-title">Prix</h3>
+                            <div id="car-prices" class="row">
+                                <!-- Les colonnes des prix seront insérées ici par JavaScript -->
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Prix</strong> <br>
-                            <span id="car-price"></span></p>
+
+                    <hr class="separator mx-auto">
+
+
+
+                    <!-- Liens de téléchargement -->
+                    <div>
+                        <h3 class="car-section-title">Documents</h3>
+                        <div class="row download-links">
+                            <div class="col-md-4">
+                                <a id="car-carte-grise">Carte grise</a>
+                            </div>
+                            <div class="col-md-4">
+                                <a id="car-identity-recto" target="_blank">Carte d'identité (recto)</a>
+                            </div>
+                            <div class="col-md-4">
+                                <a id="car-identity-verso" target="_blank">Carte d'identité (verso)</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <p><strong>Photos</strong></p>
-                        <div id="car-photos" class="d-flex flex-wrap"></div>
+
+                    <hr class="separator mx-auto">
+
+                    <!-- Caractéristiques et Équipements -->
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h3 class="car-section-title">Caractéristiques</h3>
+                            <div id="car-features" class="row"></div>
+                        </div>
+                        <div class="col-lg-6">
+                            <h3 class="car-section-title">Équipements</h3>
+                            <div id="car-equipments" class="row"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><a id="car-carte-grise">Télécharger la carte grise</a>
-                        </p>
+
+                    <hr class="separator mx-auto">
+
+                    <!-- Conditions du propriétaire -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h3 class="car-section-title">Conditions du Propriétaire</h3>
+                            <div id="car-conditions" class="row"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Caractéristiques:</strong></p>
-                        <ul id="car-features"></ul>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Équipements:</strong></p>
-                        <ul id="car-equipments"></ul>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <p><strong>Conditions du Propriétaire:</strong></p>
-                        <ul id="car-conditions"></ul>
-                    </div>
+
                 </div>
             </div>
         </div>

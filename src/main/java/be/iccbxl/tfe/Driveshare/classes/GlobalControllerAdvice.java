@@ -4,10 +4,13 @@ import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.templatemode.TemplateMode;
 
 @ControllerAdvice(basePackages = "be.iccbxl.tfe.Driveshare.controller")
 public class GlobalControllerAdvice {
@@ -26,6 +29,8 @@ public class GlobalControllerAdvice {
         if (session != null) model.addAttribute("session", session);
         if (servletContext != null) model.addAttribute("servletContext", servletContext);
     }
+
+
 }
 
 

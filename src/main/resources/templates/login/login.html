@@ -21,19 +21,19 @@
                 </div>
                 <div id="buttons-container" class="row justify-content-center mgt-30 ml-auto mr-auto">
                     <div class="col-6 p-0">
-                        <a id="connexion-link" class="ds-nav-link active justify-content-center" href="#">
+                        <a id="connexion-link" class="ds-nav-link justify-content-center" href="#" onclick="showTab('signin-layout-connexion')">
                             <span class="pdb-10 text-center w100p">SE CONNECTER</span>
                         </a>
                     </div>
                     <div class="col-6 p-0">
-                        <a id="inscription-link" class="ds-nav-link justify-content-center text-more-light" href="#">
+                        <a id="inscription-link" class="ds-nav-link justify-content-center" href="#" onclick="showTab('signin-layout-inscription')">
                             <span class="pdb-10 text-center w100p">S'INSCRIRE</span>
                         </a>
                     </div>
                 </div>
             </div>
             <div class="left-container d-flex flex-column justify-content-between">
-                <div class="signin-layout-connexion">
+                <div id="signin-layout-connexion" class="signin-layout-connexion tab-pane active">
                     <div class="custom-form">
                         <div class="row pdt-30">
                             <div class="col-sm-12">
@@ -74,37 +74,34 @@
                                 </div>
                             </div>
                         </form>
-                        <div class="row justify-content-center">
+                        <div class="row justify-content-center mt-3">
                             <div class="col-sm-12">
-                                <p class="tcenter force-mobile-block fs12 bold">Pas encore de compte sur DriveShare ?<a href="#signin-layout-inscription-" class="pdl-10 semi-bold c-main">S'inscrire</a>
-                            </div>
-                        </div>
-                        <div class="justify-content-center mgt-40">
-                            <div class="border pd-15 carfully-box bg-f9f9f9">
-                                <p class="fs12"><span class="medium">Vous avez un compte <img class="carfully-logo" src="/images/logo/carfully-logo.svg?v=7.20.44" alt="Carfully"> ?</span> Connectez-vous avec vos identifiants habituels et retrouvez vos données et votre historique de locations. Si vous ne vous souvenez plus de votre mot de passe Carfully, <a href="/request-password" class="c-main normal">cliquez-ici</a> ou <a class="c-main normal" href="mailto:hello@zotcar.com?subject=J'ai un problème de connexion avec mon compte carfully&body=Bonjour,%0D%0AMon adresse email :">contactez-nous</a>.
-                            </div>
+                                <p class="tcenter force-mobile-block fs12 bold">Pas encore de compte sur DriveShare ?
+                                  <a href="#" onclick="showInscription()" class="pdl-10 semi-bold c-main ms-2">S'inscrire</a>                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="signin-layout-inscription">
+                <div id="signin-layout-inscription" class="signin-layout-inscription tab-pane">
                     <div class="custom-form">
                         <div class="row pdt-30">
                             <div class="col-sm-12">
                                 <p class="title-custom">Inscription</p>
                             </div>
                         </div>
-                        <form id="signup-form" th:action="@{/register}" th:object="${user}" method="post">
+                        <form id="signup-form" class="needs-validation" th:action="@{/register}" th:object="${user}" method="post" novalidate>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="inner-addon left-addon">
+                                        <div class="invalid-feedback">Champ obligatoire</div> <!-- Message d'erreur personnalisé -->
                                         <i class="fa fa-user fs20 text-more-light" aria-hidden="true"></i>
-                                        <input type="text" name="nom" class="form-control input-custom" id="name" placeholder="Nom" required>
+                                        <input type="text" name="lastName" class="form-control input-custom" id="name" placeholder="Nom" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="inner-addon left-addon">
+                                        <div class="invalid-feedback">Champ obligatoire</div> <!-- Message d'erreur personnalisé -->
                                         <i class="fa fa-user fs20 text-more-light" aria-hidden="true"></i>
-                                        <input type="text" name="prenom" class="form-control input-custom" id="first-name-input" placeholder="Prénom" required>
+                                        <input type="text" name="firstName" class="form-control input-custom" id="first-name-input" placeholder="Prénom" required>
                                     </div>
                                 </div>
                             </div>
@@ -112,6 +109,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="inner-addon left-addon">
+                                        <div class="invalid-feedback">Champ obligatoire</div>
                                         <i class="fa-solid fa-house" aria-hidden="true"></i>
                                         <input type="text" name="adresse" class="form-control input-custom" id="address-input" placeholder="Adresse" required>
                                     </div>
@@ -121,12 +119,15 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="inner-addon left-addon">
+                                        <div class="invalid-feedback">Champ obligatoire</div>
                                         <i class="fa-solid fa-envelopes-bulk" aria-hidden="true"></i>
-                                        <input type="text" name="codePostal" class="form-control input-custom" id="postal-code-input" placeholder="Code Postal" required>
+                                        <input type="text" name="postalCode" class="form-control input-custom" id="postal-code-input" placeholder="Code Postal" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="inner-addon left-addon">
+                                        <div class="invalid-feedback">Champ obligatoire</div>
+                                        <i class="fa-solid fa-house" aria-hidden="true"></i>
                                         <input type="text" name="locality" class="form-control input-custom" id="city-input" placeholder="Commune" required>
                                     </div>
                                 </div>
@@ -135,13 +136,19 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="inner-addon left-addon">
+                                        <div class="invalid-feedback">Champ obligatoire</div>
                                         <i class="fa fa-envelope fs20 text-more-light" aria-hidden="true"></i>
                                         <input type="email" name="email" class="form-control input-custom" placeholder="Email" id="email-input-register" required>
+
+                                        <!-- Affichage de l'erreur si l'email est déjà utilisé -->
+                                        <div th:if="${emailError}" class="text-danger" th:text="${emailError}"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="inner-addon left-addon">
-                                        <input type="tel" name="tel_number" class="form-control input-custom" id="tel_number_input" required>
+                                        <div class="invalid-feedback">Champ obligatoire</div>
+                                        <i class="fa fa-phone fs20 text-more-light" aria-hidden="true"></i> <!-- Icône de téléphone -->
+                                        <input type="tel" name="phone" class="form-control input-custom" id="tel_number_input" placeholder="Téléphone" required>
                                     </div>
                                 </div>
                             </div>
@@ -149,15 +156,28 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="inner-addon left-addon">
+                                        <div class="invalid-feedback">Champ obligatoire</div>
                                         <i class="fa fa-lock fs20 text-more-light" aria-hidden="true"></i>
                                         <input type="password" name="password" class="form-control mgb-0 input-custom" placeholder="Mot de passe" minlength="4" id="password-input-register" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="inner-addon left-addon">
+                                        <div class="invalid-feedback">Champ obligatoire</div>
                                         <i class="fa fa-lock fs20 text-more-light" aria-hidden="true"></i>
                                         <input type="password" name="confirm_password" class="form-control mgb-0 input-custom" placeholder="Confirmer le mot de passe" minlength="4" id="confirm-password-input" required>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Case à cocher pour accepter la politique de confidentialité -->
+                            <div class="form-group mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="privacyPolicyCheck" required>
+                                    <label class="form-check-label" for="privacyPolicyCheck">
+                                        J'accepte la <a href="/uploads/documents/politique-de-confidentialite.pdf" target="_blank">Politique de confidentialité</a> de DriveShare
+                                    </label>
+                                    <div class="invalid-feedback">Vous devez accepter la politique de confidentialité avant de vous inscrire.</div>
                                 </div>
                             </div>
 
@@ -167,7 +187,7 @@
                         </form>
 
                         <div class="row justify-content-center mt-3">
-                            <p class="small text-muted">Déjà un compte sur DriveShare ?<a href="/signin?redirect_uri=/" class="pdl-10 semi-bold c-main"> Se connecter</a>
+                            <p class="small text-muted">Déjà un compte sur DriveShare ?<a href="#" onclick="showConnexion()" class="pdl-10 semi-bold c-main"> Se connecter</a>
                         </div>
                         <div class="col-sm-12">
                             <div class="row justify-content-center">
@@ -244,6 +264,26 @@
       alert('Une erreur est survenue.');
     });
   });
+
+
+(function () {
+    'use strict';
+
+    // Récupérer tous les formulaires auxquels on veut appliquer le style Bootstrap
+    var forms = document.querySelectorAll('.needs-validation');
+
+    // Boucle sur chaque formulaire et empêcher la soumission si les champs ne sont pas valides
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        }, false);
+    });
+})();
 </script>
 
 </body>

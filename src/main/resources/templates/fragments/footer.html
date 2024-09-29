@@ -11,19 +11,17 @@
         <div class="separator"></div>
         <div class="d-flex flex-row justify-content-start justify-content-lg-around flex-wrap contenu">
             <div class="footer-list d-flex flex-column justify-content-start">
-                <span class="list-title">A propos</span>
-                <a class="fs15 lh32" href="/team">Notre équipe</a>
-                <a class="fs15 lh32" href="/comment-ça-marche">Comment ça marche</a>
-                <a class="fs15 lh32" href="/faq">Nous contacter</a>
+                <span class="list-title" th:text="#{propos}">A propos</span>
+                <a class="fs15 lh32" href="/comment-ça-marche" th:text="#{comment}">Comment ça marche</a>
+                <a class="fs15 lh32" href="/faq" th:text="#{contacter}">Nous contacter</a>
             </div>
             <div class="footer-list d-flex flex-column justify-content-start">
-                <span class="list-title">Découvrir</span>
-                <a class="fs15 lh32" href="/louer-ma-voiture">Vous avez un véhicule ?</a>
-                <a class="fs15 lh32" href="/guide-location-voiture">Le guide pour louer sa voiture</a>
-                <a class="fs15 lh32" href="/assurance">Assurance et sécurité</a>
+                <span class="list-title" th:text="#{decouvrir}">Découvrir</span>
+                <a class="fs15 lh32" href="/louer-ma-voiture" th:text="#{vehicule?}">Vous avez un véhicule ?</a>
+                <a class="fs15 lh32" href="/uploads/documents/assurance-driveshare.pdf" download="assurance.pdf" th:text="#{assurance}">Assurance et sécurité</a>
             </div>
         </div>
-        <div class="d-flex flex-row justify-content-center align-content-center">
+        <div class="d-flex flex-row justify-content-center align-content-center" style="margin-top:40px;margin-bottom:40px;">
             <a href="/">
                 <img class="driveshare-logo" src="/images/DriveShareLogo.png" alt="Logo DriveShare" height="50">
             </a>
@@ -35,21 +33,15 @@
             <div class="separator2"></div>
             <div class="d-flex flex-lg-row flex-column justify-content-between align-items-center">
                 <div class="copyright d-flex flex-row">
-                    <p class="fs12">DriveShare © <span class="years-reserved-right">2023 - 2024</span> - Tous droits réservés.</p>
+                    <p class="fs12">DriveShare © <span class="years-reserved-right">2023 - 2024 </span><span th:text="#{reserves}"> - Tous droits réservés.</span></p>
                 </div>
                 <div class="links d-flex flex-lg-row flex-column justify-content-between text-xs-center">
                     <div>
-                        <a class="footer-pdf" href="/documents/conditions-generales.pdf">Condition générales et mentions légales</a>
-                    </div>
+                        <a class="footer-pdf" href="/uploads/documents/conditions-generales.pdf" download th:text="#{conditions-mentions}">Conditions générales et mentions légales</a>                    </div>
                     <div>
-                        <a class="footer-pdf" href="/documents/politique-de-confidentialite.pdf">Politique de confidentialité</a>
+                        <a class="footer-pdf" href="/uploads/documents/politique-de-confidentialite.pdf" download th:text="#{politiques}">Politique de confidentialité</a>
                     </div>
-                    <div class="social-links d-flex flex-row justify-content-around align-items-center">
-                        <a class="fs16 bold" href="https://www.facebook.com/zotcar/" target="_blank"><i class="fa fa-facebook-square fa-lg"></i></a>
-                        <a class="fs16 bold" href="https://www.instagram.com/zotcar/" target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
-                        <a class="fs16 bold" href="https://www.twitter.com/zotcar974/" target="_blank"><i class="fa fa-twitter fa-lg"></i></a>
-                        <a class="fs16 bold" href="https://www.linkedin.com/company/zotcar/" target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
-                    </div>
+
 
                 </div>
             </div>

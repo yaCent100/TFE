@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>DriveShare - Disponibilité</title>
+
 </head>
 <body>
 <div th:fragment="calendrier-step" class="form-step">
     <div class="row">
-        <div class="col-lg-9" style="background-color:#D5DDE1; padding:80px; border-radius:10px;">
+        <div class="col-lg-9" style="background-color:#DFE7EC; padding:80px; border-radius:10px;">
             <div>
                 <span>Etape 5</span>
                 <div><h2 class="fw-bold">Mettez à jour votre calendrier</h2>
@@ -32,31 +33,44 @@
                 </div>
                 <input type="hidden" id="indisponibleDatesStart" name="indisponibleDatesStart" />
                 <input type="hidden" id="indisponibleDatesEnd" name="indisponibleDatesEnd" />
-                <div class="col-lg-12">
+                <div class="col-lg-12 text-end">
                     <button class="btn btn-primary btn-next mt-4 text-right">Suivant</button>
                 </div>
             </div>
         </div>
         <div class="col-lg-3">
             <div class="calendar-caption fs10 pd-20 bradius bg-white border">
-                <p class="mgb-10 medium fs14 text-center">Légende</p>
-                <div class="caption-item">
-                    <div class="caption-icon available-caption nbsp"></div>
-                    <p class="caption-text">
-                        <span class="nbsp">Disponible</span>
-                        <span class="" data-toggle="tooltip" data-placement="top" title="" data-original-title="Le véhicule est disponible et peux recevoir des demandes de locations."><i class="fa fa-info-circle"></i></span>
+                <h5 class="text-center mb-4">Légende</h5>
+                <!-- Available -->
+                <div class="caption-item mb-3">
+                    <div class="caption-icon available-caption"></div>
+                    <p class="caption-text m-0">
+                        <span class="">Disponible</span>
+                        <span class="" data-toggle="tooltip" data-placement="top" title="Le véhicule est disponible et peut recevoir des demandes de locations.">
+                    <i class="fa fa-info-circle"></i>
+                </span>
                     </p>
                 </div>
+                <!-- Unavailable -->
                 <div class="caption-item">
-                    <div class="caption-icon unavailable-caption nbsp"></div>
-                    <p class="caption-text">
-                        <span class="nbsp">Indisponible</span>
-                        <span class="" data-toggle="tooltip" data-placement="top" title="" data-original-title="Le véhicule n'est pas disponible."><i class="fa fa-info-circle"></i></span>
+                    <div class="caption-icon unavailable-caption"></div>
+                    <p class="caption-text m-0">
+                        <span class="">Indisponible</span>
+                        <span class="" data-toggle="tooltip" data-placement="top" title="Le véhicule n'est pas disponible.">
+                    <i class="fa fa-info-circle"></i>
+                </span>
                     </p>
                 </div>
             </div>
         </div>
+
     </div>
+    <script>
+        $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+    </script>
 </div>
 </body>
 </html>

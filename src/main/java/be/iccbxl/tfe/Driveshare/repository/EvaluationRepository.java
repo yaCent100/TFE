@@ -12,8 +12,9 @@ import java.util.List;
 @Repository
 public interface EvaluationRepository extends CrudRepository<Evaluation, Long> {
 
-    @Query(value = "SELECT e.reservation.car FROM Evaluation e WHERE e.note = 5")
+    @Query(value = "SELECT e.reservation.car FROM Evaluation e WHERE e.note = 5 GROUP BY e.reservation.car ORDER BY COUNT(e.note) DESC LIMIT 4")
     List<Car> findTop4CarsWithFiveStarRating();
+
 
     boolean existsByReservationId(Long reservationId);
 

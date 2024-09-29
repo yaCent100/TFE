@@ -1,12 +1,15 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,5 +56,25 @@ public class DateService {
         }
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
+
+    // Nouvelle méthode pour parser des dates non standard
+    public LocalDate parseNonStandardDate(String dateStr) {
+        Logger logger = LoggerFactory.getLogger(DateService.class);
+
+        try {
+            // Vérifier si la chaîne est déjà au format ISO standard (yyyy-MM-dd)
+            if (dateStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+            }
+
+            // Format non standard attendu (ex. : 'Ven. 29 Aoû. 2025')
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("EEE. dd MMM. yyyy", Locale.FRENCH);
+            return LocalDate.parse(dateStr, inputFormatter);
+        } catch (DateTimeParseException e) {
+            logger.error("Erreur de formatage de date : " + dateStr, e);
+            throw new RuntimeException("Invalid date format: " + dateStr);
+        }
+    }
+
 
 }

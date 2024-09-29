@@ -88,6 +88,16 @@ public class DocumentService implements DocumentServiceI {
                 .map(MapperDTO::toDocumentDTO)  // Utilise le mapper pour chaque document
                 .collect(Collectors.toList());
     }
+
+
+    // Méthode pour vérifier si les documents recto et verso sont uploadés
+    public boolean isUserIdentityUploaded(Long userId) {
+        boolean rectoUploaded = documentRepository.existsByUserIdAndDocumentType(userId, "identity_recto");
+        boolean versoUploaded = documentRepository.existsByUserIdAndDocumentType(userId, "identity_verso");
+
+        // Retourne vrai uniquement si les deux documents sont uploadés
+        return rectoUploaded && versoUploaded;
+    }
 }
 
 

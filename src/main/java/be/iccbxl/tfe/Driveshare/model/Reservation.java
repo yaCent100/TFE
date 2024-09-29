@@ -57,4 +57,6 @@ public class Reservation {
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Claim> claims; // Liste des réclamations associées
+
+
 }

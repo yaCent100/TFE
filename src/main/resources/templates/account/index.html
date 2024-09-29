@@ -20,52 +20,62 @@
                     </div>
                     <h1 class="mb-4 mt-4">Bonjour, <span th:text="${user?.firstName}">Utilisateur</span></h1>
                     <div class="row">
-                        <div class="col-lg-3">
+                        <div class="col-lg-3 d-flex flex-column" style="height: 100%;">
                             <div class="owner-view-owner">
                                 <div class="row">
                                     <div class="col-lg-12 mt-2">
                                         <div class="owner-picture text-center">
-                                            <img alt="profil" class="userPicture" th:src="${user.photoUrl != null} ? '/uploads/profil/' + ${user.photoUrl} : '/uploads/profil/defaultPhoto.png'" />
+                                            <img alt="profil" class="userPicture" src="/uploads/profil/fondecran2.jpg">
                                         </div>
                                     </div>
-                                    <input type="hidden" id="userId" th:value="${user.id}" />
-                                    <input type="file" name="picture" id="pictureInput" accept="image/jpeg,image/jpg,image/png" hidden>
+                                    <input type="hidden" id="userId" value="12">
+                                    <input type="file" name="picture" id="pictureInput" accept="image/jpeg,image/jpg,image/png" hidden="">
                                     <div class="text-center mt-2">
                                         <a class="changePicture" href="#" id="editPictureLink">
                                             <i class="fa fa-edit fa-lg nbsp fs11"></i> Modifier ma photo
                                         </a>
                                     </div>
                                 </div>
+                            </div>
 
-                            </div>
-                            <div class="text-center mt-3">
-                                <button class="btn btn-danger" id="deleteAccountButton">Supprimer mon compte</button>
-                            </div>
                         </div>
                         <div class="col-lg-9 mb-3">
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 <div class="row">
                                     <div class="col-lg-12 mb-3">
                                         <div class="statistique">
-                                            <div class="row">
-                                                <div class="col-lg-6 pdl-40 pdb-20-mobile align-self-center">
-                                                    <p class="normal text-main-2 fs14">Vos statistiques au 06/05/2024</p>
+                                            <div class="row d-flex align-items-center justify-content-between">
+                                                <!-- Colonne pour les statistiques au format date -->
+                                                <div class="col-lg-6 d-flex align-items-center pdl-40 pdb-20-mobile">
+                                                    <p class="normal text-main-2">
+                                                        Vos statistiques au
+                                                        <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy')}"></span>
+                                                    </p>
                                                 </div>
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="col-lg-3 col-md-6 col-xs-6 align-self-center text-center">
-                                                            <p><img class="iconeStat" src="/icones/graphique.png" alt="Location" data-toggle="tooltip" data-placement="top" title="Locations effectuées"></p>
-                                                            <p class="text-main-2 fs10 normal">
-                                                                <span th:text="${confirmedCount}"></span> location(s) confirmée(s)
-                                                            </p>
-                                                        </div>
-                                                        <div class="col-lg-3 col-md-6 col-xs-6 align-self-center text-center">
-                                                            <p><img class="iconeStat" src="/icones/carStat.png" alt="Vehicule" data-toggle="tooltip" data-placement="top" title="Nombre de voitures"></p>
-                                                            <p class="text-main-2 fs10 normal">
-                                                                <span th:text="${carCount}"></span> voitures
-                                                            </p>
-                                                        </div>
 
+                                                <!-- Colonne pour les icônes de statistiques -->
+                                                <div class="col-lg-6 d-flex justify-content-around">
+                                                    <!-- Location confirmée en tant que locataire -->
+                                                    <div class="text-center mr-3" data-toggle="tooltip" data-placement="top" title="Locations effectuées" style="padding:10px;margin-right:20px;">
+                                                        <img class="iconeStat" src="/images/adresse.png" alt="Location">
+                                                        <p class="small bold">
+                                                        <span class="small" th:text="${confirmedRentalsAsTenant} + ' locations(s) confirmée(s)'"></span>
+                                                        </p>
+                                                    </div>
+
+                                                    <!-- Nombre de voitures enregistrées -->
+                                                    <div class="text-center mr-3" data-toggle="tooltip" data-placement="top" title="Nombre de voitures enregistrées" style="padding:10px;margin-right:20px;">
+                                                        <img class="iconeStat" src="/images/location-de-voiture.png" alt="Vehicule">
+                                                        <p class="small bold">
+                                                            <span class="small" th:text="${carCount} + ' voiture(s) enregistrée(s)'"></span>                                                        </p>
+                                                    </div>
+
+                                                    <!-- Locations confirmées pour les voitures en tant que propriétaire -->
+                                                    <div class="text-center" data-toggle="tooltip" data-placement="top" title="Locations effectuées pour vos voitures" style="padding:10px;margin-right:20px;">
+                                                        <img class="iconeStat" src="/images/gains.png" alt="Location">
+                                                        <p class="small bold">
+                                                            <span class="small" th:text="${confirmedRentalsAsOwner} + ' réservation(s) confirmée(s)'"></span>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -81,7 +91,7 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-lg-12 mt-1">
-                                                        <p class="fs11 lh-simple text-grey-soft">Renseignez vos informations personnelles pour qu’on puisse vous joindre</p>
+                                                        <p class="fs12 lh-simple text-grey-soft">Renseignez vos informations personnelles pour qu’on puisse vous joindre</p>
                                                     </div>
                                                     <div class="col-lg-12 text-end">
                                                         <p><img src="/icones/flecheProfile.png" alt="informations" height="19" width="19"> </p>
@@ -103,7 +113,7 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-lg-12 mt-1">
-                                                        <p class="fs11 lh-simple text-grey-soft">Ajoutez votre carte d’identité et votre permis de conduire pour pouvoir louer sereinement.</p>
+                                                        <p class="fs12 lh-simple text-grey-soft">Ajoutez votre carte d’identité et votre permis de conduire pour pouvoir louer sereinement.</p>
                                                     </div>
                                                     <div class="col-lg-12 text-end">
                                                         <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
@@ -122,7 +132,7 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-lg-12 mt-1">
-                                                        <p class="fs11 lh-simple text-grey-soft">Renseignez vos informations bancaires afin de percevoir vos gains de locations.</p>
+                                                        <p class="fs12 lh-simple text-grey-soft">Renseignez vos informations bancaires afin de percevoir vos gains de locations.</p>
                                                     </div>
                                                     <div class="col-lg-12 text-end">
                                                         <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
@@ -134,25 +144,35 @@
                                     <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
                                         <a class="a" th:href="@{/account/notifications}">
                                             <div class="user-card">
-                                                <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/notifProfile.png" alt="Notifications">Notifications</p>
+                                                <!-- Titre modifié -->
+                                                <p class="user-card-title">
+                                                    <img class="user-card-icon pe-1" src="/icones/notifProfile.png" alt="Notifications">
+                                                    Notifications & Réclamations
+                                                </p>
                                                 <div class="row">
                                                     <div class="col-lg-12 mgt-10">
-                                                        <p class="fs11 lh-simple text-grey-soft">Propriétaire ou locataire, gérez vos paramètres de notifications afin d’être alerté à tout moment.</p>
+                                                        <!-- Légende modifiée -->
+                                                        <p class="fs12 lh-simple text-grey-soft">
+                                                            Gérer vos notifications et vos réclamations. Répondez rapidement et soyez informé à tout moment de l'évolution de vos demandes en tant que propriétaire ou locataire.
+                                                        </p>
                                                     </div>
                                                     <div class="col-lg-12 text-end">
-                                                        <p><img src="/icones/flecheProfile.png" alt="document"  height="19" width="19"> </p>
+                                                        <p>
+                                                            <img src="/icones/flecheProfile.png" alt="document" height="19" width="19">
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </a>
                                     </div>
+
                                     <div class="col-lg-4 col-md-6 col-xs-12 mb-3">
                                         <a class="a" th:href="@{/account/change-password}">
                                             <div class="user-card">
                                                 <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/securiteProfile.png" alt="document">Connexion et sécurité</p>
                                                 <div class="row">
                                                     <div class="col-lg-12 mgt-10">
-                                                        <p class="fs11 lh-simple text-grey-soft mgb-10">Gérez votre mot de passe à votre compte Zotcar.</p>
+                                                        <p class="fs12 lh-simple text-grey-soft mgb-10">Gérez votre mot de passe à votre compte DriveShare.</p>
                                                     </div>
                                                     <div class="col-lg-12 text-end">
                                                         <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
@@ -167,7 +187,7 @@
                                                 <p class="user-card-title"><img class="user-card-icon pe-1" src="/icones/paiementProfile.png" alt="document">Mes gains</p>
                                                 <div class="row">
                                                     <div class="col-lg-12 mgt-10">
-                                                        <p class="fs11 lh-simple text-grey-soft mgb-10">Récapitulatif de vos gains</p>
+                                                        <p class="fs12 lh-simple text-grey-soft mgb-10">Récapitulatif de vos gains</p>
                                                     </div>
                                                     <div class="col-lg-12 text-end">
                                                         <p><img src="/icones/flecheProfile.png" alt="document" height="19" width="19"> </p>
@@ -178,6 +198,10 @@
                                     </div>
 
                                 </div>
+                            </div>
+                            <!-- This div takes the remaining space, pushing the button to the bottom -->
+                            <div class="col-lg-12 text-end">
+                                <button class="btn btn-outline-danger" id="deleteAccountButton">Supprimer mon compte</button>
                             </div>
 
                         </div>
@@ -269,6 +293,10 @@
  document.getElementById('editPictureLink').addEventListener('click', function(event) {
         event.preventDefault();
         document.getElementById('pictureInput').click();
+    });
+
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
     });
 
 

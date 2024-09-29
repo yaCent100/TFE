@@ -13,8 +13,8 @@ public class DataInitializer {
     @Autowired
     private CarService carService;
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void init() {
+   /*@EventListener(ApplicationReadyEvent.class)*/
+    public void init() throws Exception {
         carService.updateCarCoordinates();
     }
 

@@ -1,29 +1,27 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.model.Car;
-import be.iccbxl.tfe.Driveshare.model.Category;
+import be.iccbxl.tfe.Driveshare.model.Price;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CategoryService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.PriceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.temporal.ChronoUnit;
 
 @Controller
 public class CarController {
@@ -33,12 +31,16 @@ public class CarController {
 
     private final CategoryService categoryService;
 
+    private final PriceService priceService;
+
+    private static final Logger logger = LoggerFactory.getLogger(CarController.class);
 
 
     @Autowired
-    public CarController(CarService carService, CategoryService categoryService, PriceService priceService) {
+    public CarController(CarService carService, CategoryService categoryService, PriceService priceService, PriceService priceService1) {
         this.carService = carService;
         this.categoryService = categoryService;
+        this.priceService = priceService1;
     }
    /* @GetMapping("/cars")
     public String getAllCars(Model model) {
@@ -65,58 +67,96 @@ public class CarController {
 
 
 
+    // Contrôleur pour afficher les détails de la voiture
     @GetMapping("/cars/{id}")
     public String getCarById(
             @PathVariable Long id,
             @RequestParam(required = false) String dateDebut,
             @RequestParam(required = false) String dateFin,
-            Model model) {
+            Model model,
+            @AuthenticationPrincipal CustomUserDetail userDetail) { // Ajoutez ce modèle si vous avez configuré la méthode globale
 
         // Récupérer la voiture par son ID
         Car car = carService.getCarById(id);
 
-        // Vérifier si la voiture existe
         if (car == null) {
-            // Gérer le cas où la voiture n'est pas trouvée
-            return "error/404"; // Vue d'erreur personnalisée
+            return "error/404";
         }
 
-        // Calculer la note moyenne associée à cette voiture
         double averageRating = carService.calculateAverageRating(car);
-
-        // Calculer le nombre total d'évaluations
         int totalEvaluations = (int) car.getReservations().stream()
                 .filter(reservation -> reservation.getEvaluation() != null)
                 .count();
 
-        // Formatter les dates
+        // Formatage des dates
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String formattedDateDebut = "";
         String formattedDateFin = "";
 
+        LocalDate localDateDebut = null;
+        LocalDate localDateFin = null;
+
+        String errorMessage = "";
+
+
+
         try {
             if (dateDebut != null && !dateDebut.isEmpty()) {
-                LocalDate localDateDebut = LocalDate.parse(dateDebut, DateTimeFormatter.ISO_LOCAL_DATE);
+                localDateDebut = LocalDate.parse(dateDebut, DateTimeFormatter.ISO_LOCAL_DATE);
                 formattedDateDebut = localDateDebut.format(formatter);
             }
+
             if (dateFin != null && !dateFin.isEmpty()) {
-                LocalDate localDateFin = LocalDate.parse(dateFin, DateTimeFormatter.ISO_LOCAL_DATE);
+                localDateFin = LocalDate.parse(dateFin, DateTimeFormatter.ISO_LOCAL_DATE);
                 formattedDateFin = localDateFin.format(formatter);
             }
         } catch (DateTimeParseException e) {
-            // Gérer l'exception de parsing
             e.printStackTrace();
+            errorMessage = "Format de date invalide. Veuillez utiliser le format ISO (YYYY-MM-DD).";
         }
 
-        // Ajouter les attributs au modèle
+        Price price = car.getPrice();
+        double dailyPrice = 0.0;
+        double totalPrice = 0.0;
+
+        if (price != null) {
+            if (localDateDebut != null && localDateFin != null) {
+                dailyPrice = priceService.calculateDisplayPrice(price, localDateDebut);
+                long daysBetween = ChronoUnit.DAYS.between(localDateDebut, localDateFin) + 1; // Inclure le premier jour
+                totalPrice = daysBetween * dailyPrice;
+            } else {
+                errorMessage = "Les dates de début et de fin doivent être fournies.";
+            }
+        }
+        logger.info("Car ID: {}", id);
+        logger.info("Display Price: {}", dailyPrice);
+
+        String fullAddress = car.getAdresse() + ", " + (car.getPostalCode() != null ? car.getPostalCode() : "") + " " + (car.getLocality() != null ? car.getLocality() : "");
+        model.addAttribute("fullAddress", fullAddress);
+
+        logger.info("Fulladress: {}", fullAddress);
+
+
         model.addAttribute("car", car);
         model.addAttribute("averageRating", averageRating);
         model.addAttribute("totalEvaluations", totalEvaluations);
         model.addAttribute("dateDebut", formattedDateDebut);
         model.addAttribute("dateFin", formattedDateFin);
+        model.addAttribute("displayPrice", dailyPrice);
+        model.addAttribute("totalPrice", totalPrice);
+        model.addAttribute("authenticatedUser", userDetail.getUser());
 
-        return "car/details"; // Vue pour afficher les détails de la voiture
+
+        model.addAttribute("errorMessage", errorMessage);
+
+        return "car/details";
     }
+
+
+
+
+
+
 
 
 

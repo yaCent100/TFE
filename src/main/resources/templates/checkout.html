@@ -12,87 +12,168 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dancing+Script&display=swap">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden;
+        }
+
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/images/font-checkout.png'); /* Update with your image path */
+            background-size: cover;
+            background-position: center;
+            filter: blur(8px); /* Adjust the blur level as needed */
+            z-index: -1; /* Make sure the background stays behind the content */
+        }
+
+        .stripe-container {
+            background-color: rgba(0, 0, 0, 0.5); /* Dark translucent background for the stripe */
+            padding: 40px; /* Padding for the content inside the stripe */
+            margin: 0; /* Remove default margins */
+            width: 100%; /* Full width for the stripe */
+        }
+
+        .inner-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #fff;
+        }
+
+        .message-content {
+            padding: 20px;
+            border-radius: 10px; /* Rounded corners */
+            text-align: center;
+            color: white;
+            max-width: 600px;
+            position: relative;
+            bottom: 500px;
+        }
+
+        #thankYouMessage, #extraMessage, #redirectButton {
+            display: none; /* Hide the thank you message, extra message, and button by default */
+        }
+
+        #redirectButton {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-md-12 text-center">
-            <h1>Merci pour votre paiement !</h1>
-            <p>Votre réservation est en cours de confirmation...</p>
-            <div id="payment-message" class="hidden"></div>
+<div class="background-image"></div> <!-- Blurred background image -->
+
+<div class="stripe-container  vh-100"> <!-- Full-width stripe with darker background -->
+    <div class="inner-container">
+        <div class="message-content">
+            <h1 id="reservationStatus" class="fw-bold mt-4">Votre réservation est en cours de confirmation...</h1>
+            <h1 id="thankYouMessage" class="mt-4 fw-bold">Merci pour votre paiement !</h1> <!-- Initially hidden -->
+            <h5 id="extraMessage" class="mt-3">Nous vous souhaitons une excellente expérience avec DriveShare. Bonne route et profitez de votre voyage en toute sérénité !</h5>
+            <img id="carImage" src="https://www.gifsanimes.com/data/media/67/voiture-image-animee-0049.gif" width="100" style="display: none;margin: 0 auto;">
+            <button id="redirectButton" class="btn btn-link mt-3 mx-auto text-light">Allez vers votre reservation</button>
         </div>
     </div>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const amount = urlParams.get('amount');
-    const reservationId = urlParams.get('reservationId');
-    const paymentIntentId = urlParams.get('paymentIntentId');
-    const insurance = urlParams.get('insurance');
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const amount = urlParams.get('amount');
+        const reservationId = urlParams.get('reservationId');
+        const paymentIntentId = urlParams.get('paymentIntentId');
+        const insurance = urlParams.get('insurance');
 
-    console.log("Amount:", amount);
-    console.log("Reservation ID:", reservationId);
-    console.log("Payment Intent ID:", paymentIntentId);
-    console.log("Insurance:", insurance);
+        console.log("Amount:", amount);
+        console.log("Reservation ID:", reservationId);
+        console.log("Payment Intent ID:", paymentIntentId);
+        console.log("Insurance:", insurance);
 
-    async function confirmPayment() {
-        try {
-            const response = await fetch("/api/payments/confirm", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    reservationId: reservationId,
-                    paymentIntentId: paymentIntentId,
-                    insurance: insurance
-                }),
-            });
+        async function confirmPayment() {
+            try {
+                const response = await fetch("/api/payments/confirm", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        reservationId: reservationId,
+                        paymentIntentId: paymentIntentId,
+                        insurance: insurance
+                    }),
+                });
 
-            if (response.ok) {
-                const result = await response.text();
-                if (result.includes("pending owner's response")) {
-                    console.log("Reservation is pending owner's response. Redirecting to your account...");
-                    window.location.href = "/account?tab=pending-response"; // Redirect to the account page's pending response tab
+                if (response.ok) {
+                    const result = await response.text();
+                    if (result.includes("pending owner's response")) {
+                        console.log("Reservation is pending owner's response. Redirecting to your account...");
+                        window.location.href = "/account?tab=pending-response"; // Redirect to the account page's pending response tab
+                    } else {
+                        console.log("Payment and reservation confirmed successfully!");
+                        showThankYouMessage(); // Show the thank you message
+                        showExtraMessageAndCar(); // Show the extra message and car image
+                        showRedirectButton(); // Show the redirect button
+                        hideReservationStatus(); // Hide the confirmation status text
+                    }
                 } else {
-                    console.log("Payment and reservation confirmed successfully!");
-                    showMessage("Payment and reservation confirmed successfully!");
+                    const errorText = await response.text();
+                    console.error("Error confirming reservation:", errorText);
+                    showMessage("An error occurred while confirming the reservation.");
                 }
-            } else {
-                const errorText = await response.text();
-                console.error("Error confirming reservation:", errorText);
-                showMessage("An error occurred while confirming the reservation.");
+            } catch (error) {
+                console.error("Error during confirmation:", error);
+                showMessage("An error occurred while confirming the reservation: " + error.message);
             }
-        } catch (error) {
-            console.error("Error during confirmation:", error);
-            showMessage("An error occurred while confirming the reservation: " + error.message);
         }
-    }
 
-    function showMessage(messageText) {
-        const messageContainer = document.querySelector("#payment-message");
-        if (messageContainer) {
-            messageContainer.classList.remove("hidden");
-            messageContainer.textContent = messageText;
-
-            setTimeout(() => {
-                messageContainer.classList.add("hidden");
-                messageContainer.textContent = "";
-            }, 4000);
+        function showThankYouMessage() {
+            const thankYouMessage = document.getElementById('thankYouMessage');
+            if (thankYouMessage) {
+                thankYouMessage.style.display = 'block'; // Show the thank you message
+            }
         }
-    }
 
-    if (amount && reservationId && paymentIntentId && insurance) {
-        confirmPayment();
-    } else {
-        console.error("Required parameters are missing in the URL.");
-        showMessage("Required parameters are missing in the URL.");
-    }
-});
+        function showExtraMessageAndCar() {
+            const extraMessage = document.getElementById('extraMessage');
+            const carImage = document.getElementById('carImage');
+            if (extraMessage && carImage) {
+                extraMessage.style.display = 'block'; // Show the extra message
+                carImage.style.display = 'block'; // Show the car image
+            }
+        }
 
+        function hideReservationStatus() {
+            const reservationStatus = document.getElementById('reservationStatus');
+            if (reservationStatus) {
+                reservationStatus.style.display = 'none'; // Hide the reservation confirmation status
+            }
+        }
+
+        function showRedirectButton() {
+            const redirectButton = document.getElementById('redirectButton');
+            if (redirectButton) {
+                redirectButton.style.display = 'block';
+                redirectButton.addEventListener('click', () => {
+                    window.location.href = "/account/reservations";
+                });
+            }
+        }
+
+        if (amount && reservationId && paymentIntentId && insurance) {
+            confirmPayment();
+        } else {
+            console.error("Required parameters are missing in the URL.");
+            showMessage("Required parameters are missing in the URL.");
+        }
+    });
 
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -1,118 +1,123 @@
 <!-- fragments/tarification.html -->
-<div layout:fragment="tarification" id="tarification-tab" class="tab-content-car">
+<div layout:fragment="tarification" id="tarification-tab" class="tab-content-car" th:classappend="${param.activeTab == 'tarification-tab'} ? 'active' : ''">
     <!-- Contenu spécifique de l'onglet "Tarification" -->
     <div id="vehicle-edit" class="body-container bg-f6f8f9">
         <div class="container mt-5">
 
-
+        <div th:if="${successMessage}" class="alert alert-success" role="alert">
+            <span th:text="${successMessage}"></span>
+        </div>
             <div id="pricing" class="step-item">
-                <form class="mgb-60 form-with-tip" method="POST" th:action="@{/car/update/tarification}" data-parsley-validate="" novalidate="">
+                <form class="" method="POST" th:action="@{/car/update/tarification}" data-parsley-validate="" novalidate="">
                     <div class="row">
-                        <div class="col-lg-12 bg-white border bradius mgt-30 ">
-                            <div th:if="${successMessage}" class="alert alert-success" role="alert">
-                                <span th:text="${successMessage}"></span>
-                            </div>
-                            <div class="row mgt-30 pdl-20 pdr-20">
-                                <div class="col-lg-6 pd-10">
-                                    <a class="inline-block bradius-bis border h100p w100p bg-main-light choose-smart-pricing">
-                                        <p class="pd-30 bold fs18 text-center">Tarification intelligente <span class="c-white fs10 bg-warning medium pdl-6 pdr-6 h25 inline-block bradius-bis nbsp-large-left">Recommandé</span></p>
-                                    </a>
+                        <div class="col-lg-12 bg-white" style="padding:20px;">
+                            <div class="row mb-4">
+                                <div class="col-lg-6 pd-10 position-relative">
+                                <div class="tarif-intelligente-tab">
+                                    <p class="m-0 bold fs18 text-center" style="font-size: 1.2rem;">Tarification intelligente </p>
+                                    <div class="ribbon">INDISPONIBLE</div>
                                 </div>
-                                <div class="col-lg-6 pd-10">
-                                    <a class="inline-block bradius-bis border h100p w100p  choose-manual-pricing">
-                                        <p class="pd-30 bold fs18 text-center">Tarification manuelle</p>
-                                    </a>
+
+                            </div>
+
+                                <div class="col-lg-6">
+                                    <div class="tarif-manuelle-tab">
+                                        <p class="m-0 bold fs18 text-center" style="font-size: 1.2rem;">Tarification manuelle</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="pricing-detail pdl-20 pdr-20">
+                            <div class="pricing-detail">
                                 <div class="manual-pricing">
                                     <div class="row">
                                         <div class="col-lg-12 mgt-20 mgb-30">
-                                            <p>Choisissez un tarif fixe pour chaque saison. <a class="c-main italic underline" href="/calendrier-saison?territory_code=MQ" target="_blank">Voir le calendrier de saison</a></p>
+                                            <p>
+                                                Choisissez un tarif fixe pour chaque saison.
+                                                <a class="c-main italic underline" href="/calendrier" target="_blank">
+                                                    Voir le calendrier de saison
+                                                </a>
+                                            </p>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-lg-4 text-center">
+                                    <div class="d-flex justify-content-between mb-3 mt-3">
+                                        <div class="d-flex flex-column align-items-center w-30">
                                             <p class="medium mgb-10 tcenter">Prix basse saison <span class="normal italic">(€)</span></p>
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    <input type="number" class="form-control bradius-bis w100p text-center price-input" name="low_season_price" min="10" max="200" value="45" data-parsley-id="6" th:value="${car.price.lowPrice}">
-                                                </div>
-                                                <div class="col-lg-12">
-                                                    <p class="mgl-40 tcenter">Prix de votre voiture pour une journée de location  en basse saison.</p>
-                                                </div>
-                                            </div>
+                                            <input type="number" class="form-control bradius-bis w100p text-center price-input" name="low_season_price" min="10" max="200" value="40.0" data-parsley-id="6">
+                                            <p class="mgl-40 tcenter">Prix de votre voiture pour une journée de location en basse saison.</p>
                                         </div>
-                                        <div class="col-lg-4 text-center">
+
+                                        <div class="d-flex flex-column align-items-center w-30">
                                             <p class="medium mgb-10 tcenter">Prix Moyenne saison <span class="light italic">(€)</span></p>
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    <input type="number" class="form-control bradius-bis w100p text-center price-input" name="medium_season_price" min="10" max="200" value="55" data-parsley-id="8" th:value="${car.price.middlePrice}">
-                                                </div>
-                                                <div class="col-lg-12">
-                                                    <p class="mgl-40">Prix de votre voiture pour une journée de location , en moyenne saison.</p>
-                                                </div>
-                                            </div>
+                                            <input type="number" class="form-control bradius-bis w100p text-center price-input" name="medium_season_price" min="10" max="200" value="45.0" data-parsley-id="8">
+                                            <p class="mgl-40">Prix de votre voiture pour une journée de location, en moyenne saison.</p>
                                         </div>
-                                        <div class="col-lg-4 text-center">
+
+                                        <div class="d-flex flex-column align-items-center w-30">
                                             <p class="medium mgb-10">Prix Haute saison <span class="text-muted">(€)</span></p>
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    <input type="number" class="form-control bradius-bis w100p text-center price-input" name="high_season_price" min="10" max="200" value="74" data-parsley-id="10" th:value="${car.price.highPrice}">
-                                                </div>
-                                                <div class="col-lg-12">
-                                                    <p class="mgl-40 ">Prix de votre voiture pour une journée de location, en haute saison.</p>
-                                                </div>
-                                            </div>
+                                            <input type="number" class="form-control bradius-bis w100p text-center price-input" name="high_season_price" min="10" max="200" value="50.0" data-parsley-id="10">
+                                            <p class="mgl-40">Prix de votre voiture pour une journée de location, en haute saison.</p>
                                         </div>
                                     </div>
-                                    <a id="toggle-link">Voir la tarification des véhicules</a>
+                                    <a id="toggle-link" class="mb-4">Voir la tarification des véhicules</a>
 
                                     <div id="pricing-container" class="pricing-container">
-                                        <table class="pricing-table">
-                                            <thead>
-                                            <tr>
-                                                <th>Catégorie</th>
-                                                <th>Basse Saison</th>
-                                                <th>Moyenne Saison</th>
-                                                <th>Haute Saison</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr>
-                                                <td>Citadine</td>
-                                                <td>20€ / jour</td>
-                                                <td>30€ / jour</td>
-                                                <td>40€ / jour</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Berline</td>
-                                                <td>30€ / jour</td>
-                                                <td>40€ / jour</td>
-                                                <td>50€ / jour</td>
-                                            </tr>
-                                            <tr>
-                                                <td>SUV</td>
-                                                <td>50€ / jour</td>
-                                                <td>60€ / jour</td>
-                                                <td>70€ / jour</td>
-                                            </tr>
-                                            <tr>
-                                                <td>4x4</td>
-                                                <td>60€ / jour</td>
-                                                <td>70€ / jour</td>
-                                                <td>80€ / jour</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
+                                        <table class="table table-striped table-bordered text-center">
+                                        <thead class="thead-dark">
+                                        <tr>
+                                            <th>Catégorie</th>
+                                            <th>Basse Saison</th>
+                                            <th>Moyenne Saison</th>
+                                            <th>Haute Saison</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Citadine</td>
+                                            <td>35€ / jour</td>
+                                            <td>40€ / jour</td>
+                                            <td>45€ / jour</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Berline</td>
+                                            <td>50€ / jour</td>
+                                            <td>60€ / jour</td>
+                                            <td>70€ / jour</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Break</td>
+                                            <td>60€ / jour</td>
+                                            <td>70€ / jour</td>
+                                            <td>80€ / jour</td>
+                                        </tr>
+                                        <tr>
+                                            <td>SUV</td>
+                                            <td>80€ / jour</td>
+                                            <td>85€ / jour</td>
+                                            <td>95€ / jour</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MonoSpace</td>
+                                            <td>90€ / jour</td>
+                                            <td>95€ / jour</td>
+                                            <td>110€ / jour</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4x4</td>
+                                            <td>90€ / jour</td>
+                                            <td>95€ / jour</td>
+                                            <td>100€ / jour</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
                                     </div>
 
 
-                                    <hr class="mgb-30 mgt-30">
+                                    <hr style="margin-top:15px;margin-bottom:15px;width:80%; margin-right:auto; margin-left:auto;">
+
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <h2 class="fs20 bold mgb-20 mgt-30">
-                                                <img src="/images/vehicle-registration/amount_rate.svg?v=7.20.47" class="w100 nbsp-large vertical-bottom" alt="">
+                                                <img src="/icones/accord.png" width="100" alt="">
                                                 <span>Tarifs spéciaux location longue durée</span>
                                             </h2>
                                             <p class="medium mgb-10">Location moyenne durée <span class="light italic fs12">(supérieure ou égale à 14 jours)</span></p>
@@ -154,9 +159,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <input type="hidden" th:value="${car.id}" name="vehicle_id">                                <div class="row justify-content-center mgb-30 mgt-30">
+                                <input type="hidden" th:value="${car.id}" name="vehicle_id">
+                                <div class="row justify-content-center mgb-30 mgt-30">
                                     <div class="col-lg-3">
-                                        <button class="btn btn-success w100p mgt-30">
+                                        <button class="enregistrer w100p mb-5">
                                             <span class="load-el hide"><i class="fa fa-spinner fa-spin"></i></span>
                                             <span class="not-load-el">Enregistrer</span>
                                         </button>

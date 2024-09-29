@@ -98,6 +98,15 @@ document.addEventListener("DOMContentLoaded", function() {
                             y: {
                                 beginAtZero: true
                             }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Revenues par mois', // Titre du graphique
+                                font: {
+                                    size: 18 // Taille de la police du titre
+                                }
+                            }
                         }
                     }
                 });
@@ -106,6 +115,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => {
             console.error('Error fetching revenue by month:', error);
         });
+
 
     // Gestion de la sélection de l'année et du mois pour les réservations
     const currentMonth = new Date().getMonth() + 1; // JavaScript months are 0-based
@@ -209,7 +219,7 @@ function renderTop10CarsTable(cars) {
 
         // Vérifiez que les champs existent avant de les assigner
         if (car.photoUrl) {
-            photo.src = '/uploads/' + car.photoUrl;  // URL of the first photo
+            photo.src = '/uploads/photo-car/' + car.photoUrl;  // URL of the first photo
         } else {
             photo.src = 'default-image-path'; // Placeholder image if photoUrl is missing
         }
@@ -258,7 +268,7 @@ function renderTop10UsersTable(users) {
         // Photo
         const photoCell = document.createElement('td');
         const photo = document.createElement('img');
-        photo.src = user.photoUrl || 'default-photo.png'; // URL of the user's photo, or a default if none
+        photo.src = user.photoUrl ? '/uploads/profil/' + user.photoUrl : '/uploads/profil/default-photo.png';
         photo.alt = `${user.firstName} ${user.lastName}`;
         photo.classList.add('user-photo');
         photoCell.appendChild(photo);
@@ -297,8 +307,8 @@ document.addEventListener("DOMContentLoaded", function() {
     loadAllReservations();
 
     // Filtrer par statut
-    $('#filter-status').on('change', function() {
-        const selectedStatus = $(this).val();
+    document.getElementById('filter-status').addEventListener('change', function() {
+        const selectedStatus = this.value;
         const table = $('#all-reservations-table').DataTable();
         if (selectedStatus) {
             table.column(5).search('^' + selectedStatus + '$', true, false).draw();
@@ -308,25 +318,25 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Sélectionner/Désélectionner toutes les réservations
-    $('#select-all').on('click', function() {
+    document.getElementById('select-all').addEventListener('click', function() {
         const rows = $('#all-reservations-table').DataTable().rows({ 'search': 'applied' }).nodes();
-        $('input[type="checkbox"]', rows).prop('checked', this.checked);
+        document.querySelectorAll('input[type="checkbox"]', rows).forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
     });
 
     // Suppression des réservations sélectionnées
-    $('#delete-selected').on('click', function() {
+    document.getElementById('delete-selected').addEventListener('click', function() {
         const table = $('#all-reservations-table').DataTable();
         const selectedReservations = [];
 
         table.$('input[type="checkbox"]:checked').each(function() {
-            selectedReservations.push($(this).closest('tr').attr('id'));
+            selectedReservations.push(this.id);
         });
 
         if (selectedReservations.length > 0) {
             if (confirm("Êtes-vous sûr de vouloir supprimer les réservations sélectionnées ?")) {
-                // Implémentez ici la suppression côté serveur
-                console.log("Suppression des réservations : ", selectedReservations);
-                // Simuler la suppression locale (à remplacer par une suppression réelle côté serveur)
+                // Simuler la suppression locale (vous pouvez remplacer cela par une requête réelle côté serveur)
                 selectedReservations.forEach(id => {
                     table.row(`#${id}`).remove().draw();
                 });
@@ -337,6 +347,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+// Chargement des données de réservation
 async function loadAllReservations() {
     try {
         const response = await fetch('/api/admin/reservations');
@@ -352,10 +363,7 @@ async function loadAllReservations() {
                 { data: 'finLocation' },
                 { data: 'statut' },
                 { data: null, render: function(data) {
-                    return `
-                        <button class="btn btn-sm btn-primary" onclick="editReservation(${data.id})">Modifier</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteReservation(${data.id})">Supprimer</button>
-                    `;
+                    return `<button class="btn btn-sm btn-outline-danger" onclick="deleteReservation(${data.id})"><i class="lni lni-trash-can"></i></button>`;
                 }}
             ],
             scrollY: '400px',
@@ -375,6 +383,7 @@ async function loadAllReservations() {
     }
 }
 
+// Mise à jour des KPI
 function updateKPIReservations(data) {
     const totalReservations = data.length;
     const confirmedCount = data.filter(res => res.statut === 'CONFIRMED').length;
@@ -383,39 +392,26 @@ function updateKPIReservations(data) {
     const nowCount = data.filter(res => res.statut === 'NOW').length;
     const finishedCount = data.filter(res => res.statut === 'FINISHED').length;
 
-    // Vérification de l'existence de chaque élément avant de définir textContent
-    const totalEl = document.getElementById('kpi-total-reservations');
-    if (totalEl) totalEl.textContent = totalReservations;
-
-    const confirmedEl = document.getElementById('kpi-confirmed-reservations');
-    if (confirmedEl) confirmedEl.textContent = confirmedCount;
-
-    const cancelledEl = document.getElementById('kpi-cancelled-reservations');
-    if (cancelledEl) cancelledEl.textContent = cancelledCount;
-
-    const pendingEl = document.getElementById('kpi-pending-reservations');
-    if (pendingEl) pendingEl.textContent = pendingCount;
-
-    const nowEl = document.getElementById('kpi-now-reservations');
-    if (nowEl) nowEl.textContent = nowCount;
-
-    const finishedEl = document.getElementById('kpi-finished-reservations');
-    if (finishedEl) finishedEl.textContent = finishedCount;
+    document.getElementById('kpi-total-reservations').textContent = totalReservations;
+    document.getElementById('kpi-confirmed-reservations').textContent = confirmedCount;
+    document.getElementById('kpi-cancelled-reservations').textContent = cancelledCount;
+    document.getElementById('kpi-pending-reservations').textContent = pendingCount;
+    document.getElementById('kpi-now-reservations').textContent = nowCount;
+    document.getElementById('kpi-finished-reservations').textContent = finishedCount;
 }
 
-
+// Affichage des graphiques
 function displayCharts(data) {
     const statuses = ['CONFIRMED', 'CANCELLED', 'PENDING', 'NOW', 'FINISHED'];
     const statusCounts = statuses.map(status => data.filter(res => res.statut === status).length);
 
-    // Bar Chart
+    // Graphique à barres des statuts
     const ctxBar = document.getElementById('reservationsStatusChart').getContext('2d');
     new Chart(ctxBar, {
         type: 'bar',
         data: {
             labels: ['Confirmé', 'Annulé', 'En Attente', 'En Cours', 'Terminé'],
             datasets: [{
-                label: 'Nombre de Réservations',
                 data: statusCounts,
                 backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(153, 102, 255, 0.2)'],
                 borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)', 'rgba(255, 206, 86, 1)', 'rgba(54, 162, 235, 1)', 'rgba(153, 102, 255, 1)'],
@@ -423,33 +419,54 @@ function displayCharts(data) {
             }]
         },
         options: {
-            scales: {
-                y: { beginAtZero: true }
-            },
-            responsive: true
+            scales: { y: { beginAtZero: true } },
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Nombre de Réservations par statut',
+                    font: { size: 24 }
+                }
+            }
         }
     });
 
-    // Pie Chart
-    const ctxPie = document.getElementById('reservationsPieChart').getContext('2d');
-    new Chart(ctxPie, {
-        type: 'pie',
-        data: {
-            labels: ['Confirmé', 'Annulé', 'En Attente', 'En Cours', 'Terminé'],
-            datasets: [{
-                data: statusCounts,
-                backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(153, 102, 255, 0.2)'],
-                borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)', 'rgba(255, 206, 86, 1)', 'rgba(54, 162, 235, 1)', 'rgba(153, 102, 255, 1)'],
-                borderWidth: 1
-            }]
-        },
-        options: { responsive: true }
-    });
+    // Graphique en ligne pour les réservations confirmées par mois
+    fetch('/api/admin/reservations-confirmed-by-month')
+        .then(response => response.json())
+        .then(data => {
+            const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+            const months = data.map(item => `${monthNames[item.month - 1]} ${item.year}`);
+            const counts = data.map(item => item.count);
+
+            const ctxLine = document.getElementById('reservationsChartReservation').getContext('2d');
+            new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        data: counts,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Nombre de Réservations Confirmées par Mois (12 derniers mois)',
+                            font: { size: 24 }
+                        }
+                    },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des données :', error));
 }
 
-function editReservation(reservationId) {
-    alert("Modifier la réservation : " + reservationId);
-}
 
 function deleteReservation(reservationId) {
     if (confirm("Êtes-vous sûr de vouloir supprimer cette réservation ?")) {
@@ -475,38 +492,6 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => console.error('Erreur lors de la récupération des KPI:', error));
 });
 
-fetch('/api/stats/registrations')
-    .then(response => response.json())
-    .then(data => {
-        const labels = data.map(item => item.period); // Extraire les périodes
-        const counts = data.map(item => item.count);  // Extraire les comptes
-
-        var ctx = document.getElementById('userRegistrationChart').getContext('2d');
-        var userRegistrationChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Inscriptions par mois',
-                    data: counts,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    fill: true,
-                    tension: 0.1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    })
-    .catch(error => console.error('Erreur lors de la récupération des inscriptions:', error));
-
 fetch('/api/stats/geolocation')
     .then(response => response.json())
     .then(data => {
@@ -516,20 +501,20 @@ fetch('/api/stats/geolocation')
 
         var ctx = document.getElementById('userLocationChart').getContext('2d');
         var userLocationChart = new Chart(ctx, {
-            type: 'pie',
+            type: 'bar', // Utilisation du graphique en barres
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Répartition géographique des utilisateurs',
+                    label: 'Répartition géographique des utilisateurs', // Cela ne s'affichera plus
                     data: counts,
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)',
-                        'rgba(199, 199, 199, 0.2)'
+                        'rgba(255, 99, 132, 0.2)',   // Rouge
+                        'rgba(54, 162, 235, 0.2)',   // Bleu
+                        'rgba(255, 206, 86, 0.2)',   // Jaune
+                        'rgba(75, 192, 192, 0.2)',   // Vert
+                        'rgba(153, 102, 255, 0.2)',  // Violet
+                        'rgba(255, 159, 64, 0.2)',   // Orange
+                        'rgba(199, 199, 199, 0.2)'   // Gris
                     ],
                     borderColor: [
                         'rgba(255, 99, 132, 1)',
@@ -545,16 +530,36 @@ fetch('/api/stats/geolocation')
             },
             options: {
                 responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,  // Commencer l'axe Y à 0
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // Cela enlève la légende
+                    },
+                    title: {
+                        display: true,
+                        text: 'Répartition des utilisateurs par localité',
+                        font: {
+                            size: 18
+                        }
+                    }
+                }
             }
         });
     })
     .catch(error => console.error('Erreur lors de la récupération des données géographiques:', error));
 
+
+let table;  // Déclare la variable table globalement pour y avoir accès partout
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Document loaded");
 
     // Initialize DataTable
-    const table = $('#usersTable').DataTable({
+    table = $('#usersTable').DataTable({
         scrollX: true,
         scrollCollapse: true,
         paging: true,  // Enable pagination for better UX
@@ -661,7 +666,12 @@ document.addEventListener('DOMContentLoaded', function() {
             {
                 data: null,
                 render: function(data) {
-                    return data.hasIdentityDocuments ? 'Complet' : 'Incomplet';
+                    // Vérifiez si l'utilisateur est vérifié ou non, et appliquez les classes CSS appropriées
+                    if (data && data.verified) {
+                        return '<span class="text-success">Complet</span>';
+                    } else {
+                        return '<span class="text-danger">Incomplet</span>';
+                    }
                 },
                 title: 'Documents vérifiés'
             },
@@ -716,48 +726,91 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Déclaration globale de la fonction verifyDocuments
 function verifyDocuments(userId) {
-    let ids = Array.isArray(userId) ? userId : [userId];
+    currentUserId = userId;  // Stocker l'ID de l'utilisateur
 
-    ids.forEach(id => {
-        fetch(`/api/admin/users/${id}/documents`)
-            .then(response => response.json())
-            .then(data => {
-                const documentModal = new bootstrap.Modal(document.getElementById('documentVerificationModal'));
-                documentModal.show();
+    fetch(`/api/admin/users/${userId}/documents`)
+        .then(response => response.json())
+        .then(data => {
+            const documentModal = new bootstrap.Modal(document.getElementById('documentVerificationModal'));
+            documentModal.show();
 
-                const documentList = document.getElementById('documentList');
-                documentList.innerHTML = '';  // Clear previous content
+            const documentList = document.getElementById('documentList');
+            documentList.innerHTML = '';  // Clear previous content
 
-                if (data.length > 0) {
-                    data.forEach(doc => {
-                        const listItem = document.createElement('li');
-                        listItem.className = 'list-group-item';
+            if (data.length > 0) {
+                data.forEach(doc => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
 
-                        // Vérifiez que directory et fileName sont définis
-                        if (doc.directory && doc.fileName) {
-                            listItem.innerHTML = `
-                                ${doc.fileName}
-                                <a href="/api/files/${doc.directory}/${doc.fileName}" class="btn btn-primary btn-sm float-end" download>
-                                    Télécharger
-                                </a>
-                            `;
-                        } else {
-                            listItem.innerHTML = `
-                                ${doc.fileName || "Nom de fichier indisponible"}
-                                <span class="text-danger float-end">Le document est introuvable.</span>
-                            `;
-                        }
+                    // Utilisez 'url' au lieu de 'fileName'
+                    if (doc.directory && doc.url) {
+                        listItem.innerHTML = `
+                            ${doc.url}
+                            <a href="/uploads/${doc.directory}/${doc.url}" class="btn btn-primary btn-sm float-end" download>
+                                Télécharger
+                            </a>
+                        `;
+                    } else {
+                        listItem.innerHTML = `
+                            ${doc.url || "Nom de fichier indisponible"}
+                            <span class="text-danger float-end">Le document est introuvable.</span>
+                        `;
+                    }
 
-                        documentList.appendChild(listItem);
-                    });
-                } else {
-                    documentList.innerHTML = '<li class="list-group-item">Aucun document trouvé pour cet utilisateur.</li>';
-                }
-            })
-            .catch(error => console.error('Erreur lors du chargement des documents:', error));
-    });
+                    documentList.appendChild(listItem);
+                });
+            } else {
+                documentList.innerHTML = '<li class="list-group-item">Aucun document trouvé pour cet utilisateur.</li>';
+            }
+        })
+        .catch(error => console.error('Erreur lors du chargement des documents:', error));
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Gestionnaire de l'événement pour le bouton "Complet"
+    const completeVerificationBtn = document.getElementById('completeVerificationBtn');
+    completeVerificationBtn.addEventListener('click', function () {
+        // Envoyer une requête pour mettre à jour 'isVerified' à true
+        fetch(`/api/admin/users/${currentUserId}/verify`, {
+            method: 'PUT',  // Utilisez PUT ou POST selon l'API
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ isVerified: true })  // Envoyer la mise à jour de 'isVerified'
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Les documents ont été vérifiés avec succès.');
+                // Fermer le modal après la mise à jour
+                const documentModal = bootstrap.Modal.getInstance(document.getElementById('documentVerificationModal'));
+                documentModal.hide();
+
+                // Mettre à jour l'interface utilisateur si nécessaire (par exemple, changer "Incomplet" en "Complet")
+                 // Mettre à jour la ligne de l'utilisateur courant dans DataTables
+               const rowIndex = table.rows().indexes().filter(function(index) {
+                   const rowData = table.row(index).data();
+                   return rowData && rowData.id === currentUserId;  // Rechercher la ligne avec l'ID correspondant
+               });
+
+               if (rowIndex.length > 0) {
+               const rowData = table.row(rowIndex[0]).data();
+               rowData.verified = true;  // Mettre à jour le statut de vérification
+               table.row(rowIndex[0]).data(rowData).draw(false);  // Redessiner la ligne sans recharger la table
+                }
+            } else {
+                alert('Erreur lors de la vérification des documents.');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors de la vérification des documents:', error);
+            alert('Erreur lors de la vérification des documents.');
+        });
+    });
+});
+
 
 let currentUserId = null;
 
@@ -863,7 +916,89 @@ function deleteUsers(userIds) {
 }
 
 
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialisation du modal avec Bootstrap
+    var addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
+
+    // Ouvrir le modal lorsque le bouton est cliqué
+    const openModalBtn = document.getElementById('openModalBtn'); // Assurez-vous que le bouton a cet ID
+    openModalBtn.addEventListener('click', function () {
+        addUserModal.show(); // Afficher le modal
+    });
+
+    // Récupérer le formulaire
+    const form = document.getElementById('addUserForm');
+
+    // Gérer la soumission du formulaire
+    form.addEventListener('submit', function (e) {
+        e.preventDefault(); // Empêche le rechargement de la page
+
+        // Récupérer les données du formulaire
+        const lastName = document.getElementById('lastName').value;
+        const firstName = document.getElementById('firstName').value;
+        const adresse = document.getElementById('adresse').value;
+        const postalCode = document.getElementById('postalCode').value;
+        const locality = document.getElementById('locality').value;
+        const phone = document.getElementById('phone').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // Créer l'objet utilisateur à envoyer
+        const newUser = {
+            lastName: lastName,
+            firstName: firstName,
+            adresse: adresse,
+            postalCode: postalCode,
+            locality: locality,
+            phone: phone,
+            email: email,
+            password: password
+        };
+
+        // Envoyer les données à l'API avec fetch
+        fetch('/api/admin/add-user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newUser) // Convertir l'objet en JSON
+        })
+        .then(response => {
+            // Vérifier si la réponse est OK (statut 200-299)
+            if (!response.ok) {
+                // Si la réponse n'est pas OK, vérifier si c'est du texte ou du JSON
+                return response.text().then(text => {
+                    throw new Error(text); // Lancer une exception avec le texte de l'erreur
+                });
+            }
+            // Si la réponse est OK, la traiter comme JSON
+            return response.json();
+        })
+        .then(data => {
+            console.log('Utilisateur ajouté:', data);
+            // Fermer le modal après l'ajout réussi
+            addUserModal.hide();
+
+            // Réinitialiser le formulaire
+            form.reset();
+
+            // Afficher un message de succès ou mettre à jour l'interface utilisateur
+            alert('Utilisateur ajouté avec succès!');
+        })
+        .catch(error => {
+            console.error('Erreur lors de l\'ajout de l\'utilisateur:', error);
+            alert(`Erreur lors de l'ajout de l'utilisateur: ${error.message}`);
+        });
+    });
+});
+
+
+
 //--------------------ONGLET CAR ADMIN----------------------
+
+
+
 
 //-------------------ADMIN SECTION CARS---------------------
 $(document).ready(function () {
@@ -879,24 +1014,21 @@ $(document).ready(function () {
         .catch(error => console.error('Erreur lors de la récupération des KPI:', error));
 
     // Fetch Reservations Data for the Chart
-fetch('/api/admin/cars/reservations-by-month')
+fetch('/api/admin/cars/by-locality')  // Assurez-vous que l'API correspond à celle de votre backend
     .then(response => response.json())
     .then(data => {
-        // Tableau pour les noms des mois
-        const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-
-        // Map les mois et les réservations
-        const months = data.map(item => monthNames[item.month - 1]);  // Convertit le numéro du mois en nom de mois
-        const counts = data.map(item => item.count);
+        // Map les localités et les nombres de voitures
+        const localities = data.map(item => item.locality);  // Les noms des localités
+        const carCounts = data.map(item => item.count);  // Le nombre de voitures par localité
 
         const ctx = document.getElementById('reservationsChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: months,  // Les labels sont les noms des mois
+                labels: localities,  // Les labels sont les noms des localités
                 datasets: [{
-                    label: 'Réservations par Mois',
-                    data: counts,
+                    label: 'Nombre de Voitures par Commune',
+                    data: carCounts,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
@@ -907,7 +1039,7 @@ fetch('/api/admin/cars/reservations-by-month')
                 plugins: {
                     title: {
                        display: true,
-                       text: 'Nombre de Réservations par Mois',
+                       text: 'Nombre de Voitures par Commune',
                        font: {
                            size: 24  // Augmente la taille du titre
                        },
@@ -926,137 +1058,215 @@ fetch('/api/admin/cars/reservations-by-month')
             }
         });
     })
-    .catch(error => console.error('Erreur lors de la récupération des données de réservations:', error));
+    .catch(error => console.error('Erreur lors de la récupération des données de localités:', error));
+
+
 
 });
 
- $(document).ready(function () {
 
-const onlineTable = $('#onlineCarsTable').DataTable({
-  "autoWidth": false,
-  "scrollX": true,
-  "responsive": true,
-  "scrollY":600,
-    "info": false     // Désactive l'affichage des informations sur les entrées
-});
 
-const pendingTable = $('#pendingCarsTable').DataTable({
-  "autoWidth": false,
-  "scrollX": true,
-  "responsive": true,
-  "scrollY":600,
-    "info": false     // Désactive l'affichage des informations sur les entrées
-
-});
-
-    const onlineSpinner = $('#onlineSpinner');
-    const pendingSpinner = $('#pendingSpinner');
-
-    // Fonction pour charger les voitures en ligne
-function fetchOnlineCars() {
-  onlineSpinner.show();  // Afficher le spinner
-  $('#onlineCarsTable').hide();  // Masquer le tableau
-  onlineTable.clear().draw();  // Effacer le tableau avant de le recharger
-  fetch('/api/admin/cars/online')
-    .then(response => response.json())
-    .then(data => {
-      data.forEach(car => {
-        onlineTable.row.add([
-          `<img src="/uploads/${car.url}" class="car-photo img-thumbnail">`,
-          car.brand,
-          car.model,
-          car.plaqueImmatriculation,
-          `<a href="/admin/cars/details?id=${car.id}" class="btn btn-info" title="Détails">
-             <i class="fas fa-info-circle"></i>
-           </a>`
-        ]).draw(false);
-      });
-    })
-    .catch(error => console.error('Erreur lors du chargement des voitures en ligne:', error))
-    .finally(() => {
-      onlineSpinner.hide();  // Masquer le spinner
-      $('#onlineCarsTable').show();  // Afficher le tableau
+$(document).ready(function () {
+    const carTable = $('#carsTable').DataTable({
+        scrollX: true,
+        scrollCollapse: true,
+        paging: true,  // Activer la pagination pour une meilleure UX
+        info: true,
+        select: {
+            style: 'multi'
+        },
+        ajax: {
+            url: '/api/admin/cars/all',  // API pour récupérer toutes les voitures
+            type: 'GET',
+            dataType: 'json',
+            dataSrc: '',  // Adapter selon la structure de votre réponse API
+            error: function (xhr, error, code) {
+                console.error("Erreur lors du chargement des données", error, code);
+                alert("Échec du chargement des données depuis le serveur.");
+            }
+        },
+        columns: [
+            {
+                data: null,
+                render: function () {
+                    return '<input type="checkbox" class="car-checkbox" />';
+                },
+                title: 'Select',
+                orderable: false
+            },
+            {
+                data: 'url',
+                render: function (data) {
+                    return data ? `<img src="/uploads/photo-car/${data}" alt="Photo de la voiture" width="50" height="50">` : 'No Image';
+                },
+                title: 'Photo'
+            },
+            {
+                data: 'brand',
+                render: function (data) {
+                    return data || 'Non spécifié';
+                },
+                title: 'Marque'
+            },
+            {
+                data: 'model',
+                render: function (data) {
+                    return data || 'Non spécifié';
+                },
+                title: 'Modèle'
+            },
+            {
+                data: 'plaqueImmatriculation',
+                render: function (data) {
+                    return data || 'Non spécifié';
+                },
+                title: 'Plaque'
+            },
+            {
+                data: 'locality',
+                render: function (data) {
+                    return data || 'Non spécifié';
+                },
+                title: 'Commune'
+            },
+            {
+                data: null,
+                render: function (data) {
+                    return `${data.user.firstName} ${data.user.lastName}`;
+                },
+                title: 'Propriétaire'
+            },
+            {
+                data: 'displayPrice',
+                render: function (data) {
+                    return data ? `${data} €` : 'Non spécifié';
+                },
+                title: 'Prix par jour'
+            },
+            {
+                data: null,
+                render: function (data) {
+                    return data.online ? '<span class="text-success fw-bold">En ligne</span>' : '<span class="text-danger fw-bold">En attente</span>';
+                },
+                title: 'Status'
+            },
+            {
+                data: null,
+                render: function (data) {
+                    return `
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="actionMenu${data.id}" data-bs-toggle="dropdown" aria-expanded="false">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="actionMenu${data.id}">
+                                ${!data.online ? `
+                                    <li><button class="dropdown-item text-success" onclick="approveCar(${data.id})">Accepter</button></li>
+                                    <li><button class="dropdown-item text-danger" onclick="rejectCar(${data.id})">Rejeter</button></li>
+                                ` : ''}
+                                <li><a class="dropdown-item" href="/admin/cars/details?id=${data.id}">Détails</a></li>
+                                <li><button class="dropdown-item text-danger" onclick="deleteCar(${data.id})">Supprimer</button></li>
+                            </ul>
+                        </div>`;
+                },
+                title: 'Actions',
+                orderable: false
+            }
+        ]
     });
-}
 
-    // Fonction pour charger les voitures en attente
-function fetchPendingCars() {
-  pendingSpinner.show();  // Afficher le spinner
-  $('#pendingCarsTable').hide();  // Masquer le tableau
-  pendingTable.clear().draw();  // Effacer le tableau avant de le recharger
-  fetch('/api/admin/cars/pending')
-    .then(response => response.json())
-    .then(data => {
-      data.forEach(car => {
-        pendingTable.row.add([
-          `<img src="/uploads/${car.url}" class="car-photo img-thumbnail">`,
-          car.brand,
-          car.model,
-          car.plaqueImmatriculation,
-          `<div class="action-icons m-2">
-             <button class="btn btn-success btn-sm" onclick="approveCar(${car.id})" title="Accepter">
-               <i class="fas fa-check"></i>
-             </button>
-             <button class="btn btn-danger btn-sm" onclick="rejectCar(${car.id})" title="Rejeter">
-               <i class="fas fa-times"></i>
-             </button>
-             <a href="/admin/cars/details?id=${car.id}" class="btn btn-info btn-sm" title="Détails">
-               <i class="fas fa-info-circle"></i>
-             </a>
-           </div>`
-        ]).draw(false);
-      });
-    })
-    .catch(error => console.error('Erreur lors du chargement des voitures en attente:', error))
-    .finally(() => {
-      pendingSpinner.hide();  // Masquer le spinner
-      $('#pendingCarsTable').show();  // Afficher le tableau
-    });
-}
-
-
-    // Charger les voitures en ligne au démarrage
-    fetchOnlineCars();
-
-    // Charger les voitures en attente au démarrage
-    fetchPendingCars();
-
-    // Approve Car
+    // Fonction pour approuver une voiture
     window.approveCar = function (id) {
-      fetch(`/api/admin/cars/approve/${id}`, { method: 'POST' })
-        .then(response => response.json())
-        .then(data => {
-          alert('La voiture a été approuvée et est désormais en ligne.');
-          fetchPendingCars(); // Recharger les voitures en attente
-          fetchOnlineCars();  // Recharger les voitures en ligne
-        })
-        .catch(error => console.error('Erreur lors de l\'approbation de la voiture:', error));
-    }
+        fetch(`/api/admin/cars/approve/${id}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(() => {
+                alert('La voiture a été approuvée.');
+                carTable.ajax.reload(); // Recharger les données du tableau
+            })
+            .catch(error => console.error('Erreur lors de l\'approbation de la voiture:', error));
+    };
 
-    // Reject Car
+    // Fonction pour rejeter une voiture
     window.rejectCar = function (id) {
-      fetch(`/api/admin/cars/reject/${id}`, { method: 'POST' })
-        .then(response => response.json())
-        .then(data => {
-          alert('La voiture a été rejetée avec succès.');
-          fetchPendingCars(); // Recharger les voitures en attente
-        })
-        .catch(error => console.error('Erreur lors du rejet de la voiture:', error));
-    }
-  });
+        fetch(`/api/admin/cars/reject/${id}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(() => {
+                alert('La voiture a été rejetée.');
+                carTable.ajax.reload(); // Recharger les données du tableau
+            })
+            .catch(error => console.error('Erreur lors du rejet de la voiture:', error));
+    };
+
+    // Fonction pour supprimer une voiture
+    window.deleteCar = function (id) {
+        if (confirm("Êtes-vous sûr de vouloir supprimer cette voiture ?")) {
+            fetch(`/api/admin/cars/delete/${id}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(() => {
+                    alert('La voiture a été supprimée.');
+                    carTable.ajax.reload(); // Recharger les données du tableau
+                })
+                .catch(error => console.error('Erreur lors de la suppression de la voiture:', error));
+        }
+    };
+
+
+ // Filtrage des voitures par status (ALL, EN LIGNE, EN ATTENTE)
+    $('#carStatusFilter').on('change', function () {
+        const filterValue = this.value;
+        carTable.column(8).search(filterValue).draw();
+    });
+
+    // Appliquer des actions groupées
+    $('#applyActionBtn').on('click', function () {
+        const selectedAction = $('#groupActionSelect').val();  // Récupérer l'action sélectionnée
+        const selectedCars = [];
+
+        $('.car-checkbox:checked').each(function () {
+            const rowData = carTable.row($(this).parents('tr')).data();
+            selectedCars.push(rowData.id);
+        });
+
+        if (selectedCars.length > 0) {
+            if (selectedAction === 'approve') {
+                // Approuver toutes les voitures sélectionnées
+                selectedCars.forEach(id => approveCar(id));
+            } else if (selectedAction === 'reject') {
+                // Rejeter toutes les voitures sélectionnées
+                selectedCars.forEach(id => rejectCar(id));
+            } else if (selectedAction === 'delete') {
+                // Supprimer toutes les voitures sélectionnées
+                selectedCars.forEach(id => deleteCar(id));
+            }
+        } else {
+            alert('Aucune voiture sélectionnée.');
+        }
+    });
+
+});
+
+
 
              //-----------DETAIL CAR-------------------
 document.addEventListener("DOMContentLoaded", function() {
     const urlParams = new URLSearchParams(window.location.search);
     const carId = urlParams.get('id');
     const spinner = document.getElementById("spinner");
+    const cardBodyContent = document.querySelector(".card-body-content");
+    const cardBodyLoading = document.querySelector(".card-body-loading");
+
+        // Afficher le spinner et masquer le contenu de la carte
+            cardBodyLoading.style.display = "flex";
+            cardBodyContent.style.display = "none";
 
     spinner.style.display = "block";
 
     fetch(`/api/admin/cars/${carId}`)
         .then(response => response.json())
         .then(data => {
-            spinner.style.display = "none";
+            console.log(data);
+
+            cardBodyLoading.style.display = "none";
+            cardBodyContent.style.display = "block";
 
             // Vérification des données pour éviter des erreurs
             document.getElementById("car-brand").textContent = data.brand || 'N/A';
@@ -1065,14 +1275,64 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("car-first-circulation").textContent = data.firstImmatriculation || 'N/A';
             document.getElementById("car-plate").textContent = data.plaqueImmatriculation || 'N/A';
             document.getElementById("car-mode-reservation").textContent = data.modeReservation || 'N/A';
-            document.getElementById("car-price").textContent = data.price?.middlePrice || 'N/A';
+
+            // Section Prix
+            const pricesContainer = document.getElementById("car-prices");
+            if (data.price) {
+                const { lowPrice, middlePrice, highPrice, promo1, promo2 } = data.price;
+
+                // Créer des colonnes pour les prix
+                const lowPriceHtml = `
+                    <div class="col-lg-3">
+                        <p><strong>Basse saison</strong></p>
+                        <p>${lowPrice ? lowPrice + '€' : 'Non spécifié'}</p>
+                    </div>
+                `;
+                const middlePriceHtml = `
+                    <div class="col-lg-3">
+                        <p><strong>Moyenne saison</strong></p>
+                        <p>${middlePrice ? middlePrice + '€' : 'Non spécifié'}</p>
+                    </div>
+                `;
+                const highPriceHtml = `
+                    <div class="col-lg-3">
+                        <p><strong>Haute saison</strong></p>
+                        <p>${highPrice ? highPrice + '€' : 'Non spécifié'}</p>
+                    </div>
+                `;
+
+                // Créer des colonnes pour les promotions
+                let promoHtml = '';
+                if (promo1) {
+                    promoHtml += `
+                        <div class="col-lg-3">
+                            <p><strong>Promotion 1</strong></p>
+                            <p>${promo1}%</p>
+                        </div>
+                    `;
+                }
+                if (promo2) {
+                    promoHtml += `
+                        <div class="col-lg-3">
+                            <p><strong>Promotion 2</strong></p>
+                            <p>${promo2}%</p>
+                        </div>
+                    `;
+                }
+
+                // Injecter les colonnes dans le conteneur des prix
+                pricesContainer.innerHTML = lowPriceHtml + middlePriceHtml + highPriceHtml + promoHtml;
+            } else {
+                pricesContainer.innerHTML = '<p>Aucun prix disponible</p>';
+            }
+
 
             // Affichage des photos
             const photoContainer = document.getElementById("car-photos");
             if (data.photoUrl && data.photoUrl.length > 0) {
                 data.photoUrl.forEach(photoUrl => {
                     const img = document.createElement('img');
-                    img.src = `/uploads/${photoUrl}`;
+                    img.src = `/uploads/photo-car/${photoUrl}`;
                     img.alt = "Photo de voiture";
                     img.classList.add('car-photo', 'img-thumbnail');
                     photoContainer.appendChild(img);
@@ -1081,65 +1341,126 @@ document.addEventListener("DOMContentLoaded", function() {
                 photoContainer.innerHTML = '<p>Aucune photo disponible</p>';
             }
 
-            // Affichage des caractéristiques
-            const featuresContainer = document.getElementById("car-features");
-            if (data.features && data.features.length > 0) {
-                data.features.forEach(feature => {
-                    const li = document.createElement('li');
-                    li.textContent = `${feature.name}: ${feature.description}`;
-                    featuresContainer.appendChild(li);
-                });
-            } else {
-                featuresContainer.innerHTML = '<p>Aucune caractéristique disponible</p>';
-            }
+            // Caractéristiques
+           const featuresContainer = document.getElementById("car-features");
+           if (data.features && data.features.length > 0) {
+               data.features.forEach(feature => {
+                   const colDiv = document.createElement('div');
+                   colDiv.classList.add('col-lg-4', 'car-feature','text-center');
+                   colDiv.innerHTML = `
+                       <h4>${feature.name}</h4>
+                       <p>${feature.description || 'Description non disponible'}</p>
+                   `;
+                   featuresContainer.appendChild(colDiv);
+               });
+           } else {
+               featuresContainer.innerHTML = '<p>Aucune caractéristique disponible</p>';
+           }
 
-            // Affichage des équipements
-            const equipmentsContainer = document.getElementById("car-equipments");
-            if (data.equipments && data.equipments.length > 0) {
-                data.equipments.forEach(equipment => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<img src="${equipment.icon}" alt="${equipment.equipment}" class="equipment-icon mr-2"> ${equipment.equipment}`;
-                    equipmentsContainer.appendChild(li);
-                });
-            } else {
-                equipmentsContainer.innerHTML = '<p>Aucun équipement disponible</p>';
-            }
+           // Équipements
+           const equipmentsContainer = document.getElementById("car-equipments");
 
-            // Affichage des conditions du propriétaire
-            const conditionsContainer = document.getElementById("car-conditions");
-            if (data.conditionsDTOs && data.conditionsDTOs.length > 0) {
-                data.conditionsDTOs.forEach(condition => {
-                    const li = document.createElement('li');
-                    li.textContent = condition.condition;
-                    conditionsContainer.appendChild(li);
-                });
-            } else {
-                conditionsContainer.innerHTML = '<p>Aucune condition disponible</p>';
-            }
+           if (data.equipments && data.equipments.length > 0) {
+               data.equipments.forEach(equipment => {
+                   const colDiv = document.createElement('div');
+                   colDiv.classList.add('col-lg-4', 'car-equipment','text-center');
+
+                   // Générer l'HTML pour chaque équipement
+                   colDiv.innerHTML = `
+                       <h4>${equipment.equipment}</h4>
+                       <img src="${equipment.icon}" alt="${equipment.equipment}" class="equipment-icon">
+                   `;
+
+                   equipmentsContainer.appendChild(colDiv);
+               });
+           } else {
+               equipmentsContainer.innerHTML = '<p>Aucun équipement disponible</p>';
+           }
+
+
+           // Conditions
+           const conditionsContainer = document.getElementById("car-conditions");
+           if (data.conditionsDTOs && data.conditionsDTOs.length > 0) {
+               data.conditionsDTOs.forEach(condition => {
+                   const colDiv = document.createElement('div');
+                   colDiv.classList.add('col-lg-4', 'car-condition','text-center');
+                   colDiv.innerHTML = `
+                       <p>${condition.condition || 'Description non disponible'}</p>
+                   `;
+                   conditionsContainer.appendChild(colDiv);
+               });
+           } else {
+               conditionsContainer.innerHTML = '<p>Aucune condition disponible</p>';
+           }
 
             // Liens de téléchargement des fichiers
             const carteGriseLink = document.getElementById("car-carte-grise");
             if (data.carteGrisePath) {
-                carteGriseLink.href = `/uploads/${data.carteGrisePath}`;
+                carteGriseLink.href = `/uploads/registrationCard/${data.carteGrisePath}`;
+                carteGriseLink.target = "_blank";  // Ouvrir dans un nouvel onglet
                 carteGriseLink.textContent = "Télécharger la carte grise";
             } else {
                 carteGriseLink.textContent = "Carte grise non disponible";
             }
 
-            const identityCardLink = document.getElementById("identity-card");
-            if (data.identityRecto) {
-                identityCardLink.href = `/uploads/${data.identityRecto}`;
-                identityCardLink.textContent = "Télécharger la carte d'identité";
+ // Liens de téléchargement des documents d'identité
+            const identityCardRectoLink = document.getElementById("car-identity-recto");
+            const identityCardVersoLink = document.getElementById("car-identity-verso");
+
+            // Vérification si data.user et ses documents existent
+            if (data.user && data.user.documents) {
+                console.log('Documents trouvés:', data.user.documents);  // Vérification
+
+                // Trouver le document de type 'identity_recto'
+                const identityRectoDoc = data.user.documents.find(doc => doc.documentType === 'identity_recto');
+                if (identityRectoDoc && identityRectoDoc.url) {
+                    console.log('Identity Recto Document:', identityRectoDoc);  // Vérification
+                    identityCardRectoLink.href = `/uploads/identityCard/${identityRectoDoc.url}`;
+                    identityCardRectoLink.target = "_blank";  // Ouvrir dans un nouvel onglet
+                    identityCardRectoLink.textContent = "Télécharger la carte d'identité (recto)";
+                } else {
+                    console.log('Identity Recto non disponible');
+                    identityCardRectoLink.removeAttribute('href');
+                    identityCardRectoLink.style.color = 'gray'; // Pour montrer que le lien est inactif
+                    identityCardRectoLink.textContent = "Carte d'identité (recto) non disponible";
+                }
+
+                // Trouver le document de type 'identity_verso'
+                const identityVersoDoc = data.user.documents.find(doc => doc.documentType === 'identity_verso');
+                if (identityVersoDoc && identityVersoDoc.url) {
+                    console.log('Identity Verso Document:', identityVersoDoc);  // Vérification
+                    identityCardVersoLink.href = `/uploads/identityCard/${identityVersoDoc.url}`;
+                    identityCardVersoLink.target = "_blank";  // Ouvrir dans un nouvel onglet
+                    identityCardVersoLink.textContent = "Télécharger la carte d'identité (verso)";
+                } else {
+                    console.log('Identity Verso non disponible');
+                    identityCardVersoLink.removeAttribute('href');
+                    identityCardVersoLink.style.color = 'gray'; // Pour montrer que le lien est inactif
+                    identityCardVersoLink.textContent = "Carte d'identité (verso) non disponible";
+                }
             } else {
-                identityCardLink.textContent = "Carte d'identité non disponible";
+                console.log('Pas de documents trouvés ou data.user est null');
+                identityCardRectoLink.removeAttribute('href');
+                identityCardRectoLink.style.color = 'gray';
+                identityCardRectoLink.textContent = "Documents d'identité non disponibles";
+
+                identityCardVersoLink.removeAttribute('href');
+                identityCardVersoLink.style.color = 'gray';
+                identityCardVersoLink.textContent = "Documents d'identité non disponibles";
             }
 
         })
         .catch(error => {
-            spinner.style.display = "none";
-            console.error('Erreur:', error);
+             console.error('Erreur:', error);
+            // Tu peux également gérer les erreurs ici en masquant le spinner
+            cardBodyLoading.style.display = "none";
+            cardBodyContent.innerHTML = "<p>Erreur lors du chargement des données.</p>";
+            cardBodyContent.style.display = "block";
         });
 });
+
+
+
 
 
         //-------------------------CAR GESTION--------------------
@@ -1280,140 +1601,138 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 //-------------ONGLET FINANCES-------------------
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     console.log("DOM fully loaded and parsed");
 
-    fetch('/api/admin/payments')
-        .then(response => response.json())
-        .then(data => {
-            console.log('Payments data:', data);
+    try {
+        // Charger les paiements
+        const paymentResponse = await fetch('/api/admin/payments');
+        const paymentData = await paymentResponse.json();
+        console.log('Payments data:', paymentData);
 
-            // Mise à jour des KPI
-            updateKPIPayments(data);
+        // Affichage du tableau de paiements
+        $('#paymentsTable').DataTable({
+            scrollY: '600px',
+            scrollX: true,
+            scrollCollapse: true,
+            searching: false,
+            data: paymentData,
+            columns: [
+                { data: null, render: function(data) {
+                    return `
+                        <div style="text-align: center;">
+                            <img src="${data.photoProfil}" alt="${data.userFirstName} ${data.userLastName}" style="width: 40px; height: 40px; border-radius: 50%;">
+                            <div style="display: flex; justify-content: center;">
+                                <span style="margin-right: 5px;">${data.userFirstName}</span>
+                                <span>${data.userLastName}</span>
+                            </div>
+                        </div>`;
+                }},
 
-            // Affichage du tableau
-            $('#paymentsTable').DataTable({
-                scrollY: '200px',
-                scrollX: true,
-                scrollCollapse: true,
-                searching: false,
-                data: data,
-                columns: [
-                    { data: null, render: function(data) {
-                        return `${data.userFirstName} ${data.userLastName}`;
-                    }},  // Colonne pour le nom complet de l'utilisateur
-                    { data: 'prixTotal', render: $.fn.dataTable.render.number(',', '.', 2, '€') },  // Prix total pour l'utilisateur
-                    { data: 'statut' },
-                    { data: 'paiementMode' },
-                    { data: 'createdAt', render: function(data) {
-                        return new Date(data).toLocaleDateString('fr-FR');
-                    }},
-                    { data: 'prixPourDriveShare', render: $.fn.dataTable.render.number(',', '.', 2, '€') },  // Prix pour DriveShare
-                    { data: 'refund.amount', render: function(data) {  // Montant du remboursement
-                                            return data ? `${data} €` : 'Aucun';
-                                        }},
-                    { data: 'gain.montantGain', render: function(data) {  // Montant du gain
-                        return data ? `${data} €` : 'Aucun';
-                    }},
-                    { data: 'dateFinLocation', render: function(data) {
-                        return new Date(data).toLocaleDateString('fr-FR');
-                    }},
-                    { data: null, render: function(data, type, row) {
-                        const dateFinLocation = new Date(row.dateFinLocation);
-                        const paymentDueDate = new Date(dateFinLocation);
-                        paymentDueDate.setDate(paymentDueDate.getDate() + 3);
-                        const isPaid = new Date().getTime() > paymentDueDate.getTime() && row.statut === 'Paid';
-                        return isPaid ? 'Oui' : 'Non';
-                    }},
-                    {
-                        data: null,
-                        render: function(data, type, row) {
-                            return `
-                                <div class="action-buttons">
-                                    <button class="btn btn-secondary" onclick="viewPayment(${row.id})"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-primary" onclick="editPayment(${row.id})"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deletePayment(${row.id})"><i class="fas fa-trash-alt"></i></button>
-                                </div>`;
-                        }
+
+                { data: 'prixTotal', render: $.fn.dataTable.render.number(',', '.', 2, '€') },
+                { data: 'statut' },
+                { data: 'paiementMode' },
+                { data: 'createdAt', render: function(data) {
+                    return new Date(data).toLocaleDateString('fr-FR');
+                }},
+                { data: 'prixPourDriveShare', render: $.fn.dataTable.render.number(',', '.', 2, '€') },
+
+                { data: 'gainDTO.montantGain', render: function(data) {
+                    return data ? `${data.toFixed(2)} €` : 'Aucun';
+                }},
+
+                { data: 'refundDTO.amount', render: function(data) {
+                    return data ? `${data.toFixed(2)} €` : 'Aucun';
+                }},
+
+
+                { data: 'dateFinLocation', render: function(data) {
+                    return new Date(data).toLocaleDateString('fr-FR');
+                }},
+                { data: null, render: function(data, type, row) {
+                    const hasGain = row.gainDTO && row.gainDTO.montantGain > 0;
+                    const hasRefund = row.refundDTO && row.refundDTO.amount > 0;
+
+                    return (hasGain || hasRefund) ? 'Oui' : 'Non';
+                }},
+
+                {
+                    data: null,
+                    render: function(data, type, row) {
+                        return `
+                            <div class="action-buttons">
+                                <button class="btn btn-danger" onclick="deletePayment(${row.id})"><i class="fas fa-trash-alt"></i></button>
+                            </div>`;
                     }
-                ]
-            });
+                }
+            ]
+        });
 
-            generateDailyPaymentStats(data);
-            generateMonthlyPaymentStats(data);
-        })
-        .catch(error => console.error('Erreur lors de la récupération des paiements:', error));
+        // Charger les KPI
+        const kpiResponse = await fetch('/api/admin/payments/kpi');
+        const kpiData = await kpiResponse.json();
+        updateKPIPayments(kpiData);
+
+        // Charger les statistiques financières pour le graphique
+        const financialResponse = await fetch('/api/admin/payments/financial-stats');
+        const financialData = await financialResponse.json();
+        displayFinancialStatsChart(financialData.benefitByDay, financialData.refundsByDay, financialData.userGeneratedRevenueByDay);
+
+    } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+    }
 });
 
 function updateKPIPayments(data) {
-    const totalPayments = data.length;
-    const successfulPayments = data.filter(payment => payment.statut === 'succeeded').length;
-    const pendingPayments = data.filter(payment => payment.statut === 'PENDING').length;
-    const failedPayments = data.filter(payment => payment.statut === 'FAILED').length;
+    // Total des Transactions
+    const totalTransactions = data.totalTransactions;
+    const cancellationPercentage = data.cancellationPercentage.toFixed(2) + '%';
+    const totalRefunds = data.totalRefunds.toFixed(2) + '€';
+    const userGeneratedRevenue = data.userGeneratedRevenue.toFixed(2) + '€';
 
-    document.getElementById('kpi-total-payments').textContent = totalPayments;
-    document.getElementById('kpi-successful-payments').textContent = successfulPayments;
-    document.getElementById('kpi-pending-payments').textContent = pendingPayments;
-    document.getElementById('kpi-failed-payments').textContent = failedPayments;
+    // Mise à jour des éléments DOM
+    document.getElementById('kpi-total-transactions').textContent = totalTransactions;
+    document.getElementById('kpi-cancellation-percentage').textContent = cancellationPercentage;
+    document.getElementById('kpi-total-refunds').textContent = totalRefunds;
+    document.getElementById('kpi-user-generated-revenue').textContent = userGeneratedRevenue;
 }
 
-function viewPayment(id) {
-    alert('Voir le paiement avec l\'ID ' + id);
-}
+function displayFinancialStatsChart(benefitByMonth, refundsByMonth, userGeneratedRevenueByMonth) {
+    const ctx = document.getElementById('financialStatsChart').getContext('2d');
 
-function editPayment(id) {
-    alert('Modifier le paiement avec l\'ID ' + id);
-}
-
-function deletePayment(id) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce paiement?')) {
-        console.log(`Tentative de suppression du paiement avec l'ID: ${id}`);
-        fetch(`/api/admin/payments/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Erreur lors de la suppression du paiement. Statut: ${response.status}`);
-            }
-            alert('Paiement supprimé avec succès');
-            location.reload();
-        })
-        .catch(error => {
-            console.error('Erreur lors de la suppression du paiement:', error);
-            alert('Erreur lors de la suppression du paiement. Vérifiez la console pour plus de détails.');
-        });
-    }
-}
-
-function generateDailyPaymentStats(data) {
-    const dailyData = {};
-    const formatter = new Intl.DateTimeFormat('fr-FR', { month: 'short', day: 'numeric' });
-
-    data.forEach(payment => {
-        const date = new Date(payment.createdAt);
-        const formattedDate = formatter.format(date);
-
-        if (!dailyData[formattedDate]) {
-            dailyData[formattedDate] = 0;
-        }
-        dailyData[formattedDate] += payment.prixTotal;
+    const labels = Object.keys(benefitByMonth).map(month => {
+        const date = new Date(month);
+        return date.toLocaleString('fr-FR', { year: 'numeric', month: 'long' }); // Format mois-année
     });
 
-    const ctx = document.getElementById('dailyPaymentStatsChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: Object.keys(dailyData),
-            datasets: [{
-                label: 'Paiements quotidiens',
-                data: Object.values(dailyData),
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Bénéfices',
+                    data: Object.values(benefitByMonth),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false
+                },
+                {
+                    label: 'Remboursements',
+                    data: Object.values(refundsByMonth),
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    fill: false
+                },
+                {
+                    label: 'Revenus générés par les utilisateurs',
+                    data: Object.values(userGeneratedRevenueByMonth),
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    fill: false
+                }
+            ]
         },
         options: {
             responsive: true,
@@ -1426,43 +1745,7 @@ function generateDailyPaymentStats(data) {
     });
 }
 
-function generateMonthlyPaymentStats(data) {
-    const monthlyData = {};
-    const formatter = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
 
-    data.forEach(payment => {
-        const date = new Date(payment.createdAt);
-        const formattedDate = formatter.format(date);
-
-        if (!monthlyData[formattedDate]) {
-            monthlyData[formattedDate] = 0;
-        }
-        monthlyData[formattedDate] += payment.prixTotal;
-    });
-
-    const ctx = document.getElementById('monthlyPaymentStatsChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: Object.keys(monthlyData),
-            datasets: [{
-                label: 'Paiements mensuels',
-                data: Object.values(monthlyData),
-                backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                borderColor: 'rgba(153, 102, 255, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
 
 function generateReport() {
     fetch('/api/admin/payments/report')
@@ -1482,35 +1765,42 @@ function generateReport() {
 
 
 //--------------------------ONGLET CLAIM----------------
-document.addEventListener('DOMContentLoaded', function() {
-    // Afficher le spinner et masquer le tableau avant le chargement
+document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('spinner').style.display = 'block';
     document.getElementById('claims-table').style.display = 'none';
 
-    // Charger toutes les réclamations et les KPI au démarrage
-    loadClaims();
-    loadKpiData();
-    loadMonthlyClaimsChart();
-
-    // Charger les options de réservation pour le filtre
-    loadReservationOptions();
-
-    // Gestion du filtre de réclamations par réservation
-    document.getElementById('reservationSelect').addEventListener('change', function() {
-        const reservationId = this.value;
-        if (reservationId === 'all') {
-            loadClaims(); // Afficher toutes les réclamations
-        } else {
-            loadClaimsByReservation(reservationId); // Filtrer par réservation
-        }
-    });
+    try {
+        await Promise.all([
+            loadClaims(),
+            loadKpiData(),
+            loadMonthlyClaimsChart(),
+            loadReservationOptions()
+        ]);
+    } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+    } finally {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('claims-table').style.display = 'table';
+    }
 });
 
-async function loadClaims() {
+
+document.getElementById('reservationSelect').addEventListener('change', function() {
+    const status = this.value;
+    loadClaims(status); // Afficher les réclamations selon le statut sélectionné
+});
+
+async function loadClaims(status = 'all') {
     try {
         const response = await fetch('/api/claims');
         if (!response.ok) throw new Error('Erreur lors du chargement des réclamations');
         const claims = await response.json();
+
+        // Filtrer les réclamations selon le statut si ce n'est pas 'all'
+        const filteredClaims = status === 'all' ? claims : claims.filter(claim => claim.status === status);
+
+        // Trier les réclamations par date, du plus récent au plus ancien
+        filteredClaims.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         // Masquer le spinner et afficher le tableau des réclamations
         const spinner = document.getElementById('spinner');
@@ -1521,28 +1811,15 @@ async function loadClaims() {
             claimsTable.style.display = 'table';
         }
 
-        displayClaims(claims);
+        displayClaims(filteredClaims);
     } catch (error) {
         console.error('Erreur lors du chargement des réclamations:', error);
         document.getElementById('spinner').style.display = 'none';
     }
 }
 
-async function loadClaimsByReservation(reservationId) {
-    try {
-        const response = await fetch(`/api/claims/reservation/${reservationId}`);
-        if (!response.ok) throw new Error('Erreur lors du chargement des réclamations par réservation');
-        const claims = await response.json();
 
-        document.getElementById('spinner').style.display = 'none';
-        document.getElementById('claims-table').style.display = 'table';
 
-        displayClaims(claims);
-    } catch (error) {
-        console.error('Erreur lors du chargement des réclamations par réservation:', error);
-        document.getElementById('spinner').style.display = 'none';
-    }
-}
 
 function displayClaims(claims) {
     const claimsBody = document.getElementById('claims-body');
@@ -1550,26 +1827,53 @@ function displayClaims(claims) {
 
     claimsBody.innerHTML = ''; // Vider le contenu précédent
 
+    // Vérifiez si le tableau des réclamations est vide
     if (claims.length === 0) {
-        claimsBody.innerHTML = '<tr><td colspan="7">Aucune réclamation trouvée.</td></tr>';
-    } else {
-        claims.forEach(claim => {
-            const claimRow = `
-                <tr>
-                    <td>${claim.id}</td>
-                    <td>${claim.message}</td>
-                    <td>${claim.claimantRole}</td>
-                    <td>${claim.status}</td>
-                    <td>
-                        <button class="btn btn-success" onclick="resolveClaim(${claim.id})">Résoudre</button>
-                        <button class="btn btn-primary" onclick="openResponseModal(${claim.id})">Répondre</button>
-                    </td>
-                </tr>
-            `;
-            claimsBody.insertAdjacentHTML('beforeend', claimRow);
-        });
+        claimsBody.innerHTML = '<tr><td colspan="8">Aucune réclamation trouvée pour ce statut.</td></tr>';
+        return; // Sortir de la fonction si aucune réclamation
     }
+
+    // Si des réclamations existent, ajouter les lignes au tableau
+    claims.forEach(claim => {
+        const row = document.createElement('tr');
+
+        const resolveButton = claim.status !== 'FINISHED' ? `
+            <button class="btn btn-outline-success" onclick="resolveClaim(${claim.id})">
+                <i class="fas fa-check"></i>
+            </button>
+        ` : '';
+
+        const responseButton = claim.status !== 'FINISHED' ? `
+            <button class="btn btn-outline-info" onclick="openResponseModal(${claim.id})">
+                <i class="fas fa-reply"></i>
+            </button>
+        ` : '';
+
+        const deleteButton = `
+            <button class="btn btn-outline-danger" onclick="deleteClaim(${claim.id})">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        `;
+
+        row.innerHTML = `
+            <td>${new Date(claim.createdAt).toLocaleDateString('fr-FR')}</td>
+            <td>${claim.message}</td>
+            <td>${claim.reservationId}</td>
+            <td>${claim.claimantRole}</td>
+            <td>${claim.status}</td>
+            <td>${claim.responseAt ? new Date(claim.responseAt).toLocaleDateString('fr-FR') : '<i class="fa-solid fa-xmark" style="color:red;"></i>'}</td>
+            <td>${claim.response || '<i class="fa-solid fa-xmark" style="color:red;"></i>'}</td>
+            <td>
+                ${resolveButton} ${responseButton} ${deleteButton}
+            </td>
+        `;
+        claimsBody.appendChild(row); // Ajouter la ligne au corps du tableau
+    });
 }
+
+
+
+
 
 function openResponseModal(claimId) {
     const claimIdField = document.getElementById('claimId');
@@ -1608,40 +1912,36 @@ if (responseForm) {
         }
     });
 }
-
 async function loadReservationOptions() {
-    try {
-        const response = await fetch('/api/claims');
-        if (!response.ok) throw new Error('Erreur lors du chargement des réclamations');
-        const claims = await response.json();
+    const reservationSelect = document.getElementById('reservationSelect');
+    if (!reservationSelect) return;
 
-        const reservationSelect = document.getElementById('reservationSelect');
-        if (!reservationSelect) return;
+    reservationSelect.innerHTML = ''; // Vider les options existantes
 
-        reservationSelect.innerHTML = ''; // Vider les options existantes
+    const allOption = document.createElement('option');
+    allOption.value = 'all';
+    allOption.textContent = 'Toutes les Réclamations';
+    reservationSelect.appendChild(allOption);
 
-        const groupedReservations = new Map();
-        claims.forEach(claim => {
-            if (!groupedReservations.has(claim.reservationId)) {
-                groupedReservations.set(claim.reservationId, claim.reservationId);
-            }
-        });
+    // Définir les statuts manuellement
+    const statuses = [
+        { value: 'FINISHED', display: 'Clôturé' },
+        { value: 'PENDING', display: 'En attente' },
+        { value: 'IN_PROGRESS', display: 'En cours' }
+    ];
 
-        const allOption = document.createElement('option');
-        allOption.value = 'all';
-        allOption.textContent = 'Toutes les Réclamations';
-        reservationSelect.appendChild(allOption);
-
-        groupedReservations.forEach((reservationId) => {
-            const option = document.createElement('option');
-            option.value = reservationId;
-            option.textContent = `Réservation #${reservationId}`;
-            reservationSelect.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Erreur lors du chargement des options de réservation:', error);
-    }
+    // Ajouter les options de statut
+    statuses.forEach(status => {
+        const option = document.createElement('option');
+        option.value = status.value; // Utiliser le statut pour le filtre
+        option.textContent = status.display;
+        reservationSelect.appendChild(option);
+    });
 }
+
+
+
+
 
 async function resolveClaim(claimId) {
     try {
@@ -1667,64 +1967,89 @@ async function loadKpiData() {
 
         // Afficher les KPI
         document.getElementById('totalClaims').textContent = kpiData.totalClaims;
-        document.getElementById('resolvedClaims').textContent = kpiData.resolvedClaims;
-        document.getElementById('pendingClaims').textContent = kpiData.pendingClaims;
 
+        // Calcul des pourcentages
+        const resolvedPercentage = ((kpiData.resolvedClaims / kpiData.totalClaims) * 100) || 0;
+        const inProgressPercentage = ((kpiData.inProgressClaims / kpiData.totalClaims) * 100) || 0;
+        const pendingPercentage = ((kpiData.pendingClaims / kpiData.totalClaims) * 100) || 0;
+
+        document.getElementById('resolvedClaimsPercentage').textContent = resolvedPercentage.toFixed(2) + '%';
+        document.getElementById('inProgressClaimsPercentage').textContent = inProgressPercentage.toFixed(2) + '%';
+        document.getElementById('pendingClaimsPercentage').textContent = pendingPercentage.toFixed(2) + '%';
 
     } catch (error) {
         console.error('Erreur lors du chargement des KPI:', error);
     }
 }
 
+
 // Fonction pour charger les réclamations mensuelles et créer un graphique linéaire
 async function loadMonthlyClaimsChart() {
-      try {
-          const response = await fetch('/api/claims/monthly');
-          const claimsPerMonth = await response.json();
+    try {
+        const response = await fetch('/api/claims/monthly');
+        const claimsPerMonth = await response.json();
 
-          // Obtenez la liste des 12 derniers mois
-          const months = getLast12Months();
+        // Obtenez la liste des 12 derniers mois
+        const months = getLast12Months();
 
-          // Récupérez les valeurs des réclamations correspondantes aux mois
-          const claimCounts = months.map(month => claimsPerMonth[month] || 0);
+        // Récupérez les valeurs des réclamations correspondantes aux mois
+        const claimCounts = months.map(month => claimsPerMonth[month] || 0);
 
-          // Afficher le graphique linéaire avec Chart.js
-          const ctx = document.getElementById('claimsChart').getContext('2d');
-          const chart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                  labels: months.map(month => getMonthName(month)),
-                  datasets: [{
-                      label: 'Nombre de réclamations',
-                      data: claimCounts,
-                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                      borderColor: 'rgba(75, 192, 192, 1)',
-                      borderWidth: 2,
-                      fill: false
-                  }]
-              },
-              options: {
-                  scales: {
-                      x: {
-                          title: {
-                              display: true,
-                              text: 'Mois'
-                          }
-                      },
-                      y: {
-                          beginAtZero: true,
-                          title: {
-                              display: true,
-                              text: 'Nombre de réclamations'
-                          }
-                      }
-                  }
-              }
-          });
-      } catch (error) {
-          console.error('Erreur lors du chargement des données des réclamations mensuelles:', error);
-      }
-  }
+        // Afficher le graphique linéaire avec Chart.js
+        const ctx = document.getElementById('claimsChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months.map(month => getMonthName(month)),
+                datasets: [{
+                    label: 'Nombre de réclamations',
+                    data: claimCounts,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false // Supprimer la légende
+                    },
+                    title: {
+                        display: true,
+                        text: 'Évolution des Réclamations par Mois',
+                        font: {
+                            size: 16 // Taille de la police
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 10
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Mois'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre de réclamations'
+                        }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Erreur lors du chargement des données des réclamations mensuelles:', error);
+    }
+}
+
 
   // Fonction utilitaire pour obtenir les 12 derniers mois sous forme de "MM-YYYY"
   function getLast12Months() {

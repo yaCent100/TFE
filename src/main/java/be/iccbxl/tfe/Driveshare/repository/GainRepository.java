@@ -1,6 +1,7 @@
 package be.iccbxl.tfe.Driveshare.repository;
 
 import be.iccbxl.tfe.Driveshare.model.Gain;
+import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,7 +25,10 @@ public interface GainRepository extends JpaRepository<Gain, Long> {
             "WHERE u.id = :userId AND g.dateGain BETWEEN :startDate AND :endDate")
     List<Gain> findByUserIdAndDateRange(@Param("userId") Long userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-    List<Gain> findByStatutAndDateGainBefore(String enAttenteDeVersement, LocalDateTime localDateTime);
+
+    Gain findByPaymentReservation(Reservation reservation);
+
+
 }
 
 

@@ -13,12 +13,12 @@
               <div class="row">
                 <div class="col-md-12">
                   <div class="title-top-home">
-                    <h1>Louez une voiture à <span>Bruxelles</span></h1>
-                    <h6>Location de voitures entre particuliers</h6>
+                    <h1 th:text="#{titre-1}">Louez une voiture à Bruxelles</h1>
+                    <h6 th:text="#{titre-2}">Location de voitures entre particuliers</h6>
                   </div>
-                  <form class="form-inline searchForm" id="searchForm" onsubmit="return searchCars(event)" method="GET" action="/cars">
+                  <form class="searchForm" id="searchForm" method="GET" action="/cars">
                     <div class="form-group mb-3">
-                      <input type="text" class="form-control w-100" id="manualAddress" name="manualAddress" placeholder="Entrez votre adresse">
+                      <input type="text" class="form-control w-100" id="manualAddress" name="manualAddress"  th:placeholder="#{placeholder.rechercher}">
                     </div>
                     <div class="form-group mb-3">
                       <div class="row">
@@ -31,7 +31,7 @@
                       </div>
                     </div>
                     <div class="form-group mb-3">
-                      <button type="submit" class="btn btn-block custom-search-button w-100" id="searchButton">Rechercher</button>
+                      <button th:text="#{rechercher}" type="submit" class="btn btn-block custom-search-button w-100" id="searchButton">Rechercher</button>
                     </div>
                   </form>
                 </div>
@@ -48,7 +48,7 @@
       <div class="besoins-container d-flex flex-row w-100 justify-content-between">
         <div class="besoins-content">
           <div class="besoins-item">
-            <p class="besoin-text">Besoin <span class="c-main">d’une voiture</span><br>pour aller à la plage ? </p>
+            <p th:text="#{besoin-1}" class="besoin-text">Besoin d’une voiture<br>pour aller à la plage ? </p>
           </div>
         </div>
         <div class="besoins-content">
@@ -56,7 +56,7 @@
         </div>
         <div class="besoins-content">
           <div class="besoins-item">
-            <p class="besoin-text">Besoin <span class="c-main">d’un utilitaire</span><br>pour un déménagement ? </p>
+            <p class="besoin-text" th:text="#{besoin-2}">Besoin d’un utilitaire<br>pour un déménagement ? </p>
           </div>
         </div>
         <div class="besoins-content">
@@ -64,7 +64,7 @@
         </div>
         <div class="besoins-content">
           <div class="besoins-item">
-            <p class="besoin-text">Besoin <span class="c-main">d’un 4x4</span><br>pour aller à la montagne ? </p>
+            <p class="besoin-text" th:text="#{besoin-3}">Besoin d’un 4x4<br>pour aller à la montagne ? </p>
           </div>
         </div>
       </div>
@@ -142,7 +142,7 @@
 
     <div class="d-flex justify-content-center">
       <div class="m-5">
-        <h2 class="fs32 medium text-center">🚗 Louez une voiture <span class="c-main">où que vous soyez à Bruxelles</span></h2>
+        <h2 class="fs32 medium text-center" th:text="#{titre-milieu}">🚗 Louez une voiture où que vous soyez à Bruxelles</h2>
       </div>
     </div>
     <div id="topRatedCars" class="d-flex flex-row justify-content-center align-items-center">
@@ -156,8 +156,8 @@
         <div class="insurance-card d-flex flex-row insurance">
           <img src="/images/insurance-home.png" height="56" width="56" class="me-2">
           <div>
-            <p class="insurance-card-title ">Assurance + Assistance</p>
-            <p class="insurance-card-details text-muted">Optez pour omnium et roulez l'esprit tranquille</p>
+            <p class="insurance-card-title" th:text="#{assurance-assistance}" >Assurance + Assistance</p>
+            <p class="insurance-card-details text-muted" th:text="#{assurance-description}">Optez pour omnium et roulez l'esprit tranquille</p>
           </div>
         </div>
       </div>
@@ -165,8 +165,8 @@
         <div class="insurance-card d-flex flex-row insurance">
           <img src="/images/carte-bancaire.png" height="56" width="56" class="me-2">
           <div>
-            <p class="insurance-card-title">Paiement sécurisé</p>
-            <p class="insurance-card-details text-muted">Réglez en ligne et nous nous chargerons du reste</p>
+            <p class="insurance-card-title" th:text="#{paiement}">Paiement sécurisé</p>
+            <p class="insurance-card-details text-muted" th:text="#{paiement-description}">Réglez en ligne et nous nous chargerons du reste</p>
           </div>
         </div>
       </div>
@@ -174,8 +174,8 @@
         <div class="insurance-card d-flex flex-row insurance">
           <img src="/images/service-client.png" height="56" width="56" class="me-2">
           <div>
-            <p class="insurance-card-title">Service client 24/7</p>
-            <p class="insurance-card-details text-muted">Disponible à tout moment pour répondre à vos questions et résoudre vos problèmes.</p>
+            <p class="insurance-card-title" th:text="#{service}">Service client 24/7</p>
+            <p class="insurance-card-details text-muted" th:text="#{service-description}">Disponible à tout moment pour répondre à vos questions et résoudre vos problèmes.</p>
           </div>
         </div>
       </div>
@@ -183,24 +183,24 @@
         <div class="insurance-card d-flex flex-row insurance">
           <img src="/images/aucun-frais.png" height="56" width="56" class="me-2">
           <div>
-            <p class="insurance-card-title">Aucun frais caché</p>
-            <p class="insurance-card-details text-muted">Tout est clair, pas de surprises à la fin de la location.</p>
+            <p class="insurance-card-title" th:text="#{frais}">Aucun frais caché</p>
+            <p class="insurance-card-details text-muted" th:text="#{frais-description}">Tout est clair, pas de surprises à la fin de la location.</p>
           </div>
         </div>
       </div>
     </div>
 
     <div class="right-panel d-flex flex-column justify-content-center flex-grow-1">
-      <h2 class="mb-5">N°1 de la location entre particuliers sur Bruxelles 🚗</h2>
-      <p class="small text-muted mb-5">DriveShare est en pleine expansion dans la capitale belge,
+      <h2 class="mb-5" th:text="#{titre-bas}">N°1 de la location entre particuliers sur Bruxelles 🚗</h2>
+      <p class="small text-muted mb-5" th:text="#{text-bas}">DriveShare est en pleine expansion dans la capitale belge,
         offrant une alternative unique et pratique pour la location de voitures entre particuliers.
         Bien que tout juste lancé, DriveShare se distingue déjà par son engagement à fournir
         un service de qualité et sécurisé. Rejoignez-nous et découvrez une nouvelle façon
         de louer un véhicule à Bruxelles, où les options de location entre particuliers étaient
         jusque-là limitées. Faites partie des premiers à profiter de cette nouvelle expérience de mobilité urbaine.</p>
       <div class="d-flex flex-row justify-content-center">
-        <a class="btn p-2 me-3 btn-home-1" href="/comment-ça-marche">Comment ça marche</a>
-        <a class="btn p-2 btn-home-2" href="/condition-utilisation" >Conditions d'utilisations</a>
+        <a class="btn p-2 me-3 btn-home-1" href="/comment-ça-marche" th:text="#{button.bleu}">Comment ça marche</a>
+        <a class="btn p-2 btn-home-2" href="/condition-utilisation" th:text="#{button.gris}" >Conditions d'utilisations</a>
       </div>
     </div>
   </div>

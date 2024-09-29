@@ -24,4 +24,5 @@ public class CacheInspector {
             System.out.println("Cache not found or not a ConcurrentMapCache.");
         }
     }
+
 }

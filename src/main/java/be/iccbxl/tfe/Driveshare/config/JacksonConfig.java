@@ -16,4 +16,7 @@ public class JacksonConfig {
         return builder -> builder.serializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
+    // Bean pour éviter StackOverflowError en raison des références circulaires
+
+
 }

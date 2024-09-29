@@ -1,5 +1,6 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
+import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
 import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.DTO.ReservationDataDTO;
 import be.iccbxl.tfe.Driveshare.DTO.UserDTO;
@@ -63,6 +64,7 @@ public class UserService implements UserServiceI {
     }
 
     public int countConnectedUsers() {
+        System.out.println("Nombre d'utilisateurs connectés: " + connectedUsers);
         return connectedUsers.size();
     }
 
@@ -100,6 +102,11 @@ public class UserService implements UserServiceI {
 
     @Override
     public void addUser(User user) {
+        // Vérification si l'email existe déjà
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Cette adresse email est déjà utilisée.");
+        }
+
         Role defaultRole = roleRepository.findByRole("user");
         try {
             user.addRole(defaultRole);
@@ -112,8 +119,51 @@ public class UserService implements UserServiceI {
             // Log de l'exception
             throw new RuntimeException("Une erreur s'est produite lors de l'ajout de l'utilisateur.", e);
         }
-
     }
+
+    public UserDTO addUserAdmin(User user) {
+        // Vérification si l'email existe déjà
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Cette adresse email est déjà utilisée.");
+        }
+
+        // Récupérer le rôle par défaut
+        Role defaultRole = roleRepository.findByRole("User");
+        if (defaultRole == null) {
+            throw new RuntimeException("Le rôle par défaut 'user' n'existe pas dans la base de données.");
+        }
+
+        try {
+            // Ajouter le rôle par défaut à l'utilisateur
+            user.addRole(defaultRole);
+            // Hacher le mot de passe
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            // Définir la photo par défaut
+            user.setPhotoUrl("defaultPhoto.png");
+            // Définir la date de création
+            user.setCreatedAt(LocalDateTime.now());
+            // Sauvegarder l'utilisateur dans la base de données
+            User savedUser = userRepository.save(user);
+
+            // Créer un UserDTO à partir des informations de l'utilisateur sauvegardé
+            return new UserDTO(
+                    savedUser.getId(),
+                    savedUser.getFirstName(),
+                    savedUser.getLastName(),
+                    savedUser.getAdresse(),
+                    savedUser.getLocality(),
+                    savedUser.getPostalCode(),
+                    savedUser.getEmail(),
+                    savedUser.getPassword()
+                    );
+
+        } catch (Exception e) {
+            // Log de l'exception et re-jet de l'erreur
+            throw new RuntimeException("Une erreur s'est produite lors de l'ajout de l'utilisateur.", e);
+        }
+    }
+
+
 
 
 
@@ -301,6 +351,49 @@ public class UserService implements UserServiceI {
     // Utilisateurs ayant inscrit une voiture
     public int countUsersWithRegisteredCars() {
         return userRepository.countUsersWithRegisteredCars();
+    }
+
+
+
+    // Vérifier si l'utilisateur a rempli ses informations personnelles
+    public boolean hasPersonalInfo(User user) {
+        // Par exemple, vérifiez si certaines informations personnelles sont présentes
+        return user.getFirstName() != null && user.getLastName() != null && user.getEmail() != null;
+    }
+
+    // Vérifier si l'utilisateur a fourni des informations bancaires
+    public boolean hasBankInfo(User user) {
+        // Vérifiez si l'utilisateur a des informations bancaires (ajustez selon vos besoins)
+        return user.getIban() != null && !user.getIban().isEmpty() || user.getBic()!= null && !user.getBic().isEmpty() ;
+    }
+
+    // Vérifier si l'utilisateur a fourni sa pièce d'identité
+    public boolean hasIdentityInfo(User user) {
+        // Vérifiez si l'utilisateur a téléchargé une pièce d'identité
+        return user.getDocuments() != null;
+    }
+
+    // Vérifier si des photos du véhicule ont été ajoutées
+    public boolean hasPhotos(CarDTO carDTO) {
+        // Vérifiez si des photos sont disponibles pour le véhicule
+        return carDTO.getPhotoUrl() != null && !carDTO.getPhotoUrl().isEmpty();
+    }
+
+    // Vérifier si la carte grise du véhicule est présente
+    public boolean hasRegistrationCard(CarDTO carDTO) {
+        // Vérifiez si la carte grise a été ajoutée
+        return carDTO.getRegistrationCardUrl() != null && !carDTO.getRegistrationCardUrl().isEmpty();
+    }
+
+    // Vérifier si la voiture est en attente de validation
+    public boolean isPendingValidation(CarDTO carDTO) {
+        // Ajoutez votre logique pour déterminer si la voiture est en attente de validation
+        return carDTO.getOnline();
+    }
+
+
+    public boolean emailExists(String email) {
+        return userRepository.existsByEmail(email); // Cette méthode doit exister dans votre repository
     }
 
 

@@ -43,11 +43,6 @@ public class AdminMessageRestController {
         return ResponseEntity.ok(conversations);
     }
 
-
-
-
-
-
     @Operation(summary = "Obtenir les messages pour une réservation", description = "Récupérer tous les messages échangés pour une réservation spécifique.")
     @GetMapping("/chats/reservation/{reservationId}")
     public ResponseEntity<List<ChatMessageDTO>> getChatMessagesByReservation(
@@ -118,6 +113,22 @@ public class AdminMessageRestController {
 
         return ResponseEntity.ok(dashboardData);
     }
+
+
+    @GetMapping("/chats")
+    public ResponseEntity<List<ChatMessageDTO>> getUserChats(@RequestParam Long userId) {
+        // Vérification de l'existence de l'utilisateur (si nécessaire)
+        if (userId == null) {
+            return ResponseEntity.badRequest().build(); // 400 Bad Request si userId est null
+        }
+
+        // Récupération des messages pour l'utilisateur donné
+        List<ChatMessageDTO> messages = chatMessageService.getMessagesByUser(userId);
+
+        // Si la liste est vide, renvoyer une réponse 204 No Content
+        return messages.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(messages);
+    }
+
 
 }
 

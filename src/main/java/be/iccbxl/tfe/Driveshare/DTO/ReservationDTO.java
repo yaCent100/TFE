@@ -10,7 +10,6 @@ public class ReservationDTO {
 
     private Long id;
     private Long carId;
-    private Car car;
     private String debutLocation;
     private String finLocation;
     private LocalDateTime createdAt;
@@ -26,6 +25,8 @@ public class ReservationDTO {
     private String carLocality;
     private String insurance;
     private String modeReservation;
+
+    public Boolean isUserVerified;
 
     // Ajouter le champ PaymentDTO
     private PaymentDTO payment;

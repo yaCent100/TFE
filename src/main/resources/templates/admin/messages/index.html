@@ -48,113 +48,223 @@
       display: block;
       margin-bottom: 10px;
     }
+.custom-nav-tabs {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.custom-nav-tabs .nav-item {
+    width: 50%; /* Chaque onglet prend 50% de la largeur */
+}
+
+.custom-nav-tabs .nav-link {
+    width: 100%;
+    text-align: center;
+    background-color: transparent !important; /* Arrière-plan transparent */
+    border: none; /* Enlever les bordures par défaut */
+    padding: 10px 15px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out; /* Transition fluide */
+    position: relative; /* Nécessaire pour la ligne active */
+}
+
+.custom-nav-tabs .nav-link.active {
+    color: #007bff;
+}
+
+.custom-nav-tabs .nav-link::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 3px;
+    background-color: #007bff; /* Couleur de la ligne */
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: all 0.3s ease-in-out;
+}
+
+.custom-nav-tabs .nav-link.active::after {
+    width: 100%; /* Lorsque l'onglet est actif, la ligne s'étend sur toute la largeur */
+}
+
+.custom-nav-tabs .nav-link:hover {
+    color: #007bff;
+}
+
+.custom-nav-tabs .nav-link:hover::after {
+    width: 100%; /* Effet de ligne sous l'onglet lorsqu'on survole */
+}
+
+.card{
+  border-radius:10px !important;
+}
+
 
   </style>
 </head>
 <body>
 <div layout:fragment="content">
-  <div class="container mt-5">
-    <h2>Tableau de Bord de l'Administrateur</h2>
+  <div th:insert="~{admin/fragment-header :: admin-header-notif}"></div>
 
+  <div class="mx-5 my-5">
     <!-- Section des KPI -->
-    <div class="row">
-      <div class="col-md-3">
-        <div class="kpi-card">
-          <div class="kpi-title">Total des Discussions</div>
-          <div class="kpi-value" id="kpi-total-messages">0</div>
+    <div class="row mb-5">
+      <!-- Total des Discussions -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Total des Discussions</h5>
+              <span id="total-messages-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+            </div>
+            <h2 id="kpi-total-messages" class="mb-0 fw-bold text-center">Loading...</h2>
+          </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="kpi-card">
-          <div class="kpi-title">Total des Notifications</div>
-          <div class="kpi-value" id="kpi-total-notifications">0</div>
+
+      <!-- Total des Notifications -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Total des Notifications</h5>
+              <span id="total-notifications-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+            </div>
+            <h2 id="kpi-total-notifications" class="mb-0 fw-bold text-center">Loading...</h2>
+          </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="kpi-card">
-          <div class="kpi-title">Total des Plaintes</div>
-          <div class="kpi-value" id="kpi-total-complaints">0</div>
+
+      <!-- Total des Plaintes -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Chat-Messages du jour</h5>
+              <span id="total-complaints-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+            </div>
+            <h2 id="kpi-total-message-day" class="mb-0 fw-bold text-center">Loading...</h2>
+          </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="kpi-card">
-          <div class="kpi-title">Réservations Critiques</div>
-          <div class="kpi-value" id="kpi-critical-reservations">0</div>
+
+      <!-- Réservations Critiques -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Notification du jour</h5>
+              <span id="critical-reservations-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+            </div>
+            <h2 id="kpi-total-notif-day" class="mb-0 fw-bold text-center">Loading...</h2>
+          </div>
         </div>
       </div>
     </div>
 
+
+
     <!-- Graphique des Messages et Notifications par Jour -->
-    <div class="row chart-container">
-      <div class="col-md-12">
-        <canvas id="messageNotificationBarChart"></canvas>
+    <div class="row chart-container d-flex justify-content-around">
+      <div class="col-md-10">
+        <canvas id="messageNotificationBarChart" style="max-height:375px !important;"></canvas>
       </div>
     </div>
 
     <!-- Section des Messages et Notifications -->
     <div class="row mt-4">
       <div class="col-md-4">
-        <ul class="list-group" id="user-list">
-          <!-- Utilisateurs dynamiques ayant des messages ou notifications -->
-        </ul>
+        <div class="table-responsive" style="height:800px;">
+          <table class="display nowrap table table-striped table-hover text-center" id="user-list-table">
+            <thead class="custom-thead">
+            <tr>
+              <th></th>
+              <th>Nom</th>
+              <th>Prénom</th>
+            </tr>
+            </thead>
+            <tbody id="user-list">
+            <!-- Utilisateurs dynamiques ayant des messages ou notifications -->
+            </tbody>
+          </table>
+
+        </div>
+
       </div>
       <div class="col-md-8">
-        <ul class="nav nav-tabs" id="messageNotificationTabs">
-          <li class="nav-item">
-            <a class="nav-link active" id="messages-tab" data-bs-toggle="tab" href="#messages">Messages</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="notifications-tab" data-bs-toggle="tab" href="#notifications">Notifications</a>
-          </li>
-        </ul>
+        <div class="table-responsive" style="height:800px;">
+          <ul class="nav nav-tabs custom-nav-tabs" id="messageNotificationTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="messages-tab" data-bs-toggle="tab" href="#messages" aria-selected="false" role="tab" tabindex="-1">Messages</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link active" id="notifications-tab" data-bs-toggle="tab" href="#notifications" aria-selected="true" role="tab">Notifications</a>
+            </li>
+          </ul>
+          <div class="tab-content mt-4">
+            <!-- Messages Tab -->
+            <div id="messages" class="tab-pane fade show active">
+              <div id="chat-messages" class="row"></div>
+            </div>
 
-        <div class="tab-content">
-          <!-- Messages Tab -->
-          <div id="messages" class="tab-pane fade show active">
-            <div id="chat-messages" class="row"></div>
+            <!-- Notifications Tab -->
+            <div id="notifications" class="tab-pane fade">
+              <div id="user-notifications" class="row"></div>
+            </div>
           </div>
 
-          <!-- Notifications Tab -->
-          <div id="notifications" class="tab-pane fade">
-            <div id="user-notifications" class="row"></div>
-          </div>
         </div>
+
+
       </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-  document.addEventListener("DOMContentLoaded", function() {
-      loadDashboardData();
-      loadUserListWithMessagesOrNotifications();
+document.addEventListener("DOMContentLoaded", function () {
+    // Charger les données du tableau de bord (KPI et graphique)
+    loadDashboardData();
 
-      // Gestion du clic sur les utilisateurs
-      document.querySelector('#user-list').addEventListener('click', function(e) {
-          let clickedElement = e.target.closest('li');
-          if (clickedElement) {
-              let userId = clickedElement.getAttribute('data-user-id');
-              fetchMessages(userId);
-              fetchNotifications(userId);
+    // Charger la liste des utilisateurs avec des messages ou notifications
+    loadUserListWithMessagesOrNotifications();
 
-              // Mettre à jour l'état sélectionné
-              document.querySelectorAll('#user-list .list-group-item').forEach(item => item.classList.remove('selected-item'));
-              clickedElement.classList.add('selected-item');
-          }
-      });
+    // Gestion du clic sur les utilisateurs
+    document.querySelector('#user-list').addEventListener('click', function (e) {
+        let clickedElement = e.target.closest('tr');
+        if (clickedElement) {
+            let userId = clickedElement.getAttribute('data-user-id');
+            fetchMessages(userId);
+            fetchNotifications(userId);
 
-      // Changement de tabs Messages/Notifications
-      document.querySelectorAll('#messageNotificationTabs a').forEach(tab => {
-          tab.addEventListener('click', function(e) {
-              e.preventDefault();
-              const target = e.target.getAttribute('href');
-              document.querySelector('.tab-pane.show.active').classList.remove('show', 'active');
-              document.querySelector(target).classList.add('show', 'active');
-          });
-      });
-  });
+            // Mettre à jour l'état sélectionné
+            document.querySelectorAll('#user-list tr').forEach(item => item.classList.remove('selected-item'));
+            clickedElement.classList.add('selected-item');
+        }
+    });
 
- async function loadDashboardData() {
+    // Changement de tabs Messages/Notifications
+    document.querySelectorAll('#messageNotificationTabs a').forEach(tab => {
+        tab.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = e.target.getAttribute('href');
+            document.querySelector('.tab-pane.show.active').classList.remove('show', 'active');
+            document.querySelector(target).classList.add('show', 'active');
+        });
+    });
+});
+
+async function loadDashboardData() {
     try {
         const response = await fetch('/api/admin/messages/kpi');
         const data = await response.json();
@@ -173,13 +283,23 @@
     }
 }
 
-  function updateKPI(data) {
-      document.getElementById('kpi-total-messages').textContent = data.totalChats;
-      document.getElementById('kpi-total-notifications').textContent = data.totalNotifications;
-  }
+function updateKPI(data) {
+    document.getElementById('kpi-total-messages').textContent = data.totalChats || 'Loading...';
+    document.getElementById('kpi-total-notifications').textContent = data.totalNotifications || 'Loading...';
 
- function displayBarChart(messagesByDay = { '2024-08-01': 5, '2024-08-02': 7, '2024-08-03': 3 }, notificationsByDay = { '2024-08-01': 2, '2024-08-02': 4, '2024-08-03': 6 }) {
+    // Calculer le total des messages et notifications du jour
+    const totalMessagesToday = data.messagesByDay ? Object.values(data.messagesByDay).reduce((a, b) => a + b, 0) : 'Loading...';
+    const totalNotificationsToday = data.notificationsByDay ? Object.values(data.notificationsByDay).reduce((a, b) => a + b, 0) : 'Loading...';
+
+    document.getElementById('kpi-total-message-day').textContent = totalMessagesToday;
+    document.getElementById('kpi-total-notif-day').textContent = totalNotificationsToday;
+}
+
+function displayBarChart(messagesByDay, notificationsByDay) {
     const ctx = document.getElementById('messageNotificationBarChart').getContext('2d');
+    // Ajuster la hauteur du canvas directement ici
+    ctx.canvas.style.height = '300px'; // Exemple de réduction de la hauteur
+
     new Chart(ctx, {
         type: 'bar',
         data: {
@@ -207,97 +327,212 @@
                     beginAtZero: true
                 }
             },
-            responsive: true
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Chat-Messages et Notifications par Jour', // Ajouter un titre
+                    font: {
+                        size: 20 // Taille du texte du titre
+                    }
+                },
+                legend: {
+                    display: true, // Garder la légende affichée
+                    position: 'top' // Position de la légende
+                }
+            }
         }
     });
 }
 
-  async function loadUserListWithMessagesOrNotifications() {
-      try {
-          const response = await fetch('/api/admin/messages/users-with-messages-or-notifications');
-          const users = await response.json();
+async function loadUserListWithMessagesOrNotifications() {
+    try {
+        const response = await fetch('/api/admin/messages/users-with-messages-or-notifications');
+        const users = await response.json();
 
-          const userList = document.getElementById('user-list');
-          userList.innerHTML = ''; // Vide la liste avant ajout
+        const userList = document.getElementById('user-list');
+        userList.innerHTML = ''; // Vide la liste avant ajout
 
-          users.forEach(user => {
-              const listItem = document.createElement('li');
-              listItem.className = 'list-group-item';
-              listItem.setAttribute('data-user-id', user.id);
-              listItem.textContent = `${user.prenom} ${user.nom}`;
-              userList.appendChild(listItem);
-          });
-      } catch (error) {
-          console.error("Erreur lors du chargement des utilisateurs:", error);
-      }
-  }
+        if (users.length === 0) {
+            userList.innerHTML = '<tr><td colspan="3">Aucun utilisateur disponible.</td></tr>';
+            return;
+        }
 
-  async function fetchMessages(userId) {
-      try {
-          const response = await fetch(`/api/admin/messages/chats?userId=${userId}`);
-          const messages = await response.json();
-          const messageContainer = document.getElementById('chat-messages');
-          messageContainer.innerHTML = ''; // Vide les anciens messages
+        users.forEach(user => {
+            const listItem = `
+                <tr class="clickable-row" data-user-id="${user.id}">
+                    <td><img src="/uploads/profil/${user.photoUrl || 'default-profile.png'}" alt="Profil" class="rounded-circle" width="50"></td>
+                    <td>${user.firstName}</td>
+                    <td>${user.lastName}</td>
+                </tr>`;
+            userList.insertAdjacentHTML('beforeend', listItem);
+        });
+    } catch (error) {
+        console.error("Erreur lors du chargement des utilisateurs:", error);
+        const userList = document.getElementById('user-list');
+        userList.innerHTML = '<tr><td colspan="3">Erreur lors du chargement des utilisateurs.</td></tr>';
+    }
+}
 
-          if (Array.isArray(messages) && messages.length === 0) {
-              messageContainer.innerHTML = `
-                  <div class="no-data">
-                      <i class="fas fa-inbox"></i>
-                      <p>Pas de messages</p>
-                  </div>
-              `;
-          } else if (Array.isArray(messages)) {
-              messages.forEach(message => {
-                  const messageCard = `
-                      <div class="col-md-12 mb-3">
-                          <div class="card">
-                              <div class="card-body">
-                                  <h5 class="card-title">${message.content}</h5>
-                                  <p class="card-text"><small class="text-muted">Envoyé le ${message.sentAt}</small></p>
-                              </div>
-                          </div>
-                      </div>`;
-                  messageContainer.insertAdjacentHTML('beforeend', messageCard);
-              });
-          }
-      } catch (error) {
-          console.error("Erreur lors du chargement des messages:", error);
-      }
-  }
+async function fetchMessages(userId) {
+    const messageContainer = document.getElementById('chat-messages');
+    messageContainer.innerHTML = '<p>Chargement des messages...</p>';
 
-  async function fetchNotifications(userId) {
-      try {
-          const response = await fetch(`/api/admin/messages/notifications?userId=${userId}`);
-          const notifications = await response.json();
-          const notificationContainer = document.getElementById('user-notifications');
-          notificationContainer.innerHTML = ''; // Vide les anciennes notifications
+    try {
+        const response = await fetch(`/api/admin/messages/chats?userId=${userId}`);
+        const messages = await response.json();
 
-          if (Array.isArray(notifications) && notifications.length === 0) {
-              notificationContainer.innerHTML = `
-                  <div class="no-data">
-                      <i class="fas fa-bell"></i>
-                      <p>Pas de notifications</p>
-                  </div>
-              `;
-          } else if (Array.isArray(notifications)) {
-              notifications.forEach(notification => {
-                  const notificationCard = `
-                      <div class="col-md-12 mb-3">
-                          <div class="card">
-                              <div class="card-body">
-                                  <p class="card-text">${notification.message}</p>
-                                  <p class="card-text"><small class="text-muted">Reçue le ${notification.sentAt}</small></p>
-                              </div>
-                          </div>
-                      </div>`;
-                  notificationContainer.insertAdjacentHTML('beforeend', notificationCard);
-              });
-          }
-      } catch (error) {
-          console.error("Erreur lors du chargement des notifications:", error);
-      }
-  }
+        messageContainer.innerHTML = '';
+
+        if (Array.isArray(messages) && messages.length === 0) {
+            messageContainer.innerHTML = `
+                <div class="no-data">
+                    <i class="fas fa-inbox"></i>
+                    <p>Pas de messages</p>
+                </div>
+            `;
+        } else {
+            messages.forEach(message => {
+const messageCard = `
+  <div class="col-md-12 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <!-- Ligne contenant l'expéditeur, le destinataire, et la date -->
+        <div class="d-flex justify-content-between align-items-center">
+          <!-- Expéditeur et destinataire avec photo et prénom -->
+          <div class="d-flex align-items-center">
+            <!-- Photo et nom de l'expéditeur -->
+            <img src="/uploads/profil/${message.profileImageUrl || 'default-profile.png'}" alt="Profil Expéditeur" class="img-thumbnail me-2" width="50">
+            <p class="card-text mb-0"><strong>${message.fromUserNom}</strong></p>
+            <span class="mx-2">→</span> <!-- Flèche directionnelle -->
+            <!-- Photo et nom du destinataire -->
+            <img src="/uploads/profil/${message.profileImageUrl2 || 'default-profile.png'}" alt="Profil Destinataire" class="img-thumbnail me-2" width="50">
+            <p class="card-text mb-0"><strong>${message.toUserNom}</strong></p>
+          </div>
+
+          <!-- Date d'envoi à droite (format 22/05/2512 à 15h45) -->
+          <div>
+            <p class="card-text text-muted">
+              <small>Envoyé le ${new Date(message.sentAt).toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              })} à ${new Date(message.sentAt).toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit'
+              })}</small>
+            </p>
+          </div>
+        </div>
+
+        <!-- Contenu du message -->
+        <div class="text-center m-1 "><span>${message.content}</span></div>
+        <hr class="mx-auto" style="width: 50%;">
+
+        <!-- Détails de la réservation -->
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="card-text">Réservation : <strong>#${message.reservationId}</strong></p>
+          </div>
+          <!-- Image de la voiture -->
+          <div>
+            <img src="/uploads/photo-car/${message.carImage || 'default-car.png'}" alt="Voiture" class="img-thumbnail" width="100">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+
+
+                messageContainer.insertAdjacentHTML('beforeend', messageCard);
+            });
+        }
+    } catch (error) {
+        console.error("Erreur lors du chargement des messages:", error);
+        messageContainer.innerHTML = '<p>Erreur lors du chargement des messages.</p>';
+    }
+}
+
+async function fetchNotifications(userId) {
+    const notificationContainer = document.getElementById('user-notifications');
+    notificationContainer.innerHTML = '<p>Chargement des notifications...</p>';
+
+    try {
+        const response = await fetch(`/api/admin/messages/notifications?userId=${userId}`);
+        const notifications = await response.json();
+
+        notificationContainer.innerHTML = '';
+
+        if (Array.isArray(notifications) && notifications.length === 0) {
+            notificationContainer.innerHTML = `
+                <div class="no-data">
+                    <i class="fas fa-bell"></i>
+                    <p>Pas de notifications</p>
+                </div>
+            `;
+        } else {
+            notifications.forEach(notification => {
+                   const notificationCard = `
+  <div class="col-md-12 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <!-- Ligne contenant l'expéditeur, le destinataire, et la date -->
+        <div class="d-flex justify-content-between align-items-center">
+          <!-- Expéditeur et destinataire avec photo et prénom -->
+          <div class="d-flex align-items-center">
+            <!-- Photo et nom de l'expéditeur -->
+            <img src="/uploads/profil/${notification.fromUserProfil || 'default-profile.png'}" alt="Profil Expéditeur" class="img-thumbnail me-2" width="50">
+            <p class="card-text mb-0"><strong>${notification.fromUserNom}</strong></p>
+            <span class="mx-2">→</span> <!-- Flèche directionnelle -->
+            <!-- Photo et nom du destinataire -->
+            <img src="/uploads/profil/${notification.toUserProfil || 'default-profile.png'}" alt="Profil Destinataire" class="img-thumbnail me-2" width="50">
+            <p class="card-text mb-0"><strong>${notification.toUserNom}</strong></p>
+          </div>
+
+          <!-- Date de réception à droite (format 22/05/2512 à 15h45) -->
+          <div>
+            <p class="card-text text-muted">
+              <small>Reçue le ${new Date(notification.sentAt).toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              })} à ${new Date(notification.sentAt).toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit'
+              })}</small>
+            </p>
+          </div>
+        </div>
+
+        <!-- Contenu de la notification -->
+        <div  class="text-center m-1"><span>${notification.message}</span></div>
+        <hr class="mx-auto" style="width: 50%;">
+
+        <!-- Détails de la réservation et de la voiture -->
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="card-text">Voiture : <strong>${notification.carBrand} ${notification.carModel}</strong></p>
+          </div>
+          <!-- Image de la voiture -->
+          <div>
+            <img src="/uploads/photo-car/${notification.carImage || 'default-car.png'}" alt="Voiture" class="img-thumbnail" width="100">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+                notificationContainer.insertAdjacentHTML('beforeend', notificationCard);
+            });
+        }
+    } catch (error) {
+        console.error("Erreur lors du chargement des notifications:", error);
+        notificationContainer.innerHTML = '<p>Erreur lors du chargement des notifications.</p>';
+    }
+}
 </script>
+
 </div>
 
 </body>

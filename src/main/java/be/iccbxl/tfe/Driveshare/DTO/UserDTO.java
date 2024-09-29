@@ -9,8 +9,8 @@ import java.util.List;
 public class UserDTO {
 
     private Long id;
-    private String nom;
-    private String prenom;
+    private String firstName;
+    private String lastName;
     private String email;
     private String adresse;
     private String locality;
@@ -27,15 +27,20 @@ public class UserDTO {
     private List<DocumentDTO> documents;
     private List<NotificationDTO> notificationsSent;
     private List<NotificationDTO> notificationsReceived;
+    private boolean isVerified;
+
 
     public UserDTO(Long id, String firstName, String lastName, String photoUrl) {
         this.id=id;
-        this.prenom=firstName;
-        this.nom=lastName;
+        this.firstName=firstName;
+        this.lastName=lastName;
         this.photoUrl=photoUrl;
     }
 
     public UserDTO() {
 
+    }
+
+    public UserDTO(Long id, String firstName, String lastName, String adresse, String locality, String postalCode, String email, String password) {
     }
 }

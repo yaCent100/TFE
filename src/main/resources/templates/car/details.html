@@ -3,18 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Détails de la voiture</title>
+
+
+    <style>
+        #map-details {
+            height: 100%; /* Hauteur de la carte */
+            width: 100%; /* Largeur de la carte */
+        }
+        .map-details{
+            border-radius:10px;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="container">
+
+        <!-- Détails de la voiture -->
         <div class="row mt-3">
             <div class="col-md-8">
                 <div class="rounded-custom-border p-4">
+                    <!-- Carousel des photos -->
                     <div class="d-flex justify-content-center">
                         <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" style="max-width: 700px;">
                             <div class="carousel-inner">
-                                <div th:each="photo, iterStat : ${car.photos}" class="carousel-item" th:classappend="${iterStat.first}? 'active'">
-                                    <img th:src="'/uploads/' + ${photo.url}" class="d-block w-100" alt="...">
+                                <div th:each="photo, iterStat : ${car.photos}" class="carousel-item" th:classappend="${iterStat.first} ? 'active'">
+                                    <img th:src="@{'/uploads/photo-car/' + ${photo.url}}" class="d-block w-100" alt="Photo de la voiture">
                                 </div>
                             </div>
                             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -38,61 +52,66 @@
                     </div>
                 </div>
 
+                <!-- Adresse de départ et retour -->
+                <h2 class="fw-bold mt-3">Adresse de départ et de retour</h2>
                 <div class="rounded-custom-border p-4 mt-3">
-                    <h2 class="fw-bold">Adresse de départ et de retour</h2>
                     <div class="row m-3">
                         <div class="col-md-6 text-center">
-                            <img th:src="@{/images/iconMapDetail.png}" class="img-fluid" alt="iconMap" width="100px">
+                            <img th:src="@{/images/iconMapDetail.png}" class="img-fluid" alt="Icone Map" width="100px">
                             <h4>À proximité de</h4><br>
-                            <span class="text-center" th:text="${car.adresse}"></span><br>
+                            <span class="text-center" id="address" th:text="${car.adresse}"></span><br>
                             <span class="text-center" th:text="${car.postalCode + ' ' + car.locality}"></span>
+                            <span id="fullAddress" data-address="${fullAddress}"></span>
                         </div>
-                        <div class="col-md-6">
-                            <img th:src="@{/images/mapCar.png}" class="img-fluid" alt="iconMap" width="400px">
+                        <div class="col-md-6 text-center">
+                            <div id="map-details" class="map-details"></div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Propriétaire -->
+                <h2 class="fw-bold mt-3">Propriétaire</h2>
                 <div class="rounded-custom-border p-4 mt-3">
-                    <h2 class="fw-bold">Propriétaire</h2>
                     <div class="row m-3">
                         <div class="col-md-2 align-item-center">
-                            <img th:if="${car.user.photoUrl != null}" th:src="${'/uploads/profil/' + car.user.photoUrl}" class="img-fluid rounded-circle" alt="User Profile Picture" width="100px">
+                            <img th:if="${car.user.photoUrl}" th:src="@{'/uploads/profil/' + ${car.user.photoUrl}}" class="img-fluid rounded-circle" alt="Photo Profil Utilisateur" width="100px">
                         </div>
-                        <div class="col-md-10 ">
+                        <div class="col-md-10">
                             <h2 class="fw-bold" th:text="${car.user.firstName + ' ' + car.user.lastName}"></h2>
                             <span th:text="${car.user.adresse}"></span><br>
                             <span th:text="${car.user.postalCode + ' ' + car.user.locality}"></span>
                         </div>
                     </div>
                     <div class="row">
-                        <div>
-                            <button id="send-message-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#messageModal">Envoyer un message au propriétaire</button>
+                        <div class="w-100">
+                            <button id="send-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" class="btn btn-primary enregistrer w-100">Envoyer un message au propriétaire</button>
                         </div>
                     </div>
                 </div>
 
+                <!-- Conditions requises par le propriétaire -->
+                <h2 class="fw-bold mt-3">Conditions requises par le propriétaire</h2>
                 <div class="rounded-custom-border p-4 mt-3">
-                    <h2 class="fw-bold">Conditions requises par le propriétaire</h2>
-                    <div th:if="${car.conditions != null}">
+                    <div th:if="${car.conditions != null and !#lists.isEmpty(car.conditions)}">
                         <div class="row m-3">
-                            <div th:each="condition, iterStat : ${car.conditions}" class="col-md-6">
+                            <div th:each="condition : ${car.conditions}" class="col-md-6">
                                 <div class="text-center m-1 custom-cond">
                                     <span th:text="${condition.condition}"></span>
                                 </div>
                             </div>
                         </div>
-                        <div th:if="${car.conditions == null or #lists.isEmpty(car.conditions)}">
-                            <span>Aucune condition requise par le propriétaire.</span>
-                        </div>
+                    </div>
+                    <div th:if="${car.conditions == null or #lists.isEmpty(car.conditions)}">
+                        <span>Aucune condition requise par le propriétaire.</span>
                     </div>
                 </div>
 
+                <!-- Caractéristiques techniques -->
+                <h2 class="fw-bold mt-3">Caractéristiques techniques</h2>
                 <div class="rounded-custom-border p-4 mt-3">
-                    <h2 class="fw-bold">Caractéristiques techniques</h2>
-                    <div th:if="${car.features != null}">
+                    <div th:if="${car.features != null and !#lists.isEmpty(car.features)}">
                         <div class="row m-3">
-                            <div th:each="feature, iterStat : ${car.features}" class="col-md-3">
+                            <div th:each="feature : ${car.features}" class="col-md-3">
                                 <div class="text-center m-1">
                                     <span style="font-style: italic;" th:text="${feature.name}"></span><br>
                                     <span style="font-style: italic;" th:text="${feature.description}"></span>
@@ -105,13 +124,14 @@
                     </div>
                 </div>
 
+                <!-- Équipements -->
+                <h2 class="fw-bold mt-3">Équipements</h2>
                 <div class="rounded-custom-border p-4 mt-3">
-                    <h2 class="fw-bold">Équipements</h2>
-                    <div th:if="${car.equipments != null}">
+                    <div th:if="${car.equipments != null and !#lists.isEmpty(car.equipments)}">
                         <div class="row m-3">
-                            <div th:each="equipment, iterStat : ${car.equipments}" class="col-md-3">
+                            <div th:each="equipment : ${car.equipments}" class="col-md-3">
                                 <div class="text-center m-1">
-                                    <img th:src="${equipment.icone}" alt="Equipment Icon" width="50px" height="50px"><br>
+                                    <img th:src="${equipment.icone}" alt="Icone Équipement" width="50px" height="50px"><br>
                                     <span style="font-style: italic;" th:text="${equipment.equipment}"></span>
                                 </div>
                             </div>
@@ -122,8 +142,9 @@
                     </div>
                 </div>
 
+                <!-- Évaluations -->
+                <h2 class="fw-bold mt-3">Évaluations</h2>
                 <div class="rounded-custom-border p-4 mt-3">
-                    <h2 class="fw-bold">Évaluations</h2>
                     <div th:if="${#lists.isEmpty(car.reservations.![evaluation])}">
                         <span>Aucune évaluation à ce jour.</span>
                     </div>
@@ -148,83 +169,170 @@
                         </div>
                     </div>
                 </div>
-
             </div>
+
+            <!-- Formulaire de réservation -->
             <div class="col-md-4 d-flex align-items-center justify-content-center position-fixed top-50 end-0 translate-middle-y">
-                <div class="custom-border p-3 text-center">
-                    <span th:text="${car.price.middlePrice + '€'}" class="fw-bold fs-2 m-0"></span>
-                    <span th:text="'/jour'" class="fs-6 m-0"></span>
-                    <br>
-                    <div>
-                        <form id="reservationForm" th:action="@{'/reservation/' + ${car.id}}" method="get">
-                            <input type="hidden" id="dateDebutHidden" name="dateDebut" th:value="${dateDebut}">
-                            <input type="hidden" id="dateFinHidden" name="dateFin" th:value="${dateFin}">
-                            <button type="submit" class="custom-reserver btn fw-bold fw-italic">
-                                <p>
-                                    Du
-                                    <input type="date" id="dateDebutInput" name="dateDebut" th:value="${dateDebut}" required>
-                                    Au
-                                    <input type="date" id="dateFinInput" name="dateFin" th:value="${dateFin}" required>
-                                </p>
-                                <span>Réserver</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+                <div class="custom-border p-3 text-center w-100">
+                    <h3 class="fw-bold mb-4">Finaliser votre réservation</h3>
 
-        </div>
+                    <div class="d-flex justify-content-center align-items-center mb-3">
 
-    </div>
-
-    <!-- Modal Envoi de message -->
-    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="messageModalLabel">Envoyer un message au propriétaire</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <img th:src="${'/uploads/profil/' + car.user.photoUrl}" class="img-fluid" alt="User Profile Picture" width="100px">
-                        </div>
-                        <div class="col-md-9">
-                            <h5 class="fw-bold" th:text="${car.user.firstName + ' ' + car.user.lastName}"></h5>
-                            <p>Dates de location :</p>
-                            <p>Du <span id="modalDateDebut"></span> au <span id="modalDateFin"></span></p>
-                        </div>
-                    </div>
-                    <!-- Vérification si l'utilisateur est authentifié -->
-                    <div th:if="${authenticatedUser != null}">
-                        <form id="notification-form">
-                            <div class="mb-3">
-                                <label for="message-text" class="col-form-label">Message:</label>
-                                <textarea class="form-control" id="notification-message"></textarea>
+                        <div class="d-flex flex-column mb-3">
+                            <div class="mb-2">
+                                <label for="dateDebutInput" class="form-label">Du</label>
+                                <input type="text" id="dateDebutInput" name="dateDebut"
+                                       th:value="${param.dateDebut}"
+                                       readonly class="form-control"
+                                       placeholder="YYYY-MM-DD">
                             </div>
-                            <input type="hidden" id="toUserId" th:value="${car.user.id}">
-                            <input type="hidden" id="fromUserId" th:value="${authenticatedUser.id}">
-                            <input type="hidden" id="vehicleId" th:value="${car.id}">
-                            <button type="button" id="sendNotificationButton" class="btn btn-primary">Envoyer</button>
-                        </form>
+                            <div>
+                                <label for="dateFinInput" class="form-label">Au</label>
+                                <input type="text" id="dateFinInput" name="dateFin"
+                                       th:value="${param.dateFin}"
+                                       readonly class="form-control"
+                                       placeholder="YYYY-MM-DD">
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- Si l'utilisateur n'est pas authentifié, afficher un lien de connexion -->
-                    <div th:if="${authenticatedUser == null}">
-                        <p>Veuillez vous <a th:href="@{/login}">connecter</a> pour envoyer un message.</p>
+                    <div class="price-container text-center mb-3">
+                        <span id="dailyPrice" class="fw-bold fs-4" th:text="${displayPrice} + '€ /j'">100.0€ /j</span>
+                    </div>
+
+                    <div class="price-container text-center mb-3">
+                        <span class="fw-bold fs-2">Total: </span>
+                        <span id="totalPrice" class="fw-bold fs-2" th:text="${totalPrice} + '€'">0.00€</span>
+                    </div>
+
+                    <form id="reservationForm" th:action="@{'/reservation/' + ${car.id}}" method="get">
+                        <div id="availabilityError" style="color: red;" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+                        <input type="hidden" id="dateDebutHidden" name="dateDebut" th:value="${param.dateDebut != null ? param.dateDebut : ''}">
+                        <input type="hidden" id="dateFinHidden" name="dateFin" th:value="${param.dateFin != null ? param.dateFin : ''}">
+                        <button type="submit" class="custom-reserver btn btn-success fw-bold fw-italic" id="reserveButton">Réserver</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Envoi de message -->
+        <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="messageModalLabel">Envoyer un message au propriétaire</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <img th:src="@{'/uploads/profil/' + ${car.user.photoUrl}}" class="img-fluid" alt="Photo Profil Utilisateur" width="100px">
+                            </div>
+                            <div class="col-md-9">
+                                <h5 class="fw-bold" th:text="${car.user.firstName + ' ' + car.user.lastName}"></h5>
+                                <p>Dates de location :</p>
+                                <p>Du <span id="modalDateDebut"></span> au <span id="modalDateFin"></span></p>
+                            </div>
+                        </div>
+                        <!-- Vérification si l'utilisateur est authentifié -->
+                        <div th:if="${authenticatedUser != null}">
+                            <form id="notification-form" action="#" method="post">
+                                <div class="mb-3">
+                                    <label for="message-text" class="col-form-label">Message:</label>
+                                    <textarea class="form-control" id="notification-message" style="height: 200px !important;"></textarea>                                </div>
+                                <input type="hidden" id="toUserId" th:value="${car.user.id}">
+                                <input type="hidden" id="fromUserId" th:value="${authenticatedUser.id}">
+                                <input type="hidden" id="vehicleId" th:value="${car.id}">
+                                <div class="text-center">
+                                    <button type="button" id="sendNotificationButton" class="btn btn-primary enregistrer">Envoyer</button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Si l'utilisateur n'est pas authentifié, afficher un lien de connexion -->
+                        <div th:if="${authenticatedUser == null}">
+                            <p>Veuillez vous <a th:href="@{/login}">connecter</a> pour envoyer un message.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
+    <script type="text/javascript">
+        var authenticatedUserId = /*[[${authenticatedUser.id}]]*/ '';
+        var carUserId = /*[[${car.user.id}]]*/ '';
+        var vehicleId = /*[[${car.id}]]*/ '';
+
+ </script>
+    <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+                // Clé API Mapbox
+                const mapboxApiKey = 'pk.eyJ1Ijoic2FuamkwNTEyIiwiYSI6ImNtMGQwYnhvNTA3NnUybXNjOWs2Mnhmem4ifQ.-JdPS28lnldjDaCwlcCecg';
+
+                async function fetchCarDetails(id) {
+                    try {
+                        const response = await fetch(`/api/cars/${id}`);
+                        const car = await response.json();
+                        if (car && car.adresse && car.postalCode && car.locality) {
+                            // Concaténer les parties de l'adresse
+                            const fullAddress = `${car.adresse}, ${car.postalCode} ${car.locality}`;
+                            geocodeAddressWithMapbox(fullAddress);
+                        } else {
+                            console.error('Informations d\'adresse de la voiture manquantes.');
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors de la récupération des détails de la voiture:', error);
+                    }
+                }
+
+                async function geocodeAddressWithMapbox(address) {
+                    console.log(`Geocoding address: ${address}`);
+                    try {
+                        const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxApiKey}`);
+                        const data = await response.json();
+                        console.log("Geocoding response data:", data); // Ajoutez cette ligne pour inspecter la réponse
+
+                        if (data && data.features && data.features.length > 0) {
+                            const location = {
+                                lat: data.features[0].geometry.coordinates[1],
+                                lng: data.features[0].geometry.coordinates[0]
+                            };
+                            console.log(`Geocoded coordinates:`, location);
+                            createMarker(location);
+                        } else {
+                            console.error(`Geocoding failed for address: ${address}`);
+                        }
+                    } catch (error) {
+                        console.error('Error during Mapbox geocoding:', error);
+                    }
+                }
+
+                function createMarker(location) {
+                    console.log(`Creating marker at location:`, location);
+
+                    // Initialiser la carte Mapbox
+                    mapboxgl.accessToken = mapboxApiKey;
+                    const map = new mapboxgl.Map({
+                        container: 'map-details', // ID mis à jour
+                        style: 'mapbox://styles/mapbox/streets-v11', // Style de la carte
+                        center: [location.lng, location.lat], // Coordonnées initiales
+                        zoom: 15 // Niveau de zoom
+                    });
+
+                    // Ajouter le marqueur
+                    new mapboxgl.Marker()
+                        .setLngLat([location.lng, location.lat])
+                        .addTo(map);
+                }
+
+                // Récupérer les détails de la voiture
+                const carId = window.location.pathname.split('/').pop(); // Extrait l'ID de la voiture
+                fetchCarDetails(carId);
+            });
+ </script>
 </div>
-<script type="text/javascript">
-    var authenticatedUserId = /*[[${authenticatedUser.id}]]*/;
-    var carUserId = /*[[${car.user.id}]]*/;
-    var vehicleId = /*[[${car.id}]]*/;
-</script>
-<!-- Modal Envoi de message -->
+
 </body>
 </html>

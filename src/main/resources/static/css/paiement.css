@@ -13,13 +13,15 @@
 
 .title-ligne{
     margin:5px;
-    color:	#00BFFF;
+    color:	#00788d;
     font-size: 1.2rem;
+    font-weight: bold;
 }
 
 .big-title{
     margin-top:20px;
-    margin-bottom:20px;
+    margin-bottom:40px;
+    font-weight: bold;
 }
 
 .number-custom{
@@ -31,4 +33,93 @@
     padding-right: 10px;
 
 }
+
+
+
+
+.payer{
+        padding: 0 !important;
+        width: 13rem !important;
+        font-size: 0.9rem !important;
+        line-height: 3rem !important;
+        border-radius: 10px !important;
+        background-color: #354C6F !important;
+        color:white;
+        border-color:#00BFFF !important;
+        margin-top:50px;
+        font-weight:bold;
+}
+
+.payer:hover{
+    background-color:#00BFFF !important;
+    border-radius: 10px !important;
+    border: 1px solid #354C6F !important;
+    color:white;
+
+}
+
+.titre-payer{
+    margin-bottom:50px;
+    color:white;
+    text-align:center;
+}
+
+.form-stripe{
+    background-color: #DFE7EC;
+    padding: 20px;
+    border-radius: 10px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.table-bordered {
+    border-color: #8EAAB3 !important;
+    border-radius: 10px;
+    border-collapse: collapse;
+    overflow: hidden;
+}
+
+
+
+.reservation-ttc{
+
+    background-color: #00BFFF;
+     padding: 10px;
+     border-radius: 10px;
+     margin-top: 20px;
+     font-size: 1.2rem;
+     font-weight: 500;
+     color: white;
+
+}
+
+.form-check-input:checked {
+    background-color: #00BFFF !important;
+    border-color: #354C6F !important;
+}
+
+.switch-input{
+    font-size: 1.2rem !important;
+}
+
+.back-link-arrow {
+    display: inline-block;  /* Pour que la balise <a> se comporte comme un bloc inline */
+    border: 1px solid #00BFFF;
+    padding: 5px 30px 5px 20px; /* Simplification du padding */
+    border-radius: 5px;
+    text-decoration: none;
+    color: #00BFFF;
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Animation de transition pour hover */
+}
+
+.back-link-arrow:hover {
+    background-color: #00BFFF;
+    color: #ffffff; /* Texte devient blanc au survol */
+    text-decoration: none; /* Retirer la ligne sous le lien */
+}
+
+
+
+
 

@@ -14,63 +14,66 @@
             <div class="row justify-content-center" style="padding-top:40px; padding-bottom:80px;    margin-right: -15px;
      margin-left: -15px;">
                 <div class="col-lg-8 col-md-12">
-                    <div th:if="${successMessage}" class="alert alert-success" role="alert">
-                        <span th:text="${successMessage}"></span>
+                    <div th:if="${param.message != null}">
+                        <div class="alert alert-success" role="alert">
+                            <p th:text="${param.message}"></p>
+                        </div>
                     </div>
+                    <div th:if="${successMessage != null}">
+                        <div class="alert alert-success" role="alert">
+                            <p th:text="${successMessage}"></p>
+                        </div>
+                    </div>
+
                     <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
                         <span th:text="${errorMessage}"></span>
                     </div>
                     <div class="search-list-vehicle vehicles-list">
-                            <div th:each="car : ${cars}" class="card-car-owner" >
-                                <a th:href="@{/account/cars/{id}(id=${car.id})}">
-                                    <div class="row">
-                                        <div class="col-lg-4 col-md-4 col-xs-5">
-                                            <div class="vehicle-picture">
-                                                <img th:src="${#lists.isEmpty(car.photos) ? '/images/carDefault.png' : '/uploads/' + car.photos[0].url}" alt="Car Photo">
-                                            </div>
-                                            <div class="text-center">
-                                                <p th:text="${car.plaqueImmatriculation}" class="bold text-more-light" >Plate Number</p>
-                                            </div>
+                        <div th:each="car : ${cars}" class="card-car-owner">
+                            <a th:href="@{/account/cars/{id}(id=${car.id})}" class="card-link">
+                                <div class="row g-0">
+                                    <div class="col-md-3 m-auto">
+                                            <img th:src="${#lists.isEmpty(car.photoUrl) ? '/images/carDefault.png' : '/uploads/photo-car/' + car.photoUrl[0]}"
+                                                 th:alt="'Photo de voiture ' + ${car.brand} + ' ' + ${car.model}"
+                                                 class="card-img-top" style="max-height: 150px;">
+
+
+                                        <div class="text-center mt-2">
+                                            <p th:text="${car.plaqueImmatriculation}" class="bold text-more-light">Plate Number</p>
                                         </div>
-                                        <div class="col-lg-8 col-md-8 col-xs-7 search-list-vehicle-desc-responsive">
-                                            <div class="search-list-vehicle-desc">
-                                                <div class="row">
-                                                    <div class="col-lg-12">
-                                                        <div class="row">
-                                                            <div class="col-lg-8 col-md-12 col-xs-12">
-                                                                <div class="row">
-                                                                    <div class="col-lg-10 col-md-10 col-xs-10 no-padding">
-                                                                        <p class="fs14 bold c-black" th:text="${car.brand}+' '+${car.model}">Car Model</p>
-                                                                        <span class="fs11 mobile pdl-5" >Car Details</span>
-                                                                        <p class="fs11 mobile pdl-5">
-                                                                            <span class="fa fa-map-marker mgr-10"></span>
-                                                                            <span >Car Location</span>
-                                                                        </p>
-                                                                    </div>
-                                                                    <div class="col-lg-2 col-md-2 col-xs-2 no-padding">
-                                                                    <span class="fs12 medium c-grey mobile">
-                                                                        <span class="avg-rate">
-                                                                            <!-- Display car rating if available -->
-                                                                        </span>
-                                                                    </span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-3 col-md-4 col-xs-10 text-right not-on-mobile on-ipad not-mobile">
-                                                                <p class="vehicle-pricing fs16 medium" th:text="${car.price != null ? car.price.middlePrice : 0}">Price</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                    </div>
+
+                                    <div class="col-md-9">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="card-title m-0" th:text="${car.brand + ' ' + car.model}"></h5>
+                                                <div class="priceIndex" th:text="${car.displayPrice} + ' €/jour'"></div>
+                                            </div>
+
+                                            <div class="d-flex flex-wrap mt-2 text-muted small">
+                                                <div th:each="feature : ${car.features}" class="me-3 d-flex align-items-center">
+                                                    <img th:src="${feature.iconUrl}" alt="Icone de ${feature.name}" style="width: 20px; height: 20px;" class="me-1">
+                                                    <span th:text="${feature.description}"></span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Mode de réservation -->
+                                            <div class="d-flex justify-content-end mt-3">
+                                                <div class="card-text-mode" data-toggle="tooltip" data-placement="top" data-bs-original-title="Vous pouvez réserver la voiture immédiatement">
+                                                    <img src="/icons/eclat.png" alt="eclat" class="icon" style="width: 20px; height: 20px; margin-right: 5px;">
+                                                    <span>Réservation instantanée</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </a>
-                            </div>
+                                </div>
+
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-12 mgt-40">
-                    <p class="text-center"><a th:href="@{/rent}" class="btn btn-success btn-success-shadowed"><i class="fa fa-plus-circle fs13 nbsp-large c-white" aria-hidden="true"></i>Ajouter un véhicule</a></p>
+                    <p class="text-center"><a th:href="@{/rent}" class="btn btn-success enregistrer"><i class="fa fa-plus-circle fs13 nbsp-large c-white" aria-hidden="true"></i>Ajouter un véhicule</a></p>
                 </div>
             </div>
         </div>

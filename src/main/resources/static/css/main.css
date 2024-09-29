@@ -22,8 +22,24 @@ h1, h3, h4, h5, h6 {
 
 }
 
-/* nav */
+/* --------------------nav ---------------------*/
 
+.dropdown-profil{
+    border-radius: 8px !important;
+    padding: 0 !important;
+    top: 3.4rem !important;
+    left: 0;
+    overflow: hidden !important;
+    border: 1px solid rgba(33, 61, 83, .1) !important;
+    z-index: 999999 !important;
+}
+.list-dropdown{
+    padding: 12px 20px !important;
+}
+.btn-connection{
+    color:white;
+    text-decoration:none !important;
+}
 nav {
  background-color: #354C6F;
  }
@@ -48,17 +64,19 @@ nav {
 }
 
 .louez-une-voiture {
-    border: 1px solid white; /* Bord de 1px blanc */
+    border: 1px solid #354C6F; /* Bord de 1px blanc */
     border-radius: 10px;     /* Rayon de bordure de 10px pour arrondir les coins */
-    background-color: 	#00BFFF;  /* Fond bleu */
-    padding: 10px;           /* Optionnel : Ajoutez un peu de padding pour plus d'espacement à l'intérieur */
-    color: white;            /* Optionnel : Texte en blanc pour contraster avec le fond bleu */
-    text-align: center;      /* Optionnel : Centrer le texte à l'intérieur */
-    font-style:normal;
+    background-color: #DFE7EC;  /* Fond bleu */
+    padding: 10px;           /* Ajoutez un peu de padding pour plus d'espacement à l'intérieur */
+    color: #354C6F;         /* Texte en blanc pour contraster avec le fond bleu */
+    text-align: center;      /* Centrer le texte à l'intérieur */
+    font-style: normal;
+    text-decoration: none;
 }
 
 
-/*HOME*/
+
+/*------------------HOME----------------------*/
 
 .top-home {
     background-image: url('/images/bruxelles-home.png');
@@ -182,12 +200,37 @@ nav {
     border: solid 0.5px rgba(151, 162, 162, 0.2);
     padding: 10px;
     margin-right: 25px;
-        text-decoration: none;
-        color:black;
-}
+    text-decoration: none;
+    color: inherit;
+    }
+    /* Alignement des détails de la voiture */
+    .car-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+    .car-detail-price{
+    background-color: #354C6F;
+    padding: 5px;
+      border-radius: 8px;
+      color: white;
+      padding-right: 8px;
+      padding-left: 8px;
+    }
+
+    /* Styles pour les étoiles */
+    .star {
+        font-size: 1.5rem;
+        color: #ddd; /* Couleur pour les étoiles vides */
+    }
+
+    .star.filled {
+        color: gold; /* Couleur pour les étoiles remplies */
+    }
+
 .car-item{
     text-decoration: none;
-
 }
 
 .car-link img{
@@ -264,16 +307,126 @@ nav {
     margin-right: 150px;
     padding:30px;
 }
-/* CARS */
+/*----------------- CARS --------------------*/
+
+.clear-form{
+text-decoration:none;
+color:#9EABB3;
+}
+
+.clear-form:hover{
+color:#00788d !important;
+font-weight: bold;
+}
+
+.filter-top{
+background-color:transparent !important;
+}
+
+.filter-top .nav-link {
+    position: relative; /* Nécessaire pour positionner la ligne en bas */
+    padding-bottom: 0.5rem; /* Espacement en bas pour la ligne */
+    overflow: hidden; /* Masquer la partie de la ligne en dehors du lien */
+    color:#8EAAB3;
+
+
+}
+
+.filter-top .nav-link.active {
+    background-color: transparent !important; /* Supprimer la couleur de fond */
+    color:  #00BFFF!important; /* Couleur du texte pour l'élément actif (changer selon votre design) */
+}
+
+/* Styles pour la ligne sous l'élément actif */
+.filter-top .nav-link.active::after {
+    content: ""; /* Nécessaire pour ajouter une ligne en bas */
+    position: absolute; /* Positionner la ligne en bas */
+    left: 50%; /* Commencer au milieu */
+    bottom: 0; /* Aligner la ligne avec le bas du lien */
+    width: 0; /* Largeur initiale de la ligne */
+    height: 2px; /* Épaisseur de la ligne */
+    background-color: 	#00BFFF; /* Couleur de la ligne (changer selon votre design) */
+    border-radius: 2px; /* Bord arrondi pour la ligne */
+    transform: translateX(-50%); /* Centrer la ligne */
+    transition: width 0.3s ease, left 0.3s ease; /* Animation de la largeur et du décalage */
+}
+
+
+/* Ajoutez une règle pour que la ligne remplisse entièrement le lien lorsque l'élément devient actif */
+.filter-top .nav-link.active {
+    /* La largeur de la ligne se remplit sur l'élément actif */
+    &.active::after {
+        width: 100%; /* Remplir la largeur du lien */
+        left: 0; /* Aligner la ligne avec le début du lien */
+        transform: none; /* Supprimer le centrage horizontal */
+    }
+}
+
+
+#spinner-container {
+    margin: 20px 0;
+}
+
+
+/* Conteneur pour le spinner des filtres */
+.filter-spinner-container {
+    position: relative;
+    height: 50px; /* Ajustez selon vos besoins */
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Conteneur pour le spinner des voitures */
+.car-spinner-container {
+    position: relative;
+    height: 100px; /* Ajustez selon vos besoins */
+    display: flex ;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px; /* Espace pour éviter le chevauchement */
+}
+
+/* Spinner pour les filtres */
+.filter-spinner {
+    width: 30px;
+    height: 30px;
+}
+
+/* Spinner pour les voitures */
+.car-spinner {
+    width: 50px;
+    height: 50px;
+}
+
+
+.search-main{
+    padding-top: 80px;
+}
+
+.container-search{
+    padding: 35px;
+    background-color: #DFE7EC;
+    border-radius: 10px;
+    border: 1px solid #354C6F;
+}
 
 .spinner-border {
-    width: 3rem;
-    height: 3rem;
-    border-width: .3em;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: -.125em;
+  border: .25em solid currentColor;
+  border-right-color: transparent; // Une bordure transparente sur un côté pour créer l'effet de spinner
+  border-radius: 50%;
+  animation: .75s linear infinite spinner-border;
+  -webkit-animation: .75s linear infinite spinner-border;
+}
+
+@keyframes spinner-border {
+  to {
+    transform: rotate(360deg); // Faites tourner l'élément de 360 degrés
+  }
 }
 
 #filters {
@@ -297,10 +450,88 @@ nav {
     padding-left: 30px !important;
     padding-right: 30px !important;
     background-color: #354C6F;
-    border-radius: 20px;
+    border-radius: 10px;
     color: white;
-    font-weight : bold
+    font-weight : bold;
+    text-align:center;
+
 }
+
+.car-card{
+    padding:15px !important;
+        border-radius:10px !important;
+
+}
+.card-body{
+    margin-left: 15px !important;
+    padding:0 !important;
+}
+
+.card-link{
+    text-decoration:none !important;
+    color:black !important;
+}
+
+/* Assurez-vous que les icônes Font Awesome s'affichent correctement */
+/* Style pour les étoiles remplies */
+.fa-star.checked {
+    color: #FFD700; /* Couleur dorée pour les étoiles remplies */
+}
+
+/* Style pour les étoiles vides avec contour doré et intérieur blanc */
+/* Style pour les étoiles remplies */
+.fa-star.checked {
+    color: #FFD700; /* Couleur dorée pour les étoiles remplies */
+}
+
+/* Style pour les étoiles vides avec contour doré */
+.fa-star.empty {
+    color: transparent; /* Intérieur transparent */
+    -webkit-text-stroke: 1px #FFD700; /* Ajoute un contour doré autour de l'étoile */
+}
+
+/* Taille et espacement des étoiles */
+.fa-star {
+    font-size: 13px; /* Taille des étoiles */
+    margin-right: 2px; /* Espacement entre les étoiles */
+}
+
+/* Pour s'assurer que l'intérieur des étoiles vides est bien transparent */
+.fa-star.empty::before {
+    content: '\f005'; /* Code Unicode pour l'étoile pleine dans Font Awesome */
+    color: transparent; /* Intérieur transparent */
+    -webkit-text-stroke: 1px #FFD700; /* Contour doré */
+}
+
+
+
+.card-text-mode {
+    background-color: #8EAAB3;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block; /* Pour ajuster le fond autour du texte uniquement */
+    font-weight: bold; /* Optionnel pour rendre le texte plus visible */
+    font-size:small;
+}
+
+
+
+.card-img-top{
+    border-radius:10px !important;
+    margin:auto;
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    background-size: cover;
+    max-height: 120px;
+}
+.card-title{
+    font-weight: bold;
+}
+
+
+
 
 .form-shadow{
     border-radius: 20px;
@@ -325,15 +556,18 @@ nav {
 
 
 .search-container input[type="text"] {
-    background-color: #9EABB3;
-    color: white;
-    border: none;
     border-radius: 10px;
     margin-bottom: 10px;
+
 }
 
 .search-container input[type="text"]:focus {
     outline: none;
+}
+
+.search-container input[type="date"]{
+    margin-bottom: 0px;
+
 }
 
 .search-container .btn {
@@ -345,14 +579,11 @@ nav {
     margin : 20px
 }
 
-.search-container .btn:hover {
+.container-search .btn:hover {
     background-color: #2e425d;
 }
 
-
-
-
-/* CAR */
+/*--------------------- CAR D2TAIL ------------------------*/
 
     .custom-border {
         border-radius: 20px;
@@ -520,7 +751,6 @@ nav {
     margin-bottom: 2rem;
     border-radius: 10px !important;
     font-size: 0.9rem !important;
-    padding: 0 2rem;
     color: #323648;
     border: 1px solid rgba(33, 61, 83, .1);
 }
@@ -533,15 +763,16 @@ nav {
 
 
 .question-badge{
-    margin-left: 1rem;
+    margin-left: 5px;
     padding: 2px 7px;
     width: 2rem;
     height: 2rem;
     border-radius: 1rem;
     font-weight: 400;
     font-size: 1.2rem;
-    background-color: rgba(173, 191, 204, .4);
+    background-color: 	#00BFFF;
     cursor: pointer;
+    color:white;
 }
 
 .offer-container{
@@ -554,6 +785,8 @@ nav {
     pointer-events: none;
     opacity: .5;
 }
+
+
 
 .offer-container.disabled .unavailable-overlay{
     position: absolute;
@@ -609,14 +842,14 @@ nav {
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    background-color: #CBD2D9 !important;
+    background-color: #DFE7EC !important;
     border-radius: 15px;
     margin-right: 20px;
     padding: 20px;
 }
 
 .bloc-progress{
-    background-color: #CBD2D9 !important;
+    background-color: #DFE7EC !important;
     border-radius:15px;
     margin-right : 20px;
     padding: 20px;
@@ -694,6 +927,7 @@ nav {
     margin-bottom: 15px;
     background-color:#354C6F !important;
     color:white !important;
+    border-radius: 10px !important;
 }
 
 .btn-prev:hover {
@@ -712,6 +946,7 @@ nav {
     border-radius: 10px !important;
     border: 0 !important;
     background-color: #00788d !important;
+    color:white !important;
 
 }
 
@@ -735,10 +970,16 @@ nav {
 
 }
 
+.list-group-item{
+    border-radius:10px;
+}
+.list-group-item:first-child {
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+}
+
  #conditionTextarea {
         height: 75px !important; /* Set your desired height */
-        width: 400px;
-
     }
     #addConditionButton {
         height: fit-content; /* Adjust button height to fit the content */
@@ -769,6 +1010,18 @@ nav {
     background-color : white;
 }
 
+.next-btn{
+        padding: 0 !important;
+        width: 12rem;
+        font-size: 1rem !important;
+        font-weight: 500 !important;
+        line-height: 3rem !important;
+        border-radius: 10px !important;
+        border: 0 !important;
+        background-color: #00788d !important;
+        color: white !important;
+}
+
 /* Formaulaire PARITE PHOTO*/
 
 .no-picture-2 {
@@ -785,14 +1038,14 @@ nav {
 .carte-grise-input {
     position: relative;
     height: 200px; /* Hauteur ajustable selon le besoin */
-    border: 1px dashed #ccc; /* Style de bordure pour visibilité, à supprimer si non nécessaire */
+    border: 1px dashed #354C6F ; /* Style de bordure pour visibilité, à supprimer si non nécessaire */
 }
 .obligatoire{
     color: white !important;
     background-color: #FF4F4A !important;
-    padding-left: 6px !important;
-    padding-right: 6px !important;
-    border-radius: 4px !important;
+    border-radius: 5px !important;
+    padding:5px;
+    font-size:11px;
 }
 
 /* CALENDRIER */
@@ -808,6 +1061,7 @@ nav {
     pointer-events: none;
     border-bottom: 3px solid #213D53;
     padding: 0rem 3rem;
+    text-decoration:none !important;
 }
 
 .nav-profil{
@@ -831,6 +1085,8 @@ nav {
     height: 50px !important;
     display: inline-block !important;
     font-weight: 500 !important;
+   text-decoration:none !important;
+
 }
 
 .a{
@@ -1040,17 +1296,20 @@ nav {
 /* PROFIL ANNONCE */
 
    .border-dotted{
-      position: relative;
-      border-radius: 10px;
-      border: 2px dashed #DFE7EC;
-      width: auto;
-      height: 150px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: transparent;
-      opacity:1;
-
+        position: relative;
+        border-radius: 10px;
+        border: 1px dashed #354C6F;
+        border-width: 1px;
+        border-style: dashed;
+        border-color: #354C6F;
+        border-spacing: 10px;
+        width: auto;
+        height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #F3F5F8;
+        opacity: 1;
     }
 
     .no-picture {
@@ -1063,6 +1322,7 @@ nav {
       left: 50%;
       transform: translate(-50%, -50%);
       border-radius: 10px;
+      object-fit: cover; /* Pour s'assurer que l'image conserve ses proportions */
     }
 
     .container {
@@ -1120,171 +1380,11 @@ nav {
         margin-bottom: 40px !important;
     }
 
-    .vehicle-disabled-checkmark{
-        padding: 15px 20px ;
-        border-radius: 1rem;
-        border: 1px solid rgba(33, 61, 83, 0.08);
-        margin-bottom: 20px;
-    }
-
-    .vehicle-price{
-        margin-bottom: 20px
-    }
-
-
-/*calendrier*/
-
-/*
-/* Supprime toute décoration de texte des événements */
-.fc .fc-event,
-.fc .fc-daygrid-day-top a {
-    text-decoration: none !important;
-}
-
-/* Supprime toute décoration de texte des titres */
-.fc .fc-toolbar-title {
-    text-decoration: none !important;
-
-}
-
-/* Supprime toute décoration de texte des en-têtes de jours */
-.fc .fc-daygrid-day-number,
-.fc .fc-col-header-cell {
-    text-decoration: none !important;
-    border:none;
-    color: #354C6F;
-}
-
-/* Supprime toute décoration de texte des liens dans les éléments */
-.fc a {
-    text-decoration: none !important;
-}
-
-/* Applique une couleur de fond aux jours du mois actif */
-/*.fc .fc-daygrid-day:not(.fc-day-other) {
-    background-color: #DFE7EC; /* Remplacez #f0f0f0 par la couleur désirée
-}*/
-
-/* taille de case des chiffres */
-.fc .fc-daygrid-day-frame {
-    min-height: 100%;
-    position: relative;
-    height: 50px;
-    background-color: #354C6F;
-    border-radius: 5px;
-}
-
-          .fc-daygrid-day.unavailable .fc-daygrid-day-frame {
-                     background: repeating-linear-gradient(
-                                              -45deg,
-                                              white,
-                                              white 5px,
-                                              lightgray 5px,
-                                              lightgray 10px
-                                          );
-                                          color:black;
-                 }
-
-                 /* Cette classe pour revenir à la couleur d'origine */
-                 .fc-daygrid-day.default .fc-daygrid-day-frame {
-                     background-color: #354C6F;
-                     border-radius: 5px;
-                 }
 
 
 
-/* Optionnel : Personnalisez également le survol pour les jours actifs */
-.fc .fc-daygrid-day:not(.fc-day-other):hover {
-    background-color: #00BFFF; /* Remplacez par la couleur de survol désirée */
-}
-
-.fc {
-    background-color: transparent !important;
-    border: none;
-    height: auto;
-}
 
 
-/* Supprimez la bordure autour du calendrier si nécessaire */
-.fc .fc-daygrid-day {
-    border-radius: 8px; /* Ajustez le rayon selon votre besoin */
-    margin: 2px; /* Ajustez l'espacement selon votre besoin */
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1); /* Ajoutez une ombre subtile pour séparer les jours */
-}
-
-
-/* Les événements eux-mêmes peuvent également être stylisés avec une bordure arrondie */
-.fc .fc-event {
-    border-radius: 4px; /* Bordure arrondie pour chaque événement */
-    padding: 2px;
-}
-
-.day-number-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0.5; /* Rendre légèrement transparent pour voir le numéro */
-    border-radius: 50%; /* Style optionnel pour arrondir les coins */
-}
-
-/* Cible les numéros de jour dans le calendrier */
-.fc .fc-daygrid-day-number {
-    float: none; /* Annule tout float par défaut */
-    position: absolute; /* Permet le positionnement absolu à l'intérieur de la case du jour */
-    left: 50%; /* Centrer horizontalement */
-    top: 50%; /* Centrer verticalement */
-    transform: translate(-50%, -50%); /* Ajuste précisément le centrage */
-    font-size: 16px; /* Optionnel: ajuste la taille de la police */
-    color: white;
-}
-
-/* effacer les case vide */
-.fc .fc-cell-shaded, .fc .fc-day-disabled{
-    visibility:hidden !important;
-    border:none !important;
-}
-
-/* background-color pour les mois */
-.fc .fc-multimonth-daygrid{
-    background-color: transparent;
-
-}
-
-.fc .fc-multimonth-singlecol .fc-multimonth-header{
-    background-color: transparent;
-}
-
-
-.fc .fc-multimonth{
-    border: none !important;
-}
-
-.fc .fc-day:not(.fc-day-disabled):hover,
-.fc .fc-day:not(.fc-day-disabled).selected,
-.fc:not(.picking) .fc-day:not(.fc-day-disabled):hover {
-    background: rgba(173, 191, 204, 0.05);
-    color: rgba(173, 191, 204, 1);
-    border: 1px solid rgba(173, 191, 204, 0.25);
-    text-decoration: none;
-}
-
-
-
-/* Calendrier sur les coté */
-
-.ccm{
-    border-radius: 10px !important;
-    background-color:white !important;
-    padding: 15px !important;
-}
-
-.qsf{
-    border-radius: 10px !important;
-    background-color:white !important;
-    padding: 15px !important;
-}
 
 
 
@@ -1371,20 +1471,21 @@ nav {
         line-height: 3rem !important;
         border-radius: 10px !important;
         background-color: #354C6F !important;
-        border: 1px solid #00BFFF !important; /* Bleu clair */
+        color:white;
+        border-color:#00BFFF !important;
 }
 
 .enregistrer:hover{
     background-color:#00BFFF !important;
     border-radius: 10px !important;
     border: 1px solid #354C6F !important;
-    color: #00788d !important;
+    color:white;
 
 }
 
 a {
-    text-decoration:none;
-    cursor:pointer;
+    text-decoration:none !important;
+    cursor:pointer !important;
     color: black;
 }
 

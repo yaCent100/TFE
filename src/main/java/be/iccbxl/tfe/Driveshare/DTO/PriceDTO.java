@@ -10,16 +10,21 @@ public class PriceDTO {
 
     private Long id;
 
-    private Double highPrice;
+    private double highPrice;
 
-    private Double middlePrice;
+    private double middlePrice;
 
-    private Double lowPrice;
+    private double lowPrice;
 
-    private Double promo1;  // Pourcentage de réduction si en promotion
+    private double promo1;  // Pourcentage de réduction si en promotion
 
-    private Double promo2;
+    private double promo2;
 
     private Long carId;
 
+    public PriceDTO(double middlePrice) {
+    }
+
+    public PriceDTO() {
+    }
 }

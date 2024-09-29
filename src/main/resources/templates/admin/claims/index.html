@@ -23,101 +23,162 @@
       text-align: center;
       margin-top: 20px;
     }
+
+    #claims-table-container {
+    max-width: 100%; /* Limiter la largeur maximale si nécessaire */
+    overflow-x: auto; /* Permettre le défilement horizontal */
+}
+
+.table {
+    width: 100%; /* S'assurer que le tableau prend toute la largeur */
+    table-layout: auto; /* Permettre aux colonnes de s'ajuster automatiquement */
+}
+
+.chart-container{
+  margin: 40px 0;
+}
   </style>
 </head>
 <body>
-<div layout:fragment="content" class="container mt-5">
+<div layout:fragment="content">
+  <div th:insert="~{admin/fragment-header :: admin-header-claims}"></div>
 
-  <div id="kpi-section" class="row">
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Total des Réclamations</h5>
-          <p class="card-text" id="totalClaims">0</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Réclamations Résolues</h5>
-          <p class="card-text" id="resolvedClaims">0</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Réclamations En Cours</h5>
-          <p class="card-text" id="pendingClaims">0</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section pour le graphique -->
-  <canvas id="claimsChart" width="400" height="200"></canvas>
-
-  <div id="claims-section">
-    <h2>Gestion des Réclamations</h2>
-
-    <!-- Sélecteur de réservation pour filtrer les réclamations -->
-    <div class="form-group">
-      <label for="reservationSelect">Filtrer par Réservation :</label>
-      <select id="reservationSelect" class="form-control">
-        <option value="all">Toutes les Réclamations</option>
-        <!-- Les options de réservation seront ajoutées dynamiquement -->
-      </select>
-    </div>
-
-    <!-- Tableau des réclamations -->
-    <table id="claims-table" class="table table-bordered" style="display: none;">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Message</th>
-        <th>Réservateur</th>
-        <th>Propriétaire</th>
-        <th>Statut</th>
-        <th>Date de Réponse</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody id="claims-body">
-      <!-- Contenu dynamique des réclamations -->
-      </tbody>
-    </table>
-
-    <!-- Spinner pour le chargement -->
-    <div id="spinner" class="spinner-border" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
-
-  <!-- Modal pour la réponse -->
-  <div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="responseModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="responseModalLabel">Répondre à la Réclamation</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="response-form">
-            <div class="mb-3">
-              <label for="responseMessage" class="form-label">Votre Réponse</label>
-              <textarea class="form-control" id="responseMessage" rows="3" required></textarea>
+  <div class="mx-5 my-5">
+    <div id="kpi-section" class="row">
+      <!-- Total des Réclamations -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Total des Réclamations</h5>
+              <span class="icon text-success">
+            <i class="fas fa-clipboard-list"></i> <!-- Icône de liste -->
+          </span>
             </div>
-            <input type="hidden" id="claimId">
-          </form>
+            <h2 id="totalClaims" class="mb-0 fw-bold text-center">Loading...</h2>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-          <button type="submit" class="btn btn-primary" form="response-form">Envoyer Réponse</button>
+      </div>
+
+      <!-- Pourcentage de Réclamations Résolues -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Réclamations Résolues (%)</h5>
+              <span class="icon text-info">
+            <i class="fas fa-check-circle"></i> <!-- Icône de vérification -->
+          </span>
+            </div>
+            <h2 id="resolvedClaimsPercentage" class="mb-0 fw-bold text-center">Loading...</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pourcentage de Réclamations en Cours -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Réclamations En Cours (%)</h5>
+              <span class="icon text-warning">
+            <i class="fas fa-spinner fa-spin"></i> <!-- Icône de chargement -->
+          </span>
+            </div>
+            <h2 id="inProgressClaimsPercentage" class="mb-0 fw-bold text-center">Loading...</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pourcentage de Réclamations en Attente -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Réclamations En Attente (%)</h5>
+              <span class="icon text-danger">
+            <i class="fas fa-hourglass-half"></i> <!-- Icône de sablier -->
+          </span>
+            </div>
+            <h2 id="pendingClaimsPercentage" class="mb-0 fw-bold text-center">Loading...</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Section pour le graphique -->
+    <div class="row chart-container d-flex justify-content-center">
+     <div class="col-lg-10">
+       <canvas id="claimsChart" width="400" height="200" style="max-height:375px; !important"></canvas>
+     </div>
+    </div>
+
+    <div id="claims-section">
+      <!-- Sélecteur de réservation pour filtrer les réclamations -->
+      <div class="form-group">
+        <label for="reservationSelect">Filtrer par Réservation :</label>
+        <select id="reservationSelect" class="form-control">
+          <option value="all">Toutes les Réclamations</option>
+          <!-- Les options de réservation seront ajoutées dynamiquement -->
+        </select>
+      </div>
+
+      <!-- Tableau des réclamations -->
+      <div id="claims-table-container" style="overflow-x: auto;">
+        <table id="claims-table" class="display nowrap table table-striped table-hover text-center" style="display: none;">
+          <thead class="custom-thead">
+          <tr>
+            <th>Date d'Envoi</th>
+            <th>Réclamation</th>
+            <th>Réservation n°</th>
+            <th>Rôle</th>
+            <th>Statut</th>
+            <th>Date de Réponse</th>
+            <th>Administration</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody id="claims-body">
+          <!-- Contenu dynamique des réclamations -->
+          </tbody>
+        </table>
+
+      </div>
+
+      <!-- Spinner pour le chargement -->
+      <div id="spinner" class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Modal pour la réponse -->
+    <div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="responseModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="responseModalLabel">Répondre à la Réclamation</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="response-form">
+              <div class="mb-3">
+                <label for="responseMessage" class="form-label">Votre Réponse</label>
+                <textarea class="form-control" id="responseMessage" rows="3" required></textarea>
+              </div>
+              <input type="hidden" id="claimId">
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            <button type="submit" class="btn btn-primary" form="response-form">Envoyer Réponse</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+
 </div>
 </body>
 </html>

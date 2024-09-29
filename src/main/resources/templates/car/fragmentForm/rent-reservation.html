@@ -7,8 +7,8 @@
 <body>
 <div th:fragment="reservation-step" class="form-step">
     <div class="row">
-        <input type="hidden" name="modeReservation" id="modeReservation" value="automatic" />
-        <div id="reservation-auto" class="col-lg-9" style="background-color:#D5DDE1; padding:80px; border-radius:10px;">
+        <input type="hidden" name="modeReservation" id="modeReservation" value="automatique" />
+        <div id="reservation-auto" class="col-lg-9" style="background-color:#DFE7EC; padding:80px; border-radius:10px;">
             <span>ETAPE 3</span>
         <h2 class="fw-bold">Comment les locataires pourront réserver votre voiture ?</h2>
         <div class="row">
@@ -17,7 +17,7 @@
                     <div class="text-center mt-3 mb-3" >
                         <img src="/images/carte.png" class="img-fluid">
                     </div>
-                    <p>Les locataires consultent les annonces sur le site.<br><br>
+                    <p class="small mt-5">Les locataires consultent les annonces sur le site.<br><br>
                         Toute personne qui souhaite réserver votre voiture,
                         doit confirmer ses coordonnées, fournir ses informations personnelles.</p>
                 </div>
@@ -28,7 +28,7 @@
                     <div class="text-center mt-3 mb-3">
                         <img src="/images/carte2.png" class="img-fluid">
                     </div>
-                    <p>Vous définissez vos règles de location.<br>
+                    <p class="small mt-5">Vous définissez vos règles de location.<br>
                         Vous tenez à jour un calendrier de disponibilités de votre voiture,
                         vous décider quand et à quelle heure vous êtes disponible.
                         Vous êtes prévenu suffisamment à l'avance.</p>
@@ -43,7 +43,7 @@
                     <div class="text-center mt-3 mb-3">
                         <img src="/images/carte3.png" class="img-fluid">
                     </div>
-                    <p>Vous recevez une notification dès qu’un locataire effectue une réservation.<br>
+                    <p class="small mt-5">Vous recevez une notification dès qu’un locataire effectue une réservation.<br>
                         Vous recevrez immédiatement un e-mail de confirmation contenant les informations,
                         la date et l'heure de la réservation.
                         Vous pouvez alors discuter avec votre locataire pour affiner les détails.</p>
@@ -52,14 +52,14 @@
 
         </div>
             <div class="col-lg-12 text-end">
-                <button type="submit" class="btn btn-primary btn-next mt-4" onclick="submitForm('automatic')">Suivant</button>
+                <button type="submit" class="btn btn-primary btn-next mt-4" onclick="submitForm('automatique')">Suivant</button>
             </div>
 
     </div>
-        <div id="reservation-confirmation" class="col-lg-9" style="background-color:#D5DDE1; padding:80px; border-radius:10px; display:none;">
-            <div class="bradius bg-white border pd-40">
-                <h2>Voulez-vous vraiment que chaque locataire vous envoie une demande de réservation ?</h2>
-                <p class="mgt-20 mgb-40">Cochez les cases pour confirmer que vous comprenez :</p>
+        <div id="reservation-confirmation" class="col-lg-9" style="background-color:#DFE7EC; padding:80px; border-radius:10px; display:none;">
+            <div class="">
+                <h2 class="mb-4">Voulez-vous vraiment que chaque locataire vous envoie une demande de réservation ?</h2>
+                <p class="text-muted">Cochez les cases pour confirmer que vous comprenez :</p>
                 <div>
                         <div class="row">
                             <div class="col-lg-12">
@@ -67,14 +67,10 @@
                                     <div class="col-lg-1 col-xs-2 text-right">
                                         <div class="pretty p-icon p-smooth">
                                             <input type="checkbox" name="check_1" required="">
-                                            <div class="state p-success-o">
-                                                <i class="icon fa fa-check fs18"></i>
-                                                <label class="fs18">&nbsp;</label>
-                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-lg-11 col-xs-10">
-                                        <p class="fs18">Vous n'aurez que 48h pour répondre aux demandes sans être pénalisé.</p>
+                                        <p class="fs18">Vous n'aurez que 24h pour accepter la demande sinon elle expirera.</p>
                                     </div>
 
                                 </div>
@@ -84,86 +80,92 @@
                                     <div class="col-lg-1 col-xs-2 text-right">
                                         <div class="pretty p-icon p-smooth">
                                             <input type="checkbox" name="check_2" required="">
-                                            <div class="state p-success-o">
-                                                <i class="icon fa fa-check fs18"></i>
-                                                <label class="fs18">&nbsp;</label>
-                                                <!--<label class="medium fs18 w100p">-->
-                                                <!--<span class="fs18 normal">Votre annonce apparaîtra plus bas dans les résultats de recherche. Vous risquez donc de recevoir moins de deamandes de réservation.</span>-->
-                                                <!--</label>-->
-                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-lg-11 col-xs-10">
-                                        <p class="fs18">Votre annonce apparaîtra plus bas dans les résultats de recherche. Vous risquez donc de recevoir moins de deamandes de réservation.</p>
+                                        <p class="fs18">Votre annonce apparaîtra plus bas dans les résultats de recherche. Vous risquez donc de recevoir moins de demandes de réservation.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                 </div>
-                <div class="row">
-                    <div class="col-12 text-right">
-                        <button id="next-button" class="btn next-btn btn-success mgt-40" onclick="submitForm('manual')">
+                <div class="row mt-3">
+                    <div class="col-12 text-end">
+                        <button id="next-button" class="btn next-btn btn-success mgt-40" onclick="submitForm('manuelle')">
                             <span class="loading hide"><i class="fa fa-spinner fa-spin"></i></span>
                             <span class="not-load-el">Continuer</span>
                         </button>
                     </div>
                 </div>
-                <div class="mgt-40 mgb-30">
-                    <div class="border bradius bg-main-light pd-20">
-                        <img class="w20" src="/images/picto/idea.svg">
-                        <p><span class="medium">Le saviez-vous ?</span> En moyenne, les véhicules qui peuvent être réservables instantanément reçoivent 3 à 4 fois plus de réservations.</p>
-                    </div>
-                </div>
 
-                <a class="c-main fs14 prev-btn">Autorisez les locataires à réserver votre voiture instantanément</a>
+                <a id="choose-automatic-booking" class="choose-automatic-booking c-main fs14 prev-btn">Autorisez les locataires à réserver votre voiture instantanément</a>
             </div>
 
         </div>
-        <div id="reservation-manu" style="background-color:#D5DDE1; padding:80px; border-radius:10px; display:none;">
-            <div class="bradius bg-white border pd-40">
-                <p class="normal uppercase fs12">étape 3</p>
+        <div id="reservation-manu" class="col-lg-9" style="background-color:#DFE7EC; padding:80px; border-radius:10px; display:none;">
+            <div class="">
+                <span>ETAPE 3</span>
                 <h2>Comment les locataires pourront réserver votre voiture ?</h2>
                 <p class="mgt-30 mgb-40">Chaque fois qu'un locataire sera intéressé par votre voiture, il devra préalablement vous envoyer une demande de réservation.</p>
                 <div class="row">
                     <div class="col-lg-4 mgb-20">
-                        <div class="bradius border pd-20 h100p">
-                            <div class="text-center mgt-30 mgb-30">
-                                <img class="w160" src="/images/vehicle-registration/booking_mode_manual_1.svg">
+                        <div class="reservation-col">
+                            <div class="text-center mt-3 mb-3" >
+                                <img class="img-fluid" src="/images/carte4.png">
                             </div>
-                            <p class="medium fs16">Les locataires consultent les annonces sur le site</p>
-                            <p class="">Chaque personne qui souhaite réserver votre voiture doit vous envoyer une demande de location en précisant les dates et le lieu de location souhaité.</p>
+                            <p class="small mt-5">Les locataires consultent les annonces sur le site<br>
+                            Chaque personne qui souhaite réserver votre voiture doit vous envoyer une demande de location en précisant les dates et le lieu de location souhaité.</p>
                         </div>
                     </div>
                     <div class="col-lg-4 mgb-20">
-                        <div class="bradius border pd-20 h100p">
-                            <div class="text-center  mgt-30 mgb-30">
-                                <img class="w160" src="/images/vehicle-registration/booking_mode_manual_2.svg">
+                        <div class="reservation-col">
+                            <div class="text-center mt-3 mb-3" >
+                                <img class="img-fluid" src="/images/carte5.png">
                             </div>
-                            <p class="medium fs16">Vous choisissez d'accepter ou refuser chaque demande</p>
-                            <p class="">Vous disposez de 48h maximum pour accepter ou refuser la demande. Vous pouvez aussi discuter avec le locataire.</p>
+                            <p class="small mt-5">Vous choisissez d'accepter ou refuser chaque demande<br>
+                            Vous disposez de 24h maximum pour accepter ou refuser la demande. Vous pouvez aussi discuter avec le locataire.</p>
                             <div class="mgt-20">
-                                <p class="fs14"><a id="choose-automatic-booking" class="medium c-main">Je souhaite activer la réservation instantanée</a><span class="c-white fs10 bg-warning medium pdl-6 pdr-6 h25 inline-block bradius-bis nbsp-large-left">Recommandé</span></p>
+                                <p class="fs14">
+                                    <a class="choose-automatic-booking c-main fs14 prev-btn">Je souhaite activer la réservation instantanée</a>
+                                    <span class="fs11 bg-warning " style="color: white;
+                                                                        padding: 5px;
+                                                                        border-radius: 5px;
+                                                                        font-weight: bold;">Recommandé</span>
+                                </p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 mgb-20">
-                        <div class="bradius border pd-20 h100p">
-                            <div class="text-center mgt-30 mgb-30">
-                                <img class="w160" src="/images/vehicle-registration/booking_mode_manual_3.svg">
+                        <div class="reservation-col">
+                            <div class="text-center mt-3 mb-3" >
+                                <img class="img-fluid" src="/images/carte6.png">
                             </div>
-                            <p class="medium fs16">Le locataire doit alors confirmer la réservation</p>
-                            <p class="">Une fois la demande acceptée, le locataire dispose de 48h pour procéder au paiement et confirmer ou non la réservation.</p>
+                            <p class="small mt-5">Le locataire doit alors confirmer la réservation<br>
+                            Une fois la demande acceptée, le locataire dispose de 48h pour procéder au paiement et confirmer ou non la réservation.</p>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 text-right">
+                    <div class="col-12 text-end">
                         <button id="next-button" class="btn btn-primary btn-next mt-4">
                             <span class="loading hide"><i class="fa fa-spinner fa-spin"></i></span>
-                            <span class="not-load-el">Continuer</span>
+                            <span class="not-load-el">Suivant</span>
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-3">
+            <img class="w20" width="50" src="/images/ampoule.png" style="position: relative; top: 35px;">
+            <div class="m-4">
+            <div class="bg-light" style="padding: 20px;
+                                            border: 1px solid #ccc;
+                                            border-radius: 10px;">
+                    <h6 class="bold" style="font-style:italic;">Le saviez-vous ?</h6>
+                    <p class="fs-italic">En moyenne, les véhicules qui peuvent être réservables instantanément reçoivent 3 à 4 fois plus de réservations.</p>
                 </div>
             </div>
         </div>

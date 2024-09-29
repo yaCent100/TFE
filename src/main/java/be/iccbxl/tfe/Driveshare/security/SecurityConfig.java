@@ -7,7 +7,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -21,20 +20,23 @@ public class SecurityConfig {
 			"/home", "/register", "/login", "/cars/**", "/api/cars/top-rated",
 			"/reset-password**", "/swagger-ui/**", "/v3/api-docs/**",
 			"/swagger-ui.html", "/swagger-ui/index.html", "/api/claims/**",
-			"/api/notifications/complaint", "/api/stats/**", "/api/cars",
+			"/api/notifications/complaint", "/api/stats/**", "/api/cars/**",
 			"/api/gearbox", "/api/cars/search", "/api/categories", "/api/files/**",
 			"/api/password/**","/faq", "/comment-ca-marche", "/condition-utilisation",
-			"/api/messages/reservation/**"
+			"/api/messages/reservation/**","/api/motorisation", "/api/kilometrage", "/api/places","/chat-websocket/**",
+			"/api/format-date","/api/deleteCar/**","/api/addPhoto","/api/deletePhoto/**","/documents/**","/louer-ma-voiture"
+			,"/api/unavailable-dates/**"
 	};
 
 	private static final String[] ADMIN_ENDPOINTS = {
 			"/api/admin/**", "/admin/**", "/api/dashboard/**", "/api/review",
-			"/api/admin/users/**", "/api/admin/payments", "/api/admin/evaluations"
+			"/api/admin/users/**", "/api/admin/payments", "/api/admin/evaluations","/api/admin/cars/**","/api/files/**"
 	};
 
 	private static final String[] USER_ENDPOINTS = {
-			"/account/**", "/reservation", "/checkout",
-			"/api/format-date"
+			"/account/**", "/reservation/**", "/checkout","/api/reservations/**",
+			"/evaluations/exists/**","/api/notifications/**","/api/claims/close/**","/api/claims/**","/api/getOwnerReservations",
+			"/api/getRenterReservations"
 	};
 
 	@Bean
@@ -62,10 +64,11 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> {
 					// Public access
 					auth.requestMatchers(PUBLIC_ENDPOINTS).permitAll();
-					// Admin access
-					auth.requestMatchers(ADMIN_ENDPOINTS).hasRole("Admin");
 					// Authenticated user access
 					auth.requestMatchers(USER_ENDPOINTS).authenticated();
+					// Admin access
+					auth.requestMatchers(ADMIN_ENDPOINTS).hasRole("Admin");
+
 					// All other requests
 					auth.anyRequest().authenticated();
 				})
@@ -78,8 +81,11 @@ public class SecurityConfig {
 				)
 				.logout(logout -> logout
 						.logoutUrl("/logout").permitAll()
-						.logoutSuccessUrl("/login?logout")
-				);
+						.logoutSuccessUrl("/home")
+				)
+				.headers(frameOptions->frameOptions.disable())
+
+		;
 
 		return http.build();
 	}

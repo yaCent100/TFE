@@ -8,24 +8,20 @@ import be.iccbxl.tfe.Driveshare.repository.CarRepository;
 import be.iccbxl.tfe.Driveshare.repository.ReservationRepository;
 import be.iccbxl.tfe.Driveshare.repository.UserRepository;
 import be.iccbxl.tfe.Driveshare.service.ReservationServiceI;
+import jakarta.persistence.EntityManager;
 import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +35,9 @@ public class ReservationService implements ReservationServiceI {
 
     @Autowired
     private CarRepository carRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Override
     public List<Reservation> getAllReservations() {
@@ -288,22 +287,65 @@ public class ReservationService implements ReservationServiceI {
         return Long.compare(currentMonthReservations, previousMonthReservations); // 1 = up, -1 = down
     }
 
+    public List<Reservation> getReservationsForLastMonth() {
+        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+        return reservationRepository.findReservationsForLastMonth(oneMonthAgo);
+    }
+
+    public List<Reservation> getReservationsForPreviousMonth() {
+        // Obtenir la date du premier et dernier jour du mois précédent
+        LocalDate firstDayOfLastMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+        LocalDate lastDayOfLastMonth = LocalDate.now().minusMonths(1).withDayOfMonth(firstDayOfLastMonth.lengthOfMonth());
+
+        // Récupérer les réservations pour cette plage de dates
+        return reservationRepository.findReservationsBetweenDates(firstDayOfLastMonth, lastDayOfLastMonth);
+    }
+
+
+
     public List<UserReservationKpiDTO> getTop10UsersByReservationsForCurrentMonth() {
         // Récupérer toutes les réservations du mois en cours
-        List<Reservation> currentMonthReservations = reservationRepository.findReservationsForCurrentMonth();
+        List<Reservation> currentMonthReservations = getReservationsForLastMonth(); // ou getReservationsForCurrentMonth si c'est le mois actuel
 
-        // Grouper les réservations par utilisateur et compter le nombre de réservations
-        Map<User, Long> userReservationCountMap = currentMonthReservations.stream()
+        // Récupérer toutes les réservations du mois précédent
+        List<Reservation> lastMonthReservations = getReservationsForPreviousMonth();
+
+        // Grouper les réservations par utilisateur et compter le nombre de réservations pour le mois en cours
+        Map<User, Long> currentMonthReservationCountMap = currentMonthReservations.stream()
                 .collect(Collectors.groupingBy(Reservation::getUser, Collectors.counting()));
 
-        // Transformer la map en liste de DTOs
-        List<UserReservationKpiDTO> userReservationKpiDTOs = userReservationCountMap.entrySet().stream()
-                .map(entry -> new UserReservationKpiDTO(
-                        entry.getKey().getId(),
-                        entry.getKey().getFirstName(),
-                        entry.getKey().getLastName(),
-                        entry.getValue()))
-                .collect(Collectors.toList());
+        // Grouper les réservations par utilisateur et compter le nombre de réservations pour le mois précédent
+        Map<User, Long> lastMonthReservationCountMap = lastMonthReservations.stream()
+                .collect(Collectors.groupingBy(Reservation::getUser, Collectors.counting()));
+
+        // Transformer la map en liste de DTOs avec la tendance calculée
+        List<UserReservationKpiDTO> userReservationKpiDTOs = currentMonthReservationCountMap.entrySet().stream()
+                .map(entry -> {
+                    User user = entry.getKey();
+                    Long currentMonthCount = entry.getValue();
+                    Long lastMonthCount = lastMonthReservationCountMap.getOrDefault(user, 0L);
+
+                    // Calculer la tendance (par exemple : augmentation, diminution ou stable)
+                    String trend;
+                    if (currentMonthCount > lastMonthCount) {
+                        trend = "Up";
+                    } else if (currentMonthCount < lastMonthCount) {
+                        trend = "Down";
+                    } else {
+                        trend = "Stable";
+                    }
+
+                    // Créer un DTO avec les informations et la tendance
+                    return new UserReservationKpiDTO(
+                            user.getId(),
+                            user.getFirstName(),
+                            user.getLastName(),
+                            currentMonthCount,
+                            user.getPhotoUrl(),
+                            trend
+                    );
+                })
+                .toList();
 
         // Trier par nombre de réservations décroissant et retourner les 10 premiers
         return userReservationKpiDTOs.stream()
@@ -312,6 +354,71 @@ public class ReservationService implements ReservationServiceI {
                 .collect(Collectors.toList());
     }
 
+
+
+
+
+    public List<ReservationDTO> getReservationsForCar(Long carId) {
+        // Récupérer uniquement les réservations avec les statuts pertinents
+        return reservationRepository.findByCarIdAndStatus(carId).stream()
+                .map(MapperDTO::toReservationDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    @Scheduled(fixedRate = 3600000) // Exécuter la tâche toutes les heures (3600000 ms = 1 heure)
+    public void updateExpiredReservations() {
+        List<Reservation> pendingReservations = reservationRepository.findByStatut("RESPONSE_PENDING");
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Reservation reservation : pendingReservations) {
+            if (reservation.getCreatedAt().plusHours(48).isBefore(now)) {
+                reservation.setStatut("EXPIRED");
+                reservationRepository.save(reservation);
+            }
+        }
+    }
+
+    public List<Map<String, Object>> getConfirmedReservationsByMonth() {
+        LocalDate startDate = LocalDate.now().minusYears(1).withDayOfMonth(1);  // Date d'il y a 12 mois
+        LocalDate endDate = LocalDate.now().withDayOfMonth(1);  // Date actuelle au début du mois
+
+        // Obtenir les résultats des réservations confirmées depuis la base de données
+        List<Object[]> results = entityManager.createQuery(
+                        "SELECT MONTH(r.createdAt), YEAR(r.createdAt), COUNT(r.id) " +
+                                "FROM Reservation r " +
+                                "WHERE r.statut IN ('FINISHED', 'CONFIRMED', 'NOW') " +
+                                "AND r.createdAt >= :startDate " +
+                                "GROUP BY YEAR(r.createdAt), MONTH(r.createdAt) " +
+                                "ORDER BY YEAR(r.createdAt), MONTH(r.createdAt)"
+                )
+                .setParameter("startDate", startDate.atStartOfDay())
+                .getResultList();
+
+        // Créer une map des résultats avec le mois et l'année
+        Map<String, Long> reservationsMap = new HashMap<>();
+        for (Object[] result : results) {
+            String monthYear = result[1] + "-" + String.format("%02d", result[0]);  // Format : "YYYY-MM"
+            reservationsMap.put(monthYear, (Long) result[2]);  // Stocker le count
+        }
+
+        // Créer la liste de réponse avec tous les mois des 12 derniers mois
+        List<Map<String, Object>> reservationsData = new ArrayList<>();
+        LocalDate currentMonth = startDate;
+        while (!currentMonth.isAfter(endDate)) {
+            String monthYear = currentMonth.getYear() + "-" + String.format("%02d", currentMonth.getMonthValue());
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("month", currentMonth.getMonthValue());
+            data.put("year", currentMonth.getYear());
+            data.put("count", reservationsMap.getOrDefault(monthYear, 0L));  // Mettre 0 si pas de réservation
+
+            reservationsData.add(data);
+            currentMonth = currentMonth.plusMonths(1);  // Passer au mois suivant
+        }
+
+        return reservationsData;
+    }
 
 
 }

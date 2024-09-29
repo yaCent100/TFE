@@ -1,5 +1,3 @@
-// src/js/login.js
-import { authenticateUser } from './auth.js'; // Assurez-vous que le chemin est correct
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('signin-form').addEventListener('submit', async (event) => {
@@ -31,3 +29,7 @@ function showAlert(message) {
     alertContent.textContent = message;
     alertMessage.classList.remove('hide');
 }
+
+
+
+

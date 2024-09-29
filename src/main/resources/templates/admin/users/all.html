@@ -30,64 +30,100 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="row">
-        <div class="col-lg-3">
-            <div class="kpi-card bg-light p-3 text-center">
-                <h5>Total Users</h5>
-                <h2 id="totalUsers">0</h2>
+<div th:insert="~{admin/fragment-header :: admin-header-users}"></div>
+<div class="mx-5">
+
+    <div class="row mb-5">
+        <!-- Total Users -->
+        <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="text-muted mb-2">Total Users</h5>
+                        <span id="total-users-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+                    </div>
+                    <h2 id="totalUsers" class="mb-0 fw-bold text-center">0</h2>
+                </div>
             </div>
         </div>
-        <div class="col-lg-3">
-            <div class="kpi-card bg-light p-3 text-center">
-                <h5>New Registrations (Last 30 days)</h5>
-                <h2 id="newRegistrations">0</h2>
+
+        <!-- New Registrations (Last 30 days) -->
+        <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="text-muted mb-2">New Users (Last 30 days)</h5>
+                        <span id="new-registrations-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+                    </div>
+                    <h2 id="newRegistrations" class="mb-0 fw-bold text-center">0</h2>
+                </div>
             </div>
         </div>
-        <div class="col-lg-3">
-            <div class="kpi-card bg-light p-3 text-center">
-                <h5>Users Online</h5>
-                <h2 id="usersOnline">0</h2>
+
+        <!-- Users Online -->
+        <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="text-muted mb-2">Users Online</h5>
+                        <span id="users-online-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+                    </div>
+                    <h2 id="usersOnline" class="mb-0 fw-bold text-center">0</h2>
+                </div>
             </div>
         </div>
-        <div class="col-lg-3">
-            <div class="kpi-card bg-light p-3 text-center">
-                <h5>Users with Registered Cars</h5>
-                <h2 id="usersWithCars">0</h2>
+
+        <!-- Users with Registered Cars -->
+        <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="text-muted mb-2">Users with Registered Cars</h5>
+                        <span id="users-with-cars-change" class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+                    </div>
+                    <h2 id="usersWithCars" class="mb-0 fw-bold text-center">0</h2>
+                </div>
             </div>
         </div>
     </div>
 
 
-    <div class="row">
-        <div class="col-lg-6">
-            <canvas id="userRegistrationChart" width="400" height="400"></canvas>
-        </div>
-        <div class="col-lg-6">
-            <canvas id="userLocationChart" width="400" height="400"></canvas>
 
+    <div class="row d-flex justify-content-center align-items-center mb-5">
+        <div class="col-lg-8 d-flex justify-content-center">
+            <canvas id="userLocationChart" style="max-width: 100%;"></canvas>
         </div>
     </div>
+
     <div class="group-action-container">
-        <div>
+        <div class="col-lg-4 w-100">
             <!-- Dropdown pour les actions groupées -->
-            <select id="groupActionSelect" class="form-select">
+            <select id="groupActionSelect" class="form-select mb-3">
                 <option value="">-- Sélectionner une action groupée --</option>
                 <option value="delete">Supprimer</option>
                 <option value="verify-documents">Vérifier Documents</option>
                 <option value="edit-permissions">Modifier Permissions</option>
             </select>
-            <button class="btn btn-primary" id="groupActionBtn">Appliquer</button>
+            <button class="btn btn-primary w-100" id="groupActionBtn">Appliquer</button>
         </div>
         <div class="add-user-btn">
-            <button class="btn btn-success" data-toggle="modal" data-target="#addUserModal">Ajouter un nouvel utilisateur</button>
+            <button class="btn btn-success" id="openModalBtn" data-toggle="modal" data-target="#addUserModal">Ajouter un nouvel utilisateur</button>
         </div>
     </div>
 
     <!-- Tableau des utilisateurs -->
     <div id="users" class="m-2 text-center user-table">
-        <h4 class="text-center">Gestion des Utilisateurs</h4>
-        <table id="usersTable" class="display nowrap table table-striped table-bordered" style="width:100%">
-            <thead>
+        <h1 class="text-center fw-bold">Gestion des Utilisateurs</h1>
+        <table id="usersTable" class="display nowrap table table-striped table-hover" style="width:100%">
+            <thead class="custom-thead">
             <tr>
                 <th></th> <!-- Colonne pour les cases à cocher -->
                 <th>Photo</th>
@@ -111,36 +147,106 @@
     </div>
 
     <!-- Modal pour ajouter un utilisateur -->
-    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addUserModalLabel">Ajouter un nouvel utilisateur</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addUserForm">
-                        <!-- Champs de formulaire pour un nouvel utilisateur -->
-                        <div class="form-group">
-                            <label for="firstName">Prénom</label>
-                            <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    <form id="addUserForm" novalidate>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="inner-addon left-addon">
+                                    <i class="fa fa-user fs20 text-more-light" aria-hidden="true"></i>
+                                    <input type="text" name="lastName" class="form-control input-custom" id="lastName" placeholder="Nom" required>
+                                    <div class="invalid-feedback">Champ obligatoire</div> <!-- Message d'erreur personnalisé -->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="inner-addon left-addon">
+                                    <i class="fa fa-user fs20 text-more-light" aria-hidden="true"></i>
+                                    <input type="text" name="firstName" class="form-control input-custom" id="firstName" placeholder="Prénom" required>
+                                    <div class="invalid-feedback">Champ obligatoire</div> <!-- Message d'erreur personnalisé -->
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="lastName">Nom</label>
-                            <input type="text" class="form-control" id="lastName" name="lastName" required>
+
+                        <!-- Champ pour l'adresse -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="inner-addon left-addon">
+                                    <i class="fa fa-home fs20 text-more-light" aria-hidden="true"></i>
+                                    <input type="text" name="adresse" class="form-control input-custom" id="adresse" placeholder="Adresse" required>
+                                    <div class="invalid-feedback">Champ obligatoire</div> <!-- Message d'erreur personnalisé -->
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+
+                        <!-- Champs pour le code postal et la localité sur une ligne -->
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="inner-addon left-addon">
+                                    <i class="fa fa-map-marker fs20 text-more-light" aria-hidden="true"></i>
+                                    <input type="text" name="postalCode" class="form-control input-custom" id="postalCode" placeholder="Code postal" required>
+                                    <div class="invalid-feedback">Champ obligatoire</div> <!-- Message d'erreur personnalisé -->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="inner-addon left-addon">
+                                    <i class="fa fa-map fs20 text-more-light" aria-hidden="true"></i>
+                                    <input type="text" name="locality" class="form-control input-custom" id="locality" placeholder="Localité" required>
+                                    <div class="invalid-feedback">Champ obligatoire</div> <!-- Message d'erreur personnalisé -->
+                                </div>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Ajouter l'utilisateur</button>
+
+                        <!-- Champ pour le téléphone -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="inner-addon left-addon">
+                                    <i class="fa fa-phone fs20 text-more-light" aria-hidden="true"></i>
+                                    <input type="text" name="phone" class="form-control input-custom" id="phone" placeholder="Téléphone" required>
+                                    <div class="invalid-feedback">Champ obligatoire</div> <!-- Message d'erreur personnalisé -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Champ pour l'email -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="inner-addon left-addon">
+                                    <i class="fa fa-envelope fs20 text-more-light" aria-hidden="true"></i>
+                                    <input type="email" name="email" class="form-control input-custom" id="email" placeholder="Email" required>
+                                    <div class="invalid-feedback">Email valide requis</div> <!-- Message d'erreur personnalisé -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Champ pour le mot de passe -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="inner-addon left-addon">
+                                    <i class="fa fa-lock fs20 text-more-light" aria-hidden="true"></i>
+                                    <input type="password" name="password" class="form-control input-custom" id="password" placeholder="Mot de passe" required>
+                                    <div class="invalid-feedback">Mot de passe requis</div> <!-- Message d'erreur personnalisé -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bouton de soumission -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Ajouter l'utilisateur</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Modal pour la modification des permissions -->
     <div class="modal fade" id="editPermissionsModal" tabindex="-1" role="dialog" aria-labelledby="editPermissionsModalLabel" aria-hidden="true">
@@ -183,6 +289,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-primary" id="completeVerificationBtn">Complet</button> <!-- Bouton pour marquer les documents comme "Complet" -->
                 </div>
             </div>
         </div>
@@ -214,6 +321,7 @@
         </div>
     </div>
 
+</div>
 
 </div>
 

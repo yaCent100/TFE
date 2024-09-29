@@ -31,4 +31,17 @@ public class EmailService {
     public void sendSimpleMessage(String email, String passwordResetRequest, String s) {
 
     }
+
+    public void sendNotificationEmail(String[] adminEmails, String subject, String body) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(adminEmails);
+            message.setSubject(subject);
+            message.setText(body);
+            emailSender.send(message);
+            logger.info("Email sent successfully to {}", adminEmails);
+        } catch (Exception e) {
+            logger.error("Failed to send email to {}: {}", adminEmails, e.getMessage());
+        }
+    }
 }

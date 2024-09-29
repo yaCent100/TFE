@@ -23,6 +23,7 @@ public class PaymentDTO {
     // Ajouter ces champs pour l'utilisateur
     private String userFirstName;
     private String userLastName;
+    private String photoProfil;
     // Ajoutez ce champ
     private LocalDate dateFinLocation;
 

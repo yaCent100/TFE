@@ -6,7 +6,8 @@
   <style>
     .container { margin-top: 20px; }
     .car-image { width: 100px; height: auto; }
-    .search-form { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; }
+    .search-form-gains { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; background-color: #DFE7EC;
+                          border-radius:20px; padding-top:25px;padding-bottom:25px;  }
     .input-container { margin: 0 10px; }
     .btn-success { background-color: #28a745; border-color: #28a745; }
     .btn-success:hover { background-color: #218838; border-color: #1e7e34; }
@@ -21,6 +22,25 @@
     .no-padding { padding: 0; }
     .hidden { display: none; }
     .alert { margin-top: 20px; }
+    .header-search .flex-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Ajoute un espace entre les éléments */
+}
+
+.header-search .input-container {
+  margin: 0;
+}
+
+.header-search p {
+  margin: 0;
+}
+
+.header-search .input-container input {
+  margin: 0;
+}
+
+
   </style>
 </head>
 <body>
@@ -29,24 +49,43 @@
   <div th:replace="account/fragments/account-header"></div>
 
   <div class="container">
-    <div><a href="/account">Précédent</a></div>
+    <div class="back-account">
+      <i class="fa fa-arrow-left arrow-back" aria-hidden="true"></i>
+      <a href="/account">Précédent</a>
+    </div>
+  </div>
+
+  <div class="container">
     <div class="container pdb-20">
-      <h1 class="text-main text-center mgb-30">Récapitulatif de mes gains</h1>
+      <h1 class="text-main text-center mgb-30 bold">Récapitulatif de mes gains</h1>
+
+      <!-- Formulaire de recherche par date -->
       <div class="header-search">
-        <!-- search-box -->
-        <form id="date-form" class="search-form" th:action="@{/account/gains}" method="post">
-          <p class="mgr-10 pd-10">Du</p>
-          <div class="input-container"><input type="date" class="form-control" placeholder="Date de début" name="start_date"></div>
-          <p class="mgr-10 pd-10">Au</p>
-          <div class="input-container"><input type="date" class="form-control" placeholder="Date de fin" name="end_date"></div>
-          <div class="input-container"><button type="submit" class="btn btn-success bold h45">Rechercher</button></div>
+        <form id="date-form" class="search-form-gains" th:action="@{/account/gains}" method="post">
+          <div class="flex-container">
+            <p class="mgr-10 pd-10">Du</p>
+            <div class="input-container">
+              <input type="date" class="form-control date-input-gain" name="start_date" th:value="${startDate != null ? startDate : ''}" required>
+            </div>
+            <p class="mgr-10 pd-10">Au</p>
+            <div class="input-container me-3">
+              <input type="date" class="form-control date-input-gain" name="end_date" th:value="${endDate != null ? endDate : ''}" required>
+            </div>
+            <div class="input-container">
+              <button type="submit" class="enregistrer">Rechercher</button>
+            </div>
+          </div>
         </form>
       </div>
 
-      <div th:if="${#lists.isEmpty(gains)}">
-        <h3 class="text-main text-center">Vous n'avez pas de gains pour la période sélectionnée</h3>
+
+      <!-- Si aucun gain n'est trouvé -->
+      <div th:if="${#lists.isEmpty(gains)}" class="text-center mt-5 mb-5">
+        <h3 class="text-main text-center mb-4">Vous n'avez pas de gains pour la période sélectionnée</h3>
+        <img src="/icons/revenue.png" alt="no-gains" width="200" class="img-fluid">
       </div>
 
+      <!-- Tableau des gains -->
       <div th:if="${!#lists.isEmpty(gains)}">
         <table id="gains-table" class="display table table-striped text-center">
           <thead>
@@ -54,33 +93,47 @@
             <th>Voiture</th>
             <th>Dates de réservation</th>
             <th>Votre gain</th>
-            <th>Statut du versement</th>
+            <th>Date du versement</th>
           </tr>
           </thead>
           <tbody>
           <tr th:each="gain : ${gains}">
             <td>
               <div th:if="${gain.carImage != null}">
-                <img th:src="@{'/uploads' + ${gain.carImage}}" alt="Car Image" class="car-image">
+                <img th:src="@{'/uploads/photo-car/' + ${gain.carImage}}" alt="Car Image" class="car-image" style="border-radius:10px;">
               </div>
               <p th:text="${gain.carBrand} + ' ' + ${gain.carModel}"></p>
             </td>
-            <td th:text="${gain.debutLocation} + ' au ' + ${gain.finLocation}"></td>
-            <td th:text="${gain.montantGain} + ' €'"></td>
-            <td th:text="${gain.statut}"></td>
+            <!-- Formater les dates de réservation en jj/MM/yyyy -->
+            <td th:text="${gain.debutLocation != null ? #temporals.format(gain.debutLocation, 'dd/MM/yyyy') : ''} + ' au ' + ${gain.finLocation != null ? #temporals.format(gain.finLocation, 'dd/MM/yyyy') : ''}"></td>
+            <!-- Formater le montant du gain avec 2 décimales -->
+            <td th:text="${#numbers.formatDecimal(gain.montantGain, 2, 2)} + ' €'"></td>
+            <!-- Formater la date du versement en jj/MM/yyyy -->
+            <td th:text="${gain.dateGain != null ? #temporals.format(gain.dateGain, 'dd/MM/yyyy') : ''}"></td>
           </tr>
           </tbody>
         </table>
+
+        <!-- Bouton pour imprimer le tableau en PDF -->
+        <div class="text-end mt-2">
+          <form th:action="@{/account/gains/pdf}" method="post" target="_blank" >
+            <input type="hidden" name="start_date" th:value="${startDate}">
+            <input type="hidden" name="end_date" th:value="${endDate}">
+            <button type="submit" class="enregistrer">Imprimer le récapitulatif</button>
+          </form>
+        </div>
+
+
       </div>
     </div>
   </div>
-</div>
-
-<script>
+  <script>
   $(document).ready(function() {
     $('#gains-table').DataTable();
   });
 </script>
+</div>
+
 
 </body>
 </html>

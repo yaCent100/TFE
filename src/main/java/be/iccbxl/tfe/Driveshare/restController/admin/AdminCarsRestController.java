@@ -30,9 +30,9 @@ public class AdminCarsRestController {
     private CarService carService;
 
     @Operation(summary = "Obtenir toutes les voitures en ligne", description = "Récupérer la liste de toutes les voitures actuellement en ligne.")
-    @GetMapping("/online")
+    @GetMapping("/all")
     public List<CarDTO> getOnlineCars() {
-        return carService.getOnlineCars();
+        return carService.getAll();
     }
 
     @Operation(summary = "Obtenir toutes les voitures en attente d'approbation", description = "Récupérer la liste de toutes les voitures en attente d'approbation.")
@@ -49,7 +49,6 @@ public class AdminCarsRestController {
 
         if (car != null) {
             CarDTO carDTO = MapperDTO.toCarDTO(car);
-            carDTO.setCarteGrisePath("/api/files/download?directory=registration&fileName=" + car.getCarteGrisePath());
             return ResponseEntity.ok(carDTO);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -97,19 +96,20 @@ public class AdminCarsRestController {
         return kpiData;
     }
 
-    @GetMapping("/reservations-by-month")
-    public List<Map<String, Object>> getReservationsByMonth() {
-        List<Object[]> results = carService.getReservationsByMonth();
-        List<Map<String, Object>> reservationsData = new ArrayList<>();
+    @GetMapping("/by-locality")
+    public List<Map<String, Object>> getCarsByLocality() {
+        List<Object[]> results = carService.getCarsByLocality();  // Appel au service qui récupère les données des voitures par commune
+        List<Map<String, Object>> carsData = new ArrayList<>();
 
         for (Object[] result : results) {
             Map<String, Object> data = new HashMap<>();
-            data.put("month", result[0]);
-            data.put("count", result[1]);
-            reservationsData.add(data);
+            data.put("locality", result[0]);  // Nom de la localité
+            data.put("count", result[1]);     // Nombre de voitures
+            carsData.add(data);
         }
 
-        return reservationsData;
+        return carsData;
     }
+
 }
 

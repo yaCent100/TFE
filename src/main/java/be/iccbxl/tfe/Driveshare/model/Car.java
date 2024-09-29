@@ -1,13 +1,11 @@
 package be.iccbxl.tfe.Driveshare.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -27,7 +25,7 @@ public class Car {
     private String model;
 
     @Column(name="offer")
-    private String offer;
+    private String offer ="standard";
 
     @Column(name = "immatriculation_plate", unique = true)
     private String plaqueImmatriculation;
@@ -54,7 +52,7 @@ public class Car {
     private String carteGrisePath;
 
     @Column(name = "online")
-    private Boolean online; // Utilisation de Boolean au lieu de boolean
+    private Boolean online = false; // Utilisation de Boolean au lieu de boolean
 
     private Double latitude;
 
@@ -62,6 +60,9 @@ public class Car {
 
     @Transient
     private Double distance;
+
+    @Transient
+    private double displayPrice; // Prix calculé, non stocké dans la base de données
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -82,7 +83,8 @@ public class Car {
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Photo> photos;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "car_feature",
             joinColumns = @JoinColumn(name = "car_id"),
@@ -90,13 +92,14 @@ public class Car {
     )
     private List<Feature> features = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "car_equipment",
             joinColumns = @JoinColumn(name = "car_id"),
             inverseJoinColumns = @JoinColumn(name = "equipment_id")
     )
-    private List<Equipment> equipments;
+    private List<Equipment> equipments = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Indisponible> unavailable;

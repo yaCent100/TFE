@@ -17,7 +17,7 @@ public class DocumentController {
     @GetMapping("/documents/conditions-generales.pdf")
     @ResponseBody
     public ResponseEntity<byte[]> getConditionsGenerales() throws IOException {
-        ClassPathResource pdfFile = new ClassPathResource("static/documents/conditions-generales.pdf");
+        ClassPathResource pdfFile = new ClassPathResource("static/uploads/documents/conditions-generales.pdf");
         byte[] pdfBytes = Files.readAllBytes(pdfFile.getFile().toPath());
 
         HttpHeaders headers = new HttpHeaders();
@@ -29,7 +29,7 @@ public class DocumentController {
     @GetMapping("/documents/politique-de-confidentialite.pdf")
     @ResponseBody
     public ResponseEntity<byte[]> getPolitiqueConfidentialite() throws IOException {
-        ClassPathResource pdfFile = new ClassPathResource("static/documents/politique-de-confidentialite.pdf");
+        ClassPathResource pdfFile = new ClassPathResource("static/uploads/documents/politique-de-confidentialite.pdf");
         byte[] pdfBytes = Files.readAllBytes(pdfFile.getFile().toPath());
 
         HttpHeaders headers = new HttpHeaders();

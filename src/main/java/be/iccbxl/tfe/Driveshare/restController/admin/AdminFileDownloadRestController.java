@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.file.Paths;
 
 @RestController
-@RequestMapping("/api/files")
 @Tag(name = "Admin File Management", description = "API pour la gestion et le téléchargement des fichiers")
 public class AdminFileDownloadRestController {
 

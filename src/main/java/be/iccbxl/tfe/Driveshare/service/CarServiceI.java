@@ -4,6 +4,7 @@ import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -21,6 +22,10 @@ public interface CarServiceI {
     Car saveCar(Car car);
 
     Car updateCar(Long id, Car car);
+
+
+    Car updateCarPhoto(Long carId, String photoUrl);
+
     void deleteCar(Long id);
 
     List<Car> getCarsByUser(User user);
@@ -34,7 +39,7 @@ public interface CarServiceI {
 
 
     @Transactional(readOnly = true)
-    List<CarDTO> searchAvailableCars(String address, double lat, double lng, LocalDate dateDebut, LocalDate dateFin) throws Exception;
+    Page<CarDTO> searchAvailableCars(String address, double lat, double lng, LocalDate dateDebut, LocalDate dateFin, PageRequest pageRequest) throws Exception;
 
     Car createCar(CarDTO carDTO);
 

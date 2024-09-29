@@ -1,27 +1,84 @@
 
-<div layout:fragment="calendrier" id="calendrier-tab" class="tab-content-car" >
+<div layout:fragment="calendrier" id="calendrier-tab" class="tab-content-car" th:classappend="${param.activeTab == 'calendrier-tab'} ? 'active' : ''">
     <!-- Contenu spécifique de l'onglet "Calendrier" -->
     <div class="container-fluid">
     <div class="row row justify-content-center pt-3 mt-5">
         <div class="col-lg-2 m-3">
-            <div class="m-2 ccm">
-                <h5>Comment ça marche ?</h5><br>
-                <p class="medium fs14">Pour Modifier la disponibilité</p>
-                <p>Pour modifier la disponibilité de votre véhicule sur une période</p>
-                <p>1 - Sélectionnez la date de début de la période puis la date de fin.</p>
-                <p>2 - cliquer sur le bouton disponible ou indisponible.</p>
+            <div class="calendar-caption fs10 pd-20 bradius bg-white border">
+                <h5 class="text-center mb-4">Légende</h5>
+
+                <!-- Available -->
+                <div class="caption-item mb-3">
+                    <div class="caption-icon available-caption" style="background-color: #354C6F; width: 20px; height: 20px; border-radius: 3px;"></div>
+                    <p class="caption-text m-0">
+                        <span class="">Disponible</span>
+                        <span class="" data-toggle="tooltip" data-placement="top" title="Le véhicule est disponible et peut recevoir des demandes de locations.">
+                <i class="fa fa-info-circle"></i>
+            </span>
+                    </p>
+                </div>
+
+                <!-- Unavailable -->
+                <div class="caption-item mb-3">
+                    <div class="caption-icon unavailable-caption" style="background: repeating-linear-gradient(-45deg, white, white 5px, lightgray 5px, lightgray 10px); width: 20px; height: 20px; border-radius: 3px;"></div>
+                    <p class="caption-text m-0">
+                        <span class="">Indisponible</span>
+                        <span class="" data-toggle="tooltip" data-placement="top" title="Le véhicule n'est pas disponible.">
+                <i class="fa fa-info-circle"></i>
+            </span>
+                    </p>
+                </div>
+
+                <!-- Reserved -->
+                <div class="caption-item">
+                    <div class="caption-icon reserved-caption" style="background-color: #00BFFF; width: 20px; height: 20px; border-radius: 3px;"></div>
+                    <p class="caption-text m-0">
+                        <span class="">Réservé</span>
+                        <span class="" data-toggle="tooltip" data-placement="top" title="Réservé et non modifiable.">
+                <i class="fa fa-info-circle"></i>
+            </span>
+                    </p>
+                </div>
             </div>
+
+            <div class="m-2 ccm">
+                <div class="d-flex align-items-center">
+                    <span class="me-2" data-bs-toggle="collapse" data-bs-target="#collapseInfo" aria-expanded="false" aria-controls="collapseInfo" title="Cliquez pour plus d'infos.">
+                        <i class="fa fa-info-circle"></i>
+                    </span>
+                    <h6 class="mb-0">Comment ça marche ?</h6>
+
+                </div>
+                <div id="collapseInfo" class="collapse mt-3">
+                    <p class="bold">Pour Modifier la disponibilité</p>
+                    <p>Pour modifier la disponibilité de votre véhicule sur une période</p>
+                    <p>1 - Sélectionnez la date de début de la période puis la date de fin.</p>
+                    <p>2 - Cliquez sur le bouton disponible ou indisponible.</p>
+                </div>
+            </div>
+
+
+
+
         </div>
         <div class="col-lg-7">
             <h3>Calendrier</h3>
-            <div id="calendrier"></div>
+            <div id="calendrier" style="width:100%; height: 700px;"></div>
             <form id="availability-form" th:action="@{/save-availability}" method="post">
                 <input type="hidden" id="car-id" name="carId" th:value="${car.id}">
+                <input type="hidden" id="unavailableStartDates" name="unavailableStartDates">
+                <input type="hidden" id="unavailableEndDates" name="unavailableEndDates">
+                <input type="hidden" id="availableStartDates" name="availableStartDates">
+                <input type="hidden" id="availableEndDates" name="availableEndDates">
                 <div id="date-ranges-container">
                     <!-- Conteneur pour les plages de dates sélectionnées -->
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary enregistrer mt-4">Enregistrer</button>
+                </div>
             </form>
+
+
         </div>
         <div class="col-lg-3">
 
@@ -50,5 +107,201 @@
     </div>
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Activer les tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendrier');
+    const carIdInput = document.getElementById('car-id');
+    const carId = carIdInput.value;
+    let pendingStartDate = null, pendingEndDate = null;
 
-<!-- fragments/calendrier.html -->
+    // Stocke les plages d'indisponibilité et de disponibilité
+    let unavailableRanges = [];
+    let availableRanges = [];
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+        initialView: 'multiMonth',
+        views: {
+            multiMonth: {
+                type: 'multiMonth',
+                multiMonthTitleFormat: { month: 'long', year: 'numeric' },
+                duration: { months: 12 },
+                dayHeaderContent: function(arg) {
+                    const day = arg.date.toLocaleDateString('fr-FR', { weekday: 'long' });
+                    return day.charAt(0).toUpperCase();
+                },
+                fixedWeekCount: false,
+                showNonCurrentDates: false
+            }
+        },
+        selectable: true,
+        select: function(info) {
+            pendingStartDate = info.startStr;
+            pendingEndDate = info.endStr ? new Date(info.end).toISOString().split('T')[0] : pendingStartDate;
+
+            $('#availabilityModal').modal('show');
+        },
+        initialDate: new Date(),
+        locale: 'fr',
+        events: async function(fetchInfo, successCallback, failureCallback) {
+            try {
+                const [reservationsResponse, unavailabilityResponse] = await Promise.all([
+                    fetch(`/api/reservations?carId=${carId}&status=confirmed,finished,now`),
+                    fetch(`/api/unavailable-dates?carId=${carId}`)
+                ]);
+
+                if (!reservationsResponse.ok || !unavailabilityResponse.ok) {
+                    throw new Error("Erreur lors de la récupération des données");
+                }
+
+                const reservations = await reservationsResponse.json();
+                const unavailableDates = await unavailabilityResponse.json();
+
+                const reservationEvents = reservations.map(item => ({
+                    id: item.id,
+                    title: 'Réservé',
+                    start: item.debutLocation,
+                    end: new Date(new Date(item.finLocation).setDate(new Date(item.finLocation).getDate() + 1)).toISOString().split('T')[0],
+                    rendering: 'background',
+                    backgroundColor: '#00BFFF',
+                    borderColor: '#00BFFF',
+                    textColor: 'white',
+                    editable: false
+                }));
+
+                const unavailableEvents = unavailableDates.map(item => ({
+                    id: item.id,
+                    title: 'Indisponible',
+                    start: item.startDate,
+                    end: new Date(new Date(item.endDate).setDate(new Date(item.endDate).getDate() + 1)).toISOString().split('T')[0],
+                    rendering: 'background',
+                    backgroundColor: 'lightgray',
+                    borderColor: 'lightgray',
+                    textColor: 'red',
+                    classNames: ['unavailable'],
+                    editable: true
+                }));
+
+                successCallback([...reservationEvents, ...unavailableEvents]);
+            } catch (error) {
+                console.error('Erreur:', error);
+                failureCallback(error);
+            }
+        },
+
+        eventDidMount: function(info) {
+            if (info.event.classNames.includes('unavailable')) {
+                info.el.classList.add('unavailable-event');
+            }
+            if (info.event.backgroundColor === '#00BFFF') {
+                info.el.classList.add('reservation-event');
+            }
+        }
+    });
+
+    calendar.setOption('height', '700');
+    calendar.render();
+
+    // Vérifier si les dates se chevauchent
+    function datesOverlap(start1, end1, start2, end2) {
+        return (new Date(start1) <= new Date(end2)) && (new Date(start2) <= new Date(end1));
+    }
+
+    // Ajouter une indisponibilité
+    document.getElementById('modal-mark-unavailable').addEventListener('click', function() {
+        if (!pendingStartDate || !pendingEndDate) {
+            console.error("Aucune date sélectionnée pour l'indisponibilité !");
+            return;
+        }
+
+        const events = calendar.getEvents();
+        const overlap = events.some(event =>
+            event.classNames.includes('unavailable') &&
+            datesOverlap(event.startStr, event.endStr, pendingStartDate, pendingEndDate)
+        );
+
+        if (!overlap) {
+            unavailableRanges.push({ start: pendingStartDate, end: pendingEndDate });
+            calendar.addEvent({
+                title: 'Indisponible',
+                start: pendingStartDate,
+                end: new Date(new Date(pendingEndDate).setDate(new Date(pendingEndDate).getDate() + 1)).toISOString().split('T')[0],
+                rendering: 'background',
+                backgroundColor: 'repeating-linear-gradient(-45deg, white, white 5px, lightgray 5px, lightgray 10px)',
+                borderColor: 'lightgray',
+                classNames: ['unavailable'],
+                textColor: 'red'
+            });
+
+            $('#availabilityModal').modal('hide');
+        } else {
+            alert("La plage de dates sélectionnée chevauche une autre plage indisponible.");
+        }
+    });
+
+    // Supprimer une indisponibilité (remettre disponible)
+    document.getElementById('modal-mark-available').addEventListener('click', function() {
+        if (!pendingStartDate || !pendingEndDate) {
+            console.error("Aucune date sélectionnée pour la disponibilité !");
+            return;
+        }
+
+        const events = calendar.getEvents();
+        let eventRemoved = false;
+
+        // Vérifier et supprimer l'événement si le start et end correspondent ou chevauchent la plage
+        events.forEach(function(event) {
+            if (event.classNames.includes('unavailable') && datesOverlap(event.startStr, event.endStr, pendingStartDate, pendingEndDate)) {
+                event.remove();  // Supprimer l'événement du calendrier
+                eventRemoved = true;
+            }
+        });
+
+        if (eventRemoved) {
+            // Ajouter cette plage dans les "disponibilités" pour suppression dans la base de données
+            availableRanges.push({ start: pendingStartDate, end: pendingEndDate });
+        } else {
+            console.log("Aucune indisponibilité trouvée pour ces dates.");
+        }
+
+        $('#availabilityModal').modal('hide');
+    });
+
+    // Soumission du formulaire
+    window.onload = function() {
+        const form = document.getElementById('availability-form');
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const unavailableStartDates = unavailableRanges.map(range => range.start);
+                const unavailableEndDates = unavailableRanges.map(range => range.end);
+                const availableStartDates = availableRanges.map(range => range.start);
+                const availableEndDates = availableRanges.map(range => range.end);
+
+                console.log("Unavailable Start Dates: ", unavailableStartDates);
+                console.log("Unavailable End Dates: ", unavailableEndDates);
+                console.log("Available Start Dates: ", availableStartDates);
+                console.log("Available End Dates: ", availableEndDates);
+
+                // Remplir les champs cachés
+                document.querySelector('input[name="unavailableStartDates"]').value = unavailableStartDates.join(',');
+                document.querySelector('input[name="unavailableEndDates"]').value = unavailableEndDates.join(',');
+                document.querySelector('input[name="availableStartDates"]').value = availableStartDates.join(',');
+                document.querySelector('input[name="availableEndDates"]').value = availableEndDates.join(',');
+
+                form.submit();
+            });
+        }
+    };
+});
+
+</script>

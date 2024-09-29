@@ -39,6 +39,10 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
     // Récupérer les réclamations en tant que propriétaire
     @Query("SELECT c FROM Claim c WHERE c.reservation.car.user.id = :ownerId AND c.claimantRole = 'PROPRIETAIRE' AND c.status = :status")
     List<Claim> findByOwnerAndStatus(@Param("ownerId") Long ownerId, @Param("status") String status);
+
+    boolean existsByReservationId(Long reservationId);
+
+
 }
     // Récupérer les réclamations en tant que locataire
 

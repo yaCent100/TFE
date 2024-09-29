@@ -36,48 +36,102 @@
 </head>
 <body>
 <div layout:fragment="content">
-  <div class="container">
-    <h2 class="my-4">Tableau de Bord des Réservations</h2>
+  <div th:insert="~{admin/fragment-header :: admin-header-reservations}"></div>
 
-    <!-- Section des KPI -->
-    <div class="row">
-      <div class="col-md-2">
-        <div class="kpi-card">
-          <div class="kpi-title">Total des Réservations</div>
-          <div class="kpi-value" id="kpi-total-reservations">0</div>
+  <div class="mx-5 my-5">
+
+    <div class="row mb-5">
+      <!-- Total des Réservations -->
+      <div class="col-12 col-md-2">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Total des Réservations</h5>
+              <span class="icon text-success">
+                        <i class="fas fa-arrow-up"></i>
+                    </span>
+            </div>
+            <h2 id="kpi-total-reservations" class="mb-0 fw-bold text-center">538</h2>
+          </div>
         </div>
       </div>
-      <div class="col-md-2">
-        <div class="kpi-card">
-          <div class="kpi-title">Réservations Confirmées</div>
-          <div class="kpi-value" id="kpi-confirmed-reservations">0</div>
+
+      <!-- Réservations Confirmées -->
+      <div class="col-12 col-md-2">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Réservations Confirmées</h5>
+              <span class="icon text-success">
+                        <i class="fas fa-check-circle"></i>
+                    </span>
+            </div>
+            <h2 id="kpi-confirmed-reservations" class="mb-0 fw-bold text-center">28</h2>
+          </div>
         </div>
       </div>
-      <div class="col-md-2">
-        <div class="kpi-card">
-          <div class="kpi-title">Réservations Annulées</div>
-          <div class="kpi-value" id="kpi-cancelled-reservations">0</div>
+
+      <!-- Réservations Annulées -->
+      <div class="col-12 col-md-2">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Réservations Annulées</h5>
+              <span class="icon text-danger">
+                        <i class="fas fa-times-circle"></i>
+                    </span>
+            </div>
+            <h2 id="kpi-cancelled-reservations" class="mb-0 fw-bold text-center">95</h2>
+          </div>
         </div>
       </div>
-      <div class="col-md-2">
-        <div class="kpi-card">
-          <div class="kpi-title">Réservations En Attente</div>
-          <div class="kpi-value" id="kpi-pending-reservations">0</div>
+
+      <!-- Réservations En Attente -->
+      <div class="col-12 col-md-2">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Réservations En Attente</h5>
+              <span class="icon text-warning">
+                        <i class="fas fa-hourglass-half"></i>
+                    </span>
+            </div>
+            <h2 id="kpi-pending-reservations" class="mb-0 fw-bold text-center">4</h2>
+          </div>
         </div>
       </div>
-      <div class="col-md-2">
-        <div class="kpi-card">
-          <div class="kpi-title">Réservations En Cours</div>
-          <div class="kpi-value" id="kpi-now-reservations">0</div>
+
+      <!-- Réservations En Cours -->
+      <div class="col-12 col-md-2">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Réservations En Cours</h5>
+              <span class="icon text-info">
+                        <i class="fas fa-sync-alt"></i>
+                    </span>
+            </div>
+            <h2 id="kpi-now-reservations" class="mb-0 fw-bold text-center">38</h2>
+          </div>
         </div>
       </div>
-      <div class="col-md-2">
-        <div class="kpi-card">
-          <div class="kpi-title">Réservations Terminées</div>
-          <div class="kpi-value" id="kpi-finished-reservations">0</div>
+
+      <!-- Réservations Terminées -->
+      <div class="col-12 col-md-2">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Réservations Terminées</h5>
+              <span class="icon text-primary">
+                        <i class="fas fa-check"></i>
+                    </span>
+            </div>
+            <h2 id="kpi-finished-reservations" class="mb-0 fw-bold text-center">349</h2>
+          </div>
         </div>
       </div>
     </div>
+
 
     <!-- Graphiques -->
     <div class="row chart-container">
@@ -85,7 +139,7 @@
         <canvas id="reservationsStatusChart"></canvas>
       </div>
       <div class="col-md-6">
-        <canvas id="reservationsPieChart"></canvas>
+        <canvas id="reservationsChartReservation"></canvas>
       </div>
     </div>
 
@@ -108,8 +162,8 @@
     <div class="row mt-4">
       <div class="col-12">
         <button class="btn btn-danger mb-3" id="delete-selected">Supprimer Sélectionnées</button>
-        <table class="display" id="all-reservations-table">
-          <thead>
+        <table class="display nowrap table table-striped table-hover text-center" id="all-reservations-table">
+          <thead class="custom-thead">
           <tr>
             <th><input type="checkbox" id="select-all"></th>
             <th>Nom</th>

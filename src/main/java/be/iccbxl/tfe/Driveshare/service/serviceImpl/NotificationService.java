@@ -2,7 +2,6 @@ package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
 import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
 import be.iccbxl.tfe.Driveshare.DTO.NotificationDTO;
-import be.iccbxl.tfe.Driveshare.DTO.ReservationDTO;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.repository.NotificationRepository;
 import be.iccbxl.tfe.Driveshare.service.NotificationServiceI;
@@ -84,23 +83,28 @@ public class NotificationService implements NotificationServiceI {
 
 
     public List<Notification> filterNotifications(boolean nouveauxMessages, boolean tousMessages, boolean notifications) {
-        // Implémentez la logique pour filtrer les notifications en fonction des paramètres
         if (nouveauxMessages) {
-            return getUnreadNotifications();
+            // Retourner uniquement les notifications non lues
+            return notificationRepository.findByIsReadFalse();
         } else if (tousMessages) {
+            // Retourner toutes les notifications
             return notificationRepository.findAll();
         } else if (notifications) {
-            // Suppose that `Notification` has a type or category indicating it's a notification.
+            // Retourner les notifications qui ont un type spécifique, supposons "notification"
             return notificationRepository.findByType("notification");
         } else {
-            return List.of(); // Return an empty list if no filters are selected
+            // Si aucun filtre n'est sélectionné, retourner une liste vide
+            return List.of();
         }
     }
 
 
-    public List<Notification> getUnreadNotifications() {
-        // Implémentez la logique pour récupérer les notifications non lues
-        return notificationRepository.findByIsReadFalse();
+
+    public List<Notification> getUnreadNotifications(User currentUser) {
+        // Récupère toutes les notifications non lues et filtre celles qui sont destinées à l'utilisateur actuel
+        return notificationRepository.findByIsReadFalse().stream()
+                .filter(notification -> notification.getToUser().equals(currentUser))
+                .collect(Collectors.toList());
     }
 
     public List<Notification> getReadNotifications() {
@@ -109,54 +113,98 @@ public class NotificationService implements NotificationServiceI {
     }
 
 
+
+
     public String renderNotificationsHtml(List<Notification> notifications, User currentUser) {
         StringBuilder html = new StringBuilder();
 
+        // Si aucune notification n'est trouvée
+        if (notifications.isEmpty()) {
+            // Ajouter un message d'information avec une image de notification barrée
+            html.append("<div class='d-flex flex-column align-items-center justify-content-center' style='min-height: 200px;'>")
+                    .append("<img src='/icons/no-notifications.png' alt='Pas de notifications' class='img-fluid' style='max-width: 150px;'>")
+                    .append("<h5 class='mt-3 text-muted'>Aucune notification trouvée</h5>")
+                    .append("</div>");
+            return html.toString();  // Retourner ici car il n'y a pas de notifications à afficher
+        }
+
+        // Formatter pour la date au format "dd/MM/yyyy 'à' HH'h'mm"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy 'à' HH'h'mm");
+
         for (Notification notification : notifications) {
             boolean isReceived = notification.getToUser().equals(currentUser);
+            Car car = notification.getCar(); // Récupérer la voiture liée à la notification
+            User fromUser = notification.getFromUser(); // Utilisateur qui a envoyé la notification
 
-            html.append("<div class='card ")
-                    .append(notification.getIsRead() ? "read" : "unread")
-                    .append(" mb-3'>")
-                    .append("<div class='card-body'>");
+            // Carte de notification
+            html.append("<div class='card card-reservation-profil mb-3'>")
+                    .append("<div class='row g-0'>");
 
-            if (isReceived) {
-                html.append("<div class='d-flex align-items-center mb-3'>")
-                        .append("<img src='/uploads/profil/")
-                        .append(notification.getFromUser().getPhotoUrl())
-                        .append("' alt='Profile' class='rounded-circle me-2' style='width: 40px; height: 40px;'>")
-                        .append("<div>")
-                        .append("<h5 class='card-title mb-0'>")
-                        .append(notification.getFromUser().getFirstName()).append(" ").append(notification.getFromUser().getLastName())
-                        .append("</h5>")
-                        .append("<small class='text-muted'>").append(notification.getSentAt()).append("</small>")
-                        .append("</div>")
-                        .append("</div>")
-                        .append("<p class='card-text'>").append(notification.getMessage()).append("</p>")
-                        .append("<button class='btn btn-primary mt-2' data-bs-toggle='modal' data-bs-target='#replyModal")
-                        .append(notification.getId()).append("'>Répondre</button>");
+            // Colonne principale (col-lg-9) avec image, marque de voiture, expéditeur, message
+            html.append("<div class='col-lg-9'><div class='card-body'>")
+                    .append("<div class='d-flex align-items-center'>");
+
+            // Image de la voiture en petit, format "rounded-circle"
+            html.append("<img src='/uploads/photo-car/")
+                    .append(car.getPhotos().isEmpty() ? "default-car.jpg" : car.getPhotos().get(0).getUrl()) // Image de la voiture ou image par défaut
+                    .append("' class='img-fluid rounded-circle' alt='").append(car.getBrand()).append(" ").append(car.getModel()).append("' style='width: 50px; height: 50px; margin-right: 10px;'>");
+
+            // Infos sur la voiture et l'utilisateur qui envoie
+            html.append("<div>")
+                    .append("<span class='fw-bold'>").append(car.getBrand()).append(" ").append(car.getModel()).append("</span><br>")
+                    .append("<span class='text-muted fs-13'>Envoyé par : ").append(fromUser.getFirstName()).append(" ").append(fromUser.getLastName()).append("</span>")
+                    .append("</div>")
+                    .append("</div>") // Fin du d-flex align-items-center
+
+                    // Message de la notification
+                    .append("<div class='mt-2'>")
+                    .append("<span class='card-text fs-14'>").append(notification.getMessage()).append("</span>")
+                    .append("</div>")
+                    .append("</div></div>"); // Fin du col-lg-9
+
+            // Colonne date + bouton (col-lg-3)
+            html.append("<div class='col-lg-3 d-flex flex-column justify-content-between text-end'>");
+
+            // Formater la date de la notification
+            String formattedDate = notification.getSentAt().format(formatter);
+
+            // Date en haut
+            html.append("<div>")
+                    .append("<span class='text-muted fs-13'>Envoyé le: ").append(formattedDate).append("</span>")
+                    .append("</div>");
+
+            // Si le message a été lu, afficher "Message lu". Sinon, afficher le bouton "Répondre"
+            if (notification.getIsRead()) {
+                html.append("<div class='mt-2'>")
+                        .append("<span class='text-muted fs-13'>Message lu</span>")
+                        .append("</div>");
             } else {
-                html.append("<div class='d-flex align-items-center mb-3'>")
-                        .append("<img src='/uploads/profil/")
-                        .append(notification.getToUser().getPhotoUrl())
-                        .append("' alt='Profile' class='rounded-circle me-2' style='width: 40px; height: 40px;'>")
-                        .append("<div>")
-                        .append("<h5 class='card-title mb-0'>")
-                        .append(notification.getToUser().getFirstName()).append(" ").append(notification.getToUser().getLastName())
-                        .append("</h5>")
-                        .append("<small class='text-muted'>").append(notification.getSentAt()).append("</small>")
-                        .append("</div>")
-                        .append("</div>")
-                        .append("<p class='card-text'>").append(notification.getMessage()).append("</p>");
+                html.append("<div class='mt-2'>")
+                        .append("<button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#replyModal")
+                        .append(notification.getId()).append("'>Répondre</button>")
+                        .append("</div>");
             }
 
-            html.append("</div></div>");
+            html.append("</div></div></div>"); // Fin du col-lg-3 et de la carte
+
+            // Modal HTML pour la réponse
+            html.append("<div class='modal fade' id='replyModal").append(notification.getId()).append("' tabindex='-1' aria-labelledby='replyModalLabel").append(notification.getId()).append("' aria-hidden='true'>")
+                    .append("<div class='modal-dialog'><div class='modal-content'><div class='modal-header'>")
+                    .append("<h5 class='modal-title' id='replyModalLabel").append(notification.getId()).append("'>Répondre à la notification</h5>")
+                    .append("<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>")
+                    .append("</div>")
+                    .append("<div class='modal-body'>")
+                    .append("<p>").append(notification.getMessage()).append("</p>")
+                    .append("<textarea id='replyMessage").append(notification.getId()).append("' class='form-control' rows='4' placeholder='Tapez votre réponse...'></textarea>")
+                    .append("</div>")
+                    .append("<div class='modal-footer'>")
+                    .append("<button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Fermer</button>")
+                    .append("<button type='button' class='btn btn-primary' onclick='sendReply(").append(notification.getId()).append(")'>Envoyer</button>")
+                    .append("</div></div></div></div>");
         }
 
         return html.toString();
     }
-
-
 
 
 

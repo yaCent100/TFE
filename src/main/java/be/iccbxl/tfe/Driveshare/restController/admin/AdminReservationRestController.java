@@ -70,5 +70,14 @@ public class AdminReservationRestController {
         return reservationService.getReservationsByUser(user);
     }
 
+    @GetMapping("/api/admin/reservations-confirmed-by-month")
+    public List<Map<String, Object>> getConfirmedReservationsByMonth() {
+        // Appeler le service pour obtenir les réservations confirmées des 12 derniers mois
+        return reservationService.getConfirmedReservationsByMonth();
+    }
+
+
+
+
 
 }

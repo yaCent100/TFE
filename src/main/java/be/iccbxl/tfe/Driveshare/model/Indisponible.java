@@ -18,7 +18,7 @@ public class Indisponible {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "car_id")  // Clé étrangère vers Car
+    @JoinColumn(name = "car_id")
     private Car car;
 
     @Column(name = "start_date", nullable = false)

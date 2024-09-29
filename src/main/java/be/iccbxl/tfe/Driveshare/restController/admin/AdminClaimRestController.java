@@ -3,10 +3,13 @@ package be.iccbxl.tfe.Driveshare.restController.admin;
 
 import be.iccbxl.tfe.Driveshare.DTO.ClaimDTO;
 import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
+import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Claim;
+import be.iccbxl.tfe.Driveshare.model.Reservation;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.ClaimService;
+import be.iccbxl.tfe.Driveshare.service.serviceImpl.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,9 @@ public class AdminClaimRestController {
 
     @Autowired
     private ClaimService claimService;
+
+    @Autowired
+    private EmailService emailService;
 
     // Récupérer toutes les réclamations
     // Obtenir toutes les réclamations
@@ -45,10 +51,47 @@ public class AdminClaimRestController {
     // Endpoint pour répondre à une réclamation
     @PostMapping("/response/{id}")
     public ResponseEntity<String> addResponseToClaim(@PathVariable Long id, @RequestBody Map<String, String> requestBody) {
-        String message = requestBody.get("message");
-        claimService.addResponseToClaim(id, message);
-        return ResponseEntity.ok("Réponse envoyée");
+        // Récupérer le message de la réponse de l'administrateur
+        String adminMessage = requestBody.get("message");
+
+        // Ajouter la réponse à la réclamation
+        claimService.addResponseToClaim(id, adminMessage);
+
+        // Récupérer la réclamation par son ID
+        Claim claim = claimService.getById(id)
+                .orElseThrow(() -> new RuntimeException("Réclamation non trouvée"));
+
+        // Récupérer la réservation liée à la réclamation
+        Reservation reservation = claim.getReservation();
+        if (reservation != null) {
+            // Récupérer les informations sur la voiture et l'utilisateur
+            Car car = reservation.getCar();
+            User user = reservation.getUser(); // L'utilisateur qui a fait la réservation
+
+            if (car != null && user != null) {
+                String carBrand = car.getBrand();
+                String carModel = car.getModel();
+                Long reservationId = reservation.getId();
+                String userEmail = user.getEmail(); // E-mail de l'utilisateur
+
+                // Préparer l'objet et le corps de l'e-mail
+                String subject = "Réponse à votre réclamation pour la réservation n°" + reservationId + " (" + carBrand + " " + carModel + ")";
+                String body = "Bonjour " + user.getFirstName() + ",\n\n"
+                        + "L'administrateur a répondu à votre réclamation concernant la voiture " + carBrand + " " + carModel
+                        + " pour la réservation n°" + reservationId + ".\n\n"
+                        + "Réclamation initiale : " + claim.getMessage() + "\n\n"
+                        + "Réponse de l'administrateur : " + adminMessage + "\n\n"
+                        + "Cordialement,\nL'équipe administrative";
+
+                // Envoyer l'e-mail à l'utilisateur
+                emailService.sendNotificationEmail(new String[]{userEmail}, subject, body);
+            }
+        }
+
+        // Retourner une réponse JSON
+        return ResponseEntity.ok("Réponse envoyée et notification e-mail envoyée à l'utilisateur.");
     }
+
 
     @GetMapping("/reservation/{reservationId}")
     public ResponseEntity<List<ClaimDTO>> getClaimsByReservation(@PathVariable Long reservationId) {
@@ -60,11 +103,19 @@ public class AdminClaimRestController {
     @GetMapping("/kpi")
     public ResponseEntity<Map<String, Long>> getClaimsKpi() {
         Map<String, Long> kpi = new HashMap<>();
-        kpi.put("totalClaims", claimService.countAllClaims());
-        kpi.put("resolvedClaims", claimService.countResolvedClaims());
-        kpi.put("pendingClaims", claimService.countPendingClaims());
+        long totalClaims = claimService.countAllClaims();
+        long resolvedClaims = claimService.countResolvedClaims();
+        long inProgressClaims = claimService.countInProgressClaims(); // Ajout pour réclamations en cours
+        long pendingClaims = claimService.countPendingClaims();
+
+        kpi.put("totalClaims", totalClaims);
+        kpi.put("resolvedClaims", resolvedClaims);
+        kpi.put("inProgressClaims", inProgressClaims);
+        kpi.put("pendingClaims", pendingClaims);
+
         return ResponseEntity.ok(kpi);
     }
+
 
     @GetMapping("/monthly")
     public ResponseEntity<Map<String, Long>> getMonthlyClaims() {
@@ -93,7 +144,7 @@ public class AdminClaimRestController {
     }
 
 
-    @PostMapping("/close/{id}")
+    @PostMapping("/admin/close/{id}")
     public ResponseEntity<String> closeClaim(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetail userDetails) {
         // Récupérer l'utilisateur connecté
         User currentUser = userDetails.getUser();
@@ -104,14 +155,58 @@ public class AdminClaimRestController {
         }
 
         // Récupérer la réclamation par son ID
-       Claim claim = claimService.getById(id).orElseThrow();
+        Claim claim = claimService.getById(id)
+                .orElseThrow(() -> new RuntimeException("Réclamation non trouvée"));
 
         // Clôturer la réclamation
-        claim.setStatus("TERMINE");
+        claim.setStatus("FINISHED");
         claimService.save(claim);
 
-        return ResponseEntity.ok("Réclamation clôturée par l'administrateur.");
+        // Récupérer les détails de la réservation liée
+        Reservation reservation = claim.getReservation();
+        if (reservation != null) {
+            // Récupérer les informations sur la voiture
+            Car car = reservation.getCar();
+            String carBrand = car.getBrand();
+            String carModel = car.getModel();
+            Long reservationId = reservation.getId();
+
+            // Vérifier le rôle du plaignant (propriétaire ou locataire)
+            String claimantRole = claim.getClaimantRole();
+            User userToNotify;
+
+            if ("PROPRIETAIRE".equalsIgnoreCase(claimantRole)) {
+                // Si le plaignant est le propriétaire, notifier le locataire
+                userToNotify = reservation.getUser();
+            } else if ("LOCATAIRE".equalsIgnoreCase(claimantRole)) {
+                // Si le plaignant est le locataire, notifier le propriétaire
+                userToNotify = car.getUser();
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Rôle de plaignant invalide.");
+            }
+
+            if (userToNotify != null) {
+                String userEmail = userToNotify.getEmail();
+                String userName = userToNotify.getFirstName();
+
+                // Préparer l'objet et le corps de l'e-mail
+                String subject = "Réclamation clôturée pour la réservation n°" + reservationId + " (" + carBrand + " " + carModel + ")";
+                String body = "Bonjour " + userName + ",\n\n"
+                        + "La réclamation concernant la voiture " + carBrand + " " + carModel
+                        + " pour la réservation n°" + reservationId + " a été clôturée par l'administrateur.\n\n"
+                        + "Réclamation initiale : " + claim.getMessage() + "\n\n"
+                        + "Merci pour votre compréhension.\n"
+                        + "Cordialement,\nL'équipe administrative";
+
+                // Envoyer l'e-mail
+                emailService.sendNotificationEmail(new String[]{userEmail}, subject, body);
+            }
+        }
+
+        return ResponseEntity.ok("Réclamation clôturée par l'administrateur et notification e-mail envoyée.");
     }
+
+
 
 
 

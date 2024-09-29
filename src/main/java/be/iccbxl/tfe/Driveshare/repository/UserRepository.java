@@ -43,8 +43,10 @@ public interface UserRepository extends CrudRepository<User, Long> {
     int countNewRegistrationsSince(@Param("targetDate") LocalDateTime targetDate);
 
 
-    @Query("SELECT COUNT(DISTINCT u) FROM User u JOIN u.ownedCars c")
+    @Query("SELECT COUNT(DISTINCT u) FROM User u JOIN u.ownedCars c WHERE c IS NOT NULL")
     int countUsersWithRegisteredCars();
+
+    boolean existsByEmail(String email); // Cette méthode vérifie si l'email existe
 
 
 }

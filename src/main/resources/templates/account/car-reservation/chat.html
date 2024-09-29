@@ -28,9 +28,9 @@
     .star-rating label:hover ~ label {
         color: #ffc107; /* Couleur dorée pour les étoiles survolées */
     }
+
 .chat-message.self {
     text-align: right;
-    background-color: #d1ffd1; /* Couleur de fond pour l'utilisateur actuel */
     border-radius: 10px 10px 0 10px;
     margin: 5px 0;
     display: inline-block;
@@ -39,7 +39,6 @@
 
 .chat-message.other {
     text-align: left;
-    background-color: #f1f1f1; /* Couleur de fond pour l'autre utilisateur */
     border-radius: 10px 10px 10px 0;
     margin: 5px 0;
     display: inline-block;
@@ -52,12 +51,27 @@
     margin: 0 10px;
 }
 
-.message-content {
+.message-container.other-content {
     display: inline-block;
     padding: 10px;
     border-radius: 5px;
-    background-color: #ffffff;
+    background-color: ##DFE7EC;
 }
+
+.self-content {
+    display: inline-block;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    border: 1px solid #DFE7EC;
+}
+
+.other-content{
+    display: inline-block;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #DFE7EC;
+    }
 
 .message-text {
     margin-bottom: 5px;
@@ -66,75 +80,20 @@
 .message-date {
     font-size: 0.8rem;
     color: #888;
-    margin-top: 5px;
+    margin-bottom: 5px;
     text-align: right;
 }
 
+.message-self-container{
+  text-align: right;
+}
 
-
-
+.message-other-container{
+  text-align: left;
+}
 
   </style>
-  <script th:inline="javascript">
-      document.addEventListener('DOMContentLoaded', function() {
-          var reservationStartDate = document.getElementById("reservationStartDate").value;
-          var reservationEndDate = document.getElementById("reservationEndDate").value;
 
-          console.log("Initialized variables:");
-          console.log("reservationStartDate: ", reservationStartDate);
-          console.log("reservationEndDate: ", reservationEndDate);
-
-          function parseDateString(dateStr) {
-              const months = {
-                  'Jan.': '01', 'Fév.': '02', 'Mar.': '03', 'Avr.': '04', 'Mai': '05', 'Juin': '06',
-                  'Juil.': '07', 'Aoû.': '08', 'Sep.': '09', 'Oct.': '10', 'Nov.': '11', 'Déc.': '12'
-              };
-
-              const dateParts = dateStr.split(' ');
-              const day = dateParts[1];
-              const month = months[dateParts[2]];
-              const year = dateParts[3];
-              if (!month) {
-                  console.error('Le mois est introuvable pour la date:', dateStr);
-                  return null;
-              }
-              return `${year}-${month}-${day.padStart(2, '0')}`;
-          }
-
-          if (reservationStartDate && reservationEndDate) {
-              reservationStartDate = parseDateString(reservationStartDate);
-              reservationEndDate = parseDateString(reservationEndDate);
-          } else {
-              console.error('Les dates de début et de fin sont nécessaires.');
-          }
-
-          console.log("reservationStartDate: ", reservationStartDate);
-          console.log("reservationEndDate: ", reservationEndDate);
-
-      function formatDateString(dateStr) {
-          const dateObj = new Date(dateStr);
-          return dateObj.toISOString().split('T')[0]; // Formate en yyyy-MM-dd
-      }
-
-    window.redirectToPayment = function() {
-        const reservationId = document.getElementById('reservationId').value;
-        let reservationStartDate = document.getElementById('reservationStartDate').value;
-        let reservationEndDate = document.getElementById('reservationEndDate').value;
-
-        if (!reservationStartDate || !reservationEndDate) {
-            alert('Les dates de début et de fin sont incorrectes.');
-            return;
-        }
-
-        // Formate les dates
-        reservationStartDate = formatDateString(reservationStartDate);
-        reservationEndDate = formatDateString(reservationEndDate);
-
-        const url = `/reservation/payment/${reservationId}?dateDebut=${encodeURIComponent(reservationStartDate)}&dateFin=${encodeURIComponent(reservationEndDate)}`;
-        window.location.href = url;
-    }
-      });
-  </script>
 </head>
 <body>
 <div layout:fragment="content" class="container mt-5 mb-5">
@@ -143,22 +102,74 @@
       <div class="row">
         <div class="col-lg-12 mb-4">
           <div class="text-center fw-bold">
-            <h1 th:text="'Réservation n° ' + ${reservationId}"></h1>
+            <h1 class="bold" th:text="'Réservation n° ' + ${reservationId}"></h1>
           </div>
         </div>
         <div class="col-lg-8 col-sm-12">
+
           <div class="text-center statut-box">
-            <h3 th:text="'Le statut de la réservation est : ' + ${reservationStatus}"></h3>
+            <h3 class="bold">
+              <!-- Statut CONFIRMED -->
+              <span th:if="${reservationStatus == 'CONFIRMED'}">
+            <span th:if="${isOwner}">La réservation a été confirmée</span>
+            <span th:unless="${isOwner}">Vous avez confirmé la réservation</span>
+        </span>
+
+              <!-- Statut CANCELLED -->
+              <span th:if="${reservationStatus == 'CANCELLED'}">
+            <span th:if="${isOwner}">La réservation a été annulée</span>
+            <span th:unless="${isOwner}">Vous avez annulé la réservation</span>
+        </span>
+
+              <!-- Statut PAYMENT_PENDING -->
+              <span th:if="${reservationStatus == 'PAYMENT_PENDING'}">
+            <span th:if="${isOwner}">En attente de paiement pour la réservation</span>
+            <span th:unless="${isOwner}">Veuillez effectuer le paiement pour confirmer la réservation</span>
+        </span>
+
+              <!-- Statut FINISHED -->
+              <span th:if="${reservationStatus == 'FINISHED'}">
+            <span th:if="${isOwner}">La réservation est terminée</span>
+            <span th:unless="${isOwner}">Vous avez terminé la réservation</span>
+        </span>
+
+              <!-- Statut REJECTED -->
+              <span th:if="${reservationStatus == 'REJECTED'}">
+            <span th:if="${isOwner}">Vous avez refusé la réservation</span>
+            <span th:unless="${isOwner}">Votre réservation a été refusée par le propriétaire</span>
+        </span>
+
+              <!-- Statut EXPIRED -->
+              <span th:if="${reservationStatus == 'EXPIRED'}">
+            <span th:if="${isOwner}">La réservation a expiré</span>
+            <span th:unless="${isOwner}">Votre réservation a expiré</span>
+        </span>
+
+              <!-- Statut NOW -->
+              <span th:if="${reservationStatus == 'NOW'}">
+            <span th:if="${isOwner}">La réservation est en cours</span>
+            <span th:unless="${isOwner}">Votre réservation est en cours</span>
+        </span>
+
+              <!-- Statut RESPONSE_PENDING -->
+              <span th:if="${reservationStatus == 'RESPONSE_PENDING'}">
+            <span th:if="${isOwner}">Une réponse à la demande de réservation est attendue</span>
+            <span th:unless="${isOwner}">Votre demande de réservation est en attente de réponse</span>
+        </span>
+            </h3>
           </div>
+
+
+
           <!-- Zone de discussion -->
           <div class="discussion">
             <div class="row mt-3">
-              <div class="col-lg-12 d-flex align-items-center">
+              <div class="col-lg-12 d-flex align-items-center mb-3">
                 <img src="/icones/chat-reservation.png" alt="Profile Picture">
                 <h3>Espace de discussion</h3>
               </div>
               <div class="col-lg-12 chat-area">
-                <!-- Zone de chat entre le propriétaire et le locataire -->
+                <!-- Zone de chat -->
               </div>
             </div>
             <div class="row chat-input m-3">
@@ -171,16 +182,18 @@
               </div>
               <div class="chat-input-container">
                 <textarea id="message" class="form-control full-width" rows="3" placeholder="Écrivez votre message ici..."></textarea>
-                <button id="send-button" class="btn btn-primary w-100" onclick="sendMessage(event)">Envoyer</button>
+                <div class="text-center" style="margin-top:20px">
+                  <button id="send-button" class="btn btn-primary enregistrer w-50" onclick="sendMessage(event)" >Envoyer</button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Bouton de réclamation -->
-          <div class="mt-4">
-            <button id="claim-button" class="btn btn-warning w-100" onclick="openClaimModal()">Faire une réclamation</button>
-          </div>
+
+
+
         </div>
+
         <div class="col-lg-4 col-sm-12">
           <div class="car-reservation-card">
             <div>
@@ -188,81 +201,117 @@
             </div>
             <div class="car-reservation-body">
               <p th:text="${carBrand}+' '+${carModel}+' - ' +${carFuel}"></p>
-              <hr class="bg-light fw-bold">
+              <hr class="fw-bold" style="background-color:#DFE7EC;">
               <p class="date-container">
                 <span class="fw-bold" th:text="${reservationStartDate}"></span>
                 <img src="/images/arrow-reservation.png" alt="arrow" style="width:16px;height:16px;">
                 <span class="fw-bold" th:text="${reservationEndDate}"></span>
               </p>
+
               <hr class="bg-light fw-bold">
               <p th:text="${carAddress}"></p>
               <hr class="bg-light fw-bold">
             </div>
           </div>
-          <div>
-            <!-- Vérifiez si c'est le propriétaire -->
-            <p th:if="${isOwner}" class="fw-bold">Propriétaire</p>
 
-            <!-- Sinon, affichez Locataire -->
-            <p th:unless="${isOwner}" class="fw-bold">Locataire</p>
-          </div>
-          <!-- Bouton pour télécharger le contrat de location -->
-          <div class="mt-4" th:if="${reservationStatus == 'CONFIRMED'}">
-            <p>Détails de la location</p>
-            <div>
-              <table class="table table-striped">
-                <tbody>
-                <tr>
-                  <td>Durée de la location</td>
-                  <td th:text="${duration} + ' jours'"></td>
-                </tr>
-                <tr>
-                  <td>Prix Total</td>
-                  <td th:text="${totalPrice} + ' €'"></td>
-                </tr>
-                <tr>
-                  <td>Reste à payer</td>
-                  <td th:text="'0 €'"></td>
-                </tr>
-                </tbody>
-              </table>
+          <!-- Afficher les détails du propriétaire ou locataire -->
+          <div class="profile-info align-items-center mt-4 mb-4">
+            <div class="mb-2">
+              <span th:text="${isOwner ? 'Le Locataire' : 'Le Propriétaire'}" class="bold"></span> <!-- Inverser l'affichage -->
             </div>
-            <!-- Existing button for cancelling the reservation -->
-            <button id="cancel-button" class="btn btn-danger w-100" th:onclick="'cancelReservation(event, ' + ${reservationId} + ')'">Annuler la réservation</button>
+            <div class="bg-white" style="border-radius:8px; padding: 15px;">
+              <div class="bold d-flex align-items-center">
+                <img th:src="@{'/uploads/profil/' + ${profileUser.photoUrl}}"
+                     alt="Photo de profil"
+                     class="rounded-circle me-3"
+                     style="width: 50px; height: 50px;">
 
-            <!-- New button for downloading the contract -->
-            <a href="#" class="btn btn-primary w-100 mt-2" th:href="'/api/download-contract/' + ${reservationId}">Télécharger le contrat de location</a>
-          </div>
-
-          <!-- Bouton de paiement -->
-          <div class="mt-4" th:if="${reservationStatus == 'PAYMENT_PENDING'}">
-            <p>Détails de la location</p>
-            <div>
-              <table class="table table-striped">
-                <tbody>
-                <tr>
-                  <td>Durée de la location</td>
-                  <td th:text="${duration} + ' jours'"></td>
-                </tr>
-                <tr>
-                  <td>Prix TTC</td>
-                  <td th:text="${totalPrice} + ' €'"></td>
-                </tr>
-                <tr>
-                  <td>Reste à payer</td>
-                  <td th:text="${totalPrice} + ' €'"></td>
-                </tr>
-                </tbody>
-              </table>
+                <!-- Conteneur pour le prénom et le nom côte à côte -->
+                <div>
+                  <span th:text="${#strings.capitalize(profileUser.firstName.toLowerCase())}"></span>
+                  <span th:text="${profileUser.lastName.toUpperCase()}"></span> <!-- Nom en majuscules -->
+                </div>
+              </div>
             </div>
-            <a href="javascript:void(0);" class="btn btn-success w-100" onclick="redirectToPayment()">Payer</a>
+
           </div>
 
-          <div class="mt-4" th:if="${reservationStatus == 'CONFIRMED'} and ${isOwner}">
-            <a href="#" class="btn btn-primary w-100 mt-2" th:href="'/api/download-contract/' + ${reservationId}">
-              Télécharger le contrat de location
-            </a>
+
+          <!-- Tableau de récapitulatif (toujours visible) -->
+          <div class="mt-4">
+            <div class="mb-2">
+              <span class="bold ">Détails de la location</span>
+            </div>
+            <table class="table text-center" style="border-collapse: separate; border-spacing: 0; border-radius: 8px; overflow: hidden;">
+              <tbody>
+              <tr class="bg-white">
+                <td style="padding:15px;">Durée de la location</td>
+                <td style="background-color: #DFE7EC; padding:15px;font-weight:bold;" th:text="${duration} + ' jours'"></td>
+              </tr>
+              <tr class="bg-white">
+                <td style="padding:15px;">Prix TTC</td>
+                <td style="background-color: #DFE7EC; padding:15px;font-weight:bold;" th:text="${totalPrice} + ' €'"></td>
+              </tr>
+              <tr class="bg-white">
+                <td style="padding:15px; color: #DC143C">Reste à payer</td>
+                <td style="background-color: #DC143C; padding:15px; color:white; font-weight:bold;" th:text="${remainingAmount} + ' €'"></td>
+              </tr>
+              </tbody>
+            </table>
+
+
+
+
           </div>
+
+
+          <div class="mt-4">
+            <!-- Bouton de paiement (uniquement pour les réservations PAYMENT_PENDING) -->
+
+            <div th:if="${reservationStatus == 'PAYMENT_PENDING' and !isOwner }">
+              <a href="javascript:void(0);" class="btn btn-outline-success w-100" onclick="redirectToPayment()">Payer</a>
+            </div>
+
+            <!-- Bouton pour annuler la réservation (uniquement pour le locataire et statut CONFIRMED) -->
+            <div th:if="${reservationStatus == 'CONFIRMED'} and !${isOwner}">
+              <button id="cancel-button" class="btn btn-danger w-100"
+                      th:onclick="'cancelReservation(event, ' + ${reservationId} + ')'">Annuler la réservation</button>
+            </div>
+
+
+            <!-- Bouton de réclamation (uniquement pour les réservations CONFIRMED ou NOW et s'il n'y a pas encore de plainte) -->
+            <div th:if="${(reservationStatus == 'CONFIRMED' or reservationStatus == 'NOW') and !complaintExists}">
+              <button id="claim-button" class="btn btn-outline-warning w-100 mt-2"
+                      th:onclick="'openClaimModal(' + (${isOwner} ? 'true' : 'false') + ')'">
+                Soumettre une plainte
+              </button>
+            </div>
+
+
+
+            <div  th:if="${reservationStatus == 'CONFIRMED'} and ${isOwner}">
+              <!-- Bouton pour télécharger le contrat de location -->
+              <a href="#" class="btn btn-outline-info w-100 mt-2" th:href="'/api/download-contract/' + ${reservationId}">
+                Télécharger le contrat de location
+              </a>
+
+            </div>
+            <!-- Message si la réservation est expirée ou rejetée -->
+            <div  th:if="${reservationStatus == 'EXPIRED' or reservationStatus == 'REJECTED'}">
+              <div class="alert alert-warning">
+                <p th:text="'Le statut de la réservation est : ' + ${reservationStatus}"></p>
+              </div>
+            </div>
+          </div>
+
+
+
+
+          <!-- Bouton pour laisser une évaluation (uniquement pour les réservations FINISHED) -->
+          <div class="mt-4" th:if="${reservationStatus == 'FINISHED' and !evaluationExists and !isOwner}">
+            <button id="leave-review-button" class="btn btn-outline-info w-100"  onclick="openReviewModal()">Laisser une évaluation</button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -272,7 +321,7 @@
   <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header text-center bold">
           <h5 class="modal-title" id="reviewModalLabel">Laisser une évaluation</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -295,205 +344,48 @@
             </div>
             <div class="mb-3">
               <label for="comment" class="form-label">Commentaire</label>
-              <textarea id="comment" class="form-control" rows="4" required></textarea>
+              <textarea id="comment" class="form-control" rows="4" style="height:200px; !important" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Envoyer</button>
+            <div class="text-center">
+              <button type="submit" class="btn btn-outline-info enregistrer">Envoyer</button>
+            </div>
           </form>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal Bootstrap pour soumettre une réclamation -->
+
+  <!-- Modal pour soumettre une réclamation -->
   <div class="modal" id="claimModal" tabindex="-1" aria-labelledby="claimModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="claimModalLabel">Faire une réclamation</h5>
+        <div class="modal-header text-center">
+          <h5 class="modal-title" id="claimModalLabel">Soumettre une plainte</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form id="claim-form">
             <div class="mb-3">
-              <label for="claimMessage" class="form-label">Votre réclamation</label>
-              <textarea id="claimMessage" class="form-control" rows="4"></textarea>
+              <label for="claimMessage" class="form-label">Dites-nous ce qui ne va pas ?</label>
+              <textarea id="claimMessage" class="form-control" rows="4" style="height:200px !important;"
+                        placeholder="Le service administratif vous répondra dans les plus brefs délais..."></textarea>
             </div>
-            <input type="hidden" th:value="${reservationId}"> <!-- ID de la réservation -->
-            <input type="hidden" id="claimantRole"> <!-- Rôle de l'utilisateur sera défini dynamiquement -->
-            <button type="submit" class="btn btn-primary">Envoyer</button>
+            <!-- Champs cachés pour la réservation et le rôle du plaignant -->
+            <input type="hidden" id="claimReservationId">
+            <input type="hidden" id="claimantRole">
+            <div class="text-center">
+              <button type="submit" class="btn btn-outline-info enregistrer">Envoyer</button>
+            </div>
           </form>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    function openReviewModal() {
-        var reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
-        reviewModal.show();
-    }
 
-    document.getElementById('review-form').addEventListener('submit', function(event) {
-        event.preventDefault();
 
-        var rating = document.querySelector('input[name="rating"]:checked')?.value;
-        var comment = document.getElementById('comment').value;
-        var reservationId = document.getElementById('reservationId').value;
-
-        if (!rating || !comment) {
-            alert("Veuillez remplir tous les champs.");
-            return;
-        }
-
-        var review = {
-            note: rating,
-            avis: comment,
-            reservationId: reservationId
-        };
-
-        fetch('/api/review', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(review)
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(error => {
-                    throw new Error(error.message || 'Something went wrong');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data && data.id) {
-                alert('Votre évaluation a été envoyée avec succès.');
-                var reviewModal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
-                reviewModal.hide();
-                document.getElementById('leave-review-button').style.display = 'none';
-            } else {
-                throw new Error('Erreur lors de l\'enregistrement de l\'évaluation.');
-            }
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-            alert('Une erreur s\'est produite lors de l\'envoi de votre évaluation : ' + error.message);
-        });
-    });
-
-    function cancelReservation(event, reservationId) {
-        event.preventDefault();
-
-        var confirmation = confirm("Êtes-vous sûr de vouloir annuler cette réservation ?");
-        if (confirmation) {
-            fetch(`/api/cancelReservation/${reservationId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("La réservation a été annulée avec succès.");
-                    // Mettre à jour le statut de la réservation dans l'interface utilisateur
-                    document.querySelector('.statut-box h3').innerText = "Le statut de la réservation est : ANNULÉ";
-                    // Masquer le bouton d'annulation
-                    document.getElementById('cancel-button').style.display = 'none';
-                    // Mettre à jour la card pour afficher que la location est annulée
-                    document.querySelector('.car-reservation-body p').innerText = "Location annulée";
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Une erreur s\'est produite lors de l\'annulation de la réservation.');
-            });
-        }
-    }
-
- function openClaimModal() {
-        // Obtenir l'ID de réservation à partir de l'URL
-        var pathArray = window.location.pathname.split('/');
-        var reservationId = pathArray[pathArray.length - 1]; // Supposons que l'ID de réservation est à la fin de l'URL
-
-        // Vérifiez que l'ID de réservation est valide
-        if (!reservationId || isNaN(reservationId)) {
-            alert("ID de réservation invalide.");
-            return;
-        }
-
-        // Récupérer le rôle de l'utilisateur pour cette réservation
-        fetch(`/api/claims/${reservationId}/role`)
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.role) {
-                    document.getElementById('claimantRole').value = data.role; // Remplir le champ caché avec le rôle
-                    document.getElementById('reservationId').value = reservationId; // Remplir l'ID de la réservation
-                } else {
-                    console.error('Impossible de déterminer le rôle pour cette réservation.');
-                    alert("Erreur lors de la récupération du rôle.");
-                    return;
-                }
-            })
-            .catch(error => {
-                console.error('Erreur lors de la récupération du rôle de l\'utilisateur :', error);
-                alert("Erreur lors de la récupération du rôle.");
-            });
-
-        // Ouvrir la modal de réclamation
-        var claimModal = new bootstrap.Modal(document.getElementById('claimModal'));
-        claimModal.show();
-    }
-
-    document.getElementById('claim-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        var reservationId = document.getElementById('reservationId').value;
-        var claimantRole = document.getElementById('claimantRole').value;
-        var message = document.getElementById('claimMessage').value;
-
-        if (!message || !reservationId || !claimantRole) {
-            alert("Veuillez remplir tous les champs.");
-            return;
-        }
-
-        var claim = {
-            message: message,
-            reservationId: reservationId,
-            claimantRole: claimantRole
-        };
-
-        // Envoyer la réclamation au serveur
-        fetch('/api/claims/submit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(claim)
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(error => {
-                    throw new Error(error.message || 'Une erreur s\'est produite');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            alert('Votre réclamation a été envoyée avec succès.');
-            var claimModal = bootstrap.Modal.getInstance(document.getElementById('claimModal'));
-            claimModal.hide();
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-            alert('Une erreur s\'est produite lors de l\'envoi de votre réclamation : ' + error.message);
-        });
-    });
-
-  </script>
 </div>
+
 </body>
 </html>

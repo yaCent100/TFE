@@ -1,5 +1,4 @@
-<!-- fragments/reservation.html -->
-<div layout:fragment="reservation" id="reservation-tab" class="tab-content-car">
+<div layout:fragment="reservation" id="reservation-tab" class="tab-content-car"  th:classappend="${param.activeTab == 'reservation-tab'} ? 'active' : ''">
     <div class="container mt-5">
         <div id="booking-mode" class="step-item">
             <!-- Afficher le message flash s'il existe -->
@@ -13,10 +12,10 @@
                             <span class="actually"><i class="fa fa-check"></i></span> Actuellement, vous êtes en mode
                             <span id="current-mode" class="auto-manu" th:text="${car.modeReservation}"></span>
                         </h3>
-                        <div class="row mt-3">
+                        <div class="row mt-3 mb-3">
                             <div class="col-lg-6" style="padding: 10px;">
                                 <a href="#" class="choose-automatic-reservation">
-                                    <p class="p-manuel-auto">Mode automatique <span class="c-white fs10 bg-warning medium pdl-6 pe-6 h25 inline-block bradius-bis nbsp-large-left">Recommandé</span></p>
+                                    <p class="p-manuel-auto">Mode automatique <span class="p-1 ms-1" style="font-size:0.8rem; border-radius:5px; background-color:#8EAAB3;">Recommandé</span></p>
                                 </a>
                             </div>
                             <div class="col-lg-6" style="padding: 10px;">
@@ -27,80 +26,82 @@
                         </div>
                         <div class="reservation-mode-detail">
                             <div class="reservation-mode-auto">
-                                <p class="mt-2 mb-4">Votre voiture pourra être réservée instantanément par le locataire. C'est le moyen le plus simple et le plus efficace de proposer sa voiture en location.</p>
+                                <h6 class="mt-2 mb-4 text-center">Votre voiture pourra être réservée instantanément par le locataire. C'est le moyen le plus simple et le plus efficace de proposer sa voiture en location.</h6>
                                 <div class="row">
                                     <div class="col-lg-4" style="margin-bottom: 20px;">
-                                        <div class="card-reservation p-2 ">
-                                            <div class="text-center mt-3 mb-3">
-                                                <img class="w160" src="/images/carte.png" alt="">
+                                        <div class="card-reservation p-2">
+                                            <div class="text-center mt-3 mb-5">
+                                                <img height="160" src="/images/carte.png" alt="">
                                             </div>
-                                            <p class="medium fs16">Les locataires consultent les annonces sur le site</p>
+                                            <h6 class="">Les locataires consultent les annonces sur le site</h6>
+                                            <hr style="margin-top:15px; margin-bottom: 15px; height:1px; width:50%; margin-left: auto; margin-right: auto;" >
                                             <p class="">Toute personne qui souhaite réserver votre voiture, doit confirmer ses coordonnées, fournir ses informations bancaires.</p>
                                         </div>
                                     </div>
                                     <div class="col-lg-4" style="margin-bottom: 20px;">
                                         <div class="card-reservation p-2">
-                                            <div class="text-center mt-3 mb-3">
-                                                <img width="160" src="/images/carte2.png" alt="">
+                                            <div class="text-center mt-3 mb-5">
+                                                <img height="160" src="/images/carte2.png" alt="">
                                             </div>
-                                            <p class="p-reservation">Vous définissez vos règles de location</p>
-                                            <p class="">Vous tenez à jour un calendrier de disponibilités de votre voiture, vous décider quand et à quelle heure vous êtes disponible. Vous êtes prévenu suffisamment à l'avance.</p>
-                                            <div class="mt-2">
-                                                <a class="medium c-main fs14 choose-manual-booking">Je souhaite examiner chaque demande</a>
-                                            </div>
+                                            <h6 class="">Vous définissez vos règles de location</h6>
+                                            <hr style="margin-top:15px; margin-bottom: 15px; height:1px; width:50%; margin-left: auto; margin-right: auto;" >
+                                            <p class="">Vous tenez à jour un calendrier de disponibilités de votre voiture, vous décidez quand et à quelle heure vous êtes disponible.</p>
                                         </div>
                                     </div>
                                     <div class="col-lg-4" style="margin-bottom: 20px;">
                                         <div class="card-reservation p-2">
-                                            <div class="text-center  mt-3 mb-3">
-                                                <img width="160" src="/images/carte3.png" alt="">
+                                            <div class="text-center  mt-3 mb-5">
+                                                <img height="160" src="/images/carte3.png" alt="">
                                             </div>
-                                            <p class="p-reservation">Vous recevez une notification dès qu’un locataire effectue une réservation</p>
-                                            <p class="">Vous recevrez immédiatement un e-mail de confirmation contenant les informations, la date et l'heure de la réservation. Vous pouvez alors discuter avec votre locataire pour affiner les détails.</p>
+                                            <h6 class="">Vous recevez une notification dès qu’un locataire effectue une réservation</h6>
+                                            <hr style="margin-top:15px; margin-bottom: 15px; height:1px; width:50%; margin-left: auto; margin-right: auto;" >
+                                            <p class="">Vous recevrez immédiatement un e-mail de confirmation contenant les informations.</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="reservation-mode-manual hide">
-                                <p class="mt-2 mb-4">Chaque fois qu'un locataire sera intéressé par votre voiture, il devra préalablement vous envoyer une demande de réservation.</p>
+
+                            <div class="reservation-mode-manual">
+                                <h6 class="text-center mt-2 mb-4">Chaque fois qu'un locataire sera intéressé par votre voiture, vous devrez accepter ou refuser sa demande de reservation.</h6>
                                 <div class="row">
                                     <div class="col-lg-4" style="margin-bottom: 20px;">
-                                        <div class="card-reservation p-2 ">
-                                            <div class="text-center mt-3 mb-3">
-                                                <img width="160" src="/images/carte4.png" alt="">
+                                        <div class="card-reservation p-2">
+                                            <div class="text-center mt-3 mb-5">
+                                                <img height="160" src="/images/carte4.png" alt="">
                                             </div>
-                                            <p class="p-reservation">Les locataires consultent les annonces sur le site</p>
-                                            <p class="">Chaque personne qui souhaite réserver votre voiture doit vous envoyer une demande de location en précisant les dates et le lieu de location souhaité.</p>
+                                            <h6 class="">Les locataires consultent les annonces sur le site</h6>
+                                            <hr style="margin-top:15px; margin-bottom: 15px; height:1px; width:50%; margin-left: auto; margin-right: auto;" >
+                                            <p class="">Chaque personne qui souhaite réserver votre voiture doit vous envoyer une demande.</p>
                                         </div>
                                     </div>
                                     <div class="col-lg-4" style="margin-bottom: 20px;">
                                         <div class="card-reservation p-2">
-                                            <div class="text-center  mgt-30 mgb-30">
-                                                <img width="160" src="/images/carte5.png" alt="">
+                                            <div class="text-center mt-3 mb-5">
+                                                <img height="160" src="/images/carte5.png" alt="">
                                             </div>
-                                            <p class="p-reservation">Vous choisissez d'accepter ou refuser chaque demande</p>
-                                            <p class="">Vous disposez de 48h maximum pour accepter ou refuser la demande. Vous pouvez aussi discuter avec le locataire.</p>
-                                            <div class="mt-2">
-                                                <p class="fs14"><a class="medium c-main choose-automatic-booking">Je souhaite activer la réservation instantanée</a><span class="c-white fs10 bg-warning medium pdl-6 pdr-6 h25 inline-block bradius-bis nbsp-large-left">Recommandé</span></p>
-                                            </div>
+                                            <h6 class="">Vous choisissez d'accepter ou refuser chaque demande</h6>
+                                            <hr style="margin-top:15px; margin-bottom: 15px; height:1px; width:50%; margin-left: auto; margin-right: auto;" >
+                                            <p class="">Vous disposez de 48h maximum pour accepter ou refuser la demande.</p>
                                         </div>
                                     </div>
-                                    <div class="col-lg-4 " style="margin-bottom: 20px;">
+                                    <div class="col-lg-4" style="margin-bottom: 20px;">
                                         <div class="card-reservation p-2">
-                                            <div class="text-center mt-3 mb-3">
-                                                <img width="160" src="/images/carte6.png" alt="">
+                                            <div class="text-center mt-3 mb-5">
+                                                <img height="160" src="/images/carte6.png" alt="">
                                             </div>
-                                            <p class="p-reservation">Le locataire doit alors confirmer la réservation</p>
-                                            <p class="">Une fois la demande acceptée, le locataire dispose de 48h pour procéder au paiement et confirmer ou non la réservation.</p>
+                                            <h6 class="">Le locataire doit alors confirmer la réservation</h6>
+                                            <hr style="margin-top:15px; margin-bottom: 15px; height:1px; width:50%; margin-left: auto; margin-right: auto;" >
+                                            <p class="">Une fois la demande acceptée, le locataire dispose de 48h pour procéder au paiement.</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                     <input type="hidden" name="page" value="booking_mode">
-                    <input type="hidden" name="booking_mode" value="1" id="booking-mode-input">
                     <input type="hidden" name="vehicle_id" th:value="${car.id}">
+                    <input type="hidden" name="booking_mode" th:value="${car.modeReservation}" id="booking-mode-input">
 
                     <div class="col-lg-12 text-center" style="margin-bottom:30px; margin-top: 30px;">
                         <button class="btn btn-success enregistrer" style="margin-top: 30px;">
@@ -113,3 +114,60 @@
         </div>
     </div>
 </div>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM chargé");
+
+    const autoButton = document.querySelector('.choose-automatic-reservation');
+    const manualButton = document.querySelector('.choose-manual-reservation');
+    const autoSection = document.querySelector('.reservation-mode-auto');
+    const manualSection = document.querySelector('.reservation-mode-manual');
+    const bookingModeInput = document.getElementById('booking-mode-input');
+
+    console.log("Boutons trouvés :", autoButton, manualButton);
+    console.log("Sections trouvées :", autoSection, manualSection);
+    console.log("Valeur initiale du mode de réservation :", bookingModeInput.value);
+
+    // Fonction pour activer la section correspondant au mode actuel
+    function setActiveSection() {
+        console.log("Changement de section en fonction du mode :", bookingModeInput.value);
+        if (bookingModeInput.value === 'automatique') {
+            autoSection.style.display = 'block';
+            manualSection.style.display = 'none';
+            autoButton.classList.add('active-button');
+            manualButton.classList.remove('active-button');
+            console.log("Mode automatique activé");
+        } else {
+            autoSection.style.display = 'none';
+            manualSection.style.display = 'block';
+            manualButton.classList.add('active-button');
+            autoButton.classList.remove('active-button');
+            console.log("Mode manuel activé");
+        }
+    }
+
+    // Initialisation au chargement de la page
+    setActiveSection();
+
+    // Événement lors du clic sur "Automatique"
+    autoButton.addEventListener('click', function(event) {
+        event.preventDefault(); // Empêche le comportement par défaut du lien
+        bookingModeInput.value = 'automatique';
+        console.log("Clic sur le bouton automatique. Nouvelle valeur du mode de réservation :", bookingModeInput.value);
+        setActiveSection(); // Met à jour l'affichage
+    });
+
+    // Événement lors du clic sur "Manuel"
+    manualButton.addEventListener('click', function(event) {
+        event.preventDefault(); // Empêche le comportement par défaut du lien
+        bookingModeInput.value = 'manuelle';
+        console.log("Clic sur le bouton manuel. Nouvelle valeur du mode de réservation :", bookingModeInput.value);
+        setActiveSection(); // Met à jour l'affichage
+    });
+});
+
+
+
+
+</script>

@@ -3,167 +3,204 @@
 <head>
   <meta charset="UTF-8">
   <title>Gestion des Voitures</title>
-  <link href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" rel="stylesheet">
-  <style>
-    .car-photo { width: 80px; }
-    .datatable-container { display: flex; gap: 20px;justify-content: space-around; }
-    .spinner-container { text-align: center; margin-top: 20px; }
-    .spinner-border {
-      width: 3rem;
-      height: 3rem;
 
-    }
-    table.dataTable {
-  width: 100% !important;
-}
-  </style>
 </head>
 <body>
 <div layout:fragment="content">
-  <nav class="navbar navbar-expand px-4 py-3">
-    <div class="navbar-collapse collapse">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item dropdown">
-          <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
-            <img src="/account.png" class="avatar img-fluid" alt="">
-          </a>
-          <div class="dropdown-menu dropdown-menu-end rounded">
-            <!-- Dropdown items here -->
-          </div>
-        </li>
-      </ul>
-    </div>
-  </nav>
-  <main class="content px-3 py-4">
+  <div th:insert="~{admin/fragment-header :: admin-header-cars}"></div>
+
+  <main class="content mx-5">
     <div class="row">
-      <div class="col-lg-3">
-        <div class="kpi-card bg-light p-3 text-center">
-          <h5>Nombre Total de Voitures</h5>
-          <h2 id="totalCars">0</h2>
+      <!-- Nombre Total de Voitures -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Nombre Total de Voitures</h5>
+              <span id="total-cars-change" class="icon text-success">
+                        <i class="fas fa-arrow-up"></i>
+                    </span>
+            </div>
+            <h2 id="totalCars" class="mb-0 fw-bold text-center">0</h2>
+          </div>
         </div>
       </div>
-      <div class="col-lg-3">
-        <div class="kpi-card bg-light p-3 text-center">
-          <h5>Pourcentage de Voitures En Ligne</h5>
-          <h2 id="percentageOnline">0%</h2>
+
+      <!-- Pourcentage de Voitures En Ligne -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Pourcentage de Voitures En Ligne</h5>
+              <span id="percentage-online-change" class="icon text-success">
+                        <i class="fas fa-arrow-up"></i>
+                    </span>
+            </div>
+            <h2 id="percentageOnline" class="mb-0 fw-bold text-center">0%</h2>
+          </div>
         </div>
       </div>
-      <div class="col-lg-3">
-        <div class="kpi-card bg-light p-3 text-center">
-          <h5>Nombre de Voitures Louées Actuellement</h5>
-          <h2 id="rentedCars">0</h2>
+
+      <!-- Nombre de Voitures Louées Actuellement -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Nombre de Voitures Louées</h5>
+              <span id="rented-cars-change" class="icon text-success">
+                        <i class="fas fa-arrow-up"></i>
+                    </span>
+            </div>
+            <h2 id="rentedCars" class="mb-0 fw-bold text-center">0</h2>
+          </div>
         </div>
       </div>
-      <div class="col-lg-3">
-        <div class="kpi-card bg-light p-3 text-center">
-          <h5>Pourcentage de Voitures En Attente</h5>
-          <h2 id="percentagePending">0%</h2>
+
+      <!-- Pourcentage de Voitures En Attente -->
+      <div class="col-12 col-md-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="text-muted mb-2">Pourcentage de Voitures En Attente</h5>
+              <span id="percentage-pending-change" class="icon text-success">
+                        <i class="fas fa-arrow-up"></i>
+                    </span>
+            </div>
+            <h2 id="percentagePending" class="mb-0 fw-bold text-center">0%</h2>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-lg-12">
+    <div class="row my-5 d-flex justify-content-center">
+      <div class="col-lg-10">
         <canvas id="reservationsChart" width="400" height="150"></canvas>
       </div>
     </div>
-    <h1>Gestion des Voitures</h1>
-    <div class="datatable-container">
-      <!-- Voitures en ligne -->
-      <div class="online-cars">
-        <h2>Voitures En Ligne</h2>
 
-        <table class="table table-striped" id="onlineCarsTable" style="display: none;">
-          <thead>
-          <tr>
-            <th>Photo</th>
-            <th>Marque</th>
-            <th>Modèle</th>
-            <th>Plaque</th>    <!-- Nouvelle colonne -->
-            <th>Détails</th>
-          </tr>
-          </thead>
-          <tbody>
-          <div id="onlineSpinner" class="spinner-container">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-          </tbody>
-        </table>
+    <!-- Filtre pour les voitures -->
+    <div class="row mb-3 d-flex justify-content-around">
+      <!-- Actions groupées -->
+      <div class="col-md-3">
+        <div class="group-action-container d-flex flex-column align-items-start w-100">
+          <select id="groupActionSelect" class="form-select w-100 mb-2" aria-label="Action groupée" style="width: 200px;">
+            <option value="" disabled selected>Action groupée</option>
+            <option value="approve">Approuver</option>
+            <option value="reject">Rejeter</option>
+            <option value="delete">Supprimer</option>
+          </select>
+          <button id="applyActionBtn" class="btn btn-info text-light w-100">Appliquer</button>
+        </div>
+      </div>
+      <!-- Filtres pour les voitures -->
+      <div class="col-md-3">
+        <label for="carStatusFilter" class="ms-2 w-100">Filtrer les voitures par status:</label>
+        <select id="carStatusFilter" class="form-select w-100">
+          <option value="">ALL</option>
+          <option value="En ligne">EN LIGNE</option>
+          <option value="En attente">EN ATTENTE</option>
+        </select>
       </div>
 
-      <!-- Voitures en attente d'approbation -->
-      <div class="pending-cars">
-        <h2>Voitures En Attente</h2>
 
-        <table class="table table-striped" id="pendingCarsTable" style="display: none;">
-          <thead>
-          <tr>
-            <th>Photo</th>
-            <th>Marque</th>
-            <th>Modèle</th>
-            <th>Plaque</th>    <!-- Nouvelle colonne -->
-            <th>Action</th>
-          </tr>
-          </thead>
-          <tbody>
-          <div id="pendingSpinner" class="spinner-container">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-          </tbody>
-        </table>
-      </div>
     </div>
-    <h1>Gestion des Attributs</h1>
-    <div class="datatable-container">
+
+
+     <!-- Voitures en ligne -->
+      <div class="online-cars">
+        <h2 class="text-center fw-bold mt-5">Gestion des Véhicules</h2>
+
+        <table id="carsTable" class="display nowrap table table-striped table-hover text-center">
+          <thead class="custom-thead">
+          <tr>
+            <th></th>
+            <th>Photo</th>
+            <th>Marque</th>
+            <th>Modèle</th>
+            <th>Plaque</th>
+            <th>Commune</th> <!-- Nouvelle colonne pour la commune -->
+            <th>Propriétaire</th>
+            <th>Prix par jour</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+
+          <div id="carSpinner" class="spinner-border" role="status" style="display:none;">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          </tbody>
+        </table>
+
+      </div>
+
+
+    <div class="row d-flex justify-content-around my-5">
       <!-- Tableau des Catégories -->
-      <div class="datatable">
-        <h2>Catégories</h2>
-        <table class="table table-striped" id="categoriesTable">
-          <thead>
+      <div class="col-lg-4 datatable">
+        <div class="text-end mb-3">
+          <button id="addCategoryBtn" class="btn btn-success my-3">Ajouter Catégorie</button>
+        </div>
+        <h3 class="fw-bold text-center mb-4">Catégories</h3>
+        <table class="display nowrap table table-striped table-hover text-center" id="categoriesTable">
+          <thead class="custom-thead">
           <tr>
             <th>Nom</th>
             <th>Actions</th>
           </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+          <div id="carSpinner" class="spinner-border" role="status" style="display:none;">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          </tbody>
         </table>
-        <button id="addCategoryBtn">Ajouter Catégorie</button>
       </div>
 
       <!-- Tableau des Équipements -->
-      <div class="datatable">
-        <h2>Équipements</h2>
-        <table class="table table-striped" id="equipmentsTable">
-          <thead>
+      <div class="col-lg-4 datatable">
+        <div class="text-end mb-3">
+          <button id="addEquipmentBtn" class="btn btn-success my-3">Ajouter Équipement</button>
+        </div>
+        <h3 class="fw-bold text-center mb-4">Équipements</h3>
+        <table class="display nowrap table table-striped table-hover text-center" id="equipmentsTable">
+          <thead class="custom-thead">
           <tr>
             <th>Nom</th>
             <th>Icone</th>
             <th>Actions</th>
           </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+          <div id="carSpinner" class="spinner-border" role="status" style="display:none;">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          </tbody>
         </table>
-        <button id="addEquipmentBtn">Ajouter Équipement</button>
       </div>
 
       <!-- Tableau des Caractéristiques -->
-      <div class="datatable">
-        <h2>Caractéristiques</h2>
-        <table class="table table-striped" id="featuresTable">
-          <thead>
+      <div class=" col-lg-4 datatable">
+        <div class="text-end mb-3">
+          <button id="addFeatureBtn" class="btn btn-success my-3">Ajouter Caractéristique</button>
+        </div>
+
+        <h3 class="fw-bold text-center mb-4">Caractéristiques</h3>
+        <table class="display nowrap table table-striped table-hover text-center" id="featuresTable">
+          <thead class="custom-thead">
           <tr>
             <th>Nom</th>
             <th>Description</th>
             <th>Actions</th>
           </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+          <div id="carSpinner" class="spinner-border" role="status" style="display:none;">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          </tbody>
         </table>
-        <button id="addFeatureBtn">Ajouter Caractéristique</button>
       </div>
     </div>
   </main>

@@ -1,6 +1,7 @@
 package be.iccbxl.tfe.Driveshare.restController;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
+import be.iccbxl.tfe.Driveshare.DTO.CarDTOHome;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.CarService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.EvaluationService;
@@ -34,7 +35,7 @@ public class HomeRestController {
 
     @Operation(summary = "Obtenir les voitures les mieux notées", description = "Retourne les quatre voitures ayant les meilleures évaluations.")
     @GetMapping("/api/cars/top-rated")
-    public List<CarDTO> getTopRatedCars() {
+    public List<CarDTOHome> getTopRatedCars() {
         return evaluationService.getTop4CarsWithFiveStarRating();
     }
 }

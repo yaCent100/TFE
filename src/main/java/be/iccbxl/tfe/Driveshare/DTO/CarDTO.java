@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,10 +34,15 @@ public class CarDTO {
     private String carteGrisePath;
 
     private List<ReservationDTO> reservationDTOS;
-    private User user;
+    private UserDTO user;
     private String offre  = "standard";
 
+    private double displayPrice;
+
     private PriceDTO price = new PriceDTO(); //// Inclure le prix
+
+    private double averageRating; // Note moyenne
+    private int reviewCount; // Nombre d'avis
 
 
     // Nouveaux champs pour le jour, mois et année de la première immatriculation
@@ -50,6 +56,10 @@ public class CarDTO {
 
     private Long boiteId;
     private String boite;
+    private String compteur;
+    private String places;
+    private String portes;
+
     private Long compteurId;
     private Long placesId;
     private Long portesId;
@@ -74,6 +84,9 @@ public class CarDTO {
     private MultipartFile identityRecto;
     private MultipartFile identityVerso;
 
+    private String registrationCardUrl;
+
+
     private List<MultipartFile> photos; // Modifier en liste de MultipartFile
     private List<String> photoUrl;  // Ajouter ce champ pour l'URL de la photo
 
@@ -84,12 +97,14 @@ public class CarDTO {
     private double distance;
 
 
-    private Boolean online;
+    private Boolean online = false;
 
 
 
     public CarDTO(Long id, String brand, String model, String s, double distance, String url, String adresse, String codePostal, String locality, List<FeatureDTO> featureDTOs) {
+
     }
+
 
 
     public LocalDate getFirstImmatriculation() {
@@ -97,6 +112,16 @@ public class CarDTO {
             return LocalDate.of(year, month, day);
         }
         return null;
+    }
+
+
+    //CONSTRUCTEUR HOME TOP-RATED
+    public CarDTO(Long id, String brand, String model, double displayPrice, double averageRating) {
+        this.id = id;
+        this.brand = brand;
+        this.model = model;
+        this.displayPrice = displayPrice;
+        this.averageRating = averageRating;
     }
 
     public CarDTO(Long id, String marque, String modele, String modeReservation, String url, String adresse, String codePostal, String locality, String fuelType) {
@@ -155,10 +180,52 @@ public class CarDTO {
         this.longitude = car.getLongitude();
         this.distance = distance;
         this.plaqueImmatriculation = car.getPlaqueImmatriculation();
-        this.photoUrl = car.getPhotos() != null && !car.getPhotos().isEmpty()
+
+        this.categoryName=car.getCategory().getCategory();
+
+        // Gestion des URLs des photos
+        this.photoUrl = (car.getPhotos() != null && !car.getPhotos().isEmpty())
                 ? car.getPhotos().stream().map(Photo::getUrl).collect(Collectors.toList())
-                : null;
+                : Collections.emptyList();
+
+        // Mapping des features à FeatureDTO
+        if (car.getFeatures() != null) {
+            this.features = car.getFeatures().stream()
+                    .map(MapperDTO::toFeatureDTO)
+                    .collect(Collectors.toList());
+        } else {
+            this.features = Collections.emptyList();  // Liste vide si aucune feature
+        }
+
+        this.fuelType = car.getFuelType();
+
+        this.displayPrice = car.getDisplayPrice();
+        this.modeReservation=car.getModeReservation();
+        // Ajouter les réservations à la voiture
+        if (car.getReservations() != null) {
+            this.reservationDTOS = car.getReservations().stream()
+                    .map(MapperDTO::toReservationDTO)
+                    .collect(Collectors.toList());
+        } else {
+            this.reservationDTOS = Collections.emptyList();  // Liste vide si aucune réservation
+        }
     }
+
+    // Vous pouvez également définir un setter pour la liste des features si vous avez besoin
+    public void setFeatures(List<FeatureDTO> features) {
+        this.features = features;
+    }
+
+
+
+
+    public CarDTO(Car car, double averageRating, int reviewCount, double distance, double displayPrice) {
+        this(car, distance);  // Appel au constructeur de base pour réutiliser le code commun
+        this.averageRating = averageRating;
+        this.reviewCount = reviewCount;
+        this.displayPrice = displayPrice;
+    }
+
 
 
 

@@ -25,16 +25,24 @@ public class MapperDTO {
         carDTO.setCategoryId(car.getCategory().getId());
         carDTO.setCategoryName(car.getCategory().getCategory());
         carDTO.setModel(car.getModel());
+        carDTO.setFuelType(car.getFuelType());
         carDTO.setAdresse(car.getAdresse());
         carDTO.setOnline(car.getOnline());
+        carDTO.setRegistrationCardUrl(car.getCarteGrisePath());
 
         // Gérer les valeurs nulles pour latitude et longitude
         carDTO.setLatitude(car.getLatitude() != null ? car.getLatitude() : 0.0);
         carDTO.setLongitude(car.getLongitude() != null ? car.getLongitude() : 0.0);
-
+        if (car.getDistance() != null) {
+            carDTO.setDistance(car.getDistance());
+        } else {
+            carDTO.setDistance(0.0); // Ou une valeur par défaut si la distance n'est pas disponible
+        }
+        carDTO.setUser(MapperDTO.toDTO(car.getUser()));
         carDTO.setUrl(car.getPhotos().stream().map(Photo::getUrl).findFirst().orElse(null));
         carDTO.setPhotoUrl(car.getPhotos().stream().map(Photo::getUrl).collect(Collectors.toList()));
         carDTO.setPrice(toPriceDTO(car.getPrice()));
+        carDTO.setDisplayPrice(car.getPrice().getMiddlePrice());
         carDTO.setReservationDTOS(car.getReservations().stream().map(MapperDTO::toReservationDTO).collect(Collectors.toList()));
         carDTO.setUnavailables(car.getUnavailable().stream().map(MapperDTO::toIndisponibleDTO).collect(Collectors.toList()));
         carDTO.setEquipments(car.getEquipments().stream().map(MapperDTO::toEquipmentDTO).collect(Collectors.toList()));
@@ -64,6 +72,9 @@ public class MapperDTO {
         return carDTO;
     }
 
+
+
+
     public static Car toEntity(CarDTO carDTO) {
         if (carDTO == null) {
             return null;
@@ -82,6 +93,7 @@ public class MapperDTO {
             photo.setUrl(url);
             return photo;
         }).collect(Collectors.toList()));
+
         car.setPrice(toPrice(carDTO.getPrice()));
         car.setReservations(carDTO.getReservationDTOS().stream().map(MapperDTO::toReservationEntity).collect(Collectors.toList()));
         car.setUnavailable(carDTO.getUnavailables().stream().map(MapperDTO::toIndisponibleEntity).collect(Collectors.toList()));
@@ -94,10 +106,22 @@ public class MapperDTO {
         dto.setId(category.getId());
         dto.setCategory(category.getCategory());
 
+        // Si tu veux exclure les voitures pour éviter la récursivité
+        // dto.setCars(null); // Si tu veux juste ignorer les voitures ici
+
+        // Ou alors, tu peux mapper une version simplifiée des voitures
         List<CarDTO> carDTOs = category.getCars().stream()
-                .map(MapperDTO::toCarDTO)
+                .map(car -> {
+                    CarDTO carDTO = new CarDTO();
+                    carDTO.setId(car.getId());
+                    carDTO.setBrand(car.getBrand());
+                    carDTO.setModel(car.getModel());
+                    // Exclure les champs complexes ou relationnels pour éviter la récursivité
+                    return carDTO;
+                })
                 .collect(Collectors.toList());
-        dto.setCars(carDTOs);
+
+        dto.setCars(carDTOs);  // Utiliser la version simplifiée
 
         return dto;
     }
@@ -141,12 +165,14 @@ public class MapperDTO {
         reservationDTO.setStatut(reservation.getStatut());
         reservationDTO.setCarBrand(reservation.getCar().getBrand());
         reservationDTO.setCarModel(reservation.getCar().getModel());
-        reservationDTO.setUserName(reservation.getUser().getFirstName() + " " + reservation.getUser().getLastName());
+        reservationDTO.setUserName(reservation.getUser().getFirstName() + " " + reservation.getUser().getLastName().toUpperCase());
         reservationDTO.setCarPostal(reservation.getCar().getPostalCode());
         reservationDTO.setCarLocality(reservation.getCar().getLocality());
         reservationDTO.setModeReservation(reservation.getCar().getModeReservation());
         reservationDTO.setUserProfileImage(reservation.getUser().getPhotoUrl() != null && !reservation.getUser().getPhotoUrl().isEmpty() ? "/uploads/profil/" + reservation.getUser().getPhotoUrl() : "/uploads/profil/defaultPhoto.png");
-        reservationDTO.setCarImage(!reservation.getCar().getPhotos().isEmpty() ? "/uploads/" + reservation.getCar().getPhotos().get(0).getUrl() : "images/carDefault.png");
+        reservationDTO.setCarImage(!reservation.getCar().getPhotos().isEmpty() ? "/uploads/photo-car/" + reservation.getCar().getPhotos().get(0).getUrl() : "images/carDefault.png");
+        reservationDTO.setCreatedAt(reservation.getCreatedAt());
+        reservationDTO.setIsUserVerified(reservation.getUser().isVerified());
 
         // Ajouter le mapping pour les paiements
         if (reservation.getPayment() != null) {
@@ -166,6 +192,10 @@ public class MapperDTO {
         reservation.setStartLocation(LocalDate.parse(reservationDTO.getDebutLocation()));
         reservation.setEndLocation(LocalDate.parse(reservationDTO.getFinLocation()));
         reservation.setStatut(reservationDTO.getStatut());
+
+        if ("manuelle".equals(reservation.getCar().getModeReservation())) {
+            reservationDTO.setCreatedAt(reservation.getCreatedAt());
+        }
 
         // Ajouter le mapping pour les paiements
         if (reservationDTO.getPayment() != null) {
@@ -227,7 +257,7 @@ public class MapperDTO {
                 car.getBrand(),
                 car.getModel(),
                 car.getModeReservation(),
-                car.getPrice().getMiddlePrice(),
+                car.getDisplayPrice(),
                 car.getPhotos().stream().findFirst().map(Photo::getUrl).orElse(null),
                 car.getAdresse(),
                 car.getPostalCode(),
@@ -277,6 +307,8 @@ public class MapperDTO {
         dto.setReservationId(message.getReservation().getId());
         dto.setSentAt(message.getSentAt());
 
+        dto.setCarImage((message.getReservation().getCar().getPhotos().get(0).getUrl()));
+
         // Déterminez qui est l'expéditeur et qui est le destinataire
         Long reservationUserId = message.getReservation().getUser().getId(); // Le locataire
         Long carOwnerId = message.getReservation().getCar().getUser().getId(); // Le propriétaire
@@ -285,14 +317,21 @@ public class MapperDTO {
             // L'expéditeur est le locataire
             dto.setFromUserId(reservationUserId);
             dto.setToUserId(carOwnerId);
-            dto.setFromUserNom(message.getReservation().getUser().getLastName());
+            dto.setFromUserNom(message.getReservation().getUser().getFirstName());
+            dto.setToUserNom(message.getReservation().getCar().getUser().getFirstName());
             dto.setProfileImageUrl(message.getReservation().getUser().getPhotoUrl());
+            dto.setProfileImageUrl2(message.getReservation().getCar().getUser().getPhotoUrl());
+
+
         } else if (message.getFromUserId().equals(carOwnerId)) {
             // L'expéditeur est le propriétaire
             dto.setFromUserId(carOwnerId);
             dto.setToUserId(reservationUserId);
-            dto.setFromUserNom(message.getReservation().getCar().getUser().getLastName());
+            dto.setFromUserNom(message.getReservation().getCar().getUser().getFirstName());
+            dto.setToUserNom(message.getReservation().getUser().getFirstName());
             dto.setProfileImageUrl(message.getReservation().getCar().getUser().getPhotoUrl());
+            dto.setProfileImageUrl2(message.getReservation().getUser().getPhotoUrl());
+
         }
 
         return dto;
@@ -321,18 +360,28 @@ public class MapperDTO {
         dto.setToUserId(notification.getToUser().getId());
         dto.setCarId(notification.getCar().getId());
         dto.setType(notification.getType());
+        dto.setFromUserNom(notification.getFromUser().getFirstName());
+        dto.setToUserNom(notification.getToUser().getFirstName());
+        dto.setFromUserProfil(notification.getFromUser().getPhotoUrl());
+        dto.setToUserProfil(notification.getToUser().getPhotoUrl());
+        dto.setCarImage(notification.getCar().getPhotos().get(0).getUrl());
+        dto.setCarBrand(notification.getCar().getBrand());
+        dto.setCarModel(notification.getCar().getModel());
+        dto.setSendAt(notification.getSentAt());
+
+
         return dto;
     }
 
-    public static UserDTO toDTO(User user) {
+    public static UserDTO toUserDTO(User user) {
         if (user == null) {
             return null;
         }
 
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
-        userDTO.setNom(user.getLastName());
-        userDTO.setPrenom(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setFirstName(user.getFirstName());
         userDTO.setEmail(user.getEmail());
         userDTO.setAdresse(user.getAdresse());
         userDTO.setLocality(user.getLocality());
@@ -343,10 +392,61 @@ public class MapperDTO {
         userDTO.setIban(user.getIban());
         userDTO.setBic(user.getBic());
         userDTO.setCreatedAt(user.getCreatedAt());
+        userDTO.setVerified(user.isVerified());
 
         // Gestion des listes potentiellement nulles
         if (user.getOwnedCars() != null) {
             userDTO.setOwnedCars(user.getOwnedCars().stream().map(MapperDTO::toCarDTO).collect(Collectors.toList()));
+        }
+
+        if (user.getRoles() != null) {
+            userDTO.setRoles(user.getRoles().stream().map(MapperDTO::toRoleDTO).collect(Collectors.toList()));
+        }
+
+        if (user.getReservations() != null) {
+            userDTO.setReservations(user.getReservations().stream().map(MapperDTO::toReservationDTO).collect(Collectors.toList()));
+        }
+
+        if (user.getDocuments() != null) {
+            userDTO.setDocuments(user.getDocuments().stream().map(MapperDTO::toDocumentDTO).collect(Collectors.toList()));
+        }
+
+        if (user.getNotificationsSent() != null) {
+            userDTO.setNotificationsSent(user.getNotificationsSent().stream().map(MapperDTO::toNotificationDTO).collect(Collectors.toList()));
+        }
+
+        if (user.getNotificationsReceived() != null) {
+            userDTO.setNotificationsReceived(user.getNotificationsReceived().stream().map(MapperDTO::toNotificationDTO).collect(Collectors.toList()));
+        }
+
+        return userDTO;
+
+    }
+
+    public static UserDTO toDTO(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setAdresse(user.getAdresse());
+        userDTO.setLocality(user.getLocality());
+        userDTO.setCodePostal(user.getPostalCode());
+        userDTO.setPhone(user.getPhone());
+        userDTO.setPassword(user.getPassword());
+        userDTO.setPhotoUrl(user.getPhotoUrl());
+        userDTO.setIban(user.getIban());
+        userDTO.setBic(user.getBic());
+        userDTO.setCreatedAt(user.getCreatedAt());
+        userDTO.setVerified(user.isVerified());
+
+        // Gestion des listes potentiellement nulles
+        if (user.getOwnedCars() != null) {
+            userDTO.setOwnedCars(user.getOwnedCars().stream().map(MapperDTO::convertToCarDTO).collect(Collectors.toList()));
         }
 
         if (user.getRoles() != null) {
@@ -382,8 +482,8 @@ public class MapperDTO {
 
         User user = new User();
         user.setId(userDTO.getId());
-        user.setLastName(userDTO.getNom());
-        user.setFirstName(userDTO.getPrenom());
+        user.setLastName(userDTO.getLastName());
+        user.setFirstName(userDTO.getFirstName());
         user.setEmail(userDTO.getEmail());
         user.setAdresse(userDTO.getAdresse());
         user.setLocality(userDTO.getLocality());
@@ -528,6 +628,7 @@ public class MapperDTO {
 
         paymentDTO.setUserFirstName(payment.getReservation().getUser().getFirstName());
         paymentDTO.setUserLastName(payment.getReservation().getUser().getLastName());
+        paymentDTO.setPhotoProfil("/uploads/profil/"+payment.getReservation().getUser().getPhotoUrl());
         // Vérifiez si le gain n'est pas null
         if (payment.getGain() != null) {
             paymentDTO.setGainDTO(MapperDTO.toGainDTO(payment.getGain()));
@@ -542,11 +643,6 @@ public class MapperDTO {
             paymentDTO.setRefundDTO(null);
         }
 
-
-        // Mapping Refund to RefundDTO
-        if (payment.getRefund() != null) {
-            paymentDTO.setRefundDTO(toRefundDTO(payment.getRefund()));
-        }
 
         paymentDTO.setReservationId(payment.getReservation().getId());
 
@@ -626,8 +722,8 @@ public class MapperDTO {
         gainDTO.setCarBrand(gain.getPayment().getReservation().getCar().getBrand());
         gainDTO.setCarModel(gain.getPayment().getReservation().getCar().getModel());
         gainDTO.setCarImage(gain.getPayment().getReservation().getCar().getPhotos().get(0).getUrl());
-        gainDTO.setDebutLocation(String.valueOf(gain.getPayment().getReservation().getStartLocation()));
-        gainDTO.setFinLocation(String.valueOf(gain.getPayment().getReservation().getEndLocation()));
+        gainDTO.setDebutLocation(gain.getPayment().getReservation().getStartLocation());
+        gainDTO.setFinLocation(gain.getPayment().getReservation().getEndLocation());
         return gainDTO;
     }
 
@@ -654,6 +750,9 @@ public class MapperDTO {
         claimDto.setResponse(claim.getResponse());
         claimDto.setCreatedAt(claim.getCreatedAt());
         claimDto.setResponseAt(claim.getResponseAt());
+        claimDto.setCarPhoto((claim.getReservation().getCar().getPhotos().get(0).getUrl()));
+        claimDto.setBrand(claim.getReservation().getCar().getBrand());
+        claimDto.setModel(claim.getReservation().getCar().getModel());
         return claimDto;
     }
 

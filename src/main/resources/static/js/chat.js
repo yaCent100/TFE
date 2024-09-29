@@ -99,17 +99,29 @@ function displayMessage(message) {
     // Vérifier si l'utilisateur actuel est l'expéditeur du message
     var isSelf = (message.fromUserId === currentUserId);
 
+    // Créez un conteneur parent pour chaque message
+    var messageContainer = document.createElement('div');
+    messageContainer.classList.add('message-container');
+    messageContainer.style.display = 'block'; // Forcer chaque message à occuper toute la largeur
+
+    // Ajouter une classe pour styliser si le message provient de l'utilisateur actuel ou non
+    if (isSelf) {
+        messageContainer.classList.add('message-self-container'); // Messages envoyés par l'utilisateur à droite
+    } else {
+        messageContainer.classList.add('message-other-container'); // Messages reçus à gauche
+    }
+
+    // Créez l'élément pour chaque message
     var messageElement = document.createElement('div');
     messageElement.classList.add('chat-message');
 
-    // Ajouter une classe pour styliser si le message provient de l'utilisateur actuel ou non
     if (isSelf) {
         messageElement.classList.add('self');
     } else {
         messageElement.classList.add('other');
     }
 
-    // Créez l'élément de l'image de profil
+    // Créez le conteneur de l'image de profil
     var profileElement = document.createElement('div');
     profileElement.classList.add('message-profile');
     var profileImage = document.createElement('img');
@@ -119,6 +131,13 @@ function displayMessage(message) {
     // Créez le conteneur de contenu du message
     var contentElement = document.createElement('div');
     contentElement.classList.add('message-content');
+
+    // Ajouter une classe spécifique au contenu du message pour différencier self et other
+    if (isSelf) {
+        contentElement.classList.add('self-content');
+    } else {
+        contentElement.classList.add('other-content');
+    }
 
     // Affichez le nom de l'utilisateur si le message vient de quelqu'un d'autre
     if (!isSelf) {
@@ -148,18 +167,36 @@ function displayMessage(message) {
         dateElement.textContent = formattedDate;
     }
 
-    messageElement.appendChild(profileElement);
-    messageElement.appendChild(contentElement);
+    // Ajouter la date en premier dans le messageElement
     messageElement.appendChild(dateElement);
 
+    // Ajouter le profil et le contenu dans le conteneur message
+    if (isSelf) {
+        // Pour les messages self : message à gauche et image à droite
+        messageElement.appendChild(contentElement);
+        messageElement.appendChild(profileElement);
+    } else {
+        // Pour les messages other : image à gauche et message à droite
+        messageElement.appendChild(profileElement);
+        messageElement.appendChild(contentElement);
+    }
+
+    // Ajouter le message au conteneur parent
+    messageContainer.appendChild(messageElement);
+
+    // Ajouter le conteneur parent au chat
     var chatArea = document.querySelector('.chat-area');
     if (chatArea) {
-        chatArea.appendChild(messageElement);
+        chatArea.appendChild(messageContainer);
         chatArea.scrollTop = chatArea.scrollHeight;
     } else {
         console.error('Element with class .chat-area not found');
     }
 }
+
+
+
+
 
 
 

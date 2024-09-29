@@ -3,113 +3,101 @@
 <head>
   <meta charset="UTF-8">
   <title>Mon Compte</title>
-  <style>
-  .upload-area {
-      position: relative;
-      width: 100%;
-      max-width: 300px;
-      margin: 0 auto;
-    }
-    .upload-area img {
-      width: 100%;
-      cursor: pointer;
-    }
-    .upload-area input[type="file"] {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-    }
-    .upload-area .status {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 10px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-  </style>
+
 </head>
 <body>
 
 <div layout:fragment="content">
 
   <div th:replace="account/fragments/account-header"></div>
-
   <div class="container">
-    <div>
+    <div th:if="${successMessage}" class="alert alert-success mt-2 mb-2" role="alert">
+      <span th:text="${successMessage}"></span>
+    </div>
+    <div class="back-account">
+      <i class="fa fa-arrow-left arrow-back" aria-hidden="true"></i>
       <a href="/account">Précédent</a>
     </div>
+    </div>
+  <div class="container">
     <div class="user-info-perso">
       <div class="row">
-        <div class="col-lg-12 col-sm-9 mgb-20">
-          <h2 class="fs22">
+        <div class="col-lg-12 col-sm-9 mb-3">
+          <h2 class="bold">
             Documents d'identités
-            <span class="c-warning nbsp-left" data-toggle="tooltip" data-placement="right" title="Informations nécessaires afin de réaliser vos virements."><i class="fa fa-warning"></i></span>
+            <span class="c-warning nbsp-left" data-toggle="tooltip" data-placement="right" title="Informations nécessaires afin de réaliser vos virements."><i class="fa fa-file-text text-info" aria-hidden="true"></i></span>
           </h2>
         </div>
       </div>
 
       <div class="row">
         <div class="col-lg-12 col-sm-12">
-          <div class="bg-light bradius pd-10 mgb-20">
-            <p class="fs14 nbsp-left">Téléchargez une copie de votre pièce d'identité afin de recevoir les gains de vos locations sur votre compte bancaire. </p>
-            <p class="fs14 nbsp-left"><i class="fa fa-warning nbsp"></i>Sans ces documents nous ne pourrons pas effectuer de virement sur votre compte.</p>
+          <div class="">
+            <p class="">Téléchargez une copie de votre pièce d'identité afin de recevoir les gains de vos locations sur votre compte bancaire. </p>
+            <p class=""><i class="fa fa-warning text-danger"></i> Sans ces documents nous ne pourrons pas effectuer de virement sur votre compte.</p>
 
-            <p class="fs14 mgt-20">Documents acceptés par notre plateforme de paiement : <span class="medium">Passeport</span> ou <span class="medium">carte d'identité</span> (les titres de séjour ne sont pas acceptés).</p>
-            <p class="fs14">Le document doit être :</p>
-            <div class="mgl-30">
-              <p class="fs14 nbsp-large"><i class="fa fa-circle fs10 lh16 nbsp"></i><span class="medium">Lisible :</span> pas de flash, la photo doit être nette</p>
-              <p class="fs14 nbsp-large"><i class="fa fa-circle fs10 lh16 nbsp"></i><span class="medium">Complet :</span> le document ne doit pas être coupé</p>
-              <p class="fs14 nbsp-large"><i class="fa fa-circle fs10 lh16 nbsp"></i><span class="medium">Valide :</span> le document de doit pas être périmé</p>
-              <p class="fs14 nbsp-large"><i class="fa fa-circle fs10 lh16 nbsp"></i><span class="">Le recto et le verso sont nécessaire pour une carte d'identité</span></p>
-              <p class="fs14 nbsp-large"><i class="fa fa-circle fs10 lh16 nbsp"></i><span class="">Au nom du compte Zotcar</span></p>
+            <p class="">Le document doit être :</p>
+            <div class="text-center mb-4 bold">
+              <p class=""><span class="medium">Lisible <i class="fa fa-arrow-circle-right text-info"></i></span> pas de flash, la photo doit être nette</p>
+              <p class=""><span class="medium">Complet <i class="fa fa-arrow-circle-right text-info"></i></span> le document ne doit pas être coupé</p>
+              <p class=""><span class="medium">Valide <i class="fa fa-arrow-circle-right text-info"></i></span> le document de doit pas être périmé</p>
+              <p class=""><span class="">Le recto et le verso sont nécessaire pour une carte d'identité</span></p>
             </div>
-            <p class="fs14 nbsp-large">Tous les documents ne respectant pas ces critères seront refusés.</p>
+            <p class="">Tous les documents ne respectant pas ces critères seront refusés.</p>
           </div>
         </div>
       </div>
       <div class="col-lg-12 col-sm-12">
         <div class="row">
-          <div class="col-lg-5">
-            <p class="fs12 mgb-10">Recto</p>
+          <div class="col-lg-6 text-center">
+            <p class="">Recto</p>
           </div>
-          <div class="col-lg-5">
-            <p class="fs12 mgb-10">Verso</p>
+          <div class="col-lg-6 text-center">
+            <p class="">Verso</p>
           </div>
         </div>
 
-        <div th:if="${!hasRecto || !hasVerso}">
-          <form th:action="@{/account/document-identity}" method="post" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col-lg-5 mgb-20">
-                <label class="form-control form-control-edit pd-1-2 mgb-0" for="">
-                  <input class="upload-btn" id="id_document_recto_input" type="file" name="recto" accept="image/png,image/jpeg,application/pdf" th:required="${!hasRecto}">
-                </label>
-                <span class="text-more-light">Jusqu'à 10 Mo.</span>
-              </div>
-              <div class="col-lg-5 mgb-20">
-                <label class="form-control form-control-edit pd-1-2 mgb-0" for="">
-                  <input class="upload-btn" id="id_document_verso_input" type="file" name="verso" accept="image/png,image/jpeg,application/pdf" th:required="${!hasVerso}">
-                </label>
-                <span class="text-more-light">Jusqu'à 10 Mo.</span>
-              </div>
-              <div class="col-lg-2">
-                <button class="btn btn-success h45 w100p">
-                  <span class="not-load-el">Enregistrer</span><span class="load-el"><i class="fa fa-spinner fa-spin nbsp-large"></i></span>
-                </button>
-              </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <div th:if="${hasIdentityRecto && hasIdentityVerso}" class="text-center m-3 bold">
+              <p class="text-success bold">Les documents d'identité (recto et verso) sont déjà en notre possession.</p>
             </div>
-          </form>
+
+            <div th:unless="${hasIdentityRecto && hasIdentityVerso}">
+              <form th:action="@{/account/document-identity}" method="post" enctype="multipart/form-data">
+                <div class="row">
+                  <div class="col-lg-5 mgb-20">
+                    <label class="form-control form-control-edit pd-1-2 mgb-0" for="">
+                      <input class="upload-btn" id="identity_document_recto_input" type="file" name="identityRecto"
+                             accept="image/png,image/jpeg,application/pdf"
+                             th:required="${!hasIdentityRecto}">
+                    </label>
+                    <span class="text-more-light">
+              <span>Jusqu'à 10 Mo pour le recto.</span>
+            </span>
+                  </div>
+
+                  <div class="col-lg-5 mgb-20">
+                    <label class="form-control form-control-edit pd-1-2 mgb-0" for="">
+                      <input class="upload-btn" id="identity_document_verso_input" type="file" name="identityVerso"
+                             accept="image/png,image/jpeg,application/pdf"
+                             th:required="${!hasIdentityVerso}">
+                    </label>
+                    <span class="text-more-light">
+              <span>Jusqu'à 10 Mo pour le verso.</span>
+            </span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-12">
+                    <button type="submit" class="btn btn-success">Enregistrer les documents</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-        <div th:if="${hasRecto && hasVerso}">
-          <p class="text-success">Vos documents d'identité sont déjà à notre disposition.</p>
-        </div>
+
 
       </div>
 
@@ -118,36 +106,59 @@
   </div>
   <div class="container">
     <div class="user-info-perso">
-      <h2 class="fs22 bold">Permis de conduire
-        <span class="c-warning nbsp-left" data-toggle="tooltip" data-placement="right" title="" data-original-title="Informations nécessaires afin de réaliser vos virements."><i class="fa fa-warning"></i></span>
+      <h2 class="bold mb-3">Permis de conduire
+        <span class="" data-toggle="tooltip" data-placement="right" title="" data-original-title="Informations nécessaires afin de réaliser vos virements."><i class="fa fa-file-text text-info" aria-hidden="true"></i></span>
       </h2>
 
-      <form th:action="@{/account/document-identity}" method="post" enctype="multipart/form-data">
-        <div class="row">
-          <div class="col-lg-6 col-md-6 col-xs-12">
-            <p class="fs12 mgb-10">Recto</p>
-            <div class="upload-area">
-              <img src="/images/licence-recto.png" alt="Cliquez pour télécharger le recto" id="rectoPreview">
-              <input id="driver_licence_recto_input" type="file" name="recto" accept="image/png, image/jpeg, application/pdf" required>
-            </div>
-          </div>
-          <div class="col-lg-6 col-md-6 col-xs-12">
-            <p class="fs12 mgb-10">Verso</p>
-            <div class="upload-area">
-              <img src="/images/licence-verso.png" alt="Cliquez pour télécharger le verso" id="versoPreview" width="225" height="175">
-              <input id="driver_licence_verso_input" type="file" name="verso" accept="image/png, image/jpeg, application/pdf">
-            </div>
-          </div>
-
-          <div class="col-lg-12 col-md-12 col-xs-12">
-            <p class="text-center"><button class="btn btn-success" type="submit" id="send-driver-btn">Enregistrer le permis</button></p>
-          </div>
+      <div class="row">
+        <div class="col-lg-6 text-center">
+          <p class="">Recto</p>
         </div>
-      </form>
-    </div>
+        <div class="col-lg-6 text-center">
+          <p class="">Verso</p>
+        </div>
+      </div>
+
+      <!-- Vérification si les documents de la licence (recto et verso) sont déjà en notre possession -->
+      <div th:if="${hasLicenceRecto && hasLicenceVerso}" class="text-center m-3">
+        <p class="text-success bold">Les documents de la licence (recto et verso) sont déjà en notre possession.</p>
+      </div>
+
+      <div th:unless="${hasLicenceRecto && hasLicenceVerso}">
+        <form th:action="@{/account/document-identity}" method="post" enctype="multipart/form-data">
+          <div class="row">
+            <div class="col-lg-5 mgb-20">
+              <label class="form-control form-control-edit pd-1-2 mgb-0" for="">
+                <input class="upload-btn" id="licence_document_recto_input" type="file" name="licenceRecto"
+                       accept="image/png,image/jpeg,application/pdf"
+                       th:required="${!hasLicenceRecto}">
+              </label>
+              <span class="text-more-light">
+              <span>Jusqu'à 10 Mo pour le recto.</span>
+            </span>
+            </div>
+
+            <div class="col-lg-5 mgb-20">
+              <label class="form-control form-control-edit pd-1-2 mgb-0" for="">
+                <input class="upload-btn" id="licence_document_verso_input" type="file" name="licenceVerso"
+                       accept="image/png,image/jpeg,application/pdf"
+                       th:required="${!hasLicenceVerso}">
+              </label>
+              <span class="text-more-light">
+              <span>Jusqu'à 10 Mo pour le verso.</span>
+            </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <button type="submit" class="btn btn-success">Enregistrer les documents de la licence</button>
+            </div>
+          </div>
+        </form>
+      </div>
 
   </div>
-</div>
+  </div>
 
 <script>
   document.getElementById('driver_licence_recto_input').addEventListener('change', function(e) {
@@ -170,5 +181,11 @@
     }
   });
 </script>
+    <script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+</script>
+</div>
 </body>
 </html>

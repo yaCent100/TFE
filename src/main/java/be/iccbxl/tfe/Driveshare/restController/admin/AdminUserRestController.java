@@ -17,10 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -43,13 +40,14 @@ public class AdminUserRestController {
         List<UserDTO> users = userService.getAllUsers().stream().map(MapperDTO::toDTO).collect(Collectors.toList());
 
         users.forEach(user -> {
-            System.out.println("User: " + user.getNom() + " " + user.getPrenom());
+            System.out.println("User: " + user.getLastName() + " " + user.getFirstName());
             user.getDocuments().forEach(document -> {
                 System.out.println("Document Type: " + document.getDocumentType() + ", URL: " + document.getUrl());
             });
         });
 
-        return users;    }
+        return users;
+    }
 
 
     @Operation(summary = "Obtenir les utilisateurs par rôle", description = "Récupérer une liste d'utilisateurs en fonction de leur rôle.")
@@ -63,9 +61,18 @@ public class AdminUserRestController {
 
     @Operation(summary = "Ajouter un nouvel utilisateur", description = "Ajouter un nouvel utilisateur à la plateforme.")
     @PostMapping("/add-user")
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        User newUser = userService.save(user);
-        return ResponseEntity.ok(newUser);
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        try {
+            // Appel au service pour ajouter l'utilisateur
+            UserDTO newUser = userService.addUserAdmin(user);
+            return ResponseEntity.ok(newUser); // 200 OK avec le nouvel utilisateur
+        } catch (IllegalArgumentException e) {
+            // Retourne un code 400 BAD REQUEST si l'email est déjà utilisé
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            // Retourne un code 500 INTERNAL SERVER ERROR pour toute autre erreur
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue lors de l'ajout de l'utilisateur.");
+        }
     }
 
     @Operation(summary = "Obtenir les permissions d'un utilisateur", description = "Récupérer les rôles attribués à un utilisateur.")
@@ -139,6 +146,20 @@ public class AdminUserRestController {
         documentService.deleteDocumentsByUserIdAndType(userId, documentType);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/users/{id}/verify")
+    public ResponseEntity<?> verifyUserDocuments(@PathVariable Long id) {
+        Optional<User> optionalUser = Optional.ofNullable(userService.getUserById(id));
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setVerified(true);  // Marquer l'utilisateur comme vérifié
+            userService.save(user);
+            return ResponseEntity.ok("Les documents ont été vérifiés avec succès.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur non trouvé.");
+        }
+    }
+
 
     @Operation(summary = "Supprimer un utilisateur", description = "Supprimer un utilisateur de la plateforme.")
     @DeleteMapping("/users/{userId}")

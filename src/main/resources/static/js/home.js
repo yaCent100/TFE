@@ -37,62 +37,75 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fonction pour récupérer et afficher les voitures les mieux notées
-    function fetchTopRatedCars() {
-        fetch('/api/cars/top-rated')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            displayTopRatedCars(data);
-        })
-        .catch(error => console.error('Error fetching top-rated cars:', error));
+function fetchTopRatedCars() {
+    fetch('/api/cars/top-rated')
+    .then(response => {
+        console.log('Response status:', response.status);  // Ajouter du logging
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Top-rated cars data:', data);  // Voir les données reçues
+        displayTopRatedCars(data);
+    })
+    .catch(error => console.error('Error fetching top-rated cars:', error));
+}
+
+function displayTopRatedCars(cars) {
+    const carListElement = document.getElementById('topRatedCars');
+
+    if (!carListElement) {
+        console.error("Element with id 'topRatedCars' not found.");
+        return;
     }
 
-    function displayTopRatedCars(cars) {
-        const carListElement = document.getElementById('topRatedCars');
+    carListElement.innerHTML = ''; // Vider la liste avant d'ajouter les nouvelles voitures
 
-        if (!carListElement) {
-            console.error("Element with id 'topRatedCars' not found.");
-            return;
+    if (cars.length === 0) {
+        carListElement.innerHTML = '<p>Aucune voiture disponible avec 5 étoiles.</p>';
+        return;
+    }
+
+    cars.forEach(car => {
+        const carLink = document.createElement('a');
+        carLink.href = `/cars/${car.id}`;
+        carLink.classList.add('car-link');
+
+        const carItem = document.createElement('div');
+        carItem.classList.add('car-item');
+
+        // Calculer les étoiles
+        const fullStars = Math.round(car.averageRating);
+        const emptyStars = 5 - fullStars;
+
+        let starHtml = '';
+        for (let i = 0; i < fullStars; i++) {
+            starHtml += '<span class="star filled">★</span>';
+        }
+        for (let i = 0; i < emptyStars; i++) {
+            starHtml += '<span class="star">☆</span>';
         }
 
-        carListElement.innerHTML = ''; // Vider la liste avant d'ajouter les nouvelles voitures
-
-        if (cars.length === 0) {
-            carListElement.innerHTML = '<p>Aucune voiture disponible avec 5 étoiles.</p>';
-            return;
-        }
-
-        cars.forEach(car => {
-            const carLink = document.createElement('a');
-            carLink.href = `/cars/${car.id}`;
-            carLink.classList.add('car-link');
-
-            const carItem = document.createElement('div');
-            carItem.classList.add('car-item');
-
-            // Calculer les étoiles
-            const stars = '★'.repeat(Math.round(car.averageRating)) + '☆'.repeat(5 - Math.round(car.averageRating));
-
-            carItem.innerHTML = `
-                <img src="uploads/${car.photoUrl[0]}" alt="${car.brand} ${car.model}" height="150">
+        carItem.innerHTML = `
+            <img src="uploads/photo-car/${car.photoUrl}" alt="${car.brand} ${car.model}" height="150">
+            <div class="p-2">
                 <h5>${car.brand} ${car.model}</h5>
-                <p>${car.locality}</p>
-                <div class="car-details">
-                    <span>${stars}</span>
-                    <span>${car.price.middlePrice} €/jour</span>
+                <p class="text-muted">${car.locality}</p>
+                <div class="car-details d-flex justify-content-between align-items-center">
+                    <div class="stars">${starHtml}</div>
+                    <span class="text-end car-detail-price">${car.displayPrice} €/jour</span>
                 </div>
-            `;
+            </div>
+        `;
 
-            carLink.appendChild(carItem);
-            carListElement.appendChild(carLink);
-        });
+        carLink.appendChild(carItem);
+        carListElement.appendChild(carLink);
+    });
 
-        carListElement.style.display = 'block';
-    }
+    carListElement.style.display = 'block';
+}
 
 
 });

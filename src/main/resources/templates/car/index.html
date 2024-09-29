@@ -8,174 +8,252 @@
 </head>
 <body>
 <div layout:fragment="content">
-  <div class="container pdb-30">
+  <div id="search" class="search-main">
+    <div class="container pdb-30">
 
-    <div class="search-container">
-      <form class="searchForm" id="rechercheForm" onsubmit="return searchCars(event)" method="GET">
-        <div class="row m-5">
-          <div class="col-md-4 d-flex align-items-center">
-            <img src="icones/espace-reserve.png" alt="globe" style="width: 20px; height: auto;">
-            <input type="text" class="form-inline searchForm" id="manualAddress" name="manualAddress" placeholder="Entrez votre adresse" >
-          </div>
-          <div class="col-md-3 d-flex align-items-center">
-            <input type="date" class="no-border rounded-0" placeholder="Date de début" id="dateDebut" name="dateDebut">
-            <i class="far fa-calendar-alt"></i>
-          </div>
-          <div class="col-md-3 d-flex align-items-center">
-            <input type="date" class="no-border rounded-end" placeholder="Date de fin" id="dateFin" name="dateFin">
-            <i class="far fa-calendar-alt"></i>
-          </div>
-          <div class="col-md-2 bold text-center c-white no-padding">
-            <button type="submit" class="btn btn-success bold no-padding" style="background-color: #354C6F;">Rechercher</button>
-          </div>
-        </div>
-      </form>
-    </div>
-
-    <div class="row justify-content-center mt-5">
-      <!-- Colonne de filtres (sur les grands écrans uniquement) -->
-      <div class="col-lg-3 d-none d-lg-block mgb-20">
-        <form class="form-shadow">
-          <div class="search-filter-item mb-3">
-            <h6 class="search-title"><img src="icones/voiture-electrique.png" class="img-fluid" width="25" alt="voiture"> Catégorie de véhicule</h6>
-            <hr>
-            <div id="category-filter"></div>
-          </div>
-          <br>
-          <div class="form-group">
-            <label for="priceRange">
-              <img src="icones/prix.png" class="img-fluid" width="25" alt="voiture"> Prix
-            </label>
-            <input type="range" class="form-range" id="priceRange" min="0" max="150" step="1" value="0">
-            <div id="priceValue">0 €</div>
-          </div>
-          <br>
-          <div class="search-filter-item mb-3">
-            <h6 class="search-title"><img src="icones/boite-de-vitesses.png" class="img-fluid" width="25" alt="voiture"> Boite de vitesse</h6>
-            <hr>
-            <div id="gearbox-filter"></div>
-          </div>
-          <br>
-
-          <div class="search-filter-item mb-3">
-            <h6 class="search-title"><img src="icones/pompe-a-essence.png" class="img-fluid" width="25" alt="voiture"> Motorisation</h6>
-            <hr>
-            <div id="motorisation-filter"></div>
-          </div>
-          <br>
-          <div class="search-filter-item mb-3">
-            <h6 class="search-title"><img src="icones/compteur-de-vitesse.png" class="img-fluid" width="25" alt="voiture"> Kilométrage du véhicule</h6>
-            <hr>
-            <div id="kilometrage-filter"></div>
-          </div>
-          <br>
-          <div class="search-filter-item mb-3">
-            <h6 class="search-title"><img src="icones/siege.png" class="img-fluid" width="25" alt="voiture"> Nombre de places</h6>
-            <hr>
-            <div id="places-filter"></div>
-          </div>
-
-
-          <div class="text-center">
-            <button class="btn btn-primary ps-3 pe-3 " id="resetButton">Réinitialiser</button>
-          </div>
-        </form>
+      <div class="text-center fw-bold">
+        <h2 id="carCountMessage" class="text-center fw-bold mb-4 " style="display: none;"></h2><!-- Div pour le message dynamique -->
       </div>
-
-      <!-- Colonne principale pour afficher les voitures -->
-      <div class="col-lg-9">
-        <div class="d-flex justify-content-between">
-          <h6 class="search-title">Trier par :</h6>
-          <nav class="filter-top">
-            <ul class="nav nav-pills justify-content-end">
-              <li class="nav-item">
-                <a href="#" class="nav-link sort-link active" data-sort="default">Classement des véhicules</a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link sort-link" data-sort="acceptance">Taux d'acceptation</a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link sort-link" data-sort="price">Prix croissant</a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link sort-link" data-sort="rating">Evaluation</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <div id="loading-spinner" style="display: none;">
-          <div class="spinner-border" role="status">
-            <span class="sr-only">Chargement...</span>
-          </div>
-        </div>
-        <!--<div class="row g-3 p-3" id="carList"></div>-->
-
-        <div class="row g-3 p-3" id="carList" >
-         <!-- <div class="col-lg-12">
-          <div class="mb-3" th:each="car : ${cars}">
-            <div class="card p-3 rounded">
-              <a th:href="@{'/cars/' + ${car.id}}" class="card-link">
-                <div class="row g-0">
-                  <div class="col-md-3">
-                    <img class="card-img-top" style="max-height: 150px;" th:src="${car.photos != null and car.photos.size() > 0 ? '/uploads/' + car.photos[0].url : '/images/carDefault.png'}" alt="Photo de voiture">
-                  </div>
-
-
-                  <div class="col-md-9">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-lg-12">
-                          <div class="row">
-                            <div class="col-lg-8 col-md-7">
-                              <h5 class="card-title" th:text="${car.brand + ' ' + car.model}"></h5>
-                              <div>
-                                <span th:each="starIndex : ${#numbers.sequence(1, 5)}">
-                                    <span th:if="${starIndex <= averageRatings[car.id]}">
-                                        <span class="fa fa-star"></span>
-                                    </span>
-                                    <span th:unless="${starIndex <= averageRatings[car.id]}">
-                                        <span class="fa fa-star-o"></span>
-                                    </span>
-                                </span>
-                              </div>
-                              <div>(<span th:text="${reviewCounts[car.id]}"></span> avis)</div>
-                            </div>
-                            <div class="col-lg-1 col-md-2">
-                            </div>
-                            <div class="col-lg-3 col-md-4">
-                              <p th:text="${car.price.middlePrice + ' €/j'}" class="priceIndex"></p>
-                            </div>
-                          </div>
-                          <div class="col-lg-12">
-                            <div class="row">
-                              <div class="col-lg-9">
-                                <p>
-                                  <img src="icones/voiture-electrique.png" alt="" height="15">
-                                  <span th:text="${car.category.category}"></span>
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                        </div>
+        <div class="search-container">
+          <form class="searchForm" id="searchForm" method="GET">
+            <div class="row mb-4">
+              <div class="col-lg-12 container-search">
+                <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+                  <div class="col-lg-7 d-flex flex-column justify-content-center align-items-center pe-3">
+                    <div class="position-relative w-100">
+                      <input type="text" class="form-control pac-target-input" id="manualAddressCars" name="manualAddressCars" th:placeholder="#{placeholder.rechercher}" autocomplete="off" style="padding-left: 30px;">
+                      <i class="fa-solid fa-location-dot position-absolute" style="left: 10px; top: 43%; transform: translateY(-50%); color:#00BFFF;"></i>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3 w-100">
+                      <div class="col-lg-6 me-1">
+                        <input type="date" class="form-control" id="dateDebut" name="dateDebut" placeholder="Date de début">
+                      </div>
+                      <div class="col-lg-6">
+                        <input type="date" class="form-control" id="dateFin" name="dateFin" placeholder="Date de fin">
                       </div>
                     </div>
                   </div>
+                  <div class="col-lg-3 d-flex justify-content-center align-items-center">
+                    <button type="submit" th:text="#{rechercher}" class="btn btn-success bold no-padding" style="background-color: #354C6F;">Rechercher</button>
+                  </div>
                 </div>
-              </a>
+
+              </div>
+            </div>
+          </form>
+
+      </div>
+      <div class="text-center mt-2">
+        <a id="clearSearch" class="text-muted clear-form" th:text="#{effacer-recherche}">Effacer la recherche</a>
+      </div>
+
+      <div class="row justify-content-center mt-5">
+        <!-- Colonne de filtres (sur les grands écrans uniquement) -->
+        <div class="col-lg-3 d-none d-lg-block mgb-20">
+          <form class="form-shadow">
+
+            <div class="search-filter-item mb-3">
+              <h6 class="search-title"><img src="icones/voiture-electrique.png" class="img-fluid" width="25" alt="voiture">
+                <span th:text="#{categorie}">Catégorie de véhicule</span></h6>
+              <hr>
+              <div id="category-filter">
+                <div class="form-check">
+                  <input class="form-check-input category-filter" type="checkbox" value="Citadine" id="category-citadine">
+                  <label class="form-check-label" for="category-citadine">Citadine</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input category-filter" type="checkbox" value="Berline" id="category-berline">
+                  <label class="form-check-label" for="category-berline">Berline</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input category-filter" type="checkbox" value="SUV" id="category-suv">
+                  <label class="form-check-label" for="category-suv">SUV</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input category-filter" type="checkbox" value="Monospace" id="category-monospace">
+                  <label class="form-check-label" for="category-monospace">Monospace</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input category-filter" type="checkbox" value="Break" id="category-break">
+                  <label class="form-check-label" for="category-break">Break</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input category-filter" type="checkbox" value="4X4" id="category-4x4">
+                  <label class="form-check-label" for="category-4x4">4X4</label>
+                </div>
+              </div>
+            </div>
+
+            <br>
+            <div class="form-group">
+              <label for="priceRange">
+                <img src="icones/prix.png" class="img-fluid" width="25" alt="voiture">
+                <span th:text="#{prix}">Prix</span>
+              </label>
+              <input type="range" class="form-range" id="priceRange" min="0" max="150" step="1" value="0">
+              <div id="priceValue">0 €</div>
+            </div>
+
+            <br>
+            <div class="search-filter-item mb-3">
+              <h6 class="search-title"><img src="icones/boite-de-vitesses.png" class="img-fluid" width="25" alt="voiture">
+                <span th:text="#{boite}">Boite de vitesse</span></h6>
+              <hr>
+              <div id="gearbox-filter">
+                <div class="form-check">
+                  <input class="form-check-input gearbox-filter" type="checkbox" value="Automatique" id="gearbox-automatique">
+                  <label class="form-check-label" for="gearbox-automatique">Automatique</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input gearbox-filter" type="checkbox" value="Manuelle" id="gearbox-manuelle">
+                  <label class="form-check-label" for="gearbox-manuelle">Manuelle</label>
+                </div>
+              </div>
+            </div>
+
+            <br>
+            <div class="search-filter-item mb-3">
+              <h6 class="search-title"><img src="icones/pompe-a-essence.png" class="img-fluid" width="25" alt="voiture">
+                <span th:text="#{moteur}">Motorisation</span></h6>
+              <hr>
+              <div id="motorisation-filter">
+                <div class="form-check">
+                  <input class="form-check-input motorisation-filter" type="checkbox" value="Diesel" id="motorisation-diesel">
+                  <label class="form-check-label" for="motorisation-diesel">Diesel</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input motorisation-filter" type="checkbox" value="Hybride" id="motorisation-hybride">
+                  <label class="form-check-label" for="motorisation-hybride">Hybride</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input motorisation-filter" type="checkbox" value="Essence" id="motorisation-essence">
+                  <label class="form-check-label" for="motorisation-essence">Essence</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input motorisation-filter" type="checkbox" value="Electrique" id="motorisation-electrique">
+                  <label class="form-check-label" for="motorisation-electrique">Electrique</label>
+                </div>
+              </div>
+            </div>
+
+            <br>
+            <div class="search-filter-item mb-3">
+              <h6 class="search-title"><img src="icones/compteur-de-vitesse.png" class="img-fluid" width="25" alt="voiture">
+                <span th:text="#{km}">Kilométrage du véhicule</span></h6>
+              <hr>
+              <div id="kilometrage-filter">
+                <div class="form-check">
+                  <input class="form-check-input kilometrage-filter" type="checkbox" value="15 - 50 000 km" id="kilometrage-15-50000">
+                  <label class="form-check-label" for="kilometrage-15-50000">15 - 50 000 km</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input kilometrage-filter" type="checkbox" value="0 - 15 000 km" id="kilometrage-0-15000">
+                  <label class="form-check-label" for="kilometrage-0-15000">0 - 15 000 km</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input kilometrage-filter" type="checkbox" value="50 - 100 000 km" id="kilometrage-50-100000">
+                  <label class="form-check-label" for="kilometrage-50-100000">50 - 100 000 km</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input kilometrage-filter" type="checkbox" value="+ de 150 000 km" id="kilometrage-150000">
+                  <label class="form-check-label" for="kilometrage-150000">+ de 150 000 km</label>
+                </div>
+              </div>
+            </div>
+
+            <br>
+            <div class="search-filter-item mb-3">
+              <h6 class="search-title"><img src="icones/siege.png" class="img-fluid" width="25" alt="voiture">
+                <span th:text="#{places}">Nombre de places</span></h6>
+              <hr>
+              <div id="places-filter">
+                <div class="form-check">
+                  <input class="form-check-input places-filter" type="checkbox" value="4" id="places-4">
+                  <label class="form-check-label" for="places-4">4 places</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input places-filter" type="checkbox" value="5" id="places-5">
+                  <label class="form-check-label" for="places-5">5 places</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input places-filter" type="checkbox" value="7" id="places-7">
+                  <label class="form-check-label" for="places-7">7 places</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <button class="btn btn-primary ps-3 pe-3 enregistrer" id="resetButton"  th:text="#{reinitialiser}">Réinitialiser</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Colonne principale pour afficher les voitures -->
+        <div class="col-lg-9">
+          <div class="d-flex justify-content-around align-items-center fw-bold mb-3">
+            <div class="text-center">
+              <h6 class="search-title m-0">Trier par :</h6>
+            </div>
+            <nav class="filter-top">
+              <ul class="nav nav-pills justify-content-end">
+                <li class="nav-item">
+                  <a href="#" class="nav-link sort-link active" data-sort="default" th:text="#{classement}">Classement des véhicules</a>
+                </li>
+                <li class="nav-item">
+                  <a href="#" class="nav-link sort-link" data-sort="acceptance"  th:text="#{instantanné}">Réservation instantanée</a>
+                </li>
+                <li class="nav-item">
+                  <a href="#" class="nav-link sort-link" data-sort="price"  th:text="#{croissant}">Prix croissant</a>
+                </li>
+                <li class="nav-item">
+                  <a href="#" class="nav-link sort-link" data-sort="rating"  th:text="#{note}">Évaluation</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+
+          <div class="row g-3 p-3" id="carList" >
+
+
+
+          </div>
+
+        <div id="spinner-container" class="text-center" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
             </div>
           </div>
+
+
         </div>
       </div>
+    </div>
 
-        <div id="pagination">
+  </div>
 
-        </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const { Autocomplete } = await google.maps.importLibrary("places");
 
+        const adresseInputCars = document.getElementById('manualAddressCars');
+        if (adresseInputCars) {
+            const autocompleteCars = new Autocomplete(adresseInputCars, {
+                types: ['address'],
+                componentRestrictions: { country: 'BE' }
+            });
 
-      </div>
-
-  </div>-->
+            autocompleteCars.addListener('place_changed', () => {
+                const place = autocompleteCars.getPlace();
+                if (!place.geometry) {
+                    console.error("L'adresse sélectionnée n'a pas de géométrie.");
+                    return;
+                }
+                console.log(`Place selected for #manualAddressCars:`, place);
+            });
+        }
+    });
+</script>
 </div>
 
 

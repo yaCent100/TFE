@@ -7,6 +7,7 @@ import be.iccbxl.tfe.Driveshare.service.serviceImpl.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,5 +35,14 @@ public class AdminCategoryRestController {
     public Category addCategory(@RequestBody Category category) {
         return categoryService.saveCategory(category);
     }
+
+    @Operation(summary = "Supprimer une catégorie", description = "Supprimer une catégorie par son ID.")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        // Appel du service pour supprimer la catégorie par ID
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build(); // Retourne 204 No Content si la suppression réussit
+    }
+
 }
 

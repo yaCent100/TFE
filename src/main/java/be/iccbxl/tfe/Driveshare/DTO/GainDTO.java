@@ -2,6 +2,7 @@ package be.iccbxl.tfe.Driveshare.DTO;
 
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -18,6 +19,6 @@ public class GainDTO {
     private String carBrand;
     private String carModel;
     private String carImage; // Ajouter cette ligne
-    private String debutLocation;
-    private String finLocation;
+    private LocalDate debutLocation;
+    private LocalDate finLocation;
 }

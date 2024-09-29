@@ -2,6 +2,7 @@ window.onload = function() {
     showConnexion(); // Appel initial pour configurer l'état de la page
 };
 
+
 function showConnexion() {
     // Gérer l'affichage des sections
     document.querySelector('.signin-layout-connexion').style.display = 'block';
@@ -36,12 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         showConnexion();
     });
+
     document.getElementById('inscription-link').addEventListener('click', function(event) {
         event.preventDefault();
         showInscription();
     });
 });
-
-
-
-

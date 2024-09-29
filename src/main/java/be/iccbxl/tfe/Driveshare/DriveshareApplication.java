@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.web.firewall.HttpFirewall;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 
 @SpringBootApplication
 @EnableScheduling // Pour activer les tâches planifiées
+@EnableCaching
 public class DriveshareApplication {
 
 	public static void main(String[] args) {

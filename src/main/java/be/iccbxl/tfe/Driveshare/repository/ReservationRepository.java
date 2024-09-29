@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -62,12 +63,25 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT c FROM Car c JOIN c.reservations r JOIN r.payment pay WHERE r.statut = 'CONFIRMED' AND MONTH(r.startLocation) = MONTH(CURRENT_DATE()) GROUP BY c.id ORDER BY COUNT(r) DESC")
     List<Car> findTop10MostReservedCarsThisMonth();
 
-    @Query("SELECT r FROM Reservation r WHERE MONTH(r.startLocation) = MONTH(CURRENT_DATE) AND YEAR(r.startLocation) = YEAR(CURRENT_DATE) AND r.statut = 'CONFIRMED'")
-    List<Reservation> findReservationsForCurrentMonth();
+    @Query("SELECT r FROM Reservation r WHERE r.startLocation BETWEEN :startDate AND CURRENT_DATE AND r.statut IN ('CONFIRMED', 'NOW', 'FINISHED')")
+    List<Reservation> findReservationsForLastMonth(@Param("startDate") LocalDate startDate);
+
+    @Query("SELECT r FROM Reservation r WHERE r.startLocation BETWEEN :startDate AND :endDate AND r.statut IN ('CONFIRMED', 'NOW', 'FINISHED')")
+    List<Reservation> findReservationsBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
 
 
     long countByStatut(String now);
 
     @Query("SELECT MONTH(r.startLocation), COUNT(r) FROM Reservation r GROUP BY MONTH(r.startLocation)")
     List<Object[]> countReservationsByMonth();
+
+    List<Reservation> findByStatutAndEndLocationBefore(String finished, LocalDateTime localDateTime);
+
+    List<Reservation> findByCarId(Long carId);
+
+    List<Reservation> findByStatut(String responsePending);
+
+    @Query("SELECT r FROM Reservation r WHERE r.car.id = :carId AND r.statut IN ('confirmed', 'finished', 'now')")
+    List<Reservation> findByCarIdAndStatus(@Param("carId") Long carId);
 }

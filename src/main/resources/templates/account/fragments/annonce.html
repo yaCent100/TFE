@@ -1,233 +1,370 @@
 <!-- fragments/annonce.html -->
-<div layout:fragment="annonce"  id="annonce-tab" class="tab-content-car active">
+<div layout:fragment="annonce" id="annonce-tab" class="tab-content-car active" th:classappend="${param.activeTab == 'annonce-tab'} ? 'active' : ''">
+    <div class="container mt-5">
+        <div class="vehicule-container">
+            <div class="row owner-pictures mb-4" data-car-id="${car.id}">
+                <!-- Si des photos existent, affichage des photos de la voiture -->
+                <th:block th:if="${car.photoUrl != null and !car.photoUrl.isEmpty()}">
+                    <th:block th:each="photo, iterStat : ${car.photoUrl}">
+                        <div class="col-lg-3" th:if="${iterStat.index < 4}">
+                            <div class="text-center border-dotted">
+                                <p>
+                                    <!-- Affichage des photos existantes -->
+                                    <img th:src="@{'/uploads/photo-car/' + ${photo}}" class="no-picture" alt="Car Photo"
+                                         th:id="'noPicture_' + ${iterStat.index}" style="width: 100%; height: 100%; object-fit: cover;">
+                                </p>
+                            </div>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-outline-danger btn-sm mt-2 delete-photo"
+                                        th:data-car-id="${car.id}" th:data-photo-url="${photo}">
+                                    <i class="fas fa-trash-alt"></i>
+                                    <span class="sr-only">Supprimer</span>
+                                </button>
+                            </div>
 
-  <div class="container mt-5">
-    <div class="vehicule-container">
-        <div class="row owner-pictures mb-4" data-car-id="${car.id}" >
-            <!-- Existing photos -->
-            <div th:each="photo, iterStat : ${car.photos}" class="col-lg-3" id="photo_${photo.id}">
-                <div class="text-center border-dotted">
-                    <p>
-                        <img th:src="@{'/uploads/' + ${photo.url}}" class="no-picture" alt="Car Photo" th:id="'noPicture_' + ${iterStat.index}">
-                    </p>
+                        </div>
+                    </th:block>
+                </th:block>
 
-                </div>
-                <form th:action="@{/account/cars/removePhoto/{id}(id=${photo.id})}" method="post">
-                    <button type="submit" class="btn btn-danger btn-sm mt-2 delete-photo">Supprimer</button>
-                </form>
+                <!-- Espaces pour ajouter des photos supplémentaires si moins de 4 photos sont présentes -->
+                <th:block th:if="${car.photoUrl == null || car.photoUrl.size() < 4}">
+                    <th:block th:each="i : ${#numbers.sequence((car.photoUrl != null ? car.photoUrl.size() + 1 : 1), 4)}">
+                        <div class="col-lg-3">
+                            <div class="text-center border-dotted">
+                                <p>
+                                    <!-- Icône pour ajouter une nouvelle photo -->
+                                    <img src="/images/picture-icon.png" class="no-picture" alt="Ajouter une photo"
+                                         id="addPhotoIcon_${car.id}_${i}"
+                                         onclick="document.getElementById('photoInput_${car.id}_${i}').click();" />
+                                    <!-- Champ de fichier caché pour l'upload -->
+                                    <input type="file" id="photoInput_${car.id}_${i}" style="display: none;"
+                                           onchange="uploadPhoto(event, ${car.id})">
+                                </p>
+                            </div>
+                        </div>
+                    </th:block>
+                </th:block>
             </div>
 
-            <!-- Default placeholders to add up to four photos -->
-            <th:block th:each="i : ${#numbers.sequence(car.photos.size(), 3)}">
-                <div class="col-lg-3">
-                    <div class="text-center border-dotted">
-                        <p>
-                            <img src="/images/picture-icon.png" class="no-picture" alt="Add Photo" th:id="'addPhotoIcon_' + ${i}">
+            <div th:if="${car.online == false}">
+                <p class="alert alert-warning text-center">
+                    Votre véhicule a bien été pré-inscrit mais n'est pas encore en ligne. Vos informations sont en cours de validation.
+                </p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="vehicle-show-info bg-white bg-more-light mgb-20">
+                        <div class="row">
+                            <div class="col-lg-9 col-md-9 col-xs-8 mb-5">
+                                <div class="d-flex align-items-center flex-wrap">
+                                    <!-- Marque et Modèle -->
+                                    <h2 th:text="${car.brand + ' ' + car.model}" class=" mb-0 me-2"></h2>
+
+                                    <!-- Plaque d'immatriculation -->
+                                    <span class="me-2 fs-italic" th:text="${car.plaqueImmatriculation}"></span>
+                                </div>
+                                <div>
+                                    <span class="text-muted" th:text="${car.locality}"></span>
+                                </div>
+
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-xs-4">
+                                <p class="text-end">
+                                    <a class="fs14 c-main normal" th:href="@{/account/cars/edit/{id}(id=${car.id})}">
+                                        <i class="fa fa-edit nbsp-large"></i> Éditer
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="" style="padding-bottom:60px;">
+                            <div th:if="${car.modeReservation == 'automatique'}" class="card-text-mode mb-4" data-toggle="tooltip" data-placement="top" title="Vous pouvez réserver la voiture immédiatement">
+                                <img src="/icons/eclat.png" alt="eclat" class="icon" style="width: 20px; height: 20px; margin-right: 5px;">
+                                <span>Réservation instantanée</span>
+                            </div>
+                            <div>
+                                <p class="small pdt-10">* La plaque d’immatriculation n&nbsp;‘est pas visible par le locataire lorsqu’il visite votre annonce.</p>
+                            </div>
+
+                        </div>
+
+
+
+
+
+                        <div class="vehicle-show-description">
+                            <div class="row">
+                                <div class="col-12 order-2 order-sm-1 col-sm-3 center d-flex flex-column justify-content-center align-items-center">
+                                    <img class="rounded-circle mb-2" width="50" height="50"
+                                         th:src="${user.photoUrl != null ? '/uploads/profil/' + user.photoUrl : '/uploads/profil/defaultPhoto.png'}"
+                                         alt="Photo de profil">
+                                    <p th:text="${user.firstName.substring(0, 1).toUpperCase() + user.firstName.substring(1).toLowerCase()}" class="capitalize c-grey"></p>                                    <p class="fs12 lh-auto text-main">Membre depuis <span th:text="${formattedYear}"></span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="vehicle-carac mgb-40">
+                            <div class="row">
+                                <div class="col-lg-12 mb-3">
+                                    <h5 class="bold mb-3">
+                                        <img src="/icones/carac-voiture.png" width="50" alt="">
+                                        Caractéristiques
+                                    </h5>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-sm-2" th:each="carac : ${car.features}">
+                                                <div class="d-flex flex-column align-items-center pb-1">
+                                                    <!-- Nom de la caractéristique -->
+                                                    <img th:src="@{${carac.iconUrl}}" width="30" alt="Feature Icon">
+                                                    <!-- Description de la caractéristique -->
+                                                    <div th:text="${carac.description}"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+
+                                <hr class="separator-annonce">
+
+                                <div class="col-lg-12 mb-3">
+                                    <h5 class=" bold mb-3">
+                                        <img width="50" src="/icones/equip-voiture.png" alt="">
+                                        Équipements
+                                    </h5>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-sm-2" th:each="equipement : ${car.equipments}">
+                                                <!-- Utilisation de flexbox pour centrer verticalement l'image et le texte -->
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <!-- Vérification si l'icône est présente, sinon afficher une icône par défaut -->
+                                                    <img th:src="${equipement.icon != null ? equipement.icon : '/images/default-icon.png'}" alt="Equipment Icon" width="30" class="mr-2">
+                                                    <span class="fs14 c-grey medium" th:text="${equipement.equipment}"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+
+                                <hr class="separator-annonce">
+
+                                <!-- Ajout de la section des conditions sous les équipements -->
+                                <div class="col-lg-12" th:if="${!#lists.isEmpty(car.conditionsDTOs)}">
+                                    <h5 class="bold mb-3">
+                                        <img width="50" src="/images/conditionCar.png" alt="">
+                                        Conditions de location
+                                    </h5>
+                                        <div class="row">
+                                            <!-- Afficher chaque condition associée à la voiture -->
+                                            <div class="col-lg-4 col-sm-3" th:each="condition : ${car.conditionsDTOs}">
+                                                <p class="text-center p-2 custom-cond" th:text="${condition.condition}"></p>
+                                            </div>
+                                        </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-12 mobile">
+                    <div id="vehicle-price-block" class="vehicle-price bg-white">
+                        <!-- Row pour afficher le texte et le prix (mobile et desktop) -->
+                        <div class="row mgb-10 d-none d-lg-block">
+                            <div class="col-lg-9 col-xs-9">
+                                <!-- Texte d'introduction -->
+                                <p class="">À partir de</p>
+                                <!-- Prix affiché -->
+                                <h2 id="price" class="text-center mb-3">
+                                    <span class="" th:text="${car.displayPrice} + ' €'"></span>
+                                    <span class="text-muted fs-5">/ prix par jour</span>
+                                </h2>
+                            </div>
+                        </div>
+
+                        <!-- Texte supplémentaire concernant la variation des prix -->
+                        <p class="small">
+                            Le prix est susceptible de varier selon la saison et la durée de la location.
                         </p>
-                        <form th:action="@{/account/cars/addPhoto}" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="carId" th:value="${car.id}">
-                            <input type="file" name="photo" class="picture-input" th:id="'photoInput_' + ${i}" style="display: none;">
-                            <button type="submit" class="btn btn-primary btn-sm mt-2" style="display: none;">Ajouter</button>
-                        </form>
                     </div>
-                </div>
-            </th:block>
-        </div>
 
 
+                    <div class="vehicle-disabled-checkmark bg-white">
+                        <h5 class="bold mb-4 fs-5">Informations manquantes</h5>
+                        <ul class="ps-0">
+                            <!-- Informations bancaires -->
+                            <p class="fs-6">
+                                <!-- Icone avec condition : coche verte si hasBankInfo n'est pas null, croix rouge sinon -->
+                                <i class="fa-solid" th:classappend="${hasBankInfo != null} ? 'fa-circle-check text-info' : 'fa-circle-xmark text-danger'"></i>
+
+                                <!-- Si hasBankInfo est null, on affiche un lien actif pour ajouter les informations bancaires -->
+                                <a th:href="${hasBankInfo == null} ? @{/account/bank-account} : ''"
+                                   th:classappend="${hasBankInfo != null} ? 'disabled-link' : ''"
+                                   th:if="${hasBankInfo == null}"> <!-- Le lien est visible uniquement si hasBankInfo est null -->
+                                    Ajouter vos informations bancaires
+                                </a>
+                                <span th:if="${hasBankInfo != null}"> <!-- Si hasBankInfo n'est pas null, on affiche juste le texte -->
+                                    Ajouter vos informations bancaires
+                                </span>
+                            </p>
 
 
+                            <!-- Pièce d'identité -->
+                            <p class="fs-6">
+                                <!-- Icone avec condition : coche verte si hasPersonalInfo est true, croix rouge sinon -->
+                                <i class="fa-solid" th:classappend="${hasPersonalInfo} ? 'fa-circle-check text-info' : 'fa-circle-xmark text-danger'"></i>
+
+                                <!-- Si hasPersonalInfo est false, on affiche un lien actif pour ajouter la pièce d'identité -->
+                                <a th:href="${hasPersonalInfo == false} ? @{/account/document-identity} : ''"
+                                   th:classappend="${hasPersonalInfo == true} ? 'disabled-link' : 'fs14 c-main normal underline'"
+                                   th:if="${hasPersonalInfo == false}">
+                                    Ajouter votre pièce d'identité
+                                </a>
+
+                                <!-- Si hasPersonalInfo est true, on affiche le texte sans lien -->
+                                <span th:if="${hasPersonalInfo == true}">
+                                    Ajouter votre pièce d'identité
+                                </span>
+                            </p>
 
 
-
-
-
-
-
-
-
-
-
-
-
-        <div class="row m">
-      <div class="col-lg-8">
-          <div class="vehicle-show-info bg-white bg-more-light mgb-20 " >
-              <div class="row">
-                  <div class="col-lg-9 col-md-9 col-xs-8">
-                      <h2 th:text="${car.brand + ' ' + car.model}" class="mb-3">BMW i8</h2>
-                          <span class="fs16 "> - KI523KI*</span>
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-xs-4">
-                      <p class="text-right h45">
-                          <a class="fs14 c-main normal" th:href="@{/account/cars/edit/{id}(id=${car.id})}">
-                              <i class="fa fa-edit nbsp-large"></i>Editer
-                          </a>
-                      </p>
-                  </div>
-              </div>
-              <div class="vehicle-labels" >
-                  <div class="reservation-warning mb-2">
-                <span class="bg-tooltip pd-10" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Vous pouvez réserver ce véhicule immédiatement.">
-                    <span><i class="fa fa-flash nbsp-large fs15"></i> Réservation instantanée</span>
-
-                </span>
-                  </div>
-                  <p class="fs12 italic pdt-10" >* La plaque d’immatriculation n&nbsp;‘est pas visible par le locataire lorsqu’il visite votre annonce.</p>
-              </div>
-              <div class="vehicle-show-description">
-                  <div class="row">
-                      <div class="col-12 order-2 order-sm-1 col-sm-3 center d-flex flex-column justify-content-center align-items-center">
-                          <img class="rounded-circle" width="50" height="50" th:src="${user.photoUrl != null ? user.photoUrl : '/uploads/profil/defaultPhoto.png'}" alt="">
-                          <p th:text="${car.user.firstName}" class="capitalize c-grey">yassin</p>
-                          <p class="fs12 lh-auto text-main">Membre depuis 2024</p>
-                      </div>
-                      <div class="col order-sm-2 order-sm-1">
-                          <p class="mgb-30 c-grey"></p>
-                      </div>
-
-                  </div>
-
-              </div>
-              <div class="vehicle-carac mgb-40">
-
-                  <div class="row">
-                      <div class="col-12">
-                          <h3 class="carac-icon pb-2 mb-0">
-                              <img src="/icones/carac-voiture.png" width="100" alt="">
-                              Caractéristiques
-                          </h3>
-                          <ul class="mb-2 pl-4">
-                              <div class="row">
-                                  <div class="row">
-                                      <div class="col-lg-3 col-sm-2" th:each="carac, iterStat : ${car.features}">
-                                          <li class="vehicle-carac-item c-grey medium mb-1 mr-0">
-                                              <div class="row pb-1">
-
-                                                  <div class="col-12 center fs13" th:text="${carac.name}"></div>
-                                                  <div class="col-12 center fs13" th:text="${carac.description}"></div>
-                                              </div>
-                                          </li>
-                                      </div>
-                                  </div>
-
-                              </div>
-                          </ul>
-                      </div>
-                      <div class="col-12">
-                          <h3 class="fs16 bold text-main pdb-20 mgb-0 option-title"> <img width="100" src="/icones/equip-voiture.png" alt="">
-                              Equipements</h3>
-                          <ul class="pl-4">
-                              <div class="row">
-                                  <div class="col-6 col-sm-3" th:each="equipement : ${car.equipments}">
-                                      <p class="fs14 c-grey medium center mgb-20">
-                                          <img class="bg-transparent" th:src="${equipement.icone}" alt="" width="50">
-                                      </p>
-                                      <p class="fs14 c-grey medium center mgb-20" th:text="${equipement.equipment}"></p>
-                                  </div>
-                              </div>
-                          </ul>
-                      </div>
-
-
-                      <div class="col-12" th:if="${!#lists.isEmpty(car.conditions)}">
-                          <h3 class="fs16 bold text-main pdb-20 mgb-0 option-title">
-                              <img width="100" src="/images/conditionCar.png" alt="">
-                              Conditions de location
-                          </h3>
-                          <ul class="pl-4">
-                              <div class="row">
-                                  <div class="col-6 col-sm-3" th:each="condition : ${car.conditions}">
-                                      <p class="fs14 c-grey medium center mgb-20" th:text="${condition.condition}"></p>
-                                  </div>
-                              </div>
-                          </ul>
-                      </div>
-
-                  </div>
-
-
-              </div>
-              <hr class="w80p">
-          </div>
-
-      </div>
-        <div class="col-lg-4 col-md-12 mobile">
-
-
-
-
-            <!-- VEHICLE PRICE -->
-
-            <link rel="stylesheet" type="text/css" href="/css/vehicle-show-price.css?v=7.20.44">
-
-            <div id="vehicle-price-block" class="vehicle-price bg-white mgb-20 ">
-                <div class="row mgb-10 d-none d-lg-block">
-                    <div class="col-lg-9 col-xs-9">
-                        <p class="text-main medium fs16 mgt-20">A partir de</p>
-                        <h2 id="price"><span class="price-value text-main">55 €</span>
-                            <span class="fs20 text-main normal price-caption">/ prix par jour</span></h2>
+                        </ul>
                     </div>
+                    <div class="vehicle-disabled-checkmark bg-white mgb-30">
+                        <h5 class="bold mb-4 fs-5">Complétez votre annonce</h5>
+
+                        <!-- Photos du véhicule -->
+                        <p class="fs-6">
+                            <i class="fa-solid" th:classappend="${hasPhotos} ? 'fa-circle-check text-info' : 'fa-circle-xmark text-danger'"></i>
+                            Ajouter des photos du véhicule
+                        </p>
+
+                        <!-- Carte grise -->
+                        <p class="fs-6">
+                            <i class="fa-solid" th:classappend="${hasRegistrationCard} ? 'fa-circle-check text-info' : 'fa-circle-xmark text-danger'"></i>
+                            <a class="fs14 c-main normal underline" th:href="${registrationCard}" th:text="${hasRegistrationCard ? 'Ma carte grise' : 'Ajouter ma carte grise'}"></a>
+                        </p>
+
+                        <!-- Si la validation est en attente -->
+                        <div th:if="${isPendingValidation}" class="bg-warning bradius-bis c-white center fs12 inline-block medium pl-2 pr-2 mt-3">
+                            En attente de validation
+                        </div>
+                    </div>
+
+
+                    <div style="width: 100%;">
+                        <button onclick="deleteCar()" class="btn btn-outline-danger w-100">Supprimer</button>
+                    </div>
+
                 </div>
-                <p class="fs12 c-grey mgb-40 d-none d-lg-block">Le prix est susceptible de varier selon la saison et la durée d'une location.
-
-                </p>
-
             </div>
-
-            <!-- VEHICLES ENABLE RULES -->
-
-
-
-            <div class="vehicle-disabled-checkmark bg-white mgb-20">
-                <h5 class="mgb-30">Informations manquantes</h5>
-                <ul>
-                    <p class="normal text-light mgb-10"><a class="fs14 c-main normal underline" th:href="@{/account/bank-account}">
-                        <i class="fa" th:classappend="${user.iban != null && user.bic != null ? 'fa-check c-main' : 'fa-times c-danger'}"></i>
-                        Ajouter vos informations bancaires
-                    </a></p>
-                    <p class="normal text-light mgb-10"><a class="fs14 c-main normal underline" th:href="@{/account/identity}">
-                        <i class="fa" th:classappend="${user.hasIdentityDocuments() ? 'fa-check c-main' : 'fa-times c-danger'}"></i>
-                        Ajouter votre pièce d'identité
-                    </a></p>
-                </ul>
-            </div>
-
-
-
-            <div class="vehicle-disabled-checkmark bg-white mgb-30">
-                <h5 class="mgb-30">Complétez votre annonce</h5>
-                <p class="mgb-10 vehicle-picture-checked"><a class="fs14 c-main normal underline add-picture-link" href="/user/111716/account"><i class="fa fa-times c-danger nbsp-large"></i>Ajouter des photos du véhicule</a></p>
-
-                <p>
-                    <i class="fa fa-check c-main nbsp-large"></i>
-                    <a class="fs14 c-main normal underline" target="_blank" href="//s3-eu-west-1.amazonaws.com/zc-vehicles/vehicle/29282/registration_card/663b995175bb9.png">Ma carte grise</a>
-                </p><div class="bg-warning bradius-bis c-white center fs12 inline-block medium pl-2 pr-2 mt-3">
-                En attente de validation
-            </div>
-                <p></p>
-            </div>
-            <div class="">
-
-                <p>
-                    <a th:href="@{/account/cars/{id}/delete(id=${car.id})}"
-                       data-toggle="tooltip"
-                       data-placement="top"
-                       title="Supprimer le véhicule"
-                       class="remove-btn btn btn-outline-danger w100p mgt-20 lh32 fs14 h45 bradius"
-                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette voiture ?');">
-                        <span class="mgr-10"><i class="fa fa-remove" aria-hidden="true"></i></span>Supprimer le véhicule
-                    </a>
-                </p>
-            </div>
-
-
-
         </div>
     </div>
-
-  </div>
-  </div>
 </div>
 
+<script type="text/javascript">
+    // Récupérer l'ID de la voiture depuis l'URL
+    var carId = window.location.pathname.split("/").pop();
+    console.log("Car ID: " + carId);
+
+// Fonction pour supprimer la voiture
+function deleteCar() {
+    if (confirm("Voulez-vous vraiment supprimer cette voiture ?")) {
+        fetch(`/api/deleteCar/${carId}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.ok) {
+                // Redirection vers la page des voitures avec un message de succès
+                window.location.href = `/account/cars?message=La voiture a été supprimée avec succès`;
+            } else if (response.status === 404) {
+                alert("Voiture non trouvée.");
+            } else {
+                alert("Une erreur s'est produite lors de la suppression.");
+            }
+        });
+    }
+}
+
+
+document.querySelectorAll('.delete-photo').forEach(button => {
+    button.addEventListener('click', function() {
+        const carId = this.getAttribute('data-car-id');
+        const photoUrl = this.getAttribute('data-photo-url');
+
+        // Vérifiez les valeurs dans la console pour déboguer
+        console.log('Car ID:', carId);
+        console.log('Photo URL:', photoUrl);
+
+        // Appeler la fonction pour supprimer la photo
+        deletePhoto(carId, photoUrl);
+    });
+});
+
+function deletePhoto(carId, photoUrl) {
+    if (confirm("Voulez-vous vraiment supprimer cette photo ?")) {
+        fetch(`/api/deletePhoto/${carId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ photoUrl: photoUrl })
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Photo supprimée avec succès.");
+                location.reload(); // Recharge la page pour voir les changements
+            } else {
+                alert("Erreur lors de la suppression de la photo.");
+            }
+        })
+        .catch(error => {
+            console.error("Erreur:", error);
+            alert("Une erreur est survenue.");
+        });
+    }
+}
+
+function uploadPhoto(event, carId) {
+    const fileInput = event.target;
+    console.log("Fichier sélectionné : ", fileInput.files[0]); // Vérifier quel fichier est sélectionné
+    console.log("Car ID : ", carId); // Vérifier l'ID de la voiture envoyé
+
+    if (!fileInput.files.length) {
+        console.log("Aucun fichier sélectionné.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("carId", carId);
+    formData.append("photo", fileInput.files[0]);
+
+    // Afficher les données formData pour débogage
+    formData.forEach((value, key) => {
+        console.log(key, value);
+    });
+
+    // Envoyer la requête POST
+    fetch('/api/addPhoto', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log("Réponse du serveur : ", response);
+        if (response.ok) {
+            alert("Photo ajoutée avec succès.");
+            location.reload(); // Recharger la page
+        } else {
+            alert("Erreur lors de l'ajout de la photo.");
+        }
+    })
+    .catch(error => {
+        console.error("Erreur lors de l'upload de la photo : ", error);
+        alert("Une erreur est survenue.");
+    });
+}
+
+
+
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+
+</script>
 

@@ -1,6 +1,9 @@
 package be.iccbxl.tfe.Driveshare.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,12 +23,15 @@ public class User {
     private Long id;
 
     @Column(name="last_name")
+    @NotBlank(message = "Le prénom est obligatoire")
     private String lastName;
 
     @Column(name="first_name")
+    @NotBlank(message = "Le nom est obligatoire")
     private String firstName;
 
-    @Column(name="email")
+    @Column(name="email", unique = true)
+    @NotBlank(message = "L'email est obligatoire")
     private String email;
 
     @Column(name="adresse")
@@ -34,13 +40,17 @@ public class User {
     @Column(name="locality")
     private String locality;
 
-    @Column(name="postal_code")
+    @Column(name = "postal_code")
+    @Pattern(regexp = "^\\d+$", message = "Le code postal ne doit contenir que des chiffres")
     private String postalCode;
 
+    @Pattern(regexp = "^\\d{10}$", message = "Le numéro de téléphone doit contenir exactement 10 chiffres")
     @Column(name = "phone")
     private String phone;
 
-    @Column(name="password")
+    @Column(name = "password")
+    @NotBlank(message = "Le mot de passe est obligatoire")
+    @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caractères")
     private String password;
 
     @Column(name="profil_picture", nullable = true)

@@ -1,9 +1,6 @@
 package be.iccbxl.tfe.Driveshare.service.serviceImpl;
 
-import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
-import be.iccbxl.tfe.Driveshare.DTO.EvaluationDTO;
-import be.iccbxl.tfe.Driveshare.DTO.EvaluationDashboardDTO;
-import be.iccbxl.tfe.Driveshare.DTO.MapperDTO;
+import be.iccbxl.tfe.Driveshare.DTO.*;
 import be.iccbxl.tfe.Driveshare.model.Car;
 import be.iccbxl.tfe.Driveshare.model.Evaluation;
 import be.iccbxl.tfe.Driveshare.model.Reservation;
@@ -14,6 +11,7 @@ import be.iccbxl.tfe.Driveshare.service.EvaluationServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +26,12 @@ public class EvaluationService implements EvaluationServiceI {
 
     @Autowired
     private CarRepository carRepository;
+
+    @Autowired
+    private CarService carService;
+
+    @Autowired
+    private PriceService priceService;
 
     @Override
     public List<Evaluation> getAllEvaluations() {
@@ -64,17 +68,32 @@ public class EvaluationService implements EvaluationServiceI {
     }
 
 
-    public List<CarDTO> getTop4CarsWithFiveStarRating() {
+    public List<CarDTOHome> getTop4CarsWithFiveStarRating() {
         List<Car> cars = evaluationRepository.findTop4CarsWithFiveStarRating();
-        List<CarDTO> carDTOs = cars.stream()
-                .map(MapperDTO::toCarDTO)
+        Map<Long, Double> averageRatings = carService.getAverageRatingsForCars(); // Map des moyennes
+
+        // Utilisation du PriceService pour calculer le prix affiché
+        LocalDate currentDate = LocalDate.now();  // Vous pouvez ajuster cela en fonction de la date souhaitée
+
+        return cars.stream()
+                .map(car -> {
+                    double displayPrice = priceService.calculateDisplayPrice(car.getPrice(), currentDate);  // Calcul du displayPrice
+                    return new CarDTOHome(
+                            car.getId(),                     // id de la voiture
+                            car.getBrand(),                  // marque
+                            car.getModel(),                 // modèle
+                            car.getLocality(),
+                            car.getPhotos().get(0).getUrl(),
+                            displayPrice,                    // prix affiché calculé
+                            averageRatings.getOrDefault(car.getId(), 0.0)  // moyenne des évaluations
+                    );
+                })
                 .collect(Collectors.toList());
-        if (carDTOs.size() > 4) {
-            return carDTOs.subList(0, 4);
-        } else {
-            return carDTOs;
-        }
     }
+
+
+
+
 
     public EvaluationDTO createEvaluation(EvaluationDTO evaluationDTO) {
         // Vérifier que la réservation existe
@@ -117,8 +136,10 @@ public class EvaluationService implements EvaluationServiceI {
 
 
     // Méthode pour obtenir les données du tableau de bord
+
     public EvaluationDashboardDTO getEvaluationDashboardData() {
         List<Evaluation> evaluations = (List<Evaluation>) evaluationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
 
         int totalEvaluations = evaluations.size();
         double averageRating = evaluations.stream()
@@ -126,37 +147,41 @@ public class EvaluationService implements EvaluationServiceI {
                 .average()
                 .orElse(0.0);
 
+        // Calcul du pourcentage d'évaluations par rapport aux réservations avec statut FINISHED
+        List<Reservation> finishedReservations = reservations.stream()
+                .filter(reservation -> reservation.getStatut().equals("FINISHED")) // Filtre sur le statut "FINISHED"
+                .collect(Collectors.toList());
+
+        int totalFinishedReservations = finishedReservations.size(); // Nombre total de réservations terminées
+        double evaluationReservationPercentage = totalFinishedReservations > 0 ? (double) totalEvaluations / totalFinishedReservations * 100 : 0;
+
+
+        // Calcul du pourcentage d'évaluations à 5 étoiles
+        long fiveStarEvaluations = evaluations.stream().filter(e -> e.getNote() == 5).count();
+        double evaluationFiveStarsPercentage = totalEvaluations > 0 ? (double) fiveStarEvaluations / totalEvaluations * 100 : 0;
+
         // Utilisation d'un Set pour éviter les doublons d'utilisateurs
         Set<Long> uniqueUsers = new HashSet<>();
         Map<String, Long> evaluationsByDay = new HashMap<>();
 
-        // Traitement de chaque évaluation
         for (Evaluation evaluation : evaluations) {
-            try {
-                // Vérifier si la réservation existe et est valide
-                if (evaluation.getReservation() != null && evaluation.getReservation().getUser() != null) {
-                    // Ajout de l'utilisateur unique
-                    uniqueUsers.add(evaluation.getReservation().getUser().getId());
+            if (evaluation.getReservation() != null && evaluation.getReservation().getUser() != null) {
+                uniqueUsers.add(evaluation.getReservation().getUser().getId());
 
-                    // Calcul des évaluations par jour
-                    String day = evaluation.getCreatedAt().toLocalDate().toString();
-                    evaluationsByDay.put(day, evaluationsByDay.getOrDefault(day, 0L) + 1);
-                } else {
-                    // Vous pouvez loguer ou ignorer cette évaluation si la réservation ou l'utilisateur est manquant
-                    System.out.println("Évaluation sans réservation valide ou utilisateur, ID: " + evaluation.getId());
-                }
-            } catch (Exception e) {
-                // Loguer l'exception en cas de problème inattendu
-                System.err.println("Erreur lors du traitement de l'évaluation ID: " + evaluation.getId() + " - " + e.getMessage());
+                // Calcul des évaluations par jour
+                String day = evaluation.getCreatedAt().toLocalDate().toString();
+                evaluationsByDay.put(day, evaluationsByDay.getOrDefault(day, 0L) + 1);
             }
         }
 
-        // Calcul du nombre total d'utilisateurs uniques
         int totalUsers = uniqueUsers.size();
 
-        // Retourner un DTO avec les données du tableau de bord
-        return new EvaluationDashboardDTO(totalEvaluations, averageRating, totalUsers, evaluationsByDay);
+        return new EvaluationDashboardDTO(totalEvaluations, averageRating, totalUsers, totalFinishedReservations,
+                evaluationReservationPercentage, evaluationFiveStarsPercentage, evaluationsByDay);
     }
+
+
+
 
 
 

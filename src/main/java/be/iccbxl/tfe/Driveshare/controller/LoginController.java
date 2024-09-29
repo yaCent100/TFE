@@ -35,21 +35,31 @@ public class LoginController {
     }
 
 
+
     @PostMapping("/register")
     public String processRegistrationForm(@ModelAttribute @Valid User user,
                                           BindingResult result,
-                                          RedirectAttributes redirectAttributes) {
+                                          Model model) {
 
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorLogin", "Veuillez corriger les champs invalides.");
-            return "redirect:/login";
+        // Vérification si l'email existe déjà
+        if (userService.emailExists(user.getEmail())) {
+            result.rejectValue("email", "error.user", "Cette adresse email est déjà utilisée.");
         }
 
+        // Vérification des erreurs de validation
+        if (result.hasErrors()) {
+            model.addAttribute("inscriptionTab", true);  // Activer l'onglet inscription en cas d'erreur
+            return "login";  // Retourner à la même page sans redirection
+        }
 
+        // Si tout est bon, ajouter l'utilisateur
         userService.addUser(user);
-        redirectAttributes.addFlashAttribute("successMessage", "Inscription réussie. Veuillez vous connecter.");
-        return "redirect:/login?success=true";
+        model.addAttribute("successMessage", "Inscription réussie. Veuillez vous connecter.");
+        return "redirect:/login?success=true";  // Rediriger vers la page de connexion après succès
     }
+
+
+
 
 
 

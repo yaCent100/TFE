@@ -4,11 +4,22 @@ import be.iccbxl.tfe.Driveshare.DTO.*;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -18,13 +29,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 
 @Controller
@@ -80,31 +95,51 @@ public class AccountController {
 
     @GetMapping("/account")
     public String getAccount(Model model, @AuthenticationPrincipal CustomUserDetail userDetails, HttpServletRequest request) {
-        int confirmedCount = 0; // Initialisez le compteur de réservations confirmées à 0
-        long carCount = 0; // Initialisez le compteur de voitures à 0
+        int confirmedRentalsAsTenant = 0; // Nombre de locations confirmées en tant que locataire
+        long carCount = 0; // Nombre de voitures enregistrées par l'utilisateur
+        int confirmedRentalsAsOwner = 0; // Nombre de locations pour ses voitures en tant que propriétaire
 
         if (userDetails != null) {
             User user = userDetails.getUser();
 
-            // Itérez sur les réservations de l'utilisateur pour compter les réservations confirmées
-            for (Reservation reservation : user.getReservations()) {
-                if ("CONFIRMED".equalsIgnoreCase(reservation.getStatut())) {
-                    confirmedCount++;
+            // Récupérer le nombre de locations confirmées en tant que locataire
+            if (user.getReservations() != null) {
+                for (Reservation reservation : user.getReservations()) {
+                    if ("CONFIRMED".equalsIgnoreCase(reservation.getStatut()) ||
+                            "NOW".equalsIgnoreCase(reservation.getStatut()) ||
+                            "FINISHED".equalsIgnoreCase(reservation.getStatut())) {
+                        confirmedRentalsAsTenant++;
+                    }
                 }
             }
 
-            // Récupérez le nombre de voitures liées à l'utilisateur depuis la base de données
-            carCount = userService.countCarsById(user.getId());
+            // Récupérer les voitures enregistrées par l'utilisateur
+            List<Car> userCars = carService.getCarsByUser(user); // Récupère toutes les voitures de l'utilisateur
+            carCount = userCars.size(); // Compter le nombre de voitures
 
-            // Ajoutez les compteurs au modèle
-            model.addAttribute("confirmedCount", confirmedCount);
+            // Récupérer les locations confirmées en tant que propriétaire (pour les voitures de l'utilisateur)
+            for (Car car : userCars) {
+                for (Reservation reservation : car.getReservations()) {
+                    if ("CONFIRMED".equalsIgnoreCase(reservation.getStatut()) ||
+                            "NOW".equalsIgnoreCase(reservation.getStatut()) ||
+                            "FINISHED".equalsIgnoreCase(reservation.getStatut())) {
+                        confirmedRentalsAsOwner++;
+                    }
+                }
+            }
+
+            // Ajouter les compteurs au modèle
+            model.addAttribute("confirmedRentalsAsTenant", confirmedRentalsAsTenant);
             model.addAttribute("carCount", carCount);
+            model.addAttribute("confirmedRentalsAsOwner", confirmedRentalsAsOwner);
             model.addAttribute("user", user);
             model.addAttribute("requestURI", request.getRequestURI());
         }
 
-        return "account/index";
+        return "account/index"; // Retourne la vue "account/index"
     }
+
+
 
 
     @GetMapping("account/info")
@@ -144,7 +179,7 @@ public class AccountController {
         // Ajouter un message de succès aux attributs de redirection
         redirectAttributes.addFlashAttribute("successMessage", "Vos informations ont été mises à jour avec succès.");
 
-        return "redirect:/account";
+        return "redirect:/account/info";
     }
 
 
@@ -153,42 +188,72 @@ public class AccountController {
         User user = userDetails.getUser();
         List<Document> documents = documentService.getByUserId(user.getId());
 
-        boolean hasRecto = documents.stream().anyMatch(doc -> "identity_recto".equals(doc.getDocumentType()));
-        boolean hasVerso = documents.stream().anyMatch(doc -> "identity_verso".equals(doc.getDocumentType()));
+        // Vérification des documents d'identité
+        boolean hasIdentityRecto = documents.stream().anyMatch(doc -> "identity_recto".equals(doc.getDocumentType()));
+        boolean hasIdentityVerso = documents.stream().anyMatch(doc -> "identity_verso".equals(doc.getDocumentType()));
 
+        // Vérification des documents de permis de conduire
+        boolean hasLicenceRecto = documents.stream().anyMatch(doc -> "licence_recto".equals(doc.getDocumentType()));
+        boolean hasLicenceVerso = documents.stream().anyMatch(doc -> "licence_verso".equals(doc.getDocumentType()));
+
+        // Ajout des attributs au modèle
         model.addAttribute("user", user);
-        model.addAttribute("hasRecto", hasRecto);
-        model.addAttribute("hasVerso", hasVerso);
+        model.addAttribute("hasIdentityRecto", hasIdentityRecto);
+        model.addAttribute("hasIdentityVerso", hasIdentityVerso);
+        model.addAttribute("hasLicenceRecto", hasLicenceRecto);
+        model.addAttribute("hasLicenceVerso", hasLicenceVerso);
         model.addAttribute("requestURI", request.getRequestURI());
-
 
         return "account/document-identity";
     }
 
+
     @PostMapping("/account/document-identity")
     public String uploadDocument(@AuthenticationPrincipal CustomUserDetail userDetails,
-                                 @RequestParam(value = "recto", required = false) MultipartFile recto,
-                                 @RequestParam(value = "verso", required = false) MultipartFile verso,
+                                 @RequestParam(value = "identityRecto", required = false) MultipartFile identityRecto,
+                                 @RequestParam(value = "identityVerso", required = false) MultipartFile identityVerso,
+                                 @RequestParam(value = "licenceRecto", required = false) MultipartFile licenceRecto,
+                                 @RequestParam(value = "licenceVerso", required = false) MultipartFile licenceVerso,
                                  RedirectAttributes redirectAttributes) {
         User user = userDetails.getUser();
 
         try {
-            if (recto != null && !recto.isEmpty()) {
-                String rectoPath = fileStorageService.storeFile(recto, "licence");
-                Document rectoDoc = new Document();
-                rectoDoc.setUser(user);
-                rectoDoc.setDocumentType("licence_recto");
-                rectoDoc.setUrl(rectoPath);
-                documentService.save(rectoDoc);
+            // Gestion des documents d'identité
+            if (identityRecto != null && !identityRecto.isEmpty()) {
+                String identityRectoPath = fileStorageService.storeFile(identityRecto, "identityCard");
+                Document identityRectoDoc = new Document();
+                identityRectoDoc.setUser(user);
+                identityRectoDoc.setDocumentType("identity_recto");
+                identityRectoDoc.setUrl(identityRectoPath);
+                documentService.save(identityRectoDoc);
             }
-            if (verso != null && !verso.isEmpty()) {
-                String versoPath = fileStorageService.storeFile(verso, "licence");
-                Document versoDoc = new Document();
-                versoDoc.setUser(user);
-                versoDoc.setDocumentType("licence_verso");
-                versoDoc.setUrl(versoPath);
-                documentService.save(versoDoc);
+            if (identityVerso != null && !identityVerso.isEmpty()) {
+                String identityVersoPath = fileStorageService.storeFile(identityVerso, "identityCard");
+                Document identityVersoDoc = new Document();
+                identityVersoDoc.setUser(user);
+                identityVersoDoc.setDocumentType("identity_verso");
+                identityVersoDoc.setUrl(identityVersoPath);
+                documentService.save(identityVersoDoc);
             }
+
+            // Gestion des permis de conduire
+            if (licenceRecto != null && !licenceRecto.isEmpty()) {
+                String licenceRectoPath = fileStorageService.storeFile(licenceRecto, "licence");
+                Document licenceRectoDoc = new Document();
+                licenceRectoDoc.setUser(user);
+                licenceRectoDoc.setDocumentType("licence_recto");
+                licenceRectoDoc.setUrl(licenceRectoPath);
+                documentService.save(licenceRectoDoc);
+            }
+            if (licenceVerso != null && !licenceVerso.isEmpty()) {
+                String licenceVersoPath = fileStorageService.storeFile(licenceVerso, "licence");
+                Document licenceVersoDoc = new Document();
+                licenceVersoDoc.setUser(user);
+                licenceVersoDoc.setDocumentType("licence_verso");
+                licenceVersoDoc.setUrl(licenceVersoPath);
+                documentService.save(licenceVersoDoc);
+            }
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de l'upload des fichiers : " + e.getMessage());
             return "redirect:/account/document-identity";
@@ -199,30 +264,40 @@ public class AccountController {
         return "redirect:/account/document-identity";
     }
 
+
     @GetMapping("/account/notifications")
     public String getNotifications(HttpServletRequest request, Model model, @AuthenticationPrincipal CustomUserDetail userDetails) {
         User user = userDetails.getUser();
+
+        // Récupérer les notifications et les réclamations pour l'utilisateur
         List<Notification> notifications = notificationService.getNotificationsForUser(user.getId());
         List<Claim> claims = claimService.getClaimsForUser(user.getId());
 
-
-        // Filtrer les notifications non lues et lues tout en gérant le cas où isRead est null
-        List<Notification> notificationsNonLues = notifications.stream()
-                .filter(n -> Boolean.FALSE.equals(n.getIsRead())) // Gère le cas où isRead est null
+        // Convertir les entités en DTOs
+        List<NotificationDTO> notificationsNonLues = notifications.stream()
+                .filter(n -> Boolean.FALSE.equals(n.getIsRead())) // Filtrer les non-lues
+                .map(MapperDTO::toNotificationDTO) // Mapper les notifications en DTOs
                 .collect(Collectors.toList());
 
-        List<Notification> notificationsLues = notifications.stream()
-                .filter(n -> Boolean.TRUE.equals(n.getIsRead())) // Gère le cas où isRead est null
+        List<NotificationDTO> notificationsLues = notifications.stream()
+                .filter(n -> Boolean.TRUE.equals(n.getIsRead())) // Filtrer les lues
+                .map(MapperDTO::toNotificationDTO) // Mapper les notifications en DTOs
                 .collect(Collectors.toList());
 
+        List<ClaimDTO> claimsDTOs = claims.stream()
+                .map(MapperDTO::toClaimDto) // Mapper les réclamations en DTOs
+                .collect(Collectors.toList());
+
+        // Ajouter les objets à passer à la vue
         model.addAttribute("user", user);
         model.addAttribute("notificationsNonLues", notificationsNonLues);
         model.addAttribute("notificationsLues", notificationsLues);
-        model.addAttribute("claims", claims);
+        model.addAttribute("claims", claimsDTOs);
         model.addAttribute("requestURI", request.getRequestURI());
 
         return "account/notification-user";
     }
+
 
 
 
@@ -289,38 +364,6 @@ public class AccountController {
     }
 
 
-  /*  @GetMapping("/account/gains")
-    public String getUserGains(Model model, HttpServletRequest request) {
-        User currentUser = userService.getAuthenticatedUser(); // Récupérer l'utilisateur connecté
-        List<Payment> payments = paymentService.getPaymentsForUser(currentUser, LocalDateTime.MIN, LocalDateTime.MAX);
-
-        List<Map<String, Object>> paymentDetails = new ArrayList<>();
-        for (Payment payment : payments) {
-            Map<String, Object> details = new HashMap<>();
-            PaymentDTO paymentDTO = MapperDTO.toPaymentDTO(payment);
-            details.put("payment", paymentDTO);
-
-            // Récupérer la réservation en utilisant l'ID de réservation
-            Reservation reservation = reservationService.getReservationById(paymentDTO.getReservationId());
-            if (reservation != null) {
-                details.put("carImage", !reservation.getCar().getPhotos().isEmpty() ? "/uploads/" + reservation.getCar().getPhotos().get(0).getUrl() : "images/carDefault.png");
-                details.put("carBrand", reservation.getCar().getBrand());
-                details.put("carModel", reservation.getCar().getModel());
-                details.put("debutLocation", reservation.getDebutLocation().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-                details.put("finLocation", reservation.getFinLocation().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-                details.put("reservationStatus", reservation.getStatut());
-            } else {
-                System.out.println("Reservation not found for Payment ID: " + paymentDTO.getId());
-            }
-            paymentDetails.add(details);
-        }
-
-        System.out.println("Payment Details: " + paymentDetails); // Debug
-        model.addAttribute("paymentDetails", paymentDetails);
-        model.addAttribute("requestURI", request.getRequestURI());
-
-        return "account/gains";
-    }*/
 
     @GetMapping("/account/gains")
     public String getUserGains(Model model, HttpServletRequest request) {
@@ -354,8 +397,82 @@ public class AccountController {
 
         // Ajouter les gains au modèle pour les afficher dans la vue
         model.addAttribute("gains", gainDTOs);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+
         return "account/gains";
     }
+
+
+    @PostMapping("/account/gains/pdf")
+    public ResponseEntity<InputStreamResource> generateGainsPdf(
+            @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            Model model) throws Exception {
+
+        User currentUser = userService.getAuthenticatedUser(); // Récupérer l'utilisateur connecté
+        String fullName = currentUser.getFirstName() + " " + currentUser.getLastName();
+
+        // Convertir les LocalDate en LocalDateTime pour les bornes de début et de fin
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+        // Récupérer les gains pour l'utilisateur courant dans la plage de dates spécifiée
+        List<Gain> gains = gainService.getGainsForUserByDateRange(currentUser.getId(), startDateTime, endDateTime);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(out);
+        com.itextpdf.kernel.pdf.PdfDocument pdfDoc = new com.itextpdf.kernel.pdf.PdfDocument(writer);
+        com.itextpdf.layout.Document document = new com.itextpdf.layout.Document(pdfDoc);
+
+        // Ajouter le logo de DriveShare
+        ClassPathResource logoResource = new ClassPathResource("static/images/DriveShareLogo.png");
+
+        // Utilisez ImageDataFactory.create() avec un InputStream pour créer l'image
+        Image logo = new Image(ImageDataFactory.create(logoResource.getInputStream().readAllBytes()));
+        logo.setWidth(100);
+        document.add(logo);
+
+        // Ajouter le titre et les informations de l'utilisateur
+        document.add(new Paragraph("Résumé des gains").setBold().setFontSize(16));
+        document.add(new Paragraph("Nom complet : " + fullName));
+        document.add(new Paragraph("Période : du " + startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " au " + endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
+
+        // Ajouter un tableau des gains
+        float[] columnWidths = {200, 200, 200, 200};
+        Table table = new Table(columnWidths);
+
+        // En-tête du tableau
+        table.addHeaderCell(new Cell().add(new Paragraph("Voiture").setBold()));
+        table.addHeaderCell(new Cell().add(new Paragraph("Dates de réservation").setBold()));
+        table.addHeaderCell(new Cell().add(new Paragraph("Montant du gain").setBold()));
+        table.addHeaderCell(new Cell().add(new Paragraph("Date du versement").setBold()));
+
+        // Remplir les lignes du tableau
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        for (Gain gain : gains) {
+            table.addCell(new Cell().add(new Paragraph(gain.getPayment().getReservation().getCar().getBrand() + " " + gain.getPayment().getReservation().getCar().getModel())));
+            table.addCell(new Cell().add(new Paragraph(gain.getPayment().getReservation().getStartLocation().format(dateFormatter) + " au " + gain.getPayment().getReservation().getEndLocation().format(dateFormatter))));
+            table.addCell(new Cell().add(new Paragraph(String.format("%.2f €", gain.getMontantGain()))));
+            table.addCell(new Cell().add(new Paragraph(gain.getDateGain().format(dateFormatter))));
+        }
+
+        document.add(table);
+        document.close();
+
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=gains.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(in));
+    }
+
+
 
 
 
@@ -364,65 +481,87 @@ public class AccountController {
         if (userDetails != null) {
             User user = userDetails.getUser();
 
-            List<Car> userCars = userService.getUserById(user.getId()).getOwnedCars();
+            // Récupérer les voitures de l'utilisateur et les mapper en CarDTO
+            List<CarDTO> userCarDTOs = userService.getUserById(user.getId())
+                    .getOwnedCars()
+                    .stream()
+                    .map(MapperDTO::toCarDTO) // Mapper les entités Car vers des CarDTO
+                    .collect(Collectors.toList());
 
-            // Ajouter les voitures au modèle
+            // Ajouter les informations au modèle pour les passer à la vue
             model.addAttribute("user", user);
-            model.addAttribute("cars", userCars);
+            model.addAttribute("cars", userCarDTOs); // Utilisation de CarDTO ici
             model.addAttribute("requestURI", request.getRequestURI());
 
-            return "account/cars";
+            return "account/cars"; // Vue où les voitures seront affichées
         } else {
-            // Gérer le cas où aucun utilisateur n'est connecté
-            return "redirect:/login"; // Rediriger vers la page de connexion
+            // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+            return "redirect:/login";
         }
     }
+
+
 
     @GetMapping("/account/cars/{id}")
-    public String getCarDetails(@PathVariable("id") Long carId, Model model, @AuthenticationPrincipal CustomUserDetail userDetails,
-                                HttpServletRequest request) {
-        // Vérifier si l'utilisateur est connecté
+    public String getCarDetails(@PathVariable("id") Long carId, Model model,
+                                @AuthenticationPrincipal CustomUserDetail userDetails, HttpServletRequest request) {
         if (userDetails != null) {
-            // Récupérer l'utilisateur connecté
             User user = userDetails.getUser();
 
-            // Ajouter un log pour vérifier l'utilisateur connecté
-            System.out.println("Utilisateur connecté : " + user.getEmail());
-
-            // Recharger les voitures de l'utilisateur depuis la base de données
+            // Récupérer l'utilisateur actualisé et mapper vers DTO
             User refreshedUser = userService.getUserById(user.getId());
-            List<Car> userCars = refreshedUser.getOwnedCars();
+            UserDTO userDTO = MapperDTO.toUserDTO(refreshedUser);
 
-            // Ajouter un log pour vérifier les voitures de l'utilisateur
-            System.out.println("Voitures de l'utilisateur : " + userCars.size());
+            // Chercher la voiture avec l'id spécifié
+            List<CarDTO> ownedCars = userDTO.getOwnedCars();
+            System.out.println("Voitures possédées par l'utilisateur : " + ownedCars);
+            if (ownedCars != null) {
+                Optional<CarDTO> optionalCarDTO = ownedCars.stream()
+                        .filter(car -> car.getId() != null && car.getId().equals(carId))
+                        .findFirst();
 
-            // Rechercher la voiture par ID dans la liste des voitures de l'utilisateur
-            Optional<Car> optionalCar = userCars.stream().filter(car -> car.getId().equals(carId)).findFirst();
+                if (optionalCarDTO.isPresent()) {
+                    CarDTO carDTO = optionalCarDTO.get();
 
-            // Vérifier si la voiture avec l'ID spécifié existe pour cet utilisateur
-            if (optionalCar.isPresent()) {
-                Car car = optionalCar.get();
+                    // Formatage de la date pour l'année
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy");
+                    String formattedYear = carDTO.getUser().getCreatedAt().format(formatter);
+                    model.addAttribute("formattedYear", formattedYear);
 
-                // Ajouter un log pour vérifier la voiture trouvée
-                System.out.println("Voiture trouvée : " + car.getModel());
+                    // Ajouter les informations de la voiture et de l'utilisateur
+                    model.addAttribute("car", carDTO);
+                    model.addAttribute("carId", carId);
+                    model.addAttribute("user", userDTO); // Utiliser le DTO
+                    model.addAttribute("requestURI", request.getRequestURI());
 
-                // Ajouter les détails de la voiture au modèle
-                model.addAttribute("car", car);
-                model.addAttribute("user", user);
-                model.addAttribute("requestURI", request.getRequestURI());
+                    // Logique de complétion d'annonce
+                    model.addAttribute("hasPersonalInfo", userService.hasPersonalInfo(refreshedUser));
+                    model.addAttribute("hasBankInfo", userService.hasBankInfo(refreshedUser));
+                    model.addAttribute("hasIdentityInfo", userService.hasIdentityInfo(refreshedUser));
+                    model.addAttribute("hasPhotos", userService.hasPhotos(carDTO));
+                    model.addAttribute("hasRegistrationCard", userService.hasRegistrationCard(carDTO));
+                    model.addAttribute("isPendingValidation", userService.isPendingValidation(carDTO));
 
-
-                return "account/car-show"; // Page des détails de la voiture
+                    return "account/car-show"; // Vue
+                } else {
+                    System.out.println("Voiture non trouvée.");
+                    return "redirect:/account/cars";
+                }
             } else {
-                // Gérer le cas où la voiture n'est pas trouvée pour cet utilisateur
-                System.out.println("Voiture non trouvée pour cet utilisateur.");
-                return "redirect:/account/cars"; // Rediriger vers la liste des voitures de l'utilisateur
+                // Gérer le cas où l'utilisateur n'a pas de voitures
+                System.out.println("L'utilisateur n'a pas de voitures.");
+                return "redirect:/account/cars";
             }
         } else {
-            // Gérer le cas où aucun utilisateur n'est connecté
-            return "redirect:/login"; // Rediriger vers la page de connexion
+            return "redirect:/login";
         }
     }
+
+
+
+
+
+
 
 
     @GetMapping("/account/cars/{id}/delete")
@@ -500,57 +639,22 @@ public class AccountController {
 
 
 
-
-   /* @PostMapping("/account/cars/addPhoto")
-    public String addPhoto(@RequestParam("photo") MultipartFile photo, @RequestParam("carId") Long carId, @AuthenticationPrincipal CustomUserDetail userDetails, RedirectAttributes redirectAttributes) {
-        // Save the photo and get the URL
-        String photoUrl = fileStorageService.storeFile(photo, "photo");
-
-        // Create a new Photo entity and link it to the car
-        Car car = carService.getCarById(carId);
-
-        if (!car.getUser().getId().equals(userDetails.getUser().getId())) {
-            redirectAttributes.addFlashAttribute("error", "Unauthorized action");
-            return "redirect:/account/cars/" + carId;
-        }
-
-        Photo newPhoto = new Photo();
-        newPhoto.setUrl(photoUrl);
-        newPhoto.setCar(car);
-        photoService.savePhoto(newPhoto);
-
-        redirectAttributes.addFlashAttribute("success", "Photo added successfully");
-        return "redirect:/account/cars/" + carId;
-    }
-
-    @PostMapping("/account/cars/removePhoto/{id}")
-    public String removePhoto(@PathVariable("id") Long photoId, @AuthenticationPrincipal CustomUserDetail userDetails, RedirectAttributes redirectAttributes) {
-        // Find and delete the photo
-        Photo photo = photoService.getPhotoById(photoId);
-        if (photo != null && photo.getCar().getUser().getId().equals(userDetails.getUser().getId())) {
-            photoService.deletePhoto(photoId);
-            fileStorageService.deleteFile(photo.getUrl());
-            redirectAttributes.addFlashAttribute("success", "Photo deleted successfully");
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Unauthorized action");
-        }
-        return "redirect:/account/cars/" + photo.getCar().getId();
-    }*/
-
     @PostMapping("/car/update/reservation")
     public String updateBookingMode(@RequestParam("vehicle_id") Long vehicleId,
                                     @RequestParam("booking_mode") String bookingMode,
                                     RedirectAttributes redirectAttributes) {
         Car car = carService.getCarById(vehicleId);
-        car.setModeReservation(bookingMode);
-        carService.updateCar(car.getId(), car);
+        car.setModeReservation(bookingMode); // Mettre à jour le mode de réservation
+        carService.updateCar(car.getId(), car); // Enregistrer les modifications
 
-        // Ajouter un message flash
+        // Ajouter un message flash pour le succès
         redirectAttributes.addFlashAttribute("successMessage", "Le mode de réservation a été mis à jour avec succès.");
 
-        // Rediriger vers la même page avec l'ancre "reservation-tab"
-        return "redirect:/account/cars/" + vehicleId + "#reservation-tab";
+        // Rediriger vers la même page avec un paramètre indiquant que l'onglet "reservation-tab" doit être actif
+        return "redirect:/account/cars/" + vehicleId + "?activeTab=reservation-tab";
     }
+
+
 
     @PostMapping("/car/update/tarification")
     public String updateVehiclePricing(@RequestParam("vehicle_id") Long vehicleId,
@@ -559,7 +663,8 @@ public class AccountController {
                                        @RequestParam("high_season_price") double highPrice,
                                        @RequestParam("promo1") double promo1,
                                        @RequestParam("promo2") double promo2,
-                                       Model model) {
+                                       RedirectAttributes redirectAttributes) {  // Utiliser RedirectAttributes
+
         Car car = carService.getCarById(vehicleId);
         Price price = car.getPrice();
         if (price == null) {
@@ -574,12 +679,16 @@ public class AccountController {
 
         carService.updateCar(car.getId(), car);
 
-        model.addAttribute("successMessage", "Tarification mise à jour avec succès.");
-        return "redirect:/account/cars/" + vehicleId + "#tarification-tab";
+        // Ajouter un message flash
+        redirectAttributes.addFlashAttribute("successMessage", "Tarification mise à jour avec succès.");
+
+        // Redirection vers la même page avec l'onglet "tarification-tab" actif
+        return "redirect:/account/cars/" + vehicleId + "?activeTab=tarification-tab";
     }
 
 
-    /*  ONGLET RESERVATIONS */
+
+    /* ---------------------- ONGLET RESERVATIONS ---------------------------*/
 
     @GetMapping("/account/reservations")
     public String getReservations(@AuthenticationPrincipal CustomUserDetail userDetails, Model model,
@@ -605,9 +714,12 @@ public class AccountController {
 
         User user = userDetails.getUser();
 
-        // Récupérer les détails de la réservation
+        // Récupérer les détails de la réservation et de la voiture
         Reservation reservation = reservationService.getReservationById(reservationId);
         Car car = carService.getCarById(carId);
+
+        // Ajouter une vérification si une plainte existe déjà
+        boolean complaintExists = claimService.existsByReservationId(reservationId);
 
         // Détails de la voiture
         String reservationStatus = reservation.getStatut();
@@ -615,7 +727,7 @@ public class AccountController {
         String carModel = car.getModel();
         String carFuel = car.getFuelType();
         String carImageUrl = (car.getPhotos() != null && !car.getPhotos().isEmpty())
-                ? "/uploads/" + car.getPhotos().get(0).getUrl()
+                ? "/uploads/photo-car/" + car.getPhotos().get(0).getUrl()
                 : "default-car.png";
         String carAddress = car.getAdresse() + ", " + car.getPostalCode() + " " + car.getLocality();
 
@@ -635,21 +747,22 @@ public class AccountController {
         String formattedStartDate = dateService.formatAndCapitalizeDate(debutLocation);
         String formattedEndDate = dateService.formatAndCapitalizeDate(finLocation);
 
+        // Vérification de l'évaluation existante
         boolean evaluationExists = evaluationService.evaluationExists(reservationId);
-        model.addAttribute("evaluationExists", evaluationExists);
 
-        // Calculer les détails de la location
+        // Calculer la durée de la location
         long duration = ChronoUnit.DAYS.between(debutLocation, finLocation);
 
-        double totalPrice = 0;
-        if ("PAYMENT_PENDING".equals(reservationStatus)) {
-            // Calculer le prix total si la réservation est en attente de paiement
-            double pricePerDay = reservation.getCar().getPrice().getMiddlePrice();
-            totalPrice = duration * pricePerDay;
-        } else if (reservation.getPayment() != null) {
-            // Utiliser le prix total de la table Payment s'il existe
-            totalPrice = reservation.getPayment().getPrixTotal();
+        // Calculer le montant total et le montant restant
+        double totalPrice = duration * reservation.getCar().getPrice().getMiddlePrice(); // Prix total calculé par jour
+        double remainingAmount = 0;
+
+        if ("PAYMENT_PENDING".equals(reservationStatus) || "RESPONSE_PENDING".equals(reservationStatus)) {
+            remainingAmount = totalPrice;  // Si le paiement ou la réponse est en attente, le montant restant est égal au prix total
+        } else {
+            remainingAmount = 0;  // Si la réservation est déjà payée ou annulée, le montant restant est de 0
         }
+
 
         // Ajouter les attributs au modèle
         model.addAttribute("user", user);
@@ -669,9 +782,14 @@ public class AccountController {
         model.addAttribute("fromUserId", user.getId());
         model.addAttribute("duration", duration);
         model.addAttribute("totalPrice", totalPrice);
+        model.addAttribute("remainingAmount", remainingAmount);
+        model.addAttribute("evaluationExists", evaluationExists);
+        model.addAttribute("complaintExists", complaintExists);
 
         return "account/car-reservation/chat";
     }
+
+
 
 
     @PostMapping("/account/notifications/reply")

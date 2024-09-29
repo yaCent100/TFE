@@ -1,0 +1,240 @@
+/* ------- Global Styles ------- */
+.fc .fc-event, .fc .fc-daygrid-day-top a, .fc a, .fc .fc-toolbar-title {
+    text-decoration: none !important;
+}
+
+.fc .fc-daygrid-day-number, .fc .fc-col-header-cell {
+    text-decoration: none !important;
+    color: #354C6F;
+}
+
+.fc .fc-daygrid-day-frame {
+    min-height: 100%;
+    position: relative;
+    height: 50px;
+    background-color: #354C6F;
+    border-radius: 5px;
+    color: white;
+}
+
+.fc-daygrid-day.default .fc-daygrid-day-frame {
+    background-color: #354C6F;
+    border-radius: 5px;
+}
+
+/* Styles pour les événements indisponibles */
+.unavailable {
+    background: repeating-linear-gradient(-45deg, white, white 5px, lightgray 5px, lightgray 10px);
+    color: red !important;
+    font-weight: bold;
+}
+
+/* Styles pour les événements indisponibles */
+.unavailable-event {
+    background: repeating-linear-gradient(-45deg, white, white 5px, lightgray 5px, lightgray 10px);
+    color: red !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+
+ .fc-daygrid-day.unavailable .fc-daygrid-day-frame {
+     background: repeating-linear-gradient(
+      -45deg,
+      white,
+      white 5px,
+      lightgray 5px,
+      lightgray 10px
+  );
+  color:black;
+ }
+
+  .fc-daygrid-day.unavailable-event .fc-daygrid-day-frame {
+      background: repeating-linear-gradient(
+       -45deg,
+       white,
+       white 5px,
+       lightgray 5px,
+       lightgray 10px
+   );
+   color:black;
+  }
+
+ /* Cette classe pour revenir à la couleur d'origine */
+ .fc-daygrid-day.default .fc-daygrid-day-frame {
+     background-color: #354C6F;
+     border-radius: 5px;
+ }
+
+ .fc-daygrid-day.unavailable-event .fc-daygrid-day-frame .fc-daygrid-day-number{
+    color:black;
+ }
+
+  .fc-daygrid-day.unavailable .fc-daygrid-day-frame .fc-daygrid-day-number{
+     color:black;
+  }
+
+
+
+
+
+/* Styles pour les événements de réservation */
+.reservation-event {
+    background-color: #00BFFF !important;
+    color: white !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+
+
+
+
+.fc .fc-daygrid-day {
+    border-radius: 8px;
+    margin: 2px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.fc .fc-cell-shaded, .fc .fc-day-disabled {
+    visibility: hidden !important;
+    border: none !important;
+}
+
+.fc .fc-daygrid-day-number {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    color: white;
+}
+
+
+
+
+/* Cible les jours qui ne font pas partie du mois courant et les rendre complètement transparents */
+.fc .fc-day-other, .fc .fc-day-disabled {
+    background-color: transparent !important; /* Retirer l'arrière-plan */
+    border: none !important; /* Supprimer la bordure */
+    visibility: hidden; /* Cacher le contenu du jour */
+    pointer-events: none; /* Désactiver l'interaction */
+}
+
+/* Optionnel : Supprimez aussi les numéros de jours pour les jours désactivés */
+.fc .fc-daygrid-day.fc-day-other .fc-daygrid-day-number,
+.fc .fc-daygrid-day.fc-day-disabled .fc-daygrid-day-number {
+    visibility: hidden; /* Cache les numéros de jours */
+}
+
+/* Ajuster les cases de jours pour ne montrer que ceux du mois en cours */
+.fc .fc-daygrid-day.fc-day-disabled {
+    height: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+}
+
+/* Si vous voulez juste un fond transparent sans cacher totalement les jours */
+.fc-day-other, .fc-day-disabled {
+    background-color: transparent !important;
+    border: none !important;
+    color: transparent; /* Cache le texte */
+    pointer-events: none; /* Désactiver l'interaction */
+}
+
+/* Réglage pour les cellules de jour vides spécifiques à multiMonth */
+.fc .fc-multimonth-daygrid{
+    background-color: transparent !important; /* Fond transparent pour les jours non actifs */
+}
+
+.fc .fc-multimonth-singlecol .fc-multimonth-header {
+    background-color: transparent !important; /* Fond transparent pour les jours non actifs */
+    position:relative !important;
+}
+
+.fc .fc-multimonth {
+        border:none !important;
+
+}
+
+
+
+/*----------------------LEGENDE------------------------*/
+
+    .calendar-caption {
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.caption-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: large;
+}
+
+.caption-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 4px;
+}
+
+/* Available status (Blue #354C6F) */
+.available-caption {
+    background-color: #354C6F;
+}
+
+/* Unavailable status (Striped pattern) */
+.unavailable-caption {
+    background: repeating-linear-gradient(
+        -45deg,
+        white,
+        white 5px,
+        lightgray 5px,
+        lightgray 10px
+    );
+        border: 1px solid gray;
+}
+
+/* Tooltip styling */
+.caption-text i {
+    margin-left: 5px;
+    color: #999;
+    cursor: pointer;
+}
+
+/* Tooltip custom styles */
+.tooltip-inner {
+    background-color: #333 !important;
+    color: #fff !important;
+    font-size: 12px;
+}
+
+.tooltip-arrow {
+    border-top-color: #333 !important;
+}
+
+
+
+
+
+/*--------------------CALENDRIER SUR LE COTE PROFIL ------------*/
+
+.ccm{
+    background-color: white;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-right: 20px;
+        padding-left: 20px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+}

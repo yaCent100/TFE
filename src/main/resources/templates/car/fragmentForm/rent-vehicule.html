@@ -7,7 +7,7 @@
 <body>
 <div th:fragment="vehicule-step" class="form-step" >
     <div class="row">
-        <div class="col-lg-9" style="background-color:#D5DDE1; padding:80px; border-radius:10px;" >
+        <div class="col-lg-9" style="background-color:#DFE7EC; padding:80px; border-radius:10px;" >
     <h2 class="fw-bold">
         Dîtes-nous en plus sur votre carrosse 😍 . De quelle voiture s’agit-il ?
     </h2>
@@ -46,11 +46,12 @@
     <div class="row justify content center">
 
         <div class="col-lg-6" >
-            <p class="mb-1">1ére mise en circulation
-                <span class="question-badge" data-toggle="tooltip" data-placement="right" title
-                      data-original-title="Saisissez votre plaque au format AB154ZT ou 123ABC974">?
-              </span>
+            <p class="mb-1">1ère mise en circulation
+            <span class="question-badge" data-toggle="tooltip" data-placement="right" title
+                  data-original-title="Vous pouvez inscrire que des voitures de moins de 10 ans">?
+            </span>
             </p>
+
             <div class="row">
                 <div class="col-md-4">
                     <select id="day" name="day" class="form-control" th:field="*{day}" required>
@@ -119,38 +120,43 @@
             </select>
         </div>
     </div>
- <div class="equipement mt-4">
-     <h6>Equipements</h6>
+ <div class="equipement mb-4">
+     <h6 class="mb-2">Equipements</h6>
      <div class="form-group">
          <div class="row">
              <div class="col-lg-3 col-md-4 col-sm-6 col-6" th:each="equipment : ${equipments}">
-                 <div class="form-check d-flex flex-column align-items-center equipment-item">
+                 <div class="form-check d-flex flex-column align-items-center equipment-item p-0 py-2">
                      <input type="checkbox" class="form-check-input" th:field="*{equipmentIds}" th:id="${'equipment_' + equipment.id}" th:value="${equipment.id}">
-                     <label class="form-check-label" th:for="${'equipment_' + equipment.id}">
+                     <label class="form-check-label d-flex flex-column align-items-center" th:for="${'equipment_' + equipment.id}">
                          <img th:src="@{${equipment.icone}}" alt="equipment icon" class="img-fluid equipment-icon" width="50">
+                         <small th:text="${equipment.equipment}" class="text-center mt-2"></small>
                      </label>
                  </div>
              </div>
          </div>
+
+
      </div>
  </div>
 
             <div class="condition">
-                <h6>Condition de location</h6>
+                <h6 mb-2>Condition de location</h6>
 
                 <div class="row" id="conditionsList"></div>
 
                 <div class="row mb-2" id="inputRow">
-                    <div class="col-lg-8">
-                        <label>
-                <textarea id="conditionTextarea" maxlength="255" class="form-control"
-                          placeholder="4 Condition max (la décrire en quelque mots ex: voiture non fumeur.)"></textarea>
+                    <div class="col-lg-12 mb-2">
+                        <label class="w-100">
+            <textarea id="conditionTextarea" maxlength="255" class="form-control"
+                      placeholder="4 Condition max (la décrire en quelque mots ex: voiture non fumeur.)"></textarea>
                         </label>
                     </div>
-                    <div class="col-lg-2 d-flex align-items-start">
-                        <button id="addConditionButton" class="btn btn-primary ml-2">Ajouter</button>
+
+                    <div class="col-lg-12 text-center">
+                        <button id="addConditionButton" class="btn btn-primary btn-block enregistrer">Ajouter</button>
                     </div>
                 </div>
+
             </div>
 
     <div class="localisation mt-4">
@@ -175,39 +181,42 @@
             Je certifie proposer un véhicule bien entretenu et disposant d’un contrôle technique à jour
         </label>
     </div>
-            <div class="col-lg-12">
+            <div class="col-lg-12 text-end">
                 <button class="btn btn-primary btn-next mt-4 text-right">Suivant</button>
             </div>
 
         </div>
         <div class="col-lg-3">
-            <div class="p-2 position-relative">
-                <div class="text-center bg-light p-1 rounded-10px">
+            <div class="p-2 position-relative bold" style="top:50px;">
+                <div class="text-center bg-light" style="border: 1px solid #ccc; padding: 15px !important; border-radius: 10px; margin: 10px;">
                     <img src="images/info.png" class="info-image">
                     <p>
-                        Le véhicule doit avoir<br>Moins de 8 ans<br>Moins de 200000 km
+                        Le véhicule doit avoir<br>Moins de 10 ans<br>Moins de 200 000 km
                     </p>
                 </div>
             </div>
-            <div class="p-2 position-relative">
-                <div class="text-center bg-light p-1 rounded-10px">
+            <div class="p-2 position-relative bold" style="top:100px;">
+                <div class="text-center bg-light" style="border: 1px solid #ccc; padding: 15px !important; border-radius: 10px; margin: 10px;">
                     <img src="images/info.png" class="info-image">
                     <p>
-                        Le véhicule doit avoir<br>Moins de 8 ans<br>Moins de 200000 km
+                        Les documents<br>du véhicule doivent<br>être à jour
                     </p>
                 </div>
             </div>
-            <div class="p-2 position-relative">
-                <div class="text-center bg-light p-1 rounded-10px">
+            <div class="p-2 position-relative bold" style="top:150px;">
+                <div class="text-center bg-light" style="border: 1px solid #ccc; padding: 15px !important; border-radius: 10px; margin: 10px;">
                     <img src="images/info.png" class="info-image">
                     <p>
-                        Le véhicule doit avoir<br>Moins de 8 ans<br>Moins de 200000 km
+                        Le véhicule doit<br>être entretenu<br>régulièrement
                     </p>
                 </div>
             </div>
         </div>
 
+
     </div>
+
 </div>
+
 </body>
 </html>

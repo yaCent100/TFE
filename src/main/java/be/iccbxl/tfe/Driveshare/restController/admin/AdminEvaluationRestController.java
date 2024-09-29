@@ -48,6 +48,7 @@ public class AdminEvaluationRestController {
         return ResponseEntity.ok(dashboardData);
     }
 
+
     @Operation(summary = "Obtenir les évaluations pour une voiture", description = "Récupérer les évaluations spécifiques pour une voiture donnée par son ID.")
     @GetMapping("/evaluations/car/{carId}")
     public ResponseEntity<List<EvaluationDTO>> getEvaluationsByCarId(@PathVariable Long carId) {

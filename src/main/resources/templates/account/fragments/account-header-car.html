@@ -2,10 +2,10 @@
 
 <div class="second-menu">
         <p class="text-center mgb-0">
-            <a id="annonce-link" class="car-detail-onglet mgr-40 fs13 semi-bold active" data-bs-toggle="tab" href="#annonce-tab">Voir mon annonce</a>
-            <a id="calendrier-link" class="car-detail-onglet mgr-40 fs13 semi-bold" data-bs-toggle="tab" href="#calendrier-tab">Calendrier</a>
-            <a id="reservation-link" class="car-detail-onglet mgr-40 fs13 semi-bold" data-bs-toggle="tab" href="#reservation-tab">Mode de réservation</a>
-            <a id="tarification-link" class="car-detail-onglet mgr-40 fs13 semi-bold" data-bs-toggle="tab" href="#tarification-tab">Tarification</a>
+            <a id="annonce-link" class="car-detail-onglet mgr-40 fs13 semi-bold" th:classappend="${param.activeTab == 'annonce-tab'} ? 'active' : ''" data-bs-toggle="tab" href="#annonce-tab">Voir mon annonce</a>
+            <a id="calendrier-link" class="car-detail-onglet mgr-40 fs13 semi-bold" th:classappend="${param.activeTab == 'calendrier-tab'} ? 'active' : ''" data-bs-toggle="tab" href="#calendrier-tab">Calendrier</a>
+            <a id="reservation-link" class="car-detail-onglet mgr-40 fs13 semi-bold" th:classappend="${param.activeTab == 'reservation-tab'} ? 'active' : ''" data-bs-toggle="tab" href="#reservation-tab">Mode de réservation</a>
+            <a id="tarification-link" class="car-detail-onglet mgr-40 fs13 semi-bold" th:classappend="${param.activeTab == 'tarification-tab'} ? 'active' : ''" data-bs-toggle="tab" href="#tarification-tab">Tarification</a>
         </p>
     </div>
 </div>

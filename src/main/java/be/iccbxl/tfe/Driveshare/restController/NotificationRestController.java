@@ -10,6 +10,7 @@ import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -20,6 +21,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Tag(name = "Notification API", description = "Gestion des notifications")
@@ -71,30 +73,74 @@ public class NotificationRestController {
     @GetMapping("/api/notifications/filter")
     @ResponseBody
     public String filterNotifications(
-            @RequestParam boolean tousMessages,
+            @RequestParam boolean nouveauMessages,
             @RequestParam boolean recuMessages,
             @RequestParam boolean envoyeMessages,
-            @RequestParam boolean notifications,
             Principal principal) {
 
         String email = principal.getName();
         User currentUser = userService.findByEmail(email);
         List<Notification> filteredNotifications;
 
-        // Filtrer les notifications en fonction des cases cochées
-        if (tousMessages) {
-            filteredNotifications = notificationService.getAllNotifications(currentUser);
+        if (nouveauMessages) {
+            filteredNotifications = notificationService.getUnreadNotifications(currentUser);
         } else if (recuMessages) {
             filteredNotifications = notificationService.getReceivedNotifications(currentUser);
         } else if (envoyeMessages) {
             filteredNotifications = notificationService.getSentNotifications(currentUser);
-        } else if (notifications) {
-            filteredNotifications = notificationService.getNotifications(currentUser);
         } else {
-            filteredNotifications = Collections.emptyList();
+            filteredNotifications = Collections.emptyList(); // Aucun filtre sélectionné
         }
 
         return notificationService.renderNotificationsHtml(filteredNotifications, currentUser);
+    }
+
+
+
+    // API pour répondre à une notification
+    @PostMapping("/api/notifications/reply/{notificationId}")
+    public ResponseEntity<Map<String, String>> replyToNotification(
+            @PathVariable Long notificationId,
+            @RequestBody Map<String, String> payload,
+            Principal principal) {
+
+        String replyMessage = payload.get("replyMessage");
+
+        // Log pour vérifier si le message est bien reçu
+        System.out.println("Réponse reçue: " + replyMessage);
+
+        if (replyMessage == null || replyMessage.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("error", "Le message de réponse est vide."));
+        }
+
+        // Récupérer l'utilisateur authentifié
+        String email = principal.getName();
+        User currentUser = userService.findByEmail(email);
+
+        // Récupérer la notification par son ID
+        Notification notification = notificationService.getNotificationById(notificationId);
+        if (notification == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("error", "Notification introuvable"));
+        }
+
+        // Marquer la notification comme lue
+        notification.setIsRead(true);
+        notificationService.save(notification);
+
+        // Traitez la réponse (enregistrer la nouvelle notification de réponse)
+        Notification replyNotification = new Notification();
+        replyNotification.setFromUser(currentUser);
+        replyNotification.setToUser(notification.getFromUser()); // Envoyer la réponse à l'expéditeur d'origine
+        replyNotification.setCar(notification.getCar());
+        replyNotification.setMessage(replyMessage); // Enregistrer la réponse
+        replyNotification.setType("Réponse");
+        replyNotification.setSentAt(LocalDateTime.now());
+        notificationService.save(replyNotification);
+
+        // Retourner une réponse JSON valide
+        return ResponseEntity.ok(Collections.singletonMap("message", "Réponse envoyée avec succès"));
     }
 
 

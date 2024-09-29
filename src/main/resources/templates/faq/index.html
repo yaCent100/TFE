@@ -42,7 +42,7 @@
     .faq-content {
       flex: 1;
       padding: 50px;
-      background-color: white;
+      background-color: #DFE7EC;
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       width: 100%;
@@ -51,10 +51,9 @@
     .faq-question {
       cursor: pointer;
       padding: 15px;
-      background-color: #e9ecef;
-      border: 1px solid #007bff;
-      border-radius: 5px;
-      margin-bottom: 10px;
+      background-color: white;
+      border-radius: 10px;
+      margin-bottom: 15px;
       position: relative;
       font-weight: bold;
       display: flex;
@@ -64,15 +63,14 @@
 
     .faq-answer {
       display: none;
-      padding: 10px;
-      margin-bottom: 10px;
-      background-color: #f1f3f5;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #FFFFFF;
+      border-radius: 10px;
     }
 
     .faq-question.active {
-      background-color: #007bff;
+      background-color: #8EAAB3;
       color: white;
     }
 
@@ -85,13 +83,18 @@
       color: white;
     }
 
-    .faq-question.active span::before {
-      content: "-";
-    }
+.faq-question span {
+  margin-left: auto; /* Pour aligner à droite */
+  padding-left: 10px; /* Ajoute un espace entre la question et le symbole */
+  font-size: 20px;
+  color: #007bff;
+}
 
-    .faq-question span::before {
-      content: "+";
-    }
+.faq-question.active span {
+  color: white;
+}
+
+
 
     .link-container {
       display: flex;
@@ -104,23 +107,70 @@
     .link-box {
       text-align: center;
       padding: 20px;
-      margin: 10px;
-      width: 250px;
+      margin: 15px;
       border: 2px solid #007bff;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       transition: transform 0.2s, box-shadow 0.2s;
+      width:350px;
     }
+    .link-box-contact{
+       text-align: center;
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+
+    }
+
+    .link-box-contact:hover{
+          transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      cursor:pointer;
+      color:white  !important ;
+      background-color:#354C6F;
+    }
+
 
     .link-box:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      color:white !important ;
+      background-color:#354C6F;
     }
 
     .link-box a {
       text-decoration: none;
       color: #007bff;
+      font-size: 25px;
+      font-weight: bold;
+    }
+      .contact-section {
+      background-color: #DFE7EC;
+      padding: 30px;
+      border-radius: 10px;
+      margin-top: 50px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-section h2 {
+      font-size: 22px;
+      color: #354C6F;
+      margin-bottom: 20px;
+    }
+
+    .contact-info {
       font-size: 18px;
+      color: #354C6F;
+    }
+
+    .contact-info p {
+      margin-bottom: 10px;
+    }
+
+    .contact-info a {
+      color: #007bff;
+      text-decoration: none;
       font-weight: bold;
     }
 
@@ -132,112 +182,370 @@
     <div class="left-section" style="flex: 1;">
       <img class="img-fluid w-100" src="/images/faq-image.png" alt="FAQ Image" style="object-fit: cover; height: 100%;">
     </div>
-    <div class="right-section" style="flex: 1;  align-item:center;">
+    <div class="right-section" style="flex: 1;  text-align:center;">
       <img src="/images/DriveShareLogo.png" alt="DriveShare Logo" class="mb-3 img-fluid w-50">
-      <h1>Un bon plan pour louer une voiture sur Bruxelles</h1>
+      <h1 class="me-3 ms-3 bold" style="color:#354C6F;" th:text="#{plan-titre}">Un bon plan pour louer une voiture sur Bruxelles</h1>
     </div>
   </div>
 
 
 
 
-  <div class="link-container">
-    <div class="link-box">
-      <a href="#frequent-questions">Questions Fréquentes</a>
-    </div>
-    <div class="link-box">
-      <a href="#proprietaire-section">Je suis Propriétaire<span>Vous avez une voiture où vous souhaitez la mettre  en location.</span> </a>
-    </div>
-    <div class="link-box">
-      <a href="#locataire-section">Je suis Locataire <span class="text-muted">Vous souhaitez louer une voiture et vous avez des questions ?
+  <div class="link-container mt-5 mb-2">
+    <a href="#frequent-questions" class="link-box d-flex justify-content-center align-items-center">
+      <div class="w-100 h-100 d-flex justify-content-center align-items-center">
+        <h3 class="bold" th:text="#{question-frequente}">Questions Fréquentes</h3>
+      </div>
+    </a>
 
-        Nous avons les réponses :)</span></a>
-    </div>
+    <a href="#proprietaire-section" class="link-box">
+      <div class="w-100 h-100 d-flex flex-column justify-content-center">
+        <h3 class="bold m-0" th:text="#{proprietaire}">Je suis Propriétaire</h3>
+        <p class="mt-4" th:text="#{ancre-proprietaire}">Vous avez une voiture où vous souhaitez la mettre en location.</p>
+      </div>
+    </a>
+
+    <a href="#locataire-section" class="link-box">
+      <div class="w-100 h-100 d-flex flex-column justify-content-center">
+        <h3 class="bold m-0" th:text="#{locataire}">Je suis Locataire</h3>
+        <p class="mt-3" th:text="#{ancre-locataire}">Vous souhaitez louer une voiture et vous avez des questions ? Nous avons les réponses :)</p>
+      </div>
+    </a>
   </div>
+  <!-- Nouveau conteneur pour "Nous contacter" -->
+  <a href="#contact-section" class="w-100">
+    <div class="container link-box-contact d-flex justify-content-center align-items-center py-2">
+      <div class="w-100 h-100 d-flex justify-content-center align-items-center">
+        <h3 class="bold m-0" th:text="#{contactez-nous}">Nous contacter</h3>
+      </div>
+    </div>
+  </a>
 
   <div class="faq-container m-5">
-
     <!-- Section pour les Propriétaires -->
-    <div class="faq-section-wrapper">
+    <div  id="frequent-questions" class="faq-section-wrapper">
       <div class="faq-title">
-        <h2>Questions fréquentes</h2>
+        <h2 th:text="#{question-frequente}">Questions fréquentes</h2>
       </div>
       <div class="faq-content">
-        <div class="faq-question" onclick="toggleAnswer(this)">Les options aéroport (livraison et retour), comment ça marche ?<span></span></div>
-        <div class="faq-answer">Explication sur les options aéroport...</div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Que se passe-t-il en cas d’annulation ?<span></span></div>
-        <div class="faq-answer">Explication en cas d'annulation...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{annulation-question}">Que se passe-t-il en cas d’annulation ?</div>
+        <div class="faq-answer">
+          <p th:text="#{annulation-reponse-1}">En cas d'annulation, les frais varient en fonction du moment où la réservation est annulée :</p>
+          <ul>
+            <li th:text="#{annulation-reponse-2}">10 % de frais en cas d'annulation 48 heures avant le début de la location.</li>
+            <li th:text="#{annulation-reponse-3}">50 % de frais en cas d'annulation 24 heures avant le début de la location.</li>
+            <li th:text="#{annulation-reponse-4}">Annulation le jour de la location : aucun remboursement.</li>
+          </ul>
+        </div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{debut-location-question}">Que dois-je vérifier au début de la location ?<span>+</span></div>
+        <div class="faq-answer">
+          <p th:text="#{debut-location-reponse-1}">Au début de la location, il est important de :</p>
+          <ul>
+            <li th:text="#{debut-location-reponse-2}"></li>
+            <li th:text="#{debut-location-reponse-3}">• Faire un état des lieux complet du véhicule (intérieur et extérieur), en notant les éventuels dommages existants.</li>
+            <li th:text="#{debut-location-reponse-4}">• Prendre des photos du véhicule avant la remise des clés pour éviter les litiges en fin de location.</li>
+          </ul>
+        </div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{controle-technique-question}">Comment connaître la date de mon prochain contrôle technique ?<span>+</span></div>
+        <div class="faq-answer" th:text="#{controle-technique-reponse}">
+          La date de votre prochain contrôle technique est indiquée sur le certificat de contrôle technique que vous recevez après chaque inspection. Vous pouvez également la retrouver sur l'autocollant apposé sur le pare-brise de votre véhicule, s'il y en a un.
+        </div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Que dois-je vérifier au début de la location ?<span></span></div>
-        <div class="faq-answer">Liste des vérifications à faire au début de la location...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{restitution-vehicule-question}">Que se passe-t-il si le locataire ne me restitue pas mon véhicule ?<span>+</span></div>
+        <div class="faq-answer" th:text="#{restitution-vehicule-reponse-1}">
+          Si le locataire ne restitue pas votre véhicule à la fin de la période de location, voici les étapes qui seront suivies par Driveshare :
+          <ul>
+            <li th:text="#{restitution-vehicule-reponse-2}">Dans un premier temps, contactez le locataire via la messagerie de Driveshare pour demander la restitution du véhicule.</li>
+            <li th:text="#{restitution-vehicule-reponse-3}">Si le locataire ne répond pas ou refuse de restituer le véhicule, signalez immédiatement l'incident au service client de Driveshare.</li>
+            <li th:text="#{restitution-vehicule-reponse-4}">Driveshare tentera de contacter le locataire pour résoudre la situation. Si aucune solution n'est trouvée, Driveshare engagera une procédure formelle.</li>
+            <li th:text="#{restitution-vehicule-reponse-5}">En cas d'absence de restitution, Driveshare vous aidera à signaler le véhicule comme volé auprès des autorités compétentes et fournira les documents nécessaires (contrat de location, identification du locataire, etc.).</li>
+            <li th:text="#{restitution-vehicule-reponse-6}">Si votre véhicule est couvert par l'assurance Driveshare, celle-ci pourra intervenir selon les termes du contrat pour compenser les pertes.</li>
+          </ul>
+        </div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Comment connaître la date de mon prochain contrôle technique ?<span></span></div>
-        <div class="faq-answer">Explication sur le contrôle technique...</div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Que se passe-t-il si le locataire ne me restitue pas mon véhicule ?<span></span></div>
-        <div class="faq-answer">Détails sur les démarches à suivre en cas de non-restitution du véhicule...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{frais-supplementaire-question}">Quels sont les frais supplémentaires éventuels ?<span>+</span></div>
+        <div class="faq-answer" >
+          <p th:text="#{frais-supplementaire-reponse-1}">Il n'y a généralement pas de frais supplémentaires à prévoir, sauf en cas d'incidents liés à l'assurance. Si le locataire a souscrit à l'assurance omnium, aucun frais supplémentaire ne sera facturé au locataire en cas de dommages. Cependant, sans cette assurance, des frais peuvent être engagés selon les circonstances :
+
+          </p>
+          <ul>
+            <li th:text="#{frais-supplementaire-reponse-1}">Frais de réparation des dommages causés au véhicule si ceux-ci ne sont pas couverts par l'assurance.</li>
+            <li th:text="#{frais-supplementaire-reponse-1}">Frais liés à un retour tardif du véhicule ou dépassement du kilométrage prévu dans le contrat.</li>
+            <li th:text="#{frais-supplementaire-reponse-1}">Frais de nettoyage si le véhicule est rendu dans un état anormalement sale.</li>
+          </ul>
+        </div>
+
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{modification-question}">Comment puis-je modifier ou annuler ma réservation ?<span>+</span></div>
+        <div class="faq-answer" th:text="#{modification-reponse}">
+          La modification d'une réservation n'est pas possible. Si vous souhaitez changer des détails, vous devrez annuler la réservation existante et en créer une nouvelle. Pour annuler votre réservation, accédez à la section de votre réservation, où vous trouverez le chat avec le propriétaire. Cliquez ensuite sur le bouton "Annuler" pour finaliser l'annulation.
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{document-vehicule-question}">Quels sont les documents nécessaires pour louer un véhicule ?<span>+</span></div>
+        <div class="faq-answer" th:text="#{document-vehicule-reponse}">
+          Vous devez fournir une carte d'identité valide ainsi qu'un permis de conduire d'au moins 3 ans pour pouvoir louer un véhicule.
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{assurance-location-question}">Comment l’assurance fonctionne-t-elle pendant la location ?<span>+</span></div>
+        <div class="faq-answer" th:text="#{assurance-location-reponse}">
+          En cas de problème durant la location, vous devez nous contacter directement et nous nous occupons de tout. Toutefois, en cas d'accident, un constat est à disposition dans le véhicule et doit être rempli sur place.
+        </div>
+
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{prolongation-location-question}">Puis-je prolonger la durée de la location après le début de la location ?<span>+</span></div>
+        <div class="faq-answer" th:text="#{prolongation-location-question}">
+          Il n'est pas possible de prolonger une location en cours. Si vous souhaitez garder le véhicule plus longtemps, vous devrez effectuer une nouvelle réservation.
+        </div>
+
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{retard-question}">Que se passe-t-il si je rends le véhicule en retard ?<span>+</span></div>
+        <div class="faq-answer"  th:text="#{retard-reponse}">
+          En cas de restitution tardive du véhicule, des frais supplémentaires seront appliqués au locataire en fonction du temps de retard.
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)"  th:text="#{carburant-question}">Le carburant est-il inclus dans le prix de la location ?<span>+</span></div>
+        <div class="faq-answer"  th:text="#{carburant-reponse}">
+          Non, le carburant n'est pas inclus dans le prix de la location. Il est attendu que vous rendiez la voiture avec le même niveau de carburant qu'au début de la location, généralement avec le plein. Si le véhicule est restitué avec moins de carburant, des frais supplémentaires peuvent être appliqués.
+        </div>
+
+
       </div>
     </div>
 
-    <div class="faq-section-wrapper">
+    <div id="proprietaire-section" class="faq-section-wrapper">
       <div class="faq-title">
         <h2>Je suis Propriétaire</h2>
       </div>
       <div class="faq-content">
-        <div class="faq-question" onclick="toggleAnswer(this)">Les options aéroport (livraison et retour), comment ça marche ?<span></span></div>
-        <div class="faq-answer">Explication sur les options aéroport...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{annulation-question}">Que se passe-t-il en cas d’annulation ?<span>+</span></div>
+        <div class="faq-answer">
+          <p th:text="#{annulation-reponse-1}">En cas d'annulation, les frais varient en fonction du moment où la réservation est annulée :</p>
+          <ul>
+            <li th:text="#{annulation-reponse-2}">10 % de frais en cas d'annulation 48 heures avant le début de la location.</li>
+            <li th:text="#{annulation-reponse-3}">50 % de frais en cas d'annulation 24 heures avant le début de la location.</li>
+            <li th:text="#{annulation-reponse-4}">Annulation le jour de la location : aucun remboursement.</li>
+          </ul>
+        </div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Que se passe-t-il en cas d’annulation ?<span></span></div>
-        <div class="faq-answer">Explication en cas d'annulation...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{proprietaire.debut-location-question}">
+          Que dois-je vérifier au début de la location ?<span></span>
+        </div>
+        <div class="faq-answer" th:text="#{proprietaire.debut-location-reponse}">
+          Si le locataire est un locataire "Verified" par DriveShare, vous n'avez rien à vérifier. Sinon, vous devez vérifier son permis de conduire et vous assurer que tous les documents nécessaires sont en règle avant de lui remettre le véhicule.
+        </div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Que dois-je vérifier au début de la location ?<span></span></div>
-        <div class="faq-answer">Liste des vérifications à faire au début de la location...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{proprietaire.revenus-question}">
+          Dois-je déclarer mes revenus ?<span></span>
+        </div>
+        <div class="faq-answer" th:text="#{proprietaire.revenus-reponse}">
+          Oui, en Belgique, les revenus générés par la location de votre véhicule doivent être déclarés auprès des impôts...
+        </div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Comment connaître la date de mon prochain contrôle technique ?<span></span></div>
-        <div class="faq-answer">Explication sur le contrôle technique...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{proprietaire.documents-question}">
+          Quels documents dois-je fournir au locataire avant la location ?<span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{proprietaire.documents-reponse}">
+          Le contrat de location, signé par vous et le locataire, doit être fourni en deux exemplaires : un pour vous et un pour lui...
+        </div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Que se passe-t-il si le locataire ne me restitue pas mon véhicule ?<span></span></div>
-        <div class="faq-answer">Détails sur les démarches à suivre en cas de non-restitution du véhicule...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{proprietaire.prix-location-question}">
+          Comment fixer le prix de la location de mon véhicule ?<span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{proprietaire.prix-location-reponse}">
+          Le prix de la location est fixé par le propriétaire en fonction de la catégorie du véhicule...
+        </div>
+
+        <!-- Nouvelles questions ajoutées -->
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{proprietaire.refuser-location-question}">
+          Puis-je refuser une location ?<span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{proprietaire.refuser-location-reponse}">
+          Oui, en tant que propriétaire, vous pouvez refuser une location si vous avez configuré votre véhicule en mode de réservation manuelle...
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{proprietaire.dommages-question}">
+          Que faire en cas de dommages au véhicule pendant la location ?<span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{proprietaire.dommages-reponse}">
+          En cas de dommages au véhicule pendant la location, le locataire doit immédiatement vous informer...
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{proprietaire.litige-question}">
+          Quels sont mes droits en cas de litige avec un locataire ?<span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{proprietaire.litige-reponse}">
+          En cas de litige avec un locataire, vous avez plusieurs recours...
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{proprietaire.revenus-calcul-question}">
+          Comment est calculé mon revenu en tant que propriétaire ?<span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{proprietaire.revenus-calcul-reponse}">
+          Driveshare prend une commission de 30 % sur le montant total de chaque réservation...
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{proprietaire.urgence-question}">
+          Puis-je récupérer mon véhicule avant la fin de la location en cas d'urgence ?<span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{proprietaire.urgence-reponse}">
+          Non, il n'est pas possible de récupérer le véhicule avant la fin de la location...
+        </div>
       </div>
     </div>
 
-    <!-- Section pour les Locataires -->
-    <div class="faq-section-wrapper">
+    <div id="locataire-section" class="faq-section-wrapper">
       <div class="faq-title">
-        <h2>Je suis Locataire</h2>
+        <h2 th:text="#{locataire-title}">Je suis Locataire</h2>
       </div>
       <div class="faq-content">
-        <div class="faq-question" onclick="toggleAnswer(this)">Est-ce que la livraison et le retour au port sont inclus dans le prix de réservation ?<span></span></div>
-        <div class="faq-answer">Explication sur la livraison et retour au port...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{debut-location-question-locataire}">
+          Que dois-je vérifier au début de la location ? <span>+</span>
+        </div>
+        <div class="faq-answer">
+          <p th:text="#{debut-location-reponse-1-locataire}">Au début de la location, il est important de :</p>
+          <ul>
+            <li th:text="#{debut-location-reponse-2-locataire}">Signer le contrat de location et conserver un exemplaire.</li>
+            <li th:text="#{debut-location-reponse-3-locataire}">Faire une inspection complète du véhicule (intérieur et extérieur) et noter tout dommage préexistant.</li>
+            <li th:text="#{debut-location-reponse-4-locataire}">Prendre des photos du véhicule avant de remettre les clés pour éviter les litiges à la fin de la location.</li>
+          </ul>
+        </div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Que dois-je vérifier au début de la location ?<span></span></div>
-        <div class="faq-answer">Liste des vérifications à faire au début de la location...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{annulation-question-locataire}">
+          Le propriétaire me demande d'annuler ma réservation, que faire ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{annulation-reponse-locataire}">
+          Si le propriétaire vous demande d'annuler votre réservation et que vous ne le souhaitez pas, vous avez le droit de conserver la réservation. Cependant, si vous acceptez d'annuler, aucun frais ne vous sera facturé.
+        </div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Est-ce que la livraison et le retour aéroport sont compris dans le prix de location ?<span></span></div>
-        <div class="faq-answer">Explication sur la livraison et retour à l'aéroport...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{panne-question-locataire}">
+          Que faire en cas de crevaison ou de panne ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{panne-reponse-locataire}">
+          En cas de crevaison ou de panne, contactez immédiatement DriveShare via l'assistance incluse avec votre location. Un service de dépannage est disponible pour vous aider à résoudre le problème.
+        </div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Le propriétaire me demande d'annuler ma location, que faire ?<span></span></div>
-        <div class="faq-answer">Explication des démarches à suivre en cas d'annulation demandée par le propriétaire...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{prolongation-question-locataire}">
+          Comment puis-je prolonger la durée de la location ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{prolongation-reponse-locataire}">
+          Il n'est pas possible de prolonger une location en cours. Vous devez faire une nouvelle réservation si vous souhaitez garder le véhicule plus longtemps.
+        </div>
 
-        <div class="faq-question" onclick="toggleAnswer(this)">Que faire en cas de crevaison ou de panne ?<span></span></div>
-        <div class="faq-answer">Explication des démarches à suivre en cas de crevaison ou de panne...</div>
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{retard-question-locataire}">
+          Que se passe-t-il si je rends le véhicule en retard ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{retard-reponse-locataire}">
+          Les retours tardifs entraîneront des frais supplémentaires en fonction de la durée du retard.
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{carburant-question-locataire}">
+          Le carburant est-il inclus dans le prix de la location ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{carburant-reponse-locataire}">
+          Non, le carburant n'est pas inclus dans le prix de la location. Vous devez rendre le véhicule avec le même niveau de carburant qu'au début de la location, généralement avec le plein.
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{amende-question-locataire}">
+          Que se passe-t-il si je reçois une amende pendant la location ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{amende-reponse-locataire}">
+          Si vous recevez une amende pendant la location, vous êtes responsable de son règlement. DriveShare peut débiter le montant de l'amende sur votre carte de crédit.
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{conducteur-question-locataire}">
+          Puis-je changer le conducteur principal pendant la location ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{conducteur-reponse-locataire}">
+          Non, il est strictement interdit de céder le véhicule à un tiers ou de changer le conducteur principal pendant la location. Seul le conducteur désigné lors de la réservation est autorisé à conduire.
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{dommage-question-locataire}">
+          Que faire si le véhicule est endommagé pendant la location ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{dommage-reponse-locataire}">
+          Si le véhicule est endommagé pendant la location, contactez immédiatement DriveShare pour signaler l'incident.
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{assurance-question-locataire}">
+          Comment fonctionne l'assurance pendant la location ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{assurance-reponse-locataire}">
+          L'assurance couvre les dommages au véhicule en fonction de l'option choisie. En cas d'accident, remplissez le constat d'accident disponible dans le véhicule et contactez DriveShare.
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{frais-supplementaire-question-locataire}">
+          Quels sont les frais supplémentaires éventuels ? <span>+</span>
+        </div>
+        <div class="faq-answer">
+          <ul>
+            <li th:text="#{frais-supplementaire-reponse-1-locataire}">Frais de retour tardif.</li>
+            <li th:text="#{frais-supplementaire-reponse-2-locataire}">Frais de carburant pour le retour du véhicule avec moins de carburant.</li>
+            <li th:text="#{frais-supplementaire-reponse-3-locataire}">Frais de réparation si la couverture de l'assurance est insuffisante.</li>
+          </ul>
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{modification-question-locataire}">
+          Comment puis-je modifier ou annuler ma réservation ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{modification-reponse-locataire}">
+          Vous ne pouvez pas modifier une réservation. Pour apporter des modifications, vous devez annuler la réservation actuelle et en créer une nouvelle.
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{proprietaire-absent-question-locataire}">
+          Que faire si le propriétaire ne se présente pas à la remise du véhicule ? <span>+</span>
+        </div>
+        <div class="faq-answer">
+          <ul>
+            <li th:text="#{proprietaire-absent-reponse-1-locataire}">Contactez le propriétaire pour vérifier s'il y a un retard ou un problème.</li>
+            <li th:text="#{proprietaire-absent-reponse-2-locataire}">Attendez un délai raisonnable (30-60 minutes).</li>
+            <li th:text="#{proprietaire-absent-reponse-3-locataire}">Contactez le support de DriveShare pour obtenir de l'aide et une éventuelle reprogrammation.</li>
+          </ul>
+        </div>
+
+        <div class="faq-question" onclick="toggleAnswer(this)" th:text="#{restitution-lieu-question-locataire}">
+          Puis-je restituer le véhicule dans un autre lieu ? <span>+</span>
+        </div>
+        <div class="faq-answer" th:text="#{restitution-lieu-reponse-locataire}">
+          Restituer le véhicule dans un autre lieu que celui initialement prévu doit être approuvé par le propriétaire et peut entraîner des frais supplémentaires.
+        </div>
       </div>
     </div>
 
-  </div>
 
+
+  </div>
+  <div id="contact-section" class="contact-section text-center m-5">
+    <h2 th:text="#{contactez-nous}">Nous contacter</h2>
+    <div class="contact-info">
+      <p th:text="#{contact-section-email}">Email : contact@driveshare.com</p>
+      <p th:text="#{contact-section-tel}">Téléphone : +32 2 123 45 67</p>
+      <p th:text="#{contact-section-support}">Pour toute demande de support, n'hésitez pas à nous écrire ou nous appeler.</p>
+    </div>
+  </div>
   <!-- Script pour afficher/masquer les réponses -->
   <script>
-    function toggleAnswer(element) {
-      element.classList.toggle("active");
-      const answer = element.nextElementSibling;
-      if (answer.style.display === "block") {
-        answer.style.display = "none";
-      } else {
-        answer.style.display = "block";
-      }
-    }
+function toggleAnswer(element) {
+  element.classList.toggle("active");
+  const answer = element.nextElementSibling;
+
+  // Toggle visibility of the answer
+  if (answer.style.display === "block") {
+    answer.style.display = "none";
+  } else {
+    answer.style.display = "block";
+  }
+
+  // Change the "+" to "-" and vice versa
+  const spanElement = element.querySelector('span');
+  if (element.classList.contains('active')) {
+    spanElement.innerHTML = '-'; // Afficher "-"
+  } else {
+    spanElement.innerHTML = '+'; // Afficher "+"
+  }
+}
+
   </script>
 </div>
 

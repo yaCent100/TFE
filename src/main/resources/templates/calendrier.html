@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns:layout="http://www.ultraq.net.mx/thymeleaf/layout">
+
 <head>
     <meta charset="UTF-8">
     <title>Calendrier</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/footer.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
@@ -10,71 +14,207 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dancing+Script&display=swap">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.11/index.global.min.js'></script>
+    <style>
+        /* Style pour la haute saison */
+        .high-season {
+            background-color: #FF6347 !important; /* Bordeaux pour la haute saison */
+            color: white;
+            border-radius: 5px; /* Ajout du border-radius */
+        }
+
+        /* Style pour la basse saison */
+        .low-season {
+            background-color: #1E3A8A !important; /* Bleu marine pour la basse saison */
+            color: white;
+            border-radius: 5px; /* Ajout du border-radius */
+        }
+
+        /* Style pour la moyenne saison */
+        .mid-season {
+            background-color: #2E8B57 !important; /* Vert foncé pour la moyenne saison */
+            color: white;
+            border-radius: 5px; /* Ajout du border-radius */
+        }
+
+        /* Suppression des jours hors du mois visible */
+        .fc .fc-daygrid-day.fc-day-other {
+            display: none !important; /* Cache les jours en dehors du mois actuel */
+        }
+
+        .fc-daygrid-event-harness{
+            display:none;
+        }
+
+        .fc .fc-multimonth-daygrid {
+            background-color:transparent;
+        }
+
+        .fc-daygrid-day-frame {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Suppression des jours vides */
+        .fc .fc-daygrid-day.fc-day-disabled {
+            background: transparent !important;
+        }
+
+        /* Style pour les chiffres des jours */
+        .fc .fc-daygrid-day-number {
+            color: white !important;
+        }
+
+        /* Suppression des textes inutiles dans les événements */
+        .fc-daygrid-event .fc-event-title {
+            display: none !important;
+        }
+
+        /* Style pour la légende */
+        .season-legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .season-legend div {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .season-legend span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+
+        .legend-high-season {
+            background-color: #FF6347;
+        }
+
+        .legend-low-season {
+            background-color: #1E3A8A;
+        }
+
+        .legend-mid-season {
+            background-color: #2E8B57;
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div layout:fragment="content">
+    <div class="my-5 mx-5">
+        <h2 class="bold mb-4">Calendrier des Saisons</h2>
+
+        <!-- Légende des saisons -->
+        <div class="season-legend mb-4">
+            <div><span class="legend-high-season"></span> Haute Saison</div>
+            <div><span class="legend-low-season"></span> Basse Saison</div>
+            <div><span class="legend-mid-season"></span> Moyenne Saison</div>
+        </div>
+
+        <div id="calendrier-seul"></div>
+    </div>
+
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendrier-seul');
 
-document.addEventListener('DOMContentLoaded', function() {
-    const calendarEl = document.getElementById('calendar');
+            // Générer une année complète avec des événements par mois selon la saison, à partir de la date actuelle
+            const currentYear = new Date().getFullYear();
+            const seasonEvents = generateSeasonEvents(currentYear);
 
+            // Instancier FullCalendar avec les événements des saisons
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'multiMonthYear', // Vue pour une année complète avec tous les mois visibles
+                views: {
+                    multiMonthYear: {
+                        type: 'multiMonth',
+                        duration: { months: 12 }, // Afficher les 12 mois
+                        fixedWeekCount: false, // Empêche l'ajout de semaines supplémentaires
+                        showNonCurrentDates: false // Désactive les jours en dehors du mois actuel
+                    }
+                },
+                events: seasonEvents,
 
+                // Suppression de l'affichage du texte dans les événements (comme "12a")
+                eventContent: function () {
+                    return { domNodes: [] }; // Empêche d'ajouter du texte
+                },
 
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-       initialView: 'Mois', // Vue initiale
+                headerToolbar: false, // Désactive la barre d'en-tête
 
-        views: {
-            Mois: {
-                    type: 'multiMonth',
-                    duration: { months: 6 },
-                    multiMonthMaxColumns: 2,
-                    titleFormat: { month: 'long', year: 'numeric' },
-                    dayHeaderContent: function(arg) {
-                        const day = arg.date.toLocaleDateString('fr-FR', { weekday: 'long' });
-                        const firstLetter = day.charAt(0).toUpperCase();
-                        return firstLetter;
-                    },
-                    fixedWeekCount: false,
-                    showNonCurrentDates: false
+                dayCellClassNames: function (arg) {
+                    const date = new Date(arg.date);
+                    if (isHighSeason(date)) return 'high-season';
+                    if (isLowSeason(date)) return 'low-season';
+                    return 'mid-season'; // Moyenne saison par défaut
+                }
+            });
+
+            // Définir la hauteur automatique du calendrier pour qu'il prenne tout l'espace disponible
+            calendar.setOption('height', 'auto');
+            calendar.render();
+
+            // Générer les événements pour l'année selon les saisons
+            function generateSeasonEvents(year) {
+                const events = [];
+                const startOfYear = new Date(year, 0, 1);
+                const endOfYear = new Date(year, 11, 31);
+                let currentDate = new Date(startOfYear);
+
+                while (currentDate <= endOfYear) {
+                    let season = 'Moyenne saison';
+                    if (isHighSeason(currentDate)) {
+                        season = 'Haute saison';
+                    } else if (isLowSeason(currentDate)) {
+                        season = 'Basse saison';
+                    }
+
+                    // Ajouter un événement pour chaque jour avec la saison correspondante
+                    events.push({
+                        start: new Date(currentDate),
+                        end: new Date(currentDate),
+                        classNames: [getSeasonClass(season)]
+                    });
+
+                    // Passer au jour suivant
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+                return events;
             }
 
+            // Logique pour déterminer la haute saison (Juin à Septembre)
+            function isHighSeason(date) {
+                const month = date.getMonth() + 1; // getMonth() retourne un index 0-11
+                return (month >= 6 && month <= 9); // Juin à Septembre = haute saison
+            }
 
-        },
-        headerToolbar: false,
-        selectable: true,
-        initialDate: new Date(),
-        locale: 'fr'
+            // Logique pour déterminer la basse saison (Octobre à janvier)
+            function isLowSeason(date) {
+                const month = date.getMonth() + 1;
+                return (month === 10 || month === 11 || month === 12 || month === 1 ); // Octobre à Février = basse saison
+            }
 
-    });
-
-    calendar.setOption('height', 'auto');
-    calendar.render();
-
-
-
-
-
-});
-
+            // Fonction pour déterminer la classe CSS selon la saison
+            function getSeasonClass(season) {
+                if (season === 'Haute saison') return 'high-season';
+                if (season === 'Basse saison') return 'low-season';
+                return 'mid-season'; // Moyenne saison par défaut
+            }
+        });
     </script>
-</head>
-<body>
-<div class="row">
-    <div class="col-lg-6">
-        <p class="bold">
-            zfqg135.
-        </p>
-    </div>
-    <div class="col-lg-6">
-        <div id="calendar"></div>
-
-    </div>
 </div>
 
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/profil.js" type="text/javascript"></script>
-<script src="/js/calendrier.js" type="text/javascript"></script>
-<script src="/js/map.js" type="text/javascript"></script>
-<script src="/js/scriptLogin.js" type="text/javascript"></script>
-<script src="/js/prix.js" type="text/javascript"></script>
 </body>
 </html>

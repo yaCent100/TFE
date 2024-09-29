@@ -204,6 +204,26 @@ a.sidebar-link:hover {
     font-weight: bold;
 }
 
+.inner-addon {
+    position: relative;
+}
+
+.inner-addon .fa {
+    position: absolute;
+    padding: 10px;
+    pointer-events: none;
+    color: #ccc;
+}
+
+.left-addon .fa {
+    left: 10px;
+}
+
+.input-custom {
+    padding-left: 40px !important; /* Ajuster selon l'espace que prend l'icône */
+}
+
+
 //--------------------DASHBOARD--------------------
 
 .spinner-border {
@@ -300,4 +320,43 @@ a.sidebar-link:hover {
 
 .text-danger {
   color: red;
+}
+
+.user-photo{
+width: 50px;
+    height: auto;
+    border-radius: 50%;
+    margin-bottom: 5px;
+}
+
+
+
+/*-----------------ADMIN CARS--------------*/
+
+.car-photo { width: 80px; }
+
+.spinner-container { text-align: center; margin-top: 20px; }
+
+.spinner-border {
+      width: 3rem;
+      height: 3rem;
+
+}
+table.dataTable {
+  width: 100% !important;
+}
+
+/* Personnaliser des colonnes spécifiques */
+.custom-thead {
+    background-color:#354C6F; /* Couleur de fond pour la première colonne */
+    color:white;
+}
+
+
+/*-------------ADMIN HEADER------------*/
+
+.admin-header{
+    background-color: #354C6F;
+    color:white;
+
 }

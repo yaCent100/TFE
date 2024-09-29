@@ -397,7 +397,7 @@ document.getElementById("monBouton").addEventListener("click", function() {
 });
 
 
-/* FORMULAIRE MODE RESERVATION*/
+/*---------------- FORMULAIRE MODE RESERVATION---------------*/
 $(document).ready(function() {
     // Lorsque l'utilisateur souhaite examiner chaque demande
     $("#show-manual-booking-condition").click(function() {
@@ -417,11 +417,13 @@ $(document).ready(function() {
     });
 
     // Si l'utilisateur souhaite activer la réservation instantanée
-    $("#choose-automatic-booking").click(function() {
+    $(".choose-automatic-booking").click(function() {
+        $("#reservation-confirmation").hide(); // Cache la confirmation si elle est affichée
         $("#reservation-manu").hide(); // Cache la troisième div
         $("#reservation-auto").show(); // Montre la première div
     });
 });
+
 
 
 function submitForm(mode) {

@@ -10,7 +10,7 @@
     <div class="row">
       <div class="col-lg-8 mb-3">
         <h3>Informations générales de votre véhicule -
-          <span th:text="${carDTO.plaqueImmatriculation != null ? #strings.replace(carDTO.plaqueImmatriculation, '-', '').toUpperCase() : ''}"></span>
+          <span th:text="${carDTO.plaqueImmatriculation}"></span>
         </h3>
       </div>
     </div>
@@ -18,16 +18,14 @@
       <div class="row">
         <div class="col-lg-6">
           <label for="marque">Marque</label>
-          <select id="marque" class="form-control" th:field="*{brand}" required>
-            <option value="" disabled selected hidden>Marque*</option>
-          </select>
+          <input type="text" id="marque" class="form-control" th:field="*{brand}" th:value="${carDTO.brand}" readonly>
         </div>
+
         <div class="col-lg-6">
           <label for="modele">Modèle</label>
-          <select id="modele" class="form-control" th:field="*{model}" required>
-            <option value="model" disabled selected hidden>Modele*</option>
-          </select>
+          <input type="text" id="modele" class="form-control" th:field="*{model}" th:value="${carDTO.model}" readonly>
         </div>
+
       </div>
 
       <div class="row">
@@ -143,8 +141,8 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-12">
-          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <div class="col-md-12 text-center mt-3">
+          <button type="submit" class="enregistrer">Enregistrer</button>
         </div>
       </div>
     </form>

@@ -27,6 +27,9 @@
 
     .chart-container {
       margin: 40px 0;
+      display:flex;
+      justify-content:center;
+
     }
 
     .car-photo {
@@ -55,10 +58,6 @@
         color: #ddd;
     }
 
-    .list-group-item {
-        cursor: pointer;
-    }
-
     .selected-item {
         background-color: #d3d3d3;
     }
@@ -74,55 +73,142 @@
         display: block;
         margin-bottom: 10px;
     }
+
+    .table img {
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+    }
+    .chart{
+      max-height:375px !important;
+    }
+
+    /* Pour ajuster la taille et la couleur de l'icône poubelle */
+    .btn .fa-trash {
+        font-size: 1.5rem; /* Ajustez la taille selon vos besoins */
+        color: red; /* Choisissez la couleur que vous souhaitez */
+    }
+
+    /* Ajuster le hover */
+    .btn:hover .fa-trash {
+        color: white; /* Couleur plus foncée au survol */
+    }
+
+
   </style>
 </head>
 <body>
-<div layout:fragment="content" class="container mt-5">
-
-  <!-- Section des KPI -->
-  <div class="row">
-    <div class="col-md-4">
-      <div class="kpi-card">
-        <div class="kpi-title">Total des Évaluations</div>
-        <div class="kpi-value" id="kpi-total-evaluations">0</div>
+<div layout:fragment="content">
+  <div th:insert="~{admin/fragment-header :: admin-header-eval}"></div>
+<div class="mx-5 my-5">
+  <div class="row mb-5">
+    <!-- Total des Évaluations -->
+    <div class="col-12 col-md-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="text-muted mb-2">Total des Évaluations</h5>
+            <span class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+          </div>
+          <h2 id="kpi-total-evaluations" class="mb-0 fw-bold text-center">Loading...</h2>
+        </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="kpi-card">
-        <div class="kpi-title">Note Moyenne</div>
-        <div class="kpi-value" id="kpi-average-rating">0</div>
+
+    <!-- Note Moyenne -->
+    <div class="col-12 col-md-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="text-muted mb-2">Note Moyenne</h5>
+            <span class="icon text-success">
+            <i class="fas fa-arrow-up"></i>
+          </span>
+          </div>
+          <h2 id="kpi-average-rating" class="mb-0 fw-bold text-center">Loading...</h2>
+        </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="kpi-card">
-        <div class="kpi-title">Total des Voitures</div>
-        <div class="kpi-value" id="kpi-total-cars">0</div>
+
+    <!-- Pourcentage d'Évaluations sur Réservations -->
+    <div class="col-12 col-md-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="text-muted mb-2">Évaluations par Réservation</h5>
+            <span class="icon text-info">
+          <i class="fas fa-percentage"></i>
+        </span>
+          </div>
+          <h2 id="kpi-evaluation-reservation-percentage" class="mb-0 fw-bold text-center">Loading...</h2>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Section du graphique -->
-  <div class="row chart-container">
-    <div class="col-md-12">
-      <canvas id="evaluationChart" class="chart"></canvas>
-    </div>
-  </div>
 
-  <!-- Section des voitures et évaluations -->
-  <div class="row mt-4">
-    <div class="col-md-4">
-      <ul class="list-group" id="car-list">
-        <!-- Liste des voitures dynamiques -->
-      </ul>
-    </div>
-    <div class="col-md-8">
-      <div id="car-evaluations-container" class="row">
-        <!-- Évaluations dynamiques -->
+    <!-- Pourcentage d'Évaluations sur Réservations -->
+    <div class="col-12 col-md-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="text-muted mb-2">Évaluations à 5 étoiles</h5>
+            <span class="icon text-info">
+          <i class="fas fa-percentage"></i>
+        </span>
+          </div>
+          <h2 id="kpi-evaluation-percentage" class="mb-0 fw-bold text-center">Loading...</h2>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
+
+    <!-- Section du graphique -->
+    <div class="row chart-container">
+      <div class="col-md-10">
+        <canvas id="evaluationChart" class="chart"></canvas>
+      </div>
+    </div>
+
+    <!-- Section des voitures et évaluations -->
+    <div class="row mt-4">
+      <div class="col-md-4">
+
+        <!-- Spinner pour le chargement des voitures -->
+        <div class="table-responsive" style="height:800px;">
+          <table class="display nowrap table table-striped table-hover text-center" id="car-list-table">
+            <thead class="custom-thead">
+            <tr>
+              <th></th>
+              <th>Marque</th>
+              <th>Modèle</th>
+            </tr>
+            </thead>
+            <tbody id="car-list">
+            <!-- Spinner placé dans une ligne de tableau -->
+            <tr id="loading-spinner" style="display: none;">
+              <td colspan="3" style="text-align: center;">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Chargement...</span>
+                </div>
+              </td>
+            </tr>
+            <!-- Liste des voitures dynamiques -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+      <div class="col-md-8">
+        <div id="car-evaluations-container" class="row mt-5">
+          <!-- Évaluations dynamiques -->
+        </div>
+      </div>
+    </div>
+
+    <script>
    document.addEventListener('DOMContentLoaded', function() {
       // Charger les données du tableau de bord des évaluations
       loadEvaluationDashboardData();
@@ -132,14 +218,14 @@
 
       // Gestion du clic sur une voiture pour afficher ses évaluations
       document.getElementById('car-list').addEventListener('click', function(e) {
-          let clickedElement = e.target.closest('li');
+          let clickedElement = e.target.closest('tr');
           if (clickedElement) {
               let carId = clickedElement.getAttribute('data-car-id');
               if (carId && carId !== 'undefined') {
                   fetchCarEvaluations(carId);
 
                   // Mettre à jour l'état sélectionné
-                  document.querySelectorAll('#car-list .list-group-item').forEach(item => item.classList.remove('selected-item'));
+                  document.querySelectorAll('#car-list tr').forEach(item => item.classList.remove('selected-item'));
                   clickedElement.classList.add('selected-item');
               } else {
                   console.error('Car ID is undefined or invalid:', carId);
@@ -148,26 +234,37 @@
       });
   });
 
-  async function loadEvaluationDashboardData() {
-      try {
-          const response = await fetch('/api/admin/evaluations/dashboard');
-          const data = await response.json();
+async function loadEvaluationDashboardData() {
+    try {
+        const response = await fetch('/api/admin/evaluations/dashboard');
+        const data = await response.json();
 
-          // Mettre à jour les KPI
-          updateEvaluationKPI(data);
+        // Mettre à jour les KPI
+        updateEvaluationKPI(data);
 
-          // Afficher le graphique des évaluations par jour
-          displayEvaluationChart(data.evaluationsByDay);
-      } catch (error) {
-          console.error("Erreur lors du chargement des données du tableau de bord des évaluations:", error);
-      }
-  }
+        // Afficher le graphique des évaluations par jour
+        displayEvaluationChart(data.evaluationsByDay);
+    } catch (error) {
+        console.error("Erreur lors du chargement des données du tableau de bord des évaluations:", error);
+    }
+}
 
-  function updateEvaluationKPI(data) {
-      document.getElementById('kpi-total-evaluations').textContent = data.totalEvaluations;
-      document.getElementById('kpi-average-rating').textContent = data.averageRating.toFixed(2);
-      document.getElementById('kpi-total-cars').textContent = data.totalCars;
-  }
+function updateEvaluationKPI(data) {
+    // Mettre à jour le total des évaluations
+    document.getElementById('kpi-total-evaluations').textContent = data.totalEvaluations;
+
+    // Mettre à jour la note moyenne
+    document.getElementById('kpi-average-rating').textContent = data.averageRating.toFixed(2);
+
+    // Mettre à jour le pourcentage d'évaluations par rapport aux réservations
+    document.getElementById('kpi-evaluation-reservation-percentage').textContent = data.evaluationReservationPercentage.toFixed(2) + '%';
+
+    // Mettre à jour le pourcentage d'évaluations à 5 étoiles
+    document.getElementById('kpi-evaluation-percentage').textContent = data.evaluationFiveStarsPercentage.toFixed(2) + '%'; // Assurez-vous que ce champ est bien envoyé depuis le backend
+}
+
+
+
 
   function displayEvaluationChart(evaluationsByDay) {
       const weeklyData = {};
@@ -222,42 +319,73 @@
       };
   }
 
-  async function loadCarListWithEvaluations() {
-      try {
-          const response = await fetch('/api/admin/evaluations');
-          const evaluations = await response.json();
+async function loadCarListWithEvaluations() {
+    try {
+        // Afficher le spinner avant de commencer le chargement
+        document.getElementById('loading-spinner').style.display = 'block';
 
-          const carMap = new Map();
+        const response = await fetch('/api/admin/evaluations');
+        const evaluations = await response.json();
 
-          evaluations.forEach(evaluation => {
-              if (evaluation.carId && evaluation.carBrand && evaluation.carModel) { // Vérification que carId est présent
-                  const carKey = evaluation.carBrand + ' ' + evaluation.carModel;
-                  if (!carMap.has(carKey)) {
-                      carMap.set(carKey, {
-                          id: evaluation.carId,
-                          carBrand: evaluation.carBrand,
-                          carModel: evaluation.carModel
-                      });
-                  }
-              } else {
-                  console.error('Données invalides pour une voiture:', evaluation);
-              }
-          });
+        const carMap = new Map();
 
-          const carList = document.getElementById('car-list');
-          carList.innerHTML = ''; // Vide la liste avant ajout
+        evaluations.forEach(evaluation => {
+            if (evaluation.carId && evaluation.carBrand && evaluation.carModel && evaluation.carPhotoUrl) {
+                const carKey = evaluation.carId;
 
-          carMap.forEach(car => {
-              const listItem = document.createElement('li');
-              listItem.className = 'list-group-item';
-              listItem.setAttribute('data-car-id', car.id);
-              listItem.textContent = `${car.carBrand} ${car.carModel}`;
-              carList.appendChild(listItem);
-          });
-      } catch (error) {
-          console.error("Erreur lors du chargement des voitures:", error);
-      }
-  }
+                if (!carMap.has(carKey)) {
+                    carMap.set(carKey, {
+                        id: evaluation.carId,
+                        carBrand: evaluation.carBrand,
+                        carModel: evaluation.carModel,
+                        carImage: evaluation.carPhotoUrl,
+                        evaluations: []
+                    });
+                }
+
+                // Ajouter chaque évaluation à la voiture correspondante
+                carMap.get(carKey).evaluations.push({
+                    userName: `${evaluation.userPrenom} ${evaluation.userNom}`,
+                    rating: evaluation.note,
+                    comment: evaluation.avis,
+                    date: evaluation.createdAt
+                });
+            } else {
+                console.error('Données invalides pour une voiture:', evaluation);
+            }
+        });
+
+        const carList = document.getElementById('car-list');
+        carList.innerHTML = ''; // Vide la liste avant ajout
+
+        carMap.forEach(car => {
+            const listItem = `
+                <tr class="clickable-row" data-car-id="${car.id}">
+                    <td><img src="/uploads/photo-car/${car.carImage || 'default-car.png'}" alt="Photo de Voiture" class="img-thumbnail" width="50"></td>
+                    <td>${car.carBrand}</td>
+                    <td>${car.carModel}</td>
+                </tr>`;
+            carList.insertAdjacentHTML('beforeend', listItem);
+        });
+
+        // Masquer le spinner après le chargement
+        document.getElementById('loading-spinner').style.display = 'none';
+
+        // Ajoutez un écouteur d'événements sur chaque ligne de voiture
+        document.querySelectorAll('.clickable-row').forEach(row => {
+            row.addEventListener('click', function() {
+                const carId = this.getAttribute('data-car-id');
+                displayEvaluations(carMap.get(parseInt(carId)));
+            });
+        });
+    } catch (error) {
+        console.error("Erreur lors du chargement des voitures:", error);
+        // Masquer le spinner même si une erreur se produit
+        document.getElementById('loading-spinner').style.display = 'none';
+    }
+}
+
+
 
   async function fetchCarEvaluations(carId) {
       try {
@@ -277,21 +405,45 @@
           } else {
               evaluations.forEach(evaluation => {
                   const evaluationCard = `
-                      <div class="col-md-12 mb-3">
-                          <div class="card evaluation-card">
-                              <div class="card-body d-flex">
-                                  <img src="${'/uploads/profil/' + evaluation.userProfilePhotoUrl}" class="evaluation-profile rounded-circle me-2" height="100" alt="User profile">
-                                  <div>
-                                      <h5 class="card-title">${evaluation.userPrenom} ${evaluation.userNom}</h5>
-                                      <div class="star-rating">
-                                          ${[...Array(5)].map((_, i) => i < evaluation.note ? '<span class="star">&#9733;</span>' : '<span class="star empty">&#9733;</span>').join('')}
-                                      </div>
-                                      <p class="card-text">${evaluation.avis}</p>
-                                      <p class="card-textpç"><small class="text-muted">${new Date(evaluation.createdAt).toLocaleDateString('fr-FR')}</small></p>
+            <div class="col-md-12 mb-3" data-evaluation-id="${evaluation.id}">
+                        <div class="card evaluation-card">
+                            <div class="card-body">
+                                <!-- Bouton de suppression (icône de poubelle) -->
+                                  <button class="btn btn-outline-danger position-absolute top-0 end-0 p-2 m-2" data-evaluation-id="${evaluation.id}">
+                                    <i class="fas fa-trash"></i>
+                                  </button>
+
+                                <!-- Section en-tête avec l'image, le nom, les étoiles et la date -->
+                                <div class="d-flex justify-content-between">
+                                    <!-- Image et informations utilisateur -->
+                                    <div class="d-flex">
+                                        <img src="${'/uploads/profil/' + evaluation.userProfilePhotoUrl}" class="evaluation-profile rounded-circle me-3" height="70" alt="User profile">
+                                        <div class="d-flex flex-column">
+                                            <h5 class="card-title mb-1">${evaluation.userPrenom} ${evaluation.userNom}</h5>
+                                            <div class="star-rating mb-2">
+                                                ${[...Array(5)].map((_, i) => i < evaluation.note ? '<span class="star">&#9733;</span>' : '<span class="star empty">&#9733;</span>').join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                                <!-- Commentaire -->
+                                <h4 class="card-text text-center">${evaluation.avis}</h4>
+
+                                <!-- Numéro de réservation en bas à gauche -->
+
+                                  <div class="d-flex justify-content-between">
+                                        <p class="card-text mb-0"><strong>Réservation #${evaluation.reservationId}</strong></p>
+                                        <p class="card-text mb-0"><small class="text-muted">${new Date(evaluation.createdAt).toLocaleDateString('fr-FR')}</small></p>
+
                                   </div>
-                              </div>
-                          </div>
-                      </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                   `;
                   container.insertAdjacentHTML('beforeend', evaluationCard);
               });
@@ -300,7 +452,45 @@
           console.error("Erreur lors du chargement des évaluations de la voiture:", error);
       }
   }
+
+document.addEventListener('click', async function (event) {
+    // Vérifier si le bouton avec l'icône de poubelle est cliqué
+    const deleteButton = event.target.closest('button');
+
+    if (deleteButton && deleteButton.querySelector('.fa-trash')) {
+        const evaluationId = deleteButton.getAttribute('data-evaluation-id');
+        if (evaluationId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette évaluation ?')) {
+                try {
+                    const response = await fetch(`/api/admin/evaluations/${evaluationId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        // Retirer la carte d'évaluation après suppression
+                        const evaluationCard = deleteButton.closest('.evaluation-card');
+                        if (evaluationCard) {
+                            evaluationCard.remove();
+                        }
+                    } else {
+                        alert('Erreur lors de la suppression de l\'évaluation.');
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de la suppression:', error);
+                }
+            }
+        }
+    }
+});
+
+
+
+
+
   </script>
+  </div>
+
+</div>
 </div>
 </body>
 </html>

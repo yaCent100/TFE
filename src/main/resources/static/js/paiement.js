@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 variables: {
                     colorPrimary: '#00BFFF',
                     colorBackground: '#DFE7EC',
-                    colorText: '#9EABB3',
+                    colorText: '#354C6F',
                     colorDanger: '#df1b41',
                     fontFamily: 'Ideal Sans, system-ui, sans-serif',
                     spacingUnit: '2px',

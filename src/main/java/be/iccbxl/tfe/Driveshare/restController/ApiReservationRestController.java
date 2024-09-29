@@ -24,16 +24,21 @@ public class ApiReservationRestController {
     @Autowired
     private IndisponibleService indisponibleService;
 
-    @Operation(summary = "Obtenir les réservations de l'utilisateur courant", description = "Retourne la liste des réservations pour l'utilisateur connecté.")
+    @Operation(summary = "Obtenir les réservations pour une voiture spécifique", description = "Retourne la liste des réservations liées à une voiture spécifique pour l'utilisateur connecté.")
     @GetMapping("/api/reservations")
-    public List<ReservationDTO> getCurrentUserReservations() {
-        return reservationService.getReservationsForCurrentUser();
+    public List<ReservationDTO> getCarReservations(
+            @Parameter(description = "L'ID de la voiture pour laquelle obtenir les réservations", required = true)
+            @RequestParam Long carId) {
+        // Retourner les réservations uniquement avec les statuts "confirmed", "finished", et "now"
+        return reservationService.getReservationsForCar(carId);
     }
 
     @Operation(summary = "Obtenir les dates d'indisponibilité d'une voiture", description = "Retourne les dates d'indisponibilité d'une voiture spécifique.")
     @GetMapping("/api/unavailable-dates")
     public List<IndisponibleDTO> getUnavailableDates(
-            @Parameter(description = "L'ID de la voiture pour laquelle obtenir les dates", required = true) @RequestParam Long carId) {
+            @Parameter(description = "L'ID de la voiture pour laquelle obtenir les dates", required = true)
+            @RequestParam Long carId) {
+        // Retourner les indisponibilités filtrées (pas de chevauchement avec les réservations)
         return indisponibleService.findByCarId(carId);
     }
 }

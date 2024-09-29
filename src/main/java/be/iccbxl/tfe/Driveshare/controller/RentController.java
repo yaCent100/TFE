@@ -1,7 +1,6 @@
 package be.iccbxl.tfe.Driveshare.controller;
 
 import be.iccbxl.tfe.Driveshare.DTO.CarDTO;
-import be.iccbxl.tfe.Driveshare.DTO.PriceDTO;
 import be.iccbxl.tfe.Driveshare.model.*;
 import be.iccbxl.tfe.Driveshare.security.CustomUserDetail;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.*;
@@ -30,15 +29,18 @@ public class RentController {
 
     private final EquipmentService equipmentService;
 
+    private final DocumentService documentService;
+
 
     @Autowired
     public RentController(CategoryService categoryService, DateService dateService, FeatureService featureService,
-                          CarService carService, EquipmentService equipmentService) {
+                          CarService carService, EquipmentService equipmentService, DocumentService documentService) {
         this.dateService = dateService;
         this.categoryService = categoryService;
         this.featureService = featureService;
         this.carService = carService;
         this.equipmentService = equipmentService;
+        this.documentService = documentService;
     }
 
 
@@ -55,6 +57,10 @@ public class RentController {
         if (userDetails != null) {
             User user = userDetails.getUser();
             model.addAttribute("user", user);
+
+            // Vérifier si les documents d'identité (recto et verso) sont déjà uploadés
+            boolean userIdentityUploaded = documentService.isUserIdentityUploaded(user.getId());
+            model.addAttribute("userIdentityUploaded", userIdentityUploaded);
         }
 
 
@@ -98,7 +104,7 @@ public class RentController {
 
             carService.createCar(carDTO);
 
-            redirectAttributes.addFlashAttribute("successMessage", "Car saved successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "La voiture à été enregistré avec succées!");
 
             return "redirect:/account/cars";
 
