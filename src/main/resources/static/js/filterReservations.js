@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (selectedOwnerCarIds.length === 0) {
             resultContainer.innerHTML = `<div class="image-text-container">
                                           <img src="/images/clé-reservation.png" height="200" class="cle-reservation-img" alt="clé">
-                                             <p class="centered-text">Vous n'avez pas de réservation en cours.</p>
+                                             <p class="centered-text">Vous n'avez pas de réservation.</p>
                                          </div>`;
             return;
         }
@@ -70,7 +70,7 @@ function fetchRenterReservations() {
         }
         resultContainer.innerHTML = `<div class="image-text-container">
                                       <img src="/images/clé-reservation.png" height="200" class="cle-reservation-img" alt="clé">
-                                         <p class="centered-text">Vous n'avez pas de réservation en cours.</p>
+                                         <p class="centered-text">Vous n'avez pas de réservation.</p>
                                      </div>`;
         return;
     }
@@ -177,7 +177,7 @@ function displayReservations(reservations, container, isOwner) {
             contentCol.classList.add("col-lg-6");
 
             const statutCol = document.createElement("div");
-            statutCol.classList.add("col-lg-3", "text-end");
+            statutCol.classList.add("col-lg-3", "text-end","statut-reservation");
 
             const cardBody = document.createElement("div");
             cardBody.classList.add("card-body");
@@ -309,12 +309,12 @@ function displayReservations(reservations, container, isOwner) {
             } else if (reservation.statut === 'REJECTED') {
                 // Afficher le statut de demande refusée
                 statutText.innerText = "Demande refusée";
-                statutText.classList.add("text-danger");
+                statutText.classList.add("bg-danger");
                 statutCol.appendChild(statutText);
             } else if (reservation.statut === 'EXPIRED') {
                 // Afficher le statut de demande expirée
                 statutText.innerText = "Demande expirée";
-                statutText.classList.add("text-warning");
+                statutText.classList.add("bg-warning");
                 statutCol.appendChild(statutText);
             } else {
                 statutText.innerHTML = getReservationStatusText(reservation);
@@ -407,11 +407,11 @@ function handleExpiredReservation(reservationId) {
             case 'FINISHED':
                 return 'Location terminée';
             case 'PAYMENT_PENDING':
-                return 'En attente de paiement';
+                return 'Attente de paiement';
             case 'CANCELLED':
                 return 'Annulée';
             case 'RESPONSE_PENDING':
-                return 'En attente de réponse';
+                return 'Attente de réponse';
             case 'REJECTED':
                 return 'Demande refusée';
             case 'EXPIRED':
@@ -444,53 +444,62 @@ function handleExpiredReservation(reservationId) {
         }
     }
 
-    function setCurrentLabels() {
-        document.getElementById('filter-reponse-attente').nextElementSibling.textContent = 'En attente de réponse';
-        document.getElementById('filter-attente-paiement').nextElementSibling.textContent = 'En attente de paiement';
-        document.getElementById('filter-confirmed').nextElementSibling.textContent = 'Locations à venir (confirmées)';
-        document.getElementById('filter-now').nextElementSibling.textContent = 'Locations en cours';
-        document.getElementById('filter-finished').parentElement.style.display = 'none';
-        document.getElementById('filter-cancelled').parentElement.style.display = 'none';
-        document.getElementById('filter-completed').parentElement.style.display = 'none';
-        document.getElementById('filter-pending').parentElement.style.display = 'none';
-        document.getElementById('filter-reponse-attente').parentElement.style.display = 'block';
-        document.getElementById('filter-attente-paiement').parentElement.style.display = 'block';
-        document.getElementById('filter-confirmed').parentElement.style.display = 'block';
-        document.getElementById('filter-now').parentElement.style.display = 'block';
-    }
+   function setCurrentLabels() {
+       document.getElementById('filter-reponse-attente').nextElementSibling.textContent = 'En attente de réponse';
+       document.getElementById('filter-attente-paiement').nextElementSibling.textContent = 'En attente de paiement';
+       document.getElementById('filter-confirmed').nextElementSibling.textContent = 'Locations à venir (confirmées)';
+       document.getElementById('filter-now').nextElementSibling.textContent = 'Locations en cours';
 
-    function setHistoryLabels() {
-        document.getElementById('filter-finished').nextElementSibling.textContent = 'Location terminées';
-        document.getElementById('filter-cancelled').nextElementSibling.textContent = 'Location annulées';
-        document.getElementById('filter-completed').nextElementSibling.textContent = 'Demande refusées';
-        document.getElementById('filter-pending').nextElementSibling.textContent = 'Demande expirées';
-        document.getElementById('filter-reponse-attente').parentElement.style.display = 'none';
-        document.getElementById('filter-attente-paiement').parentElement.style.display = 'none';
-        document.getElementById('filter-confirmed').parentElement.style.display = 'none';
-        document.getElementById('filter-now').parentElement.style.display = 'none';
-        document.getElementById('filter-finished').parentElement.style.display = 'block';
-        document.getElementById('filter-cancelled').parentElement.style.display = 'block';
-        document.getElementById('filter-completed').parentElement.style.display = 'block';
-        document.getElementById('filter-pending').parentElement.style.display = 'block';
-    }
+       // Masquer les autres filtres
+       document.getElementById('filter-finished').parentElement.style.display = 'none';
+       document.getElementById('filter-cancelled').parentElement.style.display = 'none';
+       document.getElementById('filter-rejected').parentElement.style.display = 'none';
+       document.getElementById('filter-expired').parentElement.style.display = 'none';
 
-    currentLocationsButton.addEventListener('click', function() {
-        setCurrentLabels();
-        clearCheckboxes(statusCheckboxes);
-        resultContainer.innerHTML = ""; // Clear the result container
-        currentLocationsButton.style.display = 'none';
-        historyButton.style.display = 'inline-block';
-        fetchOwnerReservations();
-    });
+       // Afficher uniquement les filtres actuels
+       document.getElementById('filter-reponse-attente').parentElement.style.display = 'block';
+       document.getElementById('filter-attente-paiement').parentElement.style.display = 'block';
+       document.getElementById('filter-confirmed').parentElement.style.display = 'block';
+       document.getElementById('filter-now').parentElement.style.display = 'block';
+   }
 
-    historyButton.addEventListener('click', function() {
-        setHistoryLabels();
-        clearCheckboxes(statusCheckboxes);
-        resultContainer.innerHTML = ""; // Clear the result container
-        historyButton.style.display = 'none';
-        currentLocationsButton.style.display = 'inline-block';
-        fetchRenterReservations();
-    });
+   function setHistoryLabels() {
+       document.getElementById('filter-finished').nextElementSibling.textContent = 'Locations terminées';
+       document.getElementById('filter-cancelled').nextElementSibling.textContent = 'Locations annulées';
+       document.getElementById('filter-rejected').nextElementSibling.textContent = 'Demandes refusées';
+       document.getElementById('filter-expired').nextElementSibling.textContent = 'Demandes expirées';
+
+       // Masquer les filtres actuels
+       document.getElementById('filter-reponse-attente').parentElement.style.display = 'none';
+       document.getElementById('filter-attente-paiement').parentElement.style.display = 'none';
+       document.getElementById('filter-confirmed').parentElement.style.display = 'none';
+       document.getElementById('filter-now').parentElement.style.display = 'none';
+
+       // Afficher uniquement les filtres d'historique
+       document.getElementById('filter-finished').parentElement.style.display = 'block';
+       document.getElementById('filter-cancelled').parentElement.style.display = 'block';
+       document.getElementById('filter-rejected').parentElement.style.display = 'block';
+       document.getElementById('filter-expired').parentElement.style.display = 'block';
+   }
+
+   currentLocationsButton.addEventListener('click', function() {
+       setCurrentLabels();
+       clearCheckboxes(statusCheckboxes);
+       resultContainer.innerHTML = ""; // Effacer le conteneur de résultats
+       currentLocationsButton.style.display = 'none';
+       historyButton.style.display = 'inline-block';
+       fetchOwnerReservations();
+   });
+
+   historyButton.addEventListener('click', function() {
+       setHistoryLabels();
+       clearCheckboxes(statusCheckboxes);
+       resultContainer.innerHTML = ""; // Effacer le conteneur de résultats
+       historyButton.style.display = 'none';
+       currentLocationsButton.style.display = 'inline-block';
+       fetchRenterReservations();
+   });
+
 
 function updateReservationStatuses(reservations) {
     const now = new Date();

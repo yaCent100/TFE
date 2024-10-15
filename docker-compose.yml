@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  driveshare-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/driveshare
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Permettre un mot de passe vide
+      MYSQL_DATABASE: driveshare
+    ports:
+      - "3307:3306"  # Mappe le port 3306 du conteneur vers le port 3307 de l'hôte
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

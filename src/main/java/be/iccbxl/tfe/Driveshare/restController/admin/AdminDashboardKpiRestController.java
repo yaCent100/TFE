@@ -55,7 +55,7 @@ public class AdminDashboardKpiRestController {
 
     @GetMapping("/top10-cars")
     public List<CarReservationKpiDTO> getTop10CarsThisMonth() {
-        return reservationService.getTop10MostReservedCarsThisMonth();
+        return reservationService.getTop10MostReservedCars();
     }
 
     @GetMapping("/top10-users")

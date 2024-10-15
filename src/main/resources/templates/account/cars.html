@@ -57,13 +57,16 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Mode de réservation -->
-                                            <div class="d-flex justify-content-end mt-3">
-                                                <div class="card-text-mode" data-toggle="tooltip" data-placement="top" data-bs-original-title="Vous pouvez réserver la voiture immédiatement">
-                                                    <img src="/icons/eclat.png" alt="eclat" class="icon" style="width: 20px; height: 20px; margin-right: 5px;">
-                                                    <span>Réservation instantanée</span>
+                                            <div th:if="${car.modeReservation == 'automatique'}">
+                                                <!-- Mode de réservation -->
+                                                <div class="d-flex justify-content-end mt-3">
+                                                    <div class="card-text-mode" data-toggle="tooltip" data-placement="top" data-bs-original-title="Vous pouvez réserver la voiture immédiatement">
+                                                        <img src="/icons/eclat.png" alt="eclat" class="icon" style="width: 20px; height: 20px; margin-right: 5px;">
+                                                        <span>Réservation instantanée</span>
+                                                    </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>

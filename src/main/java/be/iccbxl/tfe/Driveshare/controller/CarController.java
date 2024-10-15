@@ -74,7 +74,7 @@ public class CarController {
             @RequestParam(required = false) String dateDebut,
             @RequestParam(required = false) String dateFin,
             Model model,
-            @AuthenticationPrincipal CustomUserDetail userDetail) { // Ajoutez ce modèle si vous avez configuré la méthode globale
+            @AuthenticationPrincipal CustomUserDetail userDetail) {
 
         // Récupérer la voiture par son ID
         Car car = carService.getCarById(id);
@@ -97,8 +97,6 @@ public class CarController {
         LocalDate localDateFin = null;
 
         String errorMessage = "";
-
-
 
         try {
             if (dateDebut != null && !dateDebut.isEmpty()) {
@@ -128,15 +126,18 @@ public class CarController {
                 errorMessage = "Les dates de début et de fin doivent être fournies.";
             }
         }
+
         logger.info("Car ID: {}", id);
         logger.info("Display Price: {}", dailyPrice);
 
-        String fullAddress = car.getAdresse() + ", " + (car.getPostalCode() != null ? car.getPostalCode() : "") + " " + (car.getLocality() != null ? car.getLocality() : "");
+        String fullAddress = car.getAdresse() + ", " +
+                (car.getPostalCode() != null ? car.getPostalCode() : "") + " " +
+                (car.getLocality() != null ? car.getLocality() : "");
         model.addAttribute("fullAddress", fullAddress);
 
-        logger.info("Fulladress: {}", fullAddress);
+        logger.info("Full address: {}", fullAddress);
 
-
+        // Ajouter les attributs au modèle
         model.addAttribute("car", car);
         model.addAttribute("averageRating", averageRating);
         model.addAttribute("totalEvaluations", totalEvaluations);
@@ -144,13 +145,19 @@ public class CarController {
         model.addAttribute("dateFin", formattedDateFin);
         model.addAttribute("displayPrice", dailyPrice);
         model.addAttribute("totalPrice", totalPrice);
-        model.addAttribute("authenticatedUser", userDetail.getUser());
 
+        // Vérifiez si l'utilisateur est authentifié
+        if (userDetail != null) {
+            model.addAttribute("authenticatedUser", userDetail.getUser());
+        } else {
+            model.addAttribute("authenticatedUser", null);
+        }
 
         model.addAttribute("errorMessage", errorMessage);
 
         return "car/details";
     }
+
 
 
 

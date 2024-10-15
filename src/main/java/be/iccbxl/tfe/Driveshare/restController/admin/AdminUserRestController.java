@@ -5,6 +5,7 @@ import be.iccbxl.tfe.Driveshare.model.Document;
 import be.iccbxl.tfe.Driveshare.model.Role;
 import be.iccbxl.tfe.Driveshare.model.User;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.DocumentService;
+import be.iccbxl.tfe.Driveshare.service.serviceImpl.EmailService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.RoleService;
 import be.iccbxl.tfe.Driveshare.service.serviceImpl.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +34,8 @@ public class AdminUserRestController {
 
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private EmailService emailService;
 
     @Operation(summary = "Obtenir tous les utilisateurs", description = "Récupérer tous les utilisateurs inscrits sur la plateforme.")
     @GetMapping("/users")
@@ -173,6 +176,29 @@ public class AdminUserRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    /*@PostMapping("/users/{userId}/send-email")
+    public ResponseEntity<String> sendEmail(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> emailRequest) {
+        String subject = emailRequest.get("subject");
+        String message = emailRequest.get("message");
+
+        // Assurez-vous que les valeurs ne sont pas nulles
+        if (subject == null || message == null) {
+            return ResponseEntity.badRequest().body("Required parameters are missing.");
+        }
+
+        try {
+            emailService.sendEmailToUser(userId, subject, message);
+            return ResponseEntity.ok("Email sent successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error sending email: " + e.getMessage());
+        }
+    }*/
+
+
+
 
 
 

@@ -42,13 +42,27 @@
                         </div>
                     </div>
                     <div>
-                        <h1 class="fw-bold mt-2" th:text="${car.brand + ' ' + car.model}"></h1><br>
-                        <span th:text="${car.fuelType}"></span><br>
+                        <h1 class="fw-bold mt-2" th:text="${car.brand + ' ' + car.model}"></h1>
+                        <h4 th:text="${car.fuelType}"></h4>
                         <span>
-                            <span th:each="star : ${#numbers.sequence(1, averageRating)}" class="star-filled">&#9733;</span>
-                            <span th:each="star : ${#numbers.sequence(0, 5 - averageRating)}" class="star-filled">&#9734;</span>
-                            <span th:text="${averageRating}"></span> (<span th:text="${totalEvaluations}"></span>)
+                            <!-- Vérification si le nombre total d'évaluations est supérieur à 0 -->
+                            <span th:if="${totalEvaluations > 0}">
+                                <!-- Affichage des étoiles pleines pour la note moyenne -->
+                                <span th:each="star : ${#numbers.sequence(1, T(java.lang.Math).ceil(averageRating))}" class="star-filled">&#9733;</span>
+
+                                <!-- Affichage des étoiles vides pour compléter jusqu'à 5 étoiles -->
+                                <span th:each="star : ${#numbers.sequence(1, 5 - T(java.lang.Math).ceil(averageRating))}" class="star-filled">&#9734;</span>
+
+                                <!-- Affichage de la note moyenne et du nombre total d'évaluations -->
+                                <span th:text="${averageRating}"></span> (<span th:text="${totalEvaluations}"></span>)
+                            </span>
+
+                                                    <!-- Si aucune évaluation n'est présente, afficher "Aucun avis" -->
+                            <span th:if="${totalEvaluations == 0}">
+                                Aucun avis
+                            </span>
                         </span>
+
                     </div>
                 </div>
 
@@ -145,23 +159,33 @@
                 <!-- Évaluations -->
                 <h2 class="fw-bold mt-3">Évaluations</h2>
                 <div class="rounded-custom-border p-4 mt-3">
-                    <div th:if="${#lists.isEmpty(car.reservations.![evaluation])}">
+                    <!-- Vérifier si car.reservations est vide ou si toutes les évaluations sont nulles -->
+                    <div th:if="${#lists.isEmpty(car.reservations) or car.reservations.![evaluation != null].size() == 0}">
                         <span>Aucune évaluation à ce jour.</span>
                     </div>
-                    <div th:each="reservation : ${car.reservations}" th:if="${reservation.evaluation != null}">
-                        <div class="col-md-12">
+
+                    <!-- Afficher les réservations avec des évaluations non nulles -->
+                    <div th:each="reservation : ${car.reservations}">
+                        <div th:if="${reservation.evaluation != null}" class="col-md-12">
                             <div class="row m-3">
+                                <!-- Image de profil de l'utilisateur -->
                                 <div class="col-md-2 m-1 align-content-center">
                                     <img th:if="${reservation.user.photoUrl != null}" th:src="@{'/uploads/profil/' + ${reservation.user.photoUrl}}" class="img-fluid rounded-circle" alt="Profil" width="100px" height="100px">
                                 </div>
+
+                                <!-- Informations sur l'utilisateur et l'évaluation -->
                                 <div class="col-md-7">
                                     <span class="fw-bold" th:text="${reservation.user.lastName + ' ' + reservation.user.firstName.substring(0, 1) + '.'}"></span><br>
                                     <span th:text="${reservation.evaluation.avis}"></span><br>
+
+                                    <!-- Affichage des étoiles en fonction de la note -->
                                     <span th:each="star : ${#numbers.sequence(1, 5)}">
-                                        <span th:if="${reservation.evaluation.note >= star}" class="star-filled">&#9733;</span>
-                                        <span th:unless="${reservation.evaluation.note >= star}" class="star-filled">&#9734;</span>
-                                    </span>
+                        <span th:if="${reservation.evaluation.note >= star}" class="star-filled">&#9733;</span>
+                        <span th:unless="${reservation.evaluation.note >= star}" class="star-filled">&#9734;</span>
+                    </span>
                                 </div>
+
+                                <!-- Date de l'évaluation -->
                                 <div class="col-md-2 text-end text-muted small">
                                     <span th:text="${#temporals.format(reservation.evaluation.createdAt, 'dd-MM-yyyy')}"></span>
                                 </div>
@@ -169,6 +193,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <!-- Formulaire de réservation -->
@@ -242,7 +267,7 @@
                                     <label for="message-text" class="col-form-label">Message:</label>
                                     <textarea class="form-control" id="notification-message" style="height: 200px !important;"></textarea>                                </div>
                                 <input type="hidden" id="toUserId" th:value="${car.user.id}">
-                                <input type="hidden" id="fromUserId" th:value="${authenticatedUser.id}">
+                                <input type="hidden" id="fromUserId" th:if="${authenticatedUser != null}" th:value="${authenticatedUser.id}">
                                 <input type="hidden" id="vehicleId" th:value="${car.id}">
                                 <div class="text-center">
                                     <button type="button" id="sendNotificationButton" class="btn btn-primary enregistrer">Envoyer</button>
@@ -261,7 +286,7 @@
     </div>
 
     <script type="text/javascript">
-        var authenticatedUserId = /*[[${authenticatedUser.id}]]*/ '';
+var authenticatedUserId = /*[[${authenticatedUser != null ? authenticatedUser.id : ''}]]*/ '';
         var carUserId = /*[[${car.user.id}]]*/ '';
         var vehicleId = /*[[${car.id}]]*/ '';
 

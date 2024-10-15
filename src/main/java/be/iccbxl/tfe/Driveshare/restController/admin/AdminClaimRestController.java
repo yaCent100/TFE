@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/claims")
+@RequestMapping("/api/admin/claims")
 public class AdminClaimRestController {
 
     @Autowired
@@ -144,7 +144,7 @@ public class AdminClaimRestController {
     }
 
 
-    @PostMapping("/admin/close/{id}")
+    @PostMapping("/close/{id}")
     public ResponseEntity<String> closeClaim(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetail userDetails) {
         // Récupérer l'utilisateur connecté
         User currentUser = userDetails.getUser();

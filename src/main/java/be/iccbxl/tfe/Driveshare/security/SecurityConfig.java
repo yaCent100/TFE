@@ -7,6 +7,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -29,14 +30,14 @@ public class SecurityConfig {
 	};
 
 	private static final String[] ADMIN_ENDPOINTS = {
-			"/api/admin/**", "/admin/**", "/api/dashboard/**", "/api/review",
-			"/api/admin/users/**", "/api/admin/payments", "/api/admin/evaluations","/api/admin/cars/**","/api/files/**"
+			"/api/admin/**", "/admin/**", "/api/dashboard/**", "/api/review"
+			,"/api/files/**","/api/admin/payments"
 	};
 
 	private static final String[] USER_ENDPOINTS = {
 			"/account/**", "/reservation/**", "/checkout","/api/reservations/**",
 			"/evaluations/exists/**","/api/notifications/**","/api/claims/close/**","/api/claims/**","/api/getOwnerReservations",
-			"/api/getRenterReservations"
+			"/api/getRenterReservations","/cars/**"
 	};
 
 	@Bean
@@ -83,7 +84,7 @@ public class SecurityConfig {
 						.logoutUrl("/logout").permitAll()
 						.logoutSuccessUrl("/home")
 				)
-				.headers(frameOptions->frameOptions.disable())
+				.headers(AbstractHttpConfigurer::disable)
 
 		;
 

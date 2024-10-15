@@ -249,9 +249,9 @@ public class ReservationService implements ReservationServiceI {
         return reservationRepository.countConfirmedReservations();
     }
 
-    public List<CarReservationKpiDTO> getTop10MostReservedCarsThisMonth() {
+    public List<CarReservationKpiDTO> getTop10MostReservedCars() {
         // Récupérer toutes les voitures
-        List<Car> cars = reservationRepository.findTop10MostReservedCarsThisMonth();
+        List<Car> cars = reservationRepository.findTop10MostReservedCars();
 
         // Calculer les KPI pour chaque voiture, trier par nombre de réservations et limiter à 10
         return cars.stream()
@@ -272,6 +272,7 @@ public class ReservationService implements ReservationServiceI {
                 .limit(10) // Limiter aux 10 voitures les plus réservées
                 .collect(Collectors.toList());
     }
+
 
 
     private int calculateTrend(Car car) {

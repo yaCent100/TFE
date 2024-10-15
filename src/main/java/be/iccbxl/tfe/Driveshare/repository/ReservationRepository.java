@@ -60,15 +60,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT COUNT(r) FROM Reservation r WHERE r.statut IN ('CONFIRMED', 'NOW', 'FINISHED')")
     long countConfirmedReservations();
 
-    @Query("SELECT c FROM Car c JOIN c.reservations r JOIN r.payment pay WHERE r.statut = 'CONFIRMED' AND MONTH(r.startLocation) = MONTH(CURRENT_DATE()) GROUP BY c.id ORDER BY COUNT(r) DESC")
-    List<Car> findTop10MostReservedCarsThisMonth();
+    @Query("SELECT c FROM Car c JOIN c.reservations r JOIN r.payment pay WHERE r.statut = 'FINISHED' GROUP BY c.id ORDER BY COUNT(r) DESC")
+    List<Car> findTop10MostReservedCars();
+
 
     @Query("SELECT r FROM Reservation r WHERE r.startLocation BETWEEN :startDate AND CURRENT_DATE AND r.statut IN ('CONFIRMED', 'NOW', 'FINISHED')")
     List<Reservation> findReservationsForLastMonth(@Param("startDate") LocalDate startDate);
 
     @Query("SELECT r FROM Reservation r WHERE r.startLocation BETWEEN :startDate AND :endDate AND r.statut IN ('CONFIRMED', 'NOW', 'FINISHED')")
     List<Reservation> findReservationsBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
-
 
 
     long countByStatut(String now);

@@ -127,7 +127,7 @@ public class ReservationController {
 
                 String carPhotoUrl;
                 if (car.getPhotos() != null && !car.getPhotos().isEmpty()) {
-                    carPhotoUrl = "/uploads/" + car.getPhotos().get(0).getUrl();
+                    carPhotoUrl = "/uploads/photo-car/" + car.getPhotos().get(0).getUrl();
                 } else {
                     carPhotoUrl = "/images/carDefault.jpg";
                 }

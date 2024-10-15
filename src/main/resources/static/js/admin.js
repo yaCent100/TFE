@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // Gestion de la sélection de l'année et du mois pour les réservations
-    const currentMonth = new Date().getMonth() + 1; // JavaScript months are 0-based
+    const currentMonth = new Date().getMonth(); // JavaScript months are 0-based
     const currentYear = new Date().getFullYear();
 
     const yearSelect = document.getElementById('year-select');
@@ -687,6 +687,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <li><a class="dropdown-item" href="javascript:void(0)" onclick="verifyDocuments(${data.id})">Vérifier Documents</a></li>
                                 <li><a class="dropdown-item" href="javascript:void(0)" onclick="editPermissions(${data.id})">Modifier Permissions</a></li>
                                 <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteUser(${data.id})">Supprimer Utilisateur</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)" onclick="sendEmail(${data.id})">Envoyer Message</a></li>
+
                             </ul>
                         </div>`;
                 },
@@ -725,6 +727,59 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+/*function sendEmail(userId) {
+    currentUserId = userId;  // Stocker l'ID de l'utilisateur
+
+    // Ouvrir le modal
+    const emailModal = new bootstrap.Modal(document.getElementById('sendEmailModal'));
+    emailModal.show();
+
+    // Réinitialiser le formulaire
+    document.getElementById('sendEmailForm').reset();
+    document.getElementById('userId').value = userId; // Mettre à jour l'ID de l'utilisateur
+}
+
+
+document.getElementById('sendEmailButton').addEventListener('click', function () {
+    const subject = document.getElementById('emailSubject').value.trim();
+    const message = document.getElementById('emailMessage').value.trim();
+    const userId = document.getElementById('userId').value;
+
+    // Validation des champs
+    if (!subject || !message) {
+        alert('Veuillez remplir tous les champs avant d\'envoyer le message.');
+        return;
+    }
+
+    // Envoyer la requête à l'API pour envoyer l'e-mail
+    fetch(`/api/admin/users/${userId}/send-email`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ subject: subject, message: message })
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Message envoyé avec succès');
+            // Fermer le modal
+            const emailModal = bootstrap.Modal.getInstance(document.getElementById('sendEmailModal'));
+            emailModal.hide();
+        } else {
+            return response.json().then(err => {
+                alert(`Erreur lors de l'envoi du message : ${err.message || 'Erreur inconnue'}`);
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de l\'envoi du message :', error);
+        alert('Erreur lors de l\'envoi du message. Veuillez réessayer.');
+    });
+});*/
+
+
+
+
 
 // Déclaration globale de la fonction verifyDocuments
 function verifyDocuments(userId) {
@@ -1006,6 +1061,7 @@ $(document).ready(function () {
     fetch('/api/admin/cars/stats')
         .then(response => response.json())
         .then(data => {
+            console.log("Données reçues :", data);
             $('#totalCars').text(data.totalCars);
             $('#percentageOnline').text(data.percentageOnline.toFixed(2) + '%');
             $('#rentedCars').text(data.rentedCars);
@@ -1792,7 +1848,7 @@ document.getElementById('reservationSelect').addEventListener('change', function
 
 async function loadClaims(status = 'all') {
     try {
-        const response = await fetch('/api/claims');
+        const response = await fetch('/api/admin/claims');
         if (!response.ok) throw new Error('Erreur lors du chargement des réclamations');
         const claims = await response.json();
 
@@ -1892,7 +1948,7 @@ if (responseForm) {
         const message = document.getElementById('responseMessage').value;
 
         try {
-            const response = await fetch(`/api/claims/response/${claimId}`, {
+            const response = await fetch(`/api/admin/claims/response/${claimId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1941,11 +1997,9 @@ async function loadReservationOptions() {
 
 
 
-
-
 async function resolveClaim(claimId) {
     try {
-        const response = await fetch(`/api/claims/resolve/${claimId}`, {
+        const response = await fetch(`/api/admin/claims/resolve/${claimId}`, {
             method: 'POST'
         });
 
@@ -1961,7 +2015,7 @@ async function resolveClaim(claimId) {
 
 async function loadKpiData() {
     try {
-        const response = await fetch('/api/claims/kpi');
+        const response = await fetch('/api/admin/claims/kpi');
         if (!response.ok) throw new Error('Erreur lors du chargement des KPI');
         const kpiData = await response.json();
 
@@ -1986,7 +2040,7 @@ async function loadKpiData() {
 // Fonction pour charger les réclamations mensuelles et créer un graphique linéaire
 async function loadMonthlyClaimsChart() {
     try {
-        const response = await fetch('/api/claims/monthly');
+        const response = await fetch('/api/admin/claims/monthly');
         const claimsPerMonth = await response.json();
 
         // Obtenez la liste des 12 derniers mois
